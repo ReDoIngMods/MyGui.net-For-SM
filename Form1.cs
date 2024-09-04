@@ -24,7 +24,10 @@ namespace MyGui.net
             // Create a Label
             Label label = new Label();
             label.Text = "Name:";
-            label.AutoSize = true;
+            label.AutoSize = false;
+            label.TextAlign = ContentAlignment.MiddleRight;
+            label.Height = 23;
+            label.Width = 100;
 
             // Create a TextBox
             TextBox textBox = new TextBox();
@@ -34,7 +37,10 @@ namespace MyGui.net
             // Create another Label
             Label label2 = new Label();
             label2.Text = "Age:";
-            label2.AutoSize = true;
+            label2.AutoSize = false;
+            label2.TextAlign = ContentAlignment.MiddleRight;
+            label2.Height = 23;
+            label2.Width = 100;
 
             // Create a NumericUpDown
             NumericUpDown numericUpDown = new NumericUpDown();
