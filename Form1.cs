@@ -15,17 +15,60 @@ namespace MyGui.net
                 Settings.Default.Save();
             }
         }
-        static bool _draggingViewport = false;
+        static bool _draggingViewport;
         static Point _mouseLoc = new Point(0, 0);
         public Form1()
         {
             InitializeComponent();
 
-        private void Form1_Load(object sender, EventArgs e)
+            // Create a Label
+            Label label = new Label();
+            label.Text = "Name:";
+            label.AutoSize = true;
+
+            // Create a TextBox
+            TextBox textBox = new TextBox();
+            textBox.Width = 1;
+            textBox.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+
+            // Create another Label
+            Label label2 = new Label();
+            label2.Text = "Age:";
+            label2.AutoSize = true;
+
+            // Create a NumericUpDown
+            NumericUpDown numericUpDown = new NumericUpDown();
+            numericUpDown.Width = 1;
+            numericUpDown.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+
+            // Arrange controls horizontally using TableLayoutPanel
+            TableLayoutPanel tableLayoutPanel = new TableLayoutPanel();
+            tableLayoutPanel.ColumnCount = 2;
+            tableLayoutPanel.RowCount = 2;
+            tableLayoutPanel.AutoSize = true;
+            tableLayoutPanel.Dock = DockStyle.Fill;
+
+            // Add controls to TableLayoutPanel
+            tableLayoutPanel.Controls.Add(label, 0, 0);
+            tableLayoutPanel.Controls.Add(textBox, 1, 0);
+            tableLayoutPanel.Controls.Add(label2, 0, 1);
+            tableLayoutPanel.Controls.Add(numericUpDown, 1, 1);
+
+            // Add TableLayoutPanel to the Panel
+            tabPage1.Controls.Add(tableLayoutPanel);
+        }
+
+        void Form1_Load(object sender, EventArgs e)
         {
+            Debug.WriteLine(Util.GetGameInstallPath("387990"));
             if (_ScrapMechanicPath == "")
             {
-                Debug.WriteLine("no sm path, :sadge:");
+                string? gamePathFromSteam = Util.GetGameInstallPath("387990");
+                if (gamePathFromSteam != null)
+                {
+                    _ScrapMechanicPath = gamePathFromSteam;
+                    return;
+                }
                 smPathDialog = new FolderBrowserDialog();
                 if (smPathDialog.ShowDialog(this) == DialogResult.OK)
                 {
@@ -34,7 +77,7 @@ namespace MyGui.net
             }
         }
 
-        private void Viewport_MouseDown(object senderAny, MouseEventArgs e)
+        void Viewport_MouseDown(object senderAny, MouseEventArgs e)
         {
             Panel sender = (Panel)senderAny;
             if (e.Button == MouseButtons.Right)
@@ -45,7 +88,7 @@ namespace MyGui.net
             }
         }
 
-        private void Viewport_MouseMove(object senderAny, MouseEventArgs e)
+        void Viewport_MouseMove(object senderAny, MouseEventArgs e)
         {
             Panel sender = (Panel)senderAny;
             if (_draggingViewport)
@@ -60,7 +103,7 @@ namespace MyGui.net
             }
         }
 
-        private void Viewport_MouseUp(object senderAny, MouseEventArgs e)
+        void Viewport_MouseUp(object senderAny, MouseEventArgs e)
         {
             Panel sender = (Panel)senderAny;
             if (e.Button == MouseButtons.Right)
