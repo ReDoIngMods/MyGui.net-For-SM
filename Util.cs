@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace MyGui.net
 {
@@ -75,7 +77,7 @@ namespace MyGui.net
 
         public static string? GetGameInstallPath(string appID)
         {
-            string steamInstallPath = GetSteamInstallPath();
+            string? steamInstallPath = GetSteamInstallPath();
             if (steamInstallPath == null)
                 return null;
 
@@ -123,5 +125,118 @@ namespace MyGui.net
             return null;
         }
         #endregion
+
+        #region Layout File Reading
+        public static List<MyGuiLayoutWidgetData>? ReadLayoutFile(string path)
+        {
+            XDocument xmlDocument = XDocument.Load(path);
+            XElement? root = xmlDocument.Root;
+            if (root == null) {
+                Debug.Fail("Failed to read layout file: '"+path+"'. Root element is null!");
+                return null;
+            }
+
+            return ReadWidgetElements(root.Elements("Widget"));
+        }
+
+        public static List<MyGuiLayoutWidgetData> ReadWidgetElements(IEnumerable<XElement> elements)
+        {
+            List<MyGuiLayoutWidgetData> layoutWidgetData = new();
+
+            foreach (XElement widget in elements)
+            {
+                MyGuiLayoutWidgetData widgetData = new()
+                {
+                    align = widget.Attribute("align")?.Value,
+                    layer = widget.Attribute("layer")?.Value,
+                    name = widget.Attribute("name")?.Value,
+                    type = widget.Attribute("type")?.Value,
+                    skin = widget.Attribute("skin")?.Value,
+                };
+
+                string? positionReal = widget.Attribute("position_real")?.Value;
+                string? positionPix = widget.Attribute("position")?.Value;
+                bool isPosReal = positionReal != null;
+                string? positionStr = isPosReal ? positionReal : positionPix;
+                if (positionStr == null) continue;
+                Tuple<Point, Point> posAndSize = GetWidgetPosAndSize(isPosReal, positionStr);
+                widgetData.position = posAndSize.Item1;
+                widgetData.size = posAndSize.Item2;
+
+                foreach (XElement property in widget.Elements("Property"))
+                {
+                    string? key = property.Attribute("key")?.Value;
+                    string? value = property.Attribute("value")?.Value;
+                    if (key == null || value == null) continue;
+                    if (widgetData.properties.ContainsKey(key)) continue;
+                    widgetData.properties.Add(key, value);
+                }
+
+                widgetData.children = ReadWidgetElements(widget.Elements("Widget"));
+
+                layoutWidgetData.Add(widgetData);
+            }
+            return layoutWidgetData;
+        }
+
+        public static void PrintLayoutStuff(List<MyGuiLayoutWidgetData>? layout)
+        {
+            if (layout == null) return;
+            foreach (MyGuiLayoutWidgetData data in layout)
+            {
+                Debug.WriteLine($"------\n- Type: {data.type}\n- Skin: {data.skin}\n- Name: {data.name}\n- Pos: {data.position}\n- Size: {data.size}\n- Layer: {data.layer}\n- Align: {data.align}\n- Properties#: {data.properties.Count()}\n- Children#: {data.children.Count()}");
+                PrintLayoutStuff(data.children);
+            }
+        }
+        #endregion
+
+        #region Util Utils
+        static Tuple<Point, Point> GetWidgetPosAndSize(bool isReal, string input)
+        {
+            string[] numbers = input.Split(' ');
+            double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
+
+            if (isReal)
+            {
+                parsedNumbers[0] *= 1920;
+                parsedNumbers[2] *= 1920;
+                parsedNumbers[1] *= 1080;
+                parsedNumbers[3] *= 1080;
+            }
+
+            int x1 = (int)Math.Floor(parsedNumbers[0]);
+            int y1 = (int)Math.Floor(parsedNumbers[1]);
+            int x2 = (int)Math.Floor(parsedNumbers[2]);
+            int y2 = (int)Math.Floor(parsedNumbers[3]);
+
+            Point point1 = new(x1, y1);
+            Point point2 = new(x2, y2);
+            return Tuple.Create(point1, point2);
+        }
+
+        static double ProperlyParseDouble(string input)
+        {
+            if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double result))
+            {
+                return result;
+            }
+            return double.NaN;
+        }
+        #endregion
+    }
+
+
+
+    class MyGuiLayoutWidgetData
+    {
+        public string? layer;
+        public string? align;
+        public string? name;
+        public string? type = "Widget";
+        public string? skin = "Widget";
+        public Point position = new(0,0);
+        public Point size = new(0,0);
+        public Dictionary<string, string> properties = new();
+        public List<MyGuiLayoutWidgetData> children = new();
     }
 }
