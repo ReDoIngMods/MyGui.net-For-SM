@@ -1,11 +1,20 @@
 using MyGui.net.Properties;
 using System.Diagnostics;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace MyGui.net
 {
     public partial class Form1 : Form
     {
+        #region MyGui Constants
+        public static string[] _myGuiWidgetSkins = { };
+        public static string[] _myGuiWidgetTypes = { };
+        #endregion
+
+        static MyGuiWidget[] _currentWidgets = { };
+        static MyGuiWidget _currentWidget = new();
+
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
         {
@@ -71,10 +80,50 @@ namespace MyGui.net
             // Add TableLayoutPanel to the Panel
             tabPage1Panel.Controls.Add(tableLayoutPanel);
 
+            HandleWidgetSelection();
+
             //Disposing code (for later)
             /*for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
             {
                 tabPage1Panel.Controls[i].Dispose();
+            }*/
+        }
+
+        void HandleWidgetSelection()
+        {
+            for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
+            {
+                tabPage1Panel.Controls[i].Dispose();
+            }
+            // Get the type of the class
+            Type type = _currentWidget.GetType();
+
+            // Get all members of the type
+            MemberInfo[] members = type.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+            foreach (MemberInfo member in members)
+            {
+                // Check if the member is a field
+                if (member is FieldInfo field)
+                {
+                    // Get the value of the field
+                    object fieldValue = field.GetValue(_currentWidget);
+                    Debug.WriteLine($"Field {field.Name}: {fieldValue}");
+                }
+                // Check if the member is a property
+                else if (member is PropertyInfo property)
+                {
+                    // Get the value of the property
+                    object propertyValue = property.GetValue(_currentWidget);
+                    Debug.WriteLine($"Property {property.Name}: {propertyValue}");
+                }
+            }
+
+            /*for (int i = 0; i < _currentWidget.widgetProperties.Length; i++)
+            {
+                //string value = Util.GetPropertyValue(_currentWidget, _currentWidget.widgetProperties[i]);
+                string value = _currentWidget.GetType().GetMember(_currentWidget.widgetProperties[i]).ToString();
+                Debug.WriteLine(value);
             }*/
         }
 

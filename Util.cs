@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -95,6 +96,29 @@ namespace MyGui.net
                         }
                     }
                 }
+            }
+            return null;
+        }
+        #endregion
+
+        #region Object Utils
+        public static void SetPropertyValue(object obj, string propertyName, object value)
+        {
+            Type type = obj.GetType();
+            PropertyInfo property = type.GetProperty(propertyName);
+            if (property != null && property.CanWrite)
+            {
+                property.SetValue(obj, value);
+            }
+        }
+
+        public static string GetPropertyValue(object obj, string propertyName)
+        {
+            Type type = obj.GetType();
+            PropertyInfo property = type.GetProperty(propertyName);
+            if (property != null)
+            {
+                return property.GetValue(obj) as string;
             }
             return null;
         }
