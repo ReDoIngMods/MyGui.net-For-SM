@@ -7,7 +7,8 @@ namespace MyGui.net
     public partial class Form1 : Form
     {
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
-        static string _ScrapMechanicPath{
+        static string _ScrapMechanicPath
+        {
             get { return Settings.Default.ScrapMechanicPath; }
             set
             {
@@ -17,12 +18,18 @@ namespace MyGui.net
         }
         static bool _draggingViewport;
         static Point _mouseLoc = new Point(0, 0);
+
         public Form1()
         {
             InitializeComponent();
+            HandleLoad();
+        }
+
+        void HandleLoad()
+        {
 
             // Create a Label
-            Label label = new Label();
+            Label label = new();
             label.Text = "Name:";
             label.AutoSize = false;
             label.TextAlign = ContentAlignment.MiddleRight;
@@ -30,12 +37,12 @@ namespace MyGui.net
             label.Width = 100;
 
             // Create a TextBox
-            TextBox textBox = new TextBox();
+            TextBox textBox = new();
             textBox.Width = 1;
             textBox.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
 
             // Create another Label
-            Label label2 = new Label();
+            Label label2 = new();
             label2.Text = "Age:";
             label2.AutoSize = false;
             label2.TextAlign = ContentAlignment.MiddleRight;
@@ -52,7 +59,8 @@ namespace MyGui.net
             tableLayoutPanel.ColumnCount = 2;
             tableLayoutPanel.RowCount = 2;
             tableLayoutPanel.AutoSize = true;
-            tableLayoutPanel.Dock = DockStyle.Fill;
+            tableLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            tableLayoutPanel.Dock = DockStyle.Top;
 
             // Add controls to TableLayoutPanel
             tableLayoutPanel.Controls.Add(label, 0, 0);
@@ -61,7 +69,13 @@ namespace MyGui.net
             tableLayoutPanel.Controls.Add(numericUpDown, 1, 1);
 
             // Add TableLayoutPanel to the Panel
-            tabPage1.Controls.Add(tableLayoutPanel);
+            tabPage1Panel.Controls.Add(tableLayoutPanel);
+
+            //Disposing code (for later)
+            /*for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
+            {
+                tabPage1Panel.Controls[i].Dispose();
+            }*/
         }
 
         void Form1_Load(object sender, EventArgs e)

@@ -28,11 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             splitContainer1 = new SplitContainer();
             Viewport = new Panel();
             panel1 = new Panel();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            tabPage1Panel = new Panel();
             tabPage2 = new TabPage();
             tabPage3 = new TabPage();
             smPathDialog = new FolderBrowserDialog();
@@ -43,6 +45,9 @@
             toolStripSeparator1 = new ToolStripSeparator();
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator3 = new ToolStripSeparator();
+            optionsToolStripMenuItem = new ToolStripMenuItem();
+            testToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             exitToolStripMenuItem = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
@@ -52,6 +57,7 @@
             splitContainer1.SuspendLayout();
             Viewport.SuspendLayout();
             tabControl1.SuspendLayout();
+            tabPage1.SuspendLayout();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -74,7 +80,7 @@
             splitContainer1.Panel2.Controls.Add(tabControl1);
             splitContainer1.Panel2MinSize = 175;
             splitContainer1.Size = new Size(1240, 641);
-            splitContainer1.SplitterDistance = 1050;
+            splitContainer1.SplitterDistance = 992;
             splitContainer1.TabIndex = 1;
             // 
             // Viewport
@@ -88,7 +94,7 @@
             Viewport.Controls.Add(panel1);
             Viewport.Location = new Point(0, 0);
             Viewport.Name = "Viewport";
-            Viewport.Size = new Size(1048, 639);
+            Viewport.Size = new Size(990, 639);
             Viewport.TabIndex = 0;
             Viewport.MouseDown += Viewport_MouseDown;
             Viewport.MouseMove += Viewport_MouseMove;
@@ -113,25 +119,35 @@
             tabControl1.Margin = new Padding(0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(184, 639);
+            tabControl1.Size = new Size(242, 639);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(tabPage1Panel);
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(176, 611);
+            tabPage1.Size = new Size(234, 611);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Properties";
             tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage1Panel
+            // 
+            tabPage1Panel.AutoScroll = true;
+            tabPage1Panel.Dock = DockStyle.Fill;
+            tabPage1Panel.Location = new Point(3, 3);
+            tabPage1Panel.Name = "tabPage1Panel";
+            tabPage1Panel.Size = new Size(228, 605);
+            tabPage1Panel.TabIndex = 0;
             // 
             // tabPage2
             // 
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(176, 611);
+            tabPage2.Size = new Size(234, 611);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Widgets";
             tabPage2.UseVisualStyleBackColor = true;
@@ -140,9 +156,9 @@
             // 
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(176, 611);
+            tabPage3.Size = new Size(234, 611);
             tabPage3.TabIndex = 2;
-            tabPage3.Text = "Project";
+            tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
             // 
             // menuStrip1
@@ -157,7 +173,7 @@
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, toolStripSeparator1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, toolStripSeparator1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator3, optionsToolStripMenuItem, testToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
@@ -195,6 +211,23 @@
             saveAsToolStripMenuItem.Size = new Size(186, 22);
             saveAsToolStripMenuItem.Text = "Save As";
             // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(183, 6);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            optionsToolStripMenuItem.Size = new Size(186, 22);
+            optionsToolStripMenuItem.Text = "Options";
+            // 
+            // testToolStripMenuItem
+            // 
+            testToolStripMenuItem.Name = "testToolStripMenuItem";
+            testToolStripMenuItem.Size = new Size(186, 22);
+            testToolStripMenuItem.Text = "Test";
+            // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
@@ -220,6 +253,7 @@
             ClientSize = new Size(1264, 681);
             Controls.Add(splitContainer1);
             Controls.Add(menuStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             MinimumSize = new Size(640, 480);
             Name = "Form1";
@@ -232,6 +266,7 @@
             splitContainer1.ResumeLayout(false);
             Viewport.ResumeLayout(false);
             tabControl1.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -258,5 +293,9 @@
         private ToolStripMenuItem saveAsToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem exitToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem optionsToolStripMenuItem;
+        private ToolStripMenuItem testToolStripMenuItem;
+        private Panel tabPage1Panel;
     }
 }
