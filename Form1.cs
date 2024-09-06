@@ -38,7 +38,7 @@ namespace MyGui.net
         {
             Debug.WriteLine(_currentLayoutPath);
             _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
-            Util.PrintLayoutStuff(_currentLayout);
+            Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
             // Create a Label
             Label label = new();
             label.Text = "Name:";

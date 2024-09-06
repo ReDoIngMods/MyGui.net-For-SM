@@ -127,7 +127,7 @@ namespace MyGui.net
         }
         #endregion
 
-        #region Layout File Reading
+        #region Layout File Reading/Exporting
         public static List<MyGuiLayoutWidgetData>? ReadLayoutFile(string path)
         {
             XDocument xmlDocument = XDocument.Load(path); ;
@@ -178,6 +178,45 @@ namespace MyGui.net
                 layoutWidgetData.Add(widgetData);
             }
             return layoutWidgetData;
+        }
+
+        public static string ExportLayoutToXmlString(List<MyGuiLayoutWidgetData> layout)
+        {
+            XElement root = new("MyGUI",
+                new XAttribute("type", "Layout"),
+                new XAttribute("version", "3.2.0")
+            );
+            AddChildrenToElement(root, layout);
+            return root.ToString();
+        }
+
+        public static void AddChildrenToElement(XElement element, List<MyGuiLayoutWidgetData> children)
+        {
+            foreach (MyGuiLayoutWidgetData widget in children)
+            {
+                XElement widgetElement = new(
+                    "Widget",
+                    new XAttribute("type", "Widget")
+                );
+                if (widget.layer != null) widgetElement.SetAttributeValue("layer", widget.layer);
+                if (widget.align != null) widgetElement.SetAttributeValue("align", widget.align);
+                if (widget.skin != null) widgetElement.SetAttributeValue("skin", widget.skin);
+                if (widget.name != null) widgetElement.SetAttributeValue("name", widget.name);
+                widgetElement.SetAttributeValue(
+                    "position_real",
+                    $"{(double)widget.position.X / 1920} {(double)widget.position.Y / 1080} {(double)widget.size.X / 1920} {(double)widget.size.Y / 1080}".Replace(",", ".")
+                );
+                foreach (var property in widget.properties)
+                {
+                    XElement propertyElement = new("Property",
+                        new XAttribute("key", property.Key),
+                        new XAttribute("value", property.Value)
+                    );
+                    widgetElement.Add(propertyElement);
+                }
+                AddChildrenToElement(widgetElement, widget.children);
+                element.Add(widgetElement);
+            }
         }
 
         public static void PrintLayoutStuff(List<MyGuiLayoutWidgetData>? layout)
