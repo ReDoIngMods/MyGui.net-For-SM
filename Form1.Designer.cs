@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             splitContainer1 = new SplitContainer();
             Viewport = new Panel();
-            panel1 = new Panel();
+            mainPanel = new Panel();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             tabPage1Panel = new Panel();
@@ -91,7 +91,7 @@
             Viewport.AutoScrollMinSize = new Size(1, 1);
             Viewport.BackColor = SystemColors.ScrollBar;
             Viewport.BorderStyle = BorderStyle.FixedSingle;
-            Viewport.Controls.Add(panel1);
+            Viewport.Controls.Add(mainPanel);
             Viewport.Location = new Point(0, 0);
             Viewport.Name = "Viewport";
             Viewport.Size = new Size(990, 639);
@@ -100,14 +100,14 @@
             Viewport.MouseMove += Viewport_MouseMove;
             Viewport.MouseUp += Viewport_MouseUp;
             // 
-            // panel1
+            // mainPanel
             // 
-            panel1.BackColor = SystemColors.InfoText;
-            panel1.Enabled = false;
-            panel1.Location = new Point(5, 5);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(1920, 1080);
-            panel1.TabIndex = 0;
+            mainPanel.BackColor = SystemColors.InfoText;
+            mainPanel.Enabled = false;
+            mainPanel.Location = new Point(5, 5);
+            mainPanel.Name = "mainPanel";
+            mainPanel.Size = new Size(1920, 1080);
+            mainPanel.TabIndex = 0;
             // 
             // tabControl1
             // 
@@ -278,7 +278,7 @@
         private SplitContainer splitContainer1;
         private Panel Viewport;
         private FolderBrowserDialog smPathDialog;
-        private Panel panel1;
+        private Panel mainPanel;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem editToolStripMenuItem;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Security;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -19,6 +20,22 @@ namespace MyGui.net
         public Dictionary<string, string> properties = new();
         public List<MyGuiLayoutWidgetData> children = new();
     }
+
+    class MyGuiLayoutWidgetOption
+    {
+        public string title = "";
+        public string type = "";
+        public MyGuiLayoutWidgetOption(Panel parent) {
+            // Create a Label
+            Label label = new();
+            label.Text = "Name:";
+            label.AutoSize = false;
+            label.TextAlign = ContentAlignment.MiddleRight;
+            label.Height = 23;
+            label.Width = 100;
+        }
+    }
+
     class MyGuiLayoutWidgetOptions
     {
         public string[] align = {

@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace MyGui.net
@@ -130,7 +131,7 @@ namespace MyGui.net
         #region Layout File Reading/Exporting
         public static List<MyGuiLayoutWidgetData>? ReadLayoutFile(string path)
         {
-            XDocument xmlDocument = XDocument.Load(path); ;
+            XDocument xmlDocument = XDocument.Load(path);
             XElement? root = xmlDocument.Root;
             if (root == null) {
                 Debug.Fail("Failed to read layout file: '"+path+"'. Root element is null!");
@@ -228,9 +229,37 @@ namespace MyGui.net
                 PrintLayoutStuff(data.children);
             }
         }
+
+        public static void SpawnLayoutWidgets(List<MyGuiLayoutWidgetData>? layout, Panel? currParent, Panel? defaultParent)
+        {
+            if (layout == null) return;
+            foreach (MyGuiLayoutWidgetData data in layout)
+            {
+                // Create a Label
+                Panel newWidget = new();
+                newWidget.Name = data.name;
+                newWidget.BackColor = Color.FromArgb(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255));
+                newWidget.Location = data.position;
+                newWidget.Size = (Size)data.size;
+
+                if (currParent != null)
+                {
+                    currParent.Controls.Add(newWidget);
+                }
+                else if (defaultParent != null)
+                {
+                    defaultParent.Controls.Add(newWidget);
+                }
+
+                Debug.WriteLine($"------\n- Type: {data.type}\n- Skin: {data.skin}\n- Name: {data.name}\n- Pos: {data.position}\n- Size: {data.size}\n- Layer: {data.layer}\n- Align: {data.align}\n- Properties#: {data.properties.Count()}\n- Children#: {data.children.Count()}");
+                SpawnLayoutWidgets(data.children, newWidget, defaultParent);
+            }
+        }
         #endregion
 
         #region Util Utils
+        public static Random rand = new();
+
         static Tuple<Point, Point> GetWidgetPosAndSize(bool isReal, string input)
         {
             string[] numbers = input.Split(' ');

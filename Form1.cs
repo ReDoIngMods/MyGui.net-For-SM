@@ -13,7 +13,7 @@ namespace MyGui.net
         #endregion
 
         static List<MyGuiLayoutWidgetData> _currentLayout = new();
-        static string _currentLayoutPath = _ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory";
+        static string _currentLayoutPath = "C:\\Users\\NO PEEKING\\Desktop\\TEST.layout";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
@@ -25,6 +25,16 @@ namespace MyGui.net
                 Settings.Default.Save();
             }
         }
+        static bool _DoFastRedraw
+        {
+            get { return Settings.Default.DoFastRedraw; }
+            set
+            {
+                Settings.Default.DoFastRedraw = value;
+                Settings.Default.Save();
+            }
+        }
+
         static bool _draggingViewport;
         static Point _mouseLoc = new Point(0, 0);
 
@@ -38,6 +48,7 @@ namespace MyGui.net
         {
             Debug.WriteLine(_currentLayoutPath);
             _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
+            Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
             Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
             // Create a Label
             Label label = new();
@@ -97,6 +108,9 @@ namespace MyGui.net
             {
                 tabPage1Panel.Controls[i].Dispose();
             }
+
+            //Prints to see if the class is actually it
+
             // Get the type of the class
             Type type = _currentLayout.GetType();
 
@@ -171,6 +185,10 @@ namespace MyGui.net
                 sender.HorizontalScroll.Value = Math.Max(sender.HorizontalScroll.Value - deltaLoc.X, 0);
                 sender.VerticalScroll.Value = Math.Max(sender.VerticalScroll.Value - deltaLoc.Y, 0);
                 _mouseLoc = e.Location;
+                if (_DoFastRedraw)
+                {
+                    Viewport.Refresh();
+                }
             }
         }
 

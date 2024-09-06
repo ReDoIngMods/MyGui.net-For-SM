@@ -35,5 +35,17 @@ namespace MyGui.net.Properties {
                 this["ScrapMechanicPath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DoFastRedraw {
+            get {
+                return ((bool)(this["DoFastRedraw"]));
+            }
+            set {
+                this["DoFastRedraw"] = value;
+            }
+        }
     }
 }

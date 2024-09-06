@@ -59,14 +59,5 @@ namespace MyGui.net.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to .
-        /// </summary>
-        internal static string ScrapMechanicPath {
-            get {
-                return ResourceManager.GetString("ScrapMechanicPath", resourceCulture);
-            }
-        }
     }
 }
