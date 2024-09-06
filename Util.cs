@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -129,7 +130,7 @@ namespace MyGui.net
         #region Layout File Reading
         public static List<MyGuiLayoutWidgetData>? ReadLayoutFile(string path)
         {
-            XDocument xmlDocument = XDocument.Load(path);
+            XDocument xmlDocument = XDocument.Load(path); ;
             XElement? root = xmlDocument.Root;
             if (root == null) {
                 Debug.Fail("Failed to read layout file: '"+path+"'. Root element is null!");
@@ -223,20 +224,5 @@ namespace MyGui.net
             return double.NaN;
         }
         #endregion
-    }
-
-
-
-    class MyGuiLayoutWidgetData
-    {
-        public string? layer;
-        public string? align;
-        public string? name;
-        public string? type = "Widget";
-        public string? skin = "Widget";
-        public Point position = new(0,0);
-        public Point size = new(0,0);
-        public Dictionary<string, string> properties = new();
-        public List<MyGuiLayoutWidgetData> children = new();
     }
 }
