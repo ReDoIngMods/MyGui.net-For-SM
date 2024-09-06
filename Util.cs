@@ -235,7 +235,7 @@ namespace MyGui.net
             if (layout == null) return;
             foreach (MyGuiLayoutWidgetData data in layout)
             {
-                // Create a Label
+                // Create the widget
                 Panel newWidget = new();
                 newWidget.Name = data.name;
                 newWidget.BackColor = Color.FromArgb(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255));
@@ -251,7 +251,6 @@ namespace MyGui.net
                     defaultParent.Controls.Add(newWidget);
                 }
 
-                Debug.WriteLine($"------\n- Type: {data.type}\n- Skin: {data.skin}\n- Name: {data.name}\n- Pos: {data.position}\n- Size: {data.size}\n- Layer: {data.layer}\n- Align: {data.align}\n- Properties#: {data.properties.Count()}\n- Children#: {data.children.Count()}");
                 SpawnLayoutWidgets(data.children, newWidget, defaultParent);
             }
         }

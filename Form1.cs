@@ -13,7 +13,8 @@ namespace MyGui.net
         #endregion
 
         static List<MyGuiLayoutWidgetData> _currentLayout = new();
-        static string _currentLayoutPath = "C:\\Users\\Utente\\Desktop\\PopUp_Tutorial.layout";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
+        static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
+        static string _currentLayoutSavePath = "";
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
@@ -46,10 +47,10 @@ namespace MyGui.net
 
         void HandleLoad()
         {
-            Debug.WriteLine(_currentLayoutPath);
-            _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
-            Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
-            Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+            //Debug.WriteLine(_currentLayoutPath);
+            //_currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
+            //Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
+            //Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
             // Create a Label
             Label label = new();
             label.Text = "Name:";
@@ -154,7 +155,7 @@ namespace MyGui.net
                     _ScrapMechanicPath = gamePathFromSteam;
                     return;
                 }
-                smPathDialog = new FolderBrowserDialog();
+
                 if (smPathDialog.ShowDialog(this) == DialogResult.OK)
                 {
                     _ScrapMechanicPath = smPathDialog.SelectedPath;
@@ -199,6 +200,89 @@ namespace MyGui.net
             {
                 _draggingViewport = false;
                 sender.Cursor = Cursors.Default;
+            }
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //TODO: only pop up when you have unsaved changes
+            DialogResult result = MessageBox.Show("Are you sure you want to clear the Workspace? This cannot be undone!", "New Workspace", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.Yes)
+            {
+                _currentLayoutPath = "";
+                _currentLayout = new List<MyGuiLayoutWidgetData>();
+                for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
+                {
+                    mainPanel.Controls[i].Dispose();
+                }
+            }
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //openLayoutDialog
+            if (openLayoutDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                _currentLayoutPath = openLayoutDialog.FileName;
+                _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
+                //Refresh ui
+                for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
+                {
+                    mainPanel.Controls[i].Dispose();
+                }
+                Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_currentLayoutSavePath == "")
+            {
+                if (saveLayoutDialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    _currentLayoutSavePath = saveLayoutDialog.FileName;
+                }
+            }
+            //TODO: Save the file eventually
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveLayoutDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                _currentLayoutSavePath = saveLayoutDialog.FileName;
+                //TODO: Save the file eventually
+            }
+        }
+
+        private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            // Check which button was clicked
+            if (result == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (result == DialogResult.No)
+            {
+                // Cancel the close event
+                e.Cancel = true;
             }
         }
     }
