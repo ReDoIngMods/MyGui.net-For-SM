@@ -206,7 +206,7 @@ namespace MyGui.net
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //TODO: only pop up when you have unsaved changes
-            DialogResult result = MessageBox.Show("Are you sure you want to clear the Workspace? This cannot be undone!", "New Workspace", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            DialogResult result = Settings.Default.ShowWarnings ? MessageBox.Show("Are you sure you want to clear the Workspace? This cannot be undone!", "New Workspace", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) : DialogResult.Yes;
             if (result == DialogResult.Yes)
             {
                 _currentLayoutPath = "";
@@ -257,7 +257,10 @@ namespace MyGui.net
 
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            FormSettings formSettings = new FormSettings();
+            if (formSettings.ShowDialog() == DialogResult.OK)
+            {
+            }
         }
 
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
@@ -267,7 +270,7 @@ namespace MyGui.net
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            DialogResult result = Settings.Default.ShowWarnings ? MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) : DialogResult.Yes;
 
             // Check which button was clicked
             if (result == DialogResult.Yes)
@@ -278,7 +281,7 @@ namespace MyGui.net
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult result = MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            DialogResult result = Settings.Default.ShowWarnings ? MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) : DialogResult.Yes;
             if (result == DialogResult.No)
             {
                 // Cancel the close event
