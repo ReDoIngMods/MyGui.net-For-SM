@@ -13,7 +13,7 @@ namespace MyGui.net
         #endregion
 
         static List<MyGuiLayoutWidgetData> _currentLayout = new();
-        static string _currentLayoutPath = "C:\\Users\\NO PEEKING\\Desktop\\TEST.layout";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
+        static string _currentLayoutPath = "C:\\Users\\Utente\\Desktop\\PopUp_Tutorial.layout";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath

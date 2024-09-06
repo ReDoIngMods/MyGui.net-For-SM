@@ -138,10 +138,10 @@ namespace MyGui.net
                 return null;
             }
 
-            return ReadWidgetElements(root.Elements("Widget"));
+            return ReadWidgetElements(root.Elements("Widget"), new(1920, 1080));
         }
 
-        public static List<MyGuiLayoutWidgetData> ReadWidgetElements(IEnumerable<XElement> elements)
+        public static List<MyGuiLayoutWidgetData> ReadWidgetElements(IEnumerable<XElement> elements, Point parentSize)
         {
             List<MyGuiLayoutWidgetData> layoutWidgetData = new();
 
@@ -161,7 +161,7 @@ namespace MyGui.net
                 bool isPosReal = positionReal != null;
                 string? positionStr = isPosReal ? positionReal : positionPix;
                 if (positionStr == null) continue;
-                Tuple<Point, Point> posAndSize = GetWidgetPosAndSize(isPosReal, positionStr);
+                Tuple<Point, Point> posAndSize = GetWidgetPosAndSize(isPosReal, positionStr, parentSize);
                 widgetData.position = posAndSize.Item1;
                 widgetData.size = posAndSize.Item2;
 
@@ -174,7 +174,7 @@ namespace MyGui.net
                     widgetData.properties.Add(key, value);
                 }
 
-                widgetData.children = ReadWidgetElements(widget.Elements("Widget"));
+                widgetData.children = ReadWidgetElements(widget.Elements("Widget"), widgetData.size);
 
                 layoutWidgetData.Add(widgetData);
             }
@@ -187,11 +187,11 @@ namespace MyGui.net
                 new XAttribute("type", "Layout"),
                 new XAttribute("version", "3.2.0")
             );
-            AddChildrenToElement(root, layout);
+            AddChildrenToElement(root, layout, new(1920, 1080));
             return root.ToString();
         }
 
-        public static void AddChildrenToElement(XElement element, List<MyGuiLayoutWidgetData> children)
+        public static void AddChildrenToElement(XElement element, List<MyGuiLayoutWidgetData> children, Point parentSize)
         {
             foreach (MyGuiLayoutWidgetData widget in children)
             {
@@ -205,7 +205,7 @@ namespace MyGui.net
                 if (widget.name != null) widgetElement.SetAttributeValue("name", widget.name);
                 widgetElement.SetAttributeValue(
                     "position_real",
-                    $"{(double)widget.position.X / 1920} {(double)widget.position.Y / 1080} {(double)widget.size.X / 1920} {(double)widget.size.Y / 1080}".Replace(",", ".")
+                    $"{(double)widget.position.X / parentSize.X} {(double)widget.position.Y / parentSize.Y} {(double)widget.size.X / parentSize.X} {(double)widget.size.Y / parentSize.Y}".Replace(",", ".")
                 );
                 foreach (var property in widget.properties)
                 {
@@ -215,7 +215,7 @@ namespace MyGui.net
                     );
                     widgetElement.Add(propertyElement);
                 }
-                AddChildrenToElement(widgetElement, widget.children);
+                AddChildrenToElement(widgetElement, widget.children, widget.size);
                 element.Add(widgetElement);
             }
         }
@@ -260,23 +260,23 @@ namespace MyGui.net
         #region Util Utils
         public static Random rand = new();
 
-        static Tuple<Point, Point> GetWidgetPosAndSize(bool isReal, string input)
+        static Tuple<Point, Point> GetWidgetPosAndSize(bool isReal, string input, Point parentSize)
         {
             string[] numbers = input.Split(' ');
             double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
 
             if (isReal)
             {
-                parsedNumbers[0] *= 1920;
-                parsedNumbers[2] *= 1920;
-                parsedNumbers[1] *= 1080;
-                parsedNumbers[3] *= 1080;
+                parsedNumbers[0] *= parentSize.X;
+                parsedNumbers[1] *= parentSize.Y;
+                parsedNumbers[2] *= parentSize.X;
+                parsedNumbers[3] *= parentSize.Y;
             }
 
-            int x1 = (int)Math.Floor(parsedNumbers[0]);
-            int y1 = (int)Math.Floor(parsedNumbers[1]);
-            int x2 = (int)Math.Floor(parsedNumbers[2]);
-            int y2 = (int)Math.Floor(parsedNumbers[3]);
+            int x1 = (int)Math.Round(parsedNumbers[0]);
+            int y1 = (int)Math.Round(parsedNumbers[1]);
+            int x2 = (int)Math.Round(parsedNumbers[2]);
+            int y2 = (int)Math.Round(parsedNumbers[3]);
 
             Point point1 = new(x1, y1);
             Point point2 = new(x2, y2);
