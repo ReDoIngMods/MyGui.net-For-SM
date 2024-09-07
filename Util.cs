@@ -290,6 +290,41 @@ namespace MyGui.net
             }
             return double.NaN;
         }
+
+        public static bool IsValidPath(string path, bool checkRW)
+        {
+            //Check if the path is well-formed
+            if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path))
+            {
+                return false;
+            }
+
+            //Check if the directory exists
+            if (!Directory.Exists(path))
+            {
+                return false;
+            }
+
+            if (checkRW) //Check for read/write access
+            {
+                try
+                {
+                    string testFile = Path.Combine(path, "tempfile.tmp");
+                    File.WriteAllText(testFile, "test");
+                    File.Delete(testFile);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return false;
+                }
+                catch (IOException)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
         #endregion
     }
 }

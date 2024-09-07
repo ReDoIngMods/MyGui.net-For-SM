@@ -37,6 +37,11 @@
             smPathLabel = new TextBox();
             chooseSmPath = new Button();
             label1 = new Label();
+            groupBox4 = new GroupBox();
+            exportAsBothRadioButton = new RadioButton();
+            exportAsPercentRadioButton = new RadioButton();
+            exportAskRadioButton = new RadioButton();
+            exportAsPxRadioButton = new RadioButton();
             groupBox1 = new GroupBox();
             useSlowDrawRadioButton = new RadioButton();
             useFastDrawRadioButton = new RadioButton();
@@ -48,10 +53,12 @@
             cancelButton = new Button();
             smPathDialog = new FolderBrowserDialog();
             applySettingsButton = new Button();
+            resetSettingsButton = new Button();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             groupBox2.SuspendLayout();
+            groupBox4.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox3.SuspendLayout();
             tabPage2.SuspendLayout();
@@ -84,6 +91,7 @@
             // 
             flowLayoutPanel1.AutoScroll = true;
             flowLayoutPanel1.Controls.Add(groupBox2);
+            flowLayoutPanel1.Controls.Add(groupBox4);
             flowLayoutPanel1.Controls.Add(groupBox1);
             flowLayoutPanel1.Controls.Add(groupBox3);
             flowLayoutPanel1.Dock = DockStyle.Fill;
@@ -142,11 +150,72 @@
             label1.TabIndex = 0;
             label1.Text = "Scrap Mechanic Path";
             // 
+            // groupBox4
+            // 
+            groupBox4.Controls.Add(exportAsBothRadioButton);
+            groupBox4.Controls.Add(exportAsPercentRadioButton);
+            groupBox4.Controls.Add(exportAskRadioButton);
+            groupBox4.Controls.Add(exportAsPxRadioButton);
+            groupBox4.Location = new Point(357, 3);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(169, 73);
+            groupBox4.TabIndex = 6;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Export";
+            // 
+            // exportAsBothRadioButton
+            // 
+            exportAsBothRadioButton.AutoSize = true;
+            exportAsBothRadioButton.Location = new Point(83, 48);
+            exportAsBothRadioButton.Name = "exportAsBothRadioButton";
+            exportAsBothRadioButton.Size = new Size(50, 19);
+            exportAsBothRadioButton.TabIndex = 5;
+            exportAsBothRadioButton.TabStop = true;
+            exportAsBothRadioButton.Text = "Both";
+            exportAsBothRadioButton.UseVisualStyleBackColor = true;
+            exportAsBothRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+            // 
+            // exportAsPercentRadioButton
+            // 
+            exportAsPercentRadioButton.AutoSize = true;
+            exportAsPercentRadioButton.Location = new Point(83, 23);
+            exportAsPercentRadioButton.Name = "exportAsPercentRadioButton";
+            exportAsPercentRadioButton.Size = new Size(81, 19);
+            exportAsPercentRadioButton.TabIndex = 4;
+            exportAsPercentRadioButton.TabStop = true;
+            exportAsPercentRadioButton.Text = "As Percent";
+            exportAsPercentRadioButton.UseVisualStyleBackColor = true;
+            exportAsPercentRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+            // 
+            // exportAskRadioButton
+            // 
+            exportAskRadioButton.AutoSize = true;
+            exportAskRadioButton.Location = new Point(6, 48);
+            exportAskRadioButton.Name = "exportAskRadioButton";
+            exportAskRadioButton.Size = new Size(44, 19);
+            exportAskRadioButton.TabIndex = 3;
+            exportAskRadioButton.TabStop = true;
+            exportAskRadioButton.Text = "Ask";
+            exportAskRadioButton.UseVisualStyleBackColor = true;
+            exportAskRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+            // 
+            // exportAsPxRadioButton
+            // 
+            exportAsPxRadioButton.AutoSize = true;
+            exportAsPxRadioButton.Location = new Point(6, 22);
+            exportAsPxRadioButton.Name = "exportAsPxRadioButton";
+            exportAsPxRadioButton.Size = new Size(71, 19);
+            exportAsPxRadioButton.TabIndex = 2;
+            exportAsPxRadioButton.TabStop = true;
+            exportAsPxRadioButton.Text = "As Pixels";
+            exportAsPxRadioButton.UseVisualStyleBackColor = true;
+            exportAsPxRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+            // 
             // groupBox1
             // 
             groupBox1.Controls.Add(useSlowDrawRadioButton);
             groupBox1.Controls.Add(useFastDrawRadioButton);
-            groupBox1.Location = new Point(357, 3);
+            groupBox1.Location = new Point(3, 82);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(263, 73);
             groupBox1.TabIndex = 2;
@@ -180,7 +249,7 @@
             // groupBox3
             // 
             groupBox3.Controls.Add(showWarningsCheckBox);
-            groupBox3.Location = new Point(3, 82);
+            groupBox3.Location = new Point(272, 82);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(124, 55);
             groupBox3.TabIndex = 5;
@@ -219,6 +288,7 @@
             textBox1.Multiline = true;
             textBox1.Name = "textBox1";
             textBox1.ReadOnly = true;
+            textBox1.ScrollBars = ScrollBars.Vertical;
             textBox1.ShortcutsEnabled = false;
             textBox1.Size = new Size(640, 276);
             textBox1.TabIndex = 1;
@@ -239,7 +309,7 @@
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cancelButton.Location = new Point(563, 430);
+            cancelButton.Location = new Point(567, 430);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(105, 23);
             cancelButton.TabIndex = 2;
@@ -251,7 +321,7 @@
             // 
             applySettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             applySettingsButton.Enabled = false;
-            applySettingsButton.Location = new Point(452, 430);
+            applySettingsButton.Location = new Point(456, 430);
             applySettingsButton.Name = "applySettingsButton";
             applySettingsButton.Size = new Size(105, 23);
             applySettingsButton.TabIndex = 3;
@@ -259,11 +329,23 @@
             applySettingsButton.UseVisualStyleBackColor = true;
             applySettingsButton.Click += applySettingsButton_Click;
             // 
+            // resetSettingsButton
+            // 
+            resetSettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            resetSettingsButton.Location = new Point(12, 430);
+            resetSettingsButton.Name = "resetSettingsButton";
+            resetSettingsButton.Size = new Size(77, 23);
+            resetSettingsButton.TabIndex = 4;
+            resetSettingsButton.Text = "Default";
+            resetSettingsButton.UseVisualStyleBackColor = true;
+            resetSettingsButton.Click += resetSettingsButton_Click;
+            // 
             // FormSettings
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 461);
+            Controls.Add(resetSettingsButton);
             Controls.Add(applySettingsButton);
             Controls.Add(cancelButton);
             Controls.Add(tabControl1);
@@ -283,6 +365,8 @@
             flowLayoutPanel1.ResumeLayout(false);
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            groupBox4.ResumeLayout(false);
+            groupBox4.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             groupBox3.ResumeLayout(false);
@@ -314,5 +398,11 @@
         private FolderBrowserDialog smPathDialog;
         private Button detectSmPath;
         private Button applySettingsButton;
+        private GroupBox groupBox4;
+        private RadioButton exportAsBothRadioButton;
+        private RadioButton exportAsPercentRadioButton;
+        private RadioButton exportAskRadioButton;
+        private RadioButton exportAsPxRadioButton;
+        private Button resetSettingsButton;
     }
 }

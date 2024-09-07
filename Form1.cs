@@ -19,7 +19,22 @@ namespace MyGui.net
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
         {
-            get { return Settings.Default.ScrapMechanicPath; }
+            get {
+                if (Settings.Default.ScrapMechanicPath == null || Settings.Default.ScrapMechanicPath == "" || !Util.IsValidPath(Settings.Default.ScrapMechanicPath, true))
+                {
+                    string? gamePathFromSteam = Util.GetGameInstallPath("387990");
+                    if (gamePathFromSteam != null)
+                    {
+                        Settings.Default.ScrapMechanicPath = gamePathFromSteam;
+                        Settings.Default.Save();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Game path is invalid!\nSpecify a new path in the Options.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                return Settings.Default.ScrapMechanicPath;
+            }
             set
             {
                 Settings.Default.ScrapMechanicPath = value;
