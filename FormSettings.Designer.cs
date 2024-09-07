@@ -249,7 +249,7 @@
             // 
             // applySettingsButton
             // 
-            applySettingsButton.Anchor = AnchorStyles.None;
+            applySettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             applySettingsButton.Enabled = false;
             applySettingsButton.Location = new Point(452, 430);
             applySettingsButton.Name = "applySettingsButton";
