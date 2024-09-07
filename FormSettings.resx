@@ -120,4 +120,7 @@
   <data name="textBox1.Text" xml:space="preserve">
     <value>MyGui.net is a rewrite of the original MyGui built using .NET and WinForms by The Red Builder (Github Link) and Fagiano (GitHub Link). This version was specifically created for Scrap Mechanic Layout making.</value>
   </data>
+  <metadata name="smPathDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
 </root>

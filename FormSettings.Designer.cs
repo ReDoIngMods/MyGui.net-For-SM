@@ -32,16 +32,28 @@
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             flowLayoutPanel1 = new FlowLayoutPanel();
+            groupBox2 = new GroupBox();
+            detectSmPath = new Button();
+            smPathLabel = new TextBox();
+            chooseSmPath = new Button();
+            label1 = new Label();
+            groupBox1 = new GroupBox();
+            useSlowDrawRadioButton = new RadioButton();
+            useFastDrawRadioButton = new RadioButton();
+            groupBox3 = new GroupBox();
             showWarningsCheckBox = new CheckBox();
-            useFastDrawCheckBox = new CheckBox();
             tabPage2 = new TabPage();
             textBox1 = new TextBox();
             pictureBox1 = new PictureBox();
-            applyButton = new Button();
             cancelButton = new Button();
+            smPathDialog = new FolderBrowserDialog();
+            applySettingsButton = new Button();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
+            groupBox2.SuspendLayout();
+            groupBox1.SuspendLayout();
+            groupBox3.SuspendLayout();
             tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -71,35 +83,120 @@
             // flowLayoutPanel1
             // 
             flowLayoutPanel1.AutoScroll = true;
-            flowLayoutPanel1.Controls.Add(showWarningsCheckBox);
-            flowLayoutPanel1.Controls.Add(useFastDrawCheckBox);
+            flowLayoutPanel1.Controls.Add(groupBox2);
+            flowLayoutPanel1.Controls.Add(groupBox1);
+            flowLayoutPanel1.Controls.Add(groupBox3);
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.Location = new Point(3, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
             flowLayoutPanel1.Size = new Size(646, 378);
             flowLayoutPanel1.TabIndex = 0;
             // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(detectSmPath);
+            groupBox2.Controls.Add(smPathLabel);
+            groupBox2.Controls.Add(chooseSmPath);
+            groupBox2.Controls.Add(label1);
+            groupBox2.Location = new Point(3, 3);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(348, 73);
+            groupBox2.TabIndex = 4;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Files";
+            // 
+            // detectSmPath
+            // 
+            detectSmPath.Location = new Point(73, 37);
+            detectSmPath.Name = "detectSmPath";
+            detectSmPath.Size = new Size(61, 23);
+            detectSmPath.TabIndex = 4;
+            detectSmPath.Text = "Detect";
+            detectSmPath.UseVisualStyleBackColor = true;
+            detectSmPath.Click += detectSmPath_Click;
+            // 
+            // smPathLabel
+            // 
+            smPathLabel.Location = new Point(140, 38);
+            smPathLabel.Name = "smPathLabel";
+            smPathLabel.ReadOnly = true;
+            smPathLabel.Size = new Size(202, 23);
+            smPathLabel.TabIndex = 3;
+            // 
+            // chooseSmPath
+            // 
+            chooseSmPath.Location = new Point(6, 37);
+            chooseSmPath.Name = "chooseSmPath";
+            chooseSmPath.Size = new Size(61, 23);
+            chooseSmPath.TabIndex = 2;
+            chooseSmPath.Text = "Select";
+            chooseSmPath.UseVisualStyleBackColor = true;
+            chooseSmPath.Click += chooseSmPath_Click;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(6, 19);
+            label1.Name = "label1";
+            label1.Size = new Size(118, 15);
+            label1.TabIndex = 0;
+            label1.Text = "Scrap Mechanic Path";
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(useSlowDrawRadioButton);
+            groupBox1.Controls.Add(useFastDrawRadioButton);
+            groupBox1.Location = new Point(357, 3);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(263, 73);
+            groupBox1.TabIndex = 2;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Redraw";
+            // 
+            // useSlowDrawRadioButton
+            // 
+            useSlowDrawRadioButton.AutoSize = true;
+            useSlowDrawRadioButton.Location = new Point(6, 48);
+            useSlowDrawRadioButton.Name = "useSlowDrawRadioButton";
+            useSlowDrawRadioButton.Size = new Size(211, 19);
+            useSlowDrawRadioButton.TabIndex = 3;
+            useSlowDrawRadioButton.TabStop = true;
+            useSlowDrawRadioButton.Text = "Slow Redraw (Slower, more glitchy)";
+            useSlowDrawRadioButton.UseVisualStyleBackColor = true;
+            useSlowDrawRadioButton.CheckedChanged += useSlowDrawRadioButton_CheckedChanged;
+            // 
+            // useFastDrawRadioButton
+            // 
+            useFastDrawRadioButton.AutoSize = true;
+            useFastDrawRadioButton.Location = new Point(6, 22);
+            useFastDrawRadioButton.Name = "useFastDrawRadioButton";
+            useFastDrawRadioButton.Size = new Size(172, 19);
+            useFastDrawRadioButton.TabIndex = 2;
+            useFastDrawRadioButton.TabStop = true;
+            useFastDrawRadioButton.Text = "Fast Redraw (GPU intensive)";
+            useFastDrawRadioButton.UseVisualStyleBackColor = true;
+            useFastDrawRadioButton.CheckedChanged += useFastDrawRadioButton_CheckedChanged;
+            // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(showWarningsCheckBox);
+            groupBox3.Location = new Point(3, 82);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(124, 55);
+            groupBox3.TabIndex = 5;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Popups";
+            // 
             // showWarningsCheckBox
             // 
             showWarningsCheckBox.AutoSize = true;
-            showWarningsCheckBox.Location = new Point(3, 3);
+            showWarningsCheckBox.Location = new Point(6, 22);
             showWarningsCheckBox.Name = "showWarningsCheckBox";
             showWarningsCheckBox.Size = new Size(108, 19);
             showWarningsCheckBox.TabIndex = 0;
             showWarningsCheckBox.Text = "Show Warnings";
             showWarningsCheckBox.UseVisualStyleBackColor = true;
             showWarningsCheckBox.CheckedChanged += showWarningsCheckBox_CheckedChanged;
-            // 
-            // useFastDrawCheckBox
-            // 
-            useFastDrawCheckBox.AutoSize = true;
-            useFastDrawCheckBox.Location = new Point(117, 3);
-            useFastDrawCheckBox.Name = "useFastDrawCheckBox";
-            useFastDrawCheckBox.Size = new Size(254, 19);
-            useFastDrawCheckBox.TabIndex = 1;
-            useFastDrawCheckBox.Text = "Fast Viewport Redraw (More GPU intensive)";
-            useFastDrawCheckBox.UseVisualStyleBackColor = true;
-            useFastDrawCheckBox.CheckedChanged += useFastDrawCheckBox_CheckedChanged;
             // 
             // tabPage2
             // 
@@ -139,17 +236,6 @@
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
-            // applyButton
-            // 
-            applyButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            applyButton.Location = new Point(452, 430);
-            applyButton.Name = "applyButton";
-            applyButton.Size = new Size(105, 23);
-            applyButton.TabIndex = 1;
-            applyButton.Text = "Apply";
-            applyButton.UseVisualStyleBackColor = true;
-            applyButton.Click += applyButton_Click;
-            // 
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -161,13 +247,25 @@
             cancelButton.UseVisualStyleBackColor = true;
             cancelButton.Click += cancelButton_Click;
             // 
+            // applySettingsButton
+            // 
+            applySettingsButton.Anchor = AnchorStyles.None;
+            applySettingsButton.Enabled = false;
+            applySettingsButton.Location = new Point(452, 430);
+            applySettingsButton.Name = "applySettingsButton";
+            applySettingsButton.Size = new Size(105, 23);
+            applySettingsButton.TabIndex = 3;
+            applySettingsButton.Text = "Apply";
+            applySettingsButton.UseVisualStyleBackColor = true;
+            applySettingsButton.Click += applySettingsButton_Click;
+            // 
             // FormSettings
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 461);
+            Controls.Add(applySettingsButton);
             Controls.Add(cancelButton);
-            Controls.Add(applyButton);
             Controls.Add(tabControl1);
             MaximizeBox = false;
             MinimizeBox = false;
@@ -183,7 +281,12 @@
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             flowLayoutPanel1.ResumeLayout(false);
-            flowLayoutPanel1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            groupBox3.PerformLayout();
             tabPage2.ResumeLayout(false);
             tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -197,10 +300,19 @@
         private TabPage tabPage2;
         private FlowLayoutPanel flowLayoutPanel1;
         private CheckBox showWarningsCheckBox;
-        private Button applyButton;
         private Button cancelButton;
-        private CheckBox useFastDrawCheckBox;
         private PictureBox pictureBox1;
         private TextBox textBox1;
+        private GroupBox groupBox1;
+        private RadioButton useFastDrawRadioButton;
+        private RadioButton useSlowDrawRadioButton;
+        private GroupBox groupBox2;
+        private Label label1;
+        private GroupBox groupBox3;
+        private Button chooseSmPath;
+        private TextBox smPathLabel;
+        private FolderBrowserDialog smPathDialog;
+        private Button detectSmPath;
+        private Button applySettingsButton;
     }
 }
