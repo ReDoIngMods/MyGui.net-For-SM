@@ -238,6 +238,7 @@ namespace MyGui.net
                 // Create the widget
                 Panel newWidget = new();
                 newWidget.Name = data.name;
+                newWidget.Tag = data;
                 newWidget.BackColor = Color.FromArgb(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255));
                 newWidget.Location = data.position;
                 newWidget.Size = (Size)data.size;
@@ -324,6 +325,106 @@ namespace MyGui.net
             }
 
             return true;
+        }
+        #endregion
+
+        #region WinForms Utils
+        public static Control? GetTopmostControlAtMousePosition(Control originControl, Point relativePoint, Control[] excludeParent = null)
+        {
+            // Convert the relative point (from the MouseDown event) to screen coordinates
+            Point screenPoint = originControl.PointToScreen(relativePoint);
+
+            // Start the search from the top-level parent or container
+            Control topLevelParent = originControl.TopLevelControl;
+
+            // Perform the recursive search from the topmost control downwards
+            return GetTopmostControlAtPoint(topLevelParent, screenPoint, excludeParent);
+        }
+
+        public static Control? GetTopmostControlAtPoint(Control parent, Point screenPoint, Control[] excludeParent = null)
+        {
+            // Convert screen point to client point relative to the parent control
+            Point clientPoint = parent.PointToClient(screenPoint);
+
+            // Check if the point is within the bounds of the parent control
+            if (parent.ClientRectangle.Contains(clientPoint))
+            {
+                // Check child controls in reverse order to find the topmost control
+                for (int i = parent.Controls.Count - 1; i >= 0; i--)
+                {
+                    Control child = parent.Controls[i];
+                    // Recursively search in child controls
+                    Control result = GetTopmostControlAtPoint(child, screenPoint, excludeParent);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+
+                bool doesntFit = false;
+                if (excludeParent != null)
+                {
+                    for (int i = 0; i < excludeParent.Length; i++)
+                    {
+                        Control currParent = excludeParent[i];
+                        if (parent == currParent)
+                        {
+                            doesntFit = true;
+                            break;
+                        }
+                    }
+                }
+                if (!doesntFit)
+                {
+                    return parent;
+                }
+            }
+
+            // If the point is outside the parent control's bounds, return null
+            return null;
+        }
+        public static List<Control> GetAllControlsAtPoint(Control parent, Point screenPoint, Control[] excludeParent = null)
+        {
+            List<Control> controls = new List<Control>();
+
+            // Convert the screen point to client point relative to the parent control
+            Point clientPoint = parent.PointToClient(screenPoint);
+            if (parent is ScrollableControl scrollableParent)
+            {
+                clientPoint.Offset(scrollableParent.AutoScrollPosition);
+            }
+
+            // Check if the point is within the bounds of the parent control
+            if (parent.ClientRectangle.Contains(clientPoint))
+            {
+                // Check child controls in reverse order to get them from top to bottom
+                for (int i = parent.Controls.Count - 1; i >= 0; i--)
+                {
+                    Control child = parent.Controls[i];
+                    controls.AddRange(GetAllControlsAtPoint(child, screenPoint, excludeParent));
+                }
+
+                // Add the parent control itself if it's not excluded
+                bool doesntFit = false;
+                if (excludeParent != null)
+                {
+                    for (int i = 0; i < excludeParent.Length; i++)
+                    {
+                        Control currParent = excludeParent[i];
+                        if (parent == currParent)
+                        {
+                            doesntFit = true;
+                            break;
+                        }
+                    }
+                }
+                if (!doesntFit)
+                {
+                    controls.Add(parent);
+                }
+            }
+
+            return controls;
         }
         #endregion
     }

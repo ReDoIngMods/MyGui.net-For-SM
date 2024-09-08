@@ -2,6 +2,8 @@ using MyGui.net.Properties;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace MyGui.net
 {
@@ -15,6 +17,7 @@ namespace MyGui.net
         static List<MyGuiLayoutWidgetData> _currentLayout = new();
         static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
         static string _currentLayoutSavePath = "";
+        static Control? _currentSelectedWidget;
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
@@ -178,6 +181,20 @@ namespace MyGui.net
             }
         }
 
+        private void selectWidget_Click(object senderAny, EventArgs e)
+        {
+            ToolStripMenuItem sender = (ToolStripMenuItem)senderAny;
+            if (_currentSelectedWidget != null)
+            {
+                _currentSelectedWidget.BackColor = Color.FromArgb(Util.rand.Next(0, 255), Util.rand.Next(0, 255), Util.rand.Next(0, 255));
+            }
+            _currentSelectedWidget = (Control?)sender.Tag;
+            Debug.WriteLine("NEW SELECTED WIDGET");
+            Debug.WriteLine(_currentSelectedWidget.Name);
+            _currentSelectedWidget.BackColor = Color.Green;
+            //_currentSelectedWidget = (Control?)sender;
+        }
+
         void Viewport_MouseDown(object senderAny, MouseEventArgs e)
         {
             Panel sender = (Panel)senderAny;
@@ -186,6 +203,54 @@ namespace MyGui.net
                 _draggingViewport = true;
                 _mouseLoc = e.Location;
                 sender.Cursor = Cursors.NoMove2D;
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                Control? thing = Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel });
+                if (thing != null)
+                {
+                    if (_currentSelectedWidget != thing)
+                    {
+                        if (_currentSelectedWidget != null)
+                        {
+                            _currentSelectedWidget.BackColor = Color.FromArgb(Util.rand.Next(0, 255), Util.rand.Next(0, 255), Util.rand.Next(0, 255));
+                        }
+                        _currentSelectedWidget = thing;
+                        _currentSelectedWidget.BackColor = Color.SpringGreen;
+                    }
+                    else if (e.Clicks > 1)
+                    {
+                        // Convert relative point to screen coordinates
+                        Point screenPoint = Cursor.Position;//Viewport.PointToScreen(e.Location);
+
+                        // Get all controls at the clicked point (from topmost to furthest back)
+                        List<Control> controlsAtPoint = Util.GetAllControlsAtPoint(mainPanel, screenPoint, new Control[]{ Viewport, mainPanel });
+                         
+                        if (controlsAtPoint.Count > 0)
+                        {
+                            // Create a context menu to show the controls
+                            ContextMenuStrip contextMenu = new ContextMenuStrip();
+
+                            // Add each control to the context menu
+                            foreach (Control ctrl in controlsAtPoint)
+                            {
+                                ToolStripMenuItem menuItem = new ToolStripMenuItem(ctrl.Name);
+                                // Assign the control to the menu item's Tag property for later reference
+                                menuItem.Tag = ctrl;
+                                // Add a click event handler for the menu item
+                                menuItem.Click += selectWidget_Click;
+                                contextMenu.Items.Add(menuItem);
+                            }
+
+                            // Show the context menu at the clicked position
+                            contextMenu.Show(screenPoint);
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine("Drag Widget now!");
+                    }
+                }
             }
         }
 
