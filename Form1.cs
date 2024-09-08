@@ -14,7 +14,7 @@ namespace MyGui.net
         public static string[] _myGuiWidgetTypes = { };
         #endregion
 
-        static List<MyGuiLayoutWidgetData> _currentLayout = new();
+        static List<MyGuiWidgetData> _currentLayout = new();
         static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
         static string _currentLayoutSavePath = "";
         static Control? _currentSelectedWidget;
@@ -290,7 +290,7 @@ namespace MyGui.net
             if (result == DialogResult.Yes)
             {
                 _currentLayoutPath = "";
-                _currentLayout = new List<MyGuiLayoutWidgetData>();
+                _currentLayout = new List<MyGuiWidgetData>();
                 for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
                 {
                     mainPanel.Controls[i].Dispose();

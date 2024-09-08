@@ -129,7 +129,7 @@ namespace MyGui.net
         #endregion
 
         #region Layout File Reading/Exporting
-        public static List<MyGuiLayoutWidgetData>? ReadLayoutFile(string path)
+        public static List<MyGuiWidgetData>? ReadLayoutFile(string path)
         {
             XDocument xmlDocument = XDocument.Load(path);
             XElement? root = xmlDocument.Root;
@@ -141,13 +141,13 @@ namespace MyGui.net
             return ReadWidgetElements(root.Elements("Widget"), new(1920, 1080));
         }
 
-        public static List<MyGuiLayoutWidgetData> ReadWidgetElements(IEnumerable<XElement> elements, Point parentSize)
+        public static List<MyGuiWidgetData> ReadWidgetElements(IEnumerable<XElement> elements, Point parentSize)
         {
-            List<MyGuiLayoutWidgetData> layoutWidgetData = new();
+            List<MyGuiWidgetData> layoutWidgetData = new();
 
             foreach (XElement widget in elements)
             {
-                MyGuiLayoutWidgetData widgetData = new()
+                MyGuiWidgetData widgetData = new()
                 {
                     align = widget.Attribute("align")?.Value,
                     layer = widget.Attribute("layer")?.Value,
@@ -181,7 +181,7 @@ namespace MyGui.net
             return layoutWidgetData;
         }
 
-        public static string ExportLayoutToXmlString(List<MyGuiLayoutWidgetData> layout)
+        public static string ExportLayoutToXmlString(List<MyGuiWidgetData> layout)
         {
             XElement root = new("MyGUI",
                 new XAttribute("type", "Layout"),
@@ -191,9 +191,9 @@ namespace MyGui.net
             return root.ToString();
         }
 
-        public static void AddChildrenToElement(XElement element, List<MyGuiLayoutWidgetData> children, Point parentSize)
+        public static void AddChildrenToElement(XElement element, List<MyGuiWidgetData> children, Point parentSize)
         {
-            foreach (MyGuiLayoutWidgetData widget in children)
+            foreach (MyGuiWidgetData widget in children)
             {
                 XElement widgetElement = new(
                     "Widget",
@@ -220,20 +220,20 @@ namespace MyGui.net
             }
         }
 
-        public static void PrintLayoutStuff(List<MyGuiLayoutWidgetData>? layout)
+        public static void PrintLayoutStuff(List<MyGuiWidgetData>? layout)
         {
             if (layout == null) return;
-            foreach (MyGuiLayoutWidgetData data in layout)
+            foreach (MyGuiWidgetData data in layout)
             {
                 Debug.WriteLine($"------\n- Type: {data.type}\n- Skin: {data.skin}\n- Name: {data.name}\n- Pos: {data.position}\n- Size: {data.size}\n- Layer: {data.layer}\n- Align: {data.align}\n- Properties#: {data.properties.Count()}\n- Children#: {data.children.Count()}");
                 PrintLayoutStuff(data.children);
             }
         }
 
-        public static void SpawnLayoutWidgets(List<MyGuiLayoutWidgetData>? layout, Panel? currParent, Panel? defaultParent)
+        public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Panel? currParent, Panel? defaultParent)
         {
             if (layout == null) return;
-            foreach (MyGuiLayoutWidgetData data in layout)
+            foreach (MyGuiWidgetData data in layout)
             {
                 // Create the widget
                 Panel newWidget = new();
