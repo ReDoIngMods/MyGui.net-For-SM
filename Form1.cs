@@ -1,4 +1,5 @@
 using MyGui.net.Properties;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
@@ -162,9 +163,12 @@ namespace MyGui.net
                             //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
                             if (valueInWidgetData != null)
                             {
-                                Debug.WriteLine(valueInWidgetData);
+                                comboBox.SelectedIndex = comboBox.Items.IndexOf(valueInWidgetData);
                             }
-                            comboBox.SelectedIndex = 0;  // Optionally set a default selection
+                            else
+                            {
+                                comboBox.SelectedIndex = 0;
+                            }
                             control = comboBox;
                             break;
 
@@ -250,7 +254,9 @@ namespace MyGui.net
             tableLayoutPanel.ResumeLayout();
 
             // Finally, add the TableLayoutPanel to the parent panel
+            tabPage1Panel.SuspendLayout();
             tabPage1Panel.Controls.Add(tableLayoutPanel);
+            tabPage1Panel.ResumeLayout();
         }
 
         void Form1_Load(object sender, EventArgs e)
