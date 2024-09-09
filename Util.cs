@@ -106,25 +106,98 @@ namespace MyGui.net
         #endregion
 
         #region Object Utils
-        public static void SetPropertyValue(object obj, string propertyName, object value)
+        public static object? GetPropertyValue(object obj, string name)
         {
-            Type type = obj.GetType();
-            PropertyInfo property = type.GetProperty(propertyName);
-            if (property != null && property.CanWrite)
+            if (obj == null || string.IsNullOrEmpty(name))
+                //throw new ArgumentNullException("Object or name cannot be null.");
+                return null;
+
+            Type objType = obj.GetType();
+
+            // Try to get the property
+            PropertyInfo propInfo = objType.GetProperty(name);
+            if (propInfo != null)
             {
-                property.SetValue(obj, value);
+                return propInfo.GetValue(obj);
+            }
+
+            // Try to get the field
+            FieldInfo fieldInfo = objType.GetField(name);
+            if (fieldInfo != null)
+            {
+                return fieldInfo.GetValue(obj);
+            }
+
+            // Return null if neither property nor field is found
+            return null;
+        }
+
+        // Setter method
+        public static bool SetPropertyValue(object obj, string name, object value)
+        {
+            if (obj == null || string.IsNullOrEmpty(name))
+                return false;
+
+            Type objType = obj.GetType();
+
+            // Try to set the property
+            PropertyInfo propInfo = objType.GetProperty(name);
+            if (propInfo != null && propInfo.CanWrite)
+            {
+                propInfo.SetValue(obj, value);
+                return true;
+            }
+
+            // Try to set the field
+            FieldInfo fieldInfo = objType.GetField(name);
+            if (fieldInfo != null)
+            {
+                fieldInfo.SetValue(obj, value);
+                return true;
+            }
+
+            // Return false if neither property nor field is found or not writable
+            return false;
+        }
+
+        public static T ConvertTo<T>(object obj)
+        {
+            if (obj == null)
+                return default(T); // Return null for reference types or default for value types
+
+            // Check if the object is already of the correct type
+            if (obj is T variable)
+            {
+                return variable;
+            }
+
+            // Attempt to convert the object to the specified type
+            try
+            {
+                return (T)Convert.ChangeType(obj, typeof(T));
+            }
+            catch
+            {
+                // Return default (null for reference types) if the conversion fails
+                return default(T);
             }
         }
 
-        public static string GetPropertyValue(object obj, string propertyName)
+        public static dynamic AutoConvert(object obj)
         {
-            Type type = obj.GetType();
-            PropertyInfo property = type.GetProperty(propertyName);
-            if (property != null)
+            if (obj == null)
+                return null; // Return null if object is null
+
+            try
             {
-                return property.GetValue(obj) as string;
+                // Return the object directly as its dynamic type
+                return Convert.ChangeType(obj, obj.GetType());
             }
-            return null;
+            catch
+            {
+                // Return null if the conversion fails for any reason
+                return null;
+            }
         }
         #endregion
 

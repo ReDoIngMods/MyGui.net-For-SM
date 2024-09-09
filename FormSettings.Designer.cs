@@ -48,6 +48,10 @@
             groupBox3 = new GroupBox();
             showWarningsCheckBox = new CheckBox();
             tabPage2 = new TabPage();
+            flowLayoutPanel2 = new FlowLayoutPanel();
+            groupBox6 = new GroupBox();
+            showTypesForNamedWidgetsCheckBox = new CheckBox();
+            tabPage4 = new TabPage();
             textBox1 = new TextBox();
             pictureBox1 = new PictureBox();
             cancelButton = new Button();
@@ -62,6 +66,9 @@
             groupBox1.SuspendLayout();
             groupBox3.SuspendLayout();
             tabPage2.SuspendLayout();
+            flowLayoutPanel2.SuspendLayout();
+            groupBox6.SuspendLayout();
+            tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
@@ -70,6 +77,7 @@
             tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
+            tabControl1.Controls.Add(tabPage4);
             tabControl1.Location = new Point(12, 12);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
@@ -84,7 +92,7 @@
             tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(652, 384);
             tabPage1.TabIndex = 0;
-            tabPage1.Text = "General";
+            tabPage1.Text = "Program";
             tabPage1.UseVisualStyleBackColor = true;
             // 
             // flowLayoutPanel1
@@ -269,15 +277,57 @@
             // 
             // tabPage2
             // 
-            tabPage2.Controls.Add(textBox1);
-            tabPage2.Controls.Add(pictureBox1);
+            tabPage2.Controls.Add(flowLayoutPanel2);
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(652, 384);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "About";
+            tabPage2.TabIndex = 2;
+            tabPage2.Text = "Project";
             tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanel2
+            // 
+            flowLayoutPanel2.AutoScroll = true;
+            flowLayoutPanel2.Controls.Add(groupBox6);
+            flowLayoutPanel2.Dock = DockStyle.Fill;
+            flowLayoutPanel2.Location = new Point(3, 3);
+            flowLayoutPanel2.Name = "flowLayoutPanel2";
+            flowLayoutPanel2.Size = new Size(646, 378);
+            flowLayoutPanel2.TabIndex = 1;
+            // 
+            // groupBox6
+            // 
+            groupBox6.Controls.Add(showTypesForNamedWidgetsCheckBox);
+            groupBox6.Location = new Point(3, 3);
+            groupBox6.Name = "groupBox6";
+            groupBox6.Size = new Size(201, 50);
+            groupBox6.TabIndex = 6;
+            groupBox6.TabStop = false;
+            groupBox6.Text = "Editing";
+            // 
+            // showTypesForNamedWidgetsCheckBox
+            // 
+            showTypesForNamedWidgetsCheckBox.AutoSize = true;
+            showTypesForNamedWidgetsCheckBox.Location = new Point(6, 22);
+            showTypesForNamedWidgetsCheckBox.Name = "showTypesForNamedWidgetsCheckBox";
+            showTypesForNamedWidgetsCheckBox.Size = new Size(193, 19);
+            showTypesForNamedWidgetsCheckBox.TabIndex = 1;
+            showTypesForNamedWidgetsCheckBox.Text = "Show Types for Named Widgets";
+            showTypesForNamedWidgetsCheckBox.UseVisualStyleBackColor = true;
+            showTypesForNamedWidgetsCheckBox.CheckedChanged += showTypesForNamedWidgetsCheckBox_CheckedChanged;
+            // 
+            // tabPage4
+            // 
+            tabPage4.Controls.Add(textBox1);
+            tabPage4.Controls.Add(pictureBox1);
+            tabPage4.Location = new Point(4, 24);
+            tabPage4.Name = "tabPage4";
+            tabPage4.Padding = new Padding(3);
+            tabPage4.Size = new Size(652, 384);
+            tabPage4.TabIndex = 1;
+            tabPage4.Text = "About";
+            tabPage4.UseVisualStyleBackColor = true;
             // 
             // textBox1
             // 
@@ -372,7 +422,11 @@
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             tabPage2.ResumeLayout(false);
-            tabPage2.PerformLayout();
+            flowLayoutPanel2.ResumeLayout(false);
+            groupBox6.ResumeLayout(false);
+            groupBox6.PerformLayout();
+            tabPage4.ResumeLayout(false);
+            tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
         }
@@ -381,7 +435,7 @@
 
         private TabControl tabControl1;
         private TabPage tabPage1;
-        private TabPage tabPage2;
+        private TabPage tabPage4;
         private FlowLayoutPanel flowLayoutPanel1;
         private CheckBox showWarningsCheckBox;
         private Button cancelButton;
@@ -404,5 +458,9 @@
         private RadioButton exportAskRadioButton;
         private RadioButton exportAsPxRadioButton;
         private Button resetSettingsButton;
+        private TabPage tabPage2;
+        private FlowLayoutPanel flowLayoutPanel2;
+        private GroupBox groupBox6;
+        private CheckBox showTypesForNamedWidgetsCheckBox;
     }
 }

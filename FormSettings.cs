@@ -32,6 +32,9 @@ namespace MyGui.net
         {
             _formLoaded = false;
             _hasChanged = false;
+            //TAB PROGRAM
+            smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+
             exportAsPxRadioButton.Checked = Settings.Default.ExportMode == 0;
             exportAsPercentRadioButton.Checked = Settings.Default.ExportMode == 1;
             exportAskRadioButton.Checked = Settings.Default.ExportMode == 2;
@@ -42,7 +45,9 @@ namespace MyGui.net
 
             showWarningsCheckBox.Checked = Settings.Default.ShowWarnings;
 
-            smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+            //TAB PROJECT
+            showTypesForNamedWidgetsCheckBox.Checked = Settings.Default.ShowTypesForNamedWidgets;
+
             _formLoaded = true;
         }
 
@@ -55,7 +60,7 @@ namespace MyGui.net
             applySettingsButton.Enabled = _hasChanged;
         }
 
-        //Options (ordered same as in the form)
+        //TAB PROGRAM
 
         public enum ExportMode
         {
@@ -90,6 +95,14 @@ namespace MyGui.net
         {
             CheckBox sender = (CheckBox)senderAny;
             Settings.Default.ShowWarnings = sender.Checked;
+            OnSettingChange();
+        }
+
+        //TAB PROJECT
+        private void showTypesForNamedWidgetsCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.ShowTypesForNamedWidgets = sender.Checked;
             OnSettingChange();
         }
 

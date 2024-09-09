@@ -34,6 +34,7 @@ namespace MyGui.net
                     new()
                     {
                         name = "Align",
+                        boundTo = "align",
                         type = MyGuiWidgetPropertyType.ComboBox,
                         comboBoxValues = new()
                         {
@@ -47,6 +48,7 @@ namespace MyGui.net
                     new()
                     {
                         name = "Layer",
+                        boundTo = "layer",
                         type = MyGuiWidgetPropertyType.ComboBox,
                         comboBoxValues = new()
                         {
@@ -56,30 +58,40 @@ namespace MyGui.net
                     new()
                     {
                         name = "Name",
+                        boundTo = "name",
                         type = MyGuiWidgetPropertyType.TextBox
                     },
                     new()
                     {
                         name = "Position",
-                        type = MyGuiWidgetPropertyType.TextBox
+                        boundTo = "position",
+                        type = MyGuiWidgetPropertyType.PointBox
+                    },
+                    new()
+                    {
+                        name = "Size",
+                        boundTo = "size",
+                        type = MyGuiWidgetPropertyType.PointBox
                     },
                     new()
                     {
                         name = "Skin",
+                        boundTo = "skin",
                         type = MyGuiWidgetPropertyType.ComboBox,
                         comboBoxValues = new()
                         {
                             "LATER"
                         }
                     },
-                    new()
+                    /*new()
                     {
                         name = "Template",
                         type = MyGuiWidgetPropertyType.CheckBox
-                    },
+                    },*/
                     new()
                     {
                         name = "Type",
+                        boundTo = "type",
                         type = MyGuiWidgetPropertyType.ComboBox,
                         comboBoxValues = new()
                         {
@@ -96,56 +108,67 @@ namespace MyGui.net
                     new()
                     {
                         name = "Alpha",
+                        boundTo = "alpha",
                         type = MyGuiWidgetPropertyType.TextBox
                     },
                     new()
                     {
                         name = "Colour",
-                        type = MyGuiWidgetPropertyType.TextBox
+                        boundTo = "colour",
+                        type = MyGuiWidgetPropertyType.ColorBox
                     },
                     new()
                     {
                         name = "Enabled",
+                        boundTo = "enabled",
                         type = MyGuiWidgetPropertyType.CheckBox
                     },
                     new()
                     {
                         name = "InheritsAlpha",
+                        boundTo = "inheritsAlpha",
                         type = MyGuiWidgetPropertyType.CheckBox
                     },
                     new()
                     {
                         name = "InheritsPick",
+                        boundTo = "inheritsPick",
                         type = MyGuiWidgetPropertyType.CheckBox
                     },
                     new()
                     {
                         name = "MaskPick",
+                        boundTo = "maskPick",
                         type = MyGuiWidgetPropertyType.TextBox
                     },
                     new()
                     {
                         name = "NeedKey",
+                        boundTo = "needKey",
                         type = MyGuiWidgetPropertyType.CheckBox
                     },
                     new()
                     {
                         name = "NeedMouse",
+                        boundTo = "needMouse",
                         type = MyGuiWidgetPropertyType.CheckBox
                     },
                     new()
                     {
                         name = "NeedTooltip",
+                        boundTo = "needToolTip",
                         type = MyGuiWidgetPropertyType.CheckBox
                     },
                     new()
                     {
                         name = "Pointer",
+                        boundTo = "pointer",
                         type = MyGuiWidgetPropertyType.TextBox
                     },
                     new()
                     {
                         name = "Visible",
+                        boundTo = "visible",
                         type = MyGuiWidgetPropertyType.CheckBox
                     }
                 }
@@ -162,13 +185,16 @@ namespace MyGui.net
     enum MyGuiWidgetPropertyType
     {
         TextBox,
+        PointBox,
         CheckBox,
         ComboBox,
+        ColorBox,
     }
 
     struct MyGuiWidgetProperty
     {
         public string name;
+        public string boundTo;
         public MyGuiWidgetPropertyType type;
         public List<string>? comboBoxValues;
     }

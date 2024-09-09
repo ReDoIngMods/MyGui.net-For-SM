@@ -80,7 +80,7 @@
             // 
             splitContainer1.Panel2.BackColor = SystemColors.Control;
             splitContainer1.Panel2.Controls.Add(tabControl1);
-            splitContainer1.Panel2MinSize = 175;
+            splitContainer1.Panel2MinSize = 240;
             splitContainer1.Size = new Size(1240, 641);
             splitContainer1.SplitterDistance = 992;
             splitContainer1.TabIndex = 1;

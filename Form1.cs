@@ -2,8 +2,6 @@ using MyGui.net.Properties;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace MyGui.net
 {
@@ -69,50 +67,8 @@ namespace MyGui.net
             //_currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
             //Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
             //Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
-            // Create a Label
-            Label label = new();
-            label.Text = "Name:";
-            label.AutoSize = false;
-            label.TextAlign = ContentAlignment.MiddleRight;
-            label.Height = 23;
-            label.Width = 100;
 
-            // Create a TextBox
-            TextBox textBox = new();
-            textBox.Width = 1;
-            textBox.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
-
-            // Create another Label
-            Label label2 = new();
-            label2.Text = "Age:";
-            label2.AutoSize = false;
-            label2.TextAlign = ContentAlignment.MiddleRight;
-            label2.Height = 23;
-            label2.Width = 100;
-
-            // Create a NumericUpDown
-            NumericUpDown numericUpDown = new NumericUpDown();
-            numericUpDown.Width = 1;
-            numericUpDown.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
-
-            // Arrange controls horizontally using TableLayoutPanel
-            TableLayoutPanel tableLayoutPanel = new TableLayoutPanel();
-            tableLayoutPanel.ColumnCount = 2;
-            tableLayoutPanel.RowCount = 2;
-            tableLayoutPanel.AutoSize = true;
-            tableLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            tableLayoutPanel.Dock = DockStyle.Top;
-
-            // Add controls to TableLayoutPanel
-            tableLayoutPanel.Controls.Add(label, 0, 0);
-            tableLayoutPanel.Controls.Add(textBox, 1, 0);
-            tableLayoutPanel.Controls.Add(label2, 0, 1);
-            tableLayoutPanel.Controls.Add(numericUpDown, 1, 1);
-
-            // Add TableLayoutPanel to the Panel
-            tabPage1Panel.Controls.Add(tableLayoutPanel);
-
-            //HandleWidgetSelection();
+            HandleWidgetSelection();
 
             //Disposing code (for later)
             /*for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
@@ -127,39 +83,174 @@ namespace MyGui.net
             {
                 tabPage1Panel.Controls[i].Dispose();
             }
-
-            //Prints to see if the class is actually it
-
-            // Get the type of the class
-            Type type = _currentLayout.GetType();
-
-            // Get all members of the type
-            MemberInfo[] members = type.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            foreach (MemberInfo member in members)
+            if (_currentSelectedWidget == null || _currentSelectedWidget.Tag == null)
             {
-                // Check if the member is a field
-                if (member is FieldInfo field)
-                {
-                    // Get the value of the field
-                    object fieldValue = field.GetValue(_currentLayout);
-                    Debug.WriteLine($"Field {field.Name}: {fieldValue}");
-                }
-                // Check if the member is a property
-                else if (member is PropertyInfo property)
-                {
-                    // Get the value of the property
-                    object propertyValue = property.GetValue(_currentLayout);
-                    Debug.WriteLine($"Property {property.Name}: {propertyValue}");
-                }
+                return;
             }
+            AddProperties();
+        }
 
-            /*for (int i = 0; i < _currentLayout.widgetProperties.Length; i++)
+        void AddProperties()
+        {
+            for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
             {
-                //string value = Util.GetPropertyValue(_currentLayout, _currentLayout.widgetProperties[i]);
-                string value = _currentLayout.GetType().GetMember(_currentLayout.widgetProperties[i]).ToString();
-                Debug.WriteLine(value);
-            }*/
+                tabPage1Panel.Controls[i].Dispose();
+            }
+            if (_currentSelectedWidget == null || _currentSelectedWidget.Tag == null)
+            {
+                return;
+            }
+            MyGuiWidgetData currentWidgetData = (MyGuiWidgetData)_currentSelectedWidget.Tag;
+            Debug.WriteLine(currentWidgetData.name);
+
+            TableLayoutPanel tableLayoutPanel = new TableLayoutPanel
+            {
+                ColumnCount = 2, // Two columns: one for the label, one for the control
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                Dock = DockStyle.Top,
+                Width = 1
+            };
+            tableLayoutPanel.SuspendLayout();
+            foreach (var category in MyGuiWidgetProperties.categories)
+            {
+                // Optional: Add a row for the category title (full width)
+                Label categoryLabel = new Label
+                {
+                    Text = category.title,
+                    AutoSize = false,
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Height = 23,
+                    Width = 1,
+                    Dock = DockStyle.Fill
+                };
+                tableLayoutPanel.Controls.Add(categoryLabel, 0, tableLayoutPanel.RowCount);
+                tableLayoutPanel.SetColumnSpan(categoryLabel, 2); // Span across both columns
+                tableLayoutPanel.RowCount++;
+
+                foreach (var property in category.properties)
+                {
+                    // Create and configure label for the property
+                    Label propertyLabel = new Label
+                    {
+                        Text = property.name,
+                        AutoSize = false,
+                        TextAlign = ContentAlignment.MiddleRight,
+                        Height = 23,
+                        Width = 90,
+                        Dock = DockStyle.Fill
+                    };
+
+                    // Add the label to the first column
+                    tableLayoutPanel.Controls.Add(propertyLabel, 0, tableLayoutPanel.RowCount);
+
+                    // Create and configure the control based on the property type
+                    Control control = null;
+                    object valueInWidgetData;
+                    switch (property.type)
+                    {
+                        case MyGuiWidgetPropertyType.ComboBox:
+                            ComboBox comboBox = new ComboBox
+                            {
+                                MinimumSize = new Size(1, 1),
+                                Dock = DockStyle.Fill,  // Ensure it resizes within the TableLayoutPanel
+                                DropDownStyle = ComboBoxStyle.DropDownList
+                            };
+                            comboBox.Items.AddRange(property.comboBoxValues.ToArray());
+                            //Set the value from widget data
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
+                            if (valueInWidgetData != null)
+                            {
+                                Debug.WriteLine(valueInWidgetData);
+                            }
+                            comboBox.SelectedIndex = 0;  // Optionally set a default selection
+                            control = comboBox;
+                            break;
+
+                        case MyGuiWidgetPropertyType.TextBox:
+                            control = new TextBox
+                            {
+                                Width = 1,
+                                Dock = DockStyle.Fill,
+                                PlaceholderText = "[DEFAULT]",
+                            };
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
+                            if (valueInWidgetData != null)
+                            {
+                                control.Text = Convert.ToString(valueInWidgetData);
+                            }
+
+                            break;
+
+                        case MyGuiWidgetPropertyType.PointBox:
+                            TableLayoutPanel pointBoxLayout = new TableLayoutPanel();
+                            pointBoxLayout.ColumnCount = 2;
+                            pointBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // First column
+                            pointBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // Second column
+                            pointBoxLayout.RowCount = 1;
+                            pointBoxLayout.AutoSize = true;
+                            pointBoxLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                            pointBoxLayout.Dock = DockStyle.Top;
+
+                            NumericUpDown pointBoxLayoutXCoord = new NumericUpDown
+                            {
+                                Anchor = AnchorStyles.Left | AnchorStyles.Right,
+                                Width = 1,
+                                Minimum = 0,
+                                Maximum = 1920,
+                            };
+                            NumericUpDown pointBoxLayoutYCoord = new NumericUpDown
+                            {
+                                Anchor = AnchorStyles.Left | AnchorStyles.Right,
+                                Width = 1,
+                                Maximum = 1080,
+                            };
+
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
+                            if (valueInWidgetData != null && valueInWidgetData.GetType() == typeof(Point))
+                            {
+                                Point valueInWidgetDataPoint = (Point)valueInWidgetData;
+                                pointBoxLayoutXCoord.Value = valueInWidgetDataPoint.X;
+                                pointBoxLayoutYCoord.Value = valueInWidgetDataPoint.Y;
+                            }
+
+                            // Add controls to TableLayoutPanel
+                            pointBoxLayout.Controls.Add(pointBoxLayoutXCoord, 0, 0);
+                            pointBoxLayout.Controls.Add(pointBoxLayoutYCoord, 1, 0);
+                            control = pointBoxLayout;
+                            break;
+
+                        case MyGuiWidgetPropertyType.CheckBox:
+                            control = new CheckBox
+                            {
+                                AutoSize = true,
+                                Dock = DockStyle.Left // Align checkbox to the left
+                            };
+                            break;
+
+                            // Add more cases for other control types like ColorBox, etc.
+                    }
+
+                    // Add the generated control to the second column
+                    if (control != null)
+                    {
+                        tableLayoutPanel.Controls.Add(control, 1, tableLayoutPanel.RowCount);
+                    }
+
+                    // Move to the next row
+                    tableLayoutPanel.RowCount++;
+                }
+
+                // Add some spacing between categories
+                tableLayoutPanel.RowCount++;
+            }
+            tableLayoutPanel.ResumeLayout();
+
+            // Finally, add the TableLayoutPanel to the parent panel
+            tabPage1Panel.Controls.Add(tableLayoutPanel);
         }
 
         void Form1_Load(object sender, EventArgs e)
@@ -192,6 +283,7 @@ namespace MyGui.net
             Debug.WriteLine("NEW SELECTED WIDGET");
             Debug.WriteLine(_currentSelectedWidget.Name);
             _currentSelectedWidget.BackColor = Color.Green;
+            HandleWidgetSelection();
             //_currentSelectedWidget = (Control?)sender;
         }
 
@@ -217,6 +309,7 @@ namespace MyGui.net
                         }
                         _currentSelectedWidget = thing;
                         _currentSelectedWidget.BackColor = Color.SpringGreen;
+                        HandleWidgetSelection();
                     }
                     else if (e.Clicks > 1)
                     {
@@ -229,12 +322,15 @@ namespace MyGui.net
                         if (controlsAtPoint.Count > 0)
                         {
                             // Create a context menu to show the controls
-                            ContextMenuStrip contextMenu = new ContextMenuStrip();
+                            ContextMenuStrip contextMenu = new ContextMenuStrip { 
+                                RenderMode = ToolStripRenderMode.System,
+                                LayoutStyle = ToolStripLayoutStyle.Table
+                            };
 
                             // Add each control to the context menu
                             foreach (Control ctrl in controlsAtPoint)
                             {
-                                ToolStripMenuItem menuItem = new ToolStripMenuItem(ctrl.Name);
+                                ToolStripMenuItem menuItem = new ToolStripMenuItem(ctrl.Name == "" ? $"[DEFAULT] ({((MyGuiWidgetData)ctrl.Tag).type})": ctrl.Name + (Settings.Default.ShowTypesForNamedWidgets ?$" ({((MyGuiWidgetData)ctrl.Tag).type})" : ""));
                                 // Assign the control to the menu item's Tag property for later reference
                                 menuItem.Tag = ctrl;
                                 // Add a click event handler for the menu item
