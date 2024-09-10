@@ -285,10 +285,13 @@ namespace MyGui.net
             {
                 _currentSelectedWidget.BackColor = Color.FromArgb(Util.rand.Next(0, 255), Util.rand.Next(0, 255), Util.rand.Next(0, 255));
             }
-            _currentSelectedWidget = (Control?)sender.Tag;
+            _currentSelectedWidget = (Control?)sender.Tag == _currentSelectedWidget ? null : (Control?)sender.Tag;
             Debug.WriteLine("NEW SELECTED WIDGET");
-            Debug.WriteLine(_currentSelectedWidget.Name);
-            _currentSelectedWidget.BackColor = Color.Green;
+            if (_currentSelectedWidget != null)
+            {
+                Debug.WriteLine(_currentSelectedWidget.Name);
+                _currentSelectedWidget.BackColor = Color.Green;
+            }
             HandleWidgetSelection();
             //_currentSelectedWidget = (Control?)sender;
         }
@@ -336,7 +339,20 @@ namespace MyGui.net
                             // Add each control to the context menu
                             foreach (Control ctrl in controlsAtPoint)
                             {
-                                ToolStripMenuItem menuItem = new ToolStripMenuItem(ctrl.Name == "" ? $"[DEFAULT] ({((MyGuiWidgetData)ctrl.Tag).type})": ctrl.Name + (Settings.Default.ShowTypesForNamedWidgets ?$" ({((MyGuiWidgetData)ctrl.Tag).type})" : ""));
+                                string menuItemName = "";
+                                if (ctrl.Name == "")
+                                {
+                                    menuItemName = $"[DEFAULT] ({((MyGuiWidgetData)ctrl.Tag).type})";
+                                }
+                                else if (ctrl == _currentSelectedWidget)
+                                {
+                                    menuItemName = "[DESELECT]";
+                                }
+                                else
+                                {
+                                    menuItemName = ctrl.Name + (Settings.Default.ShowTypesForNamedWidgets ? $" ({((MyGuiWidgetData)ctrl.Tag).type})" : "");
+                                }
+                                ToolStripMenuItem menuItem = new ToolStripMenuItem(menuItemName);
                                 // Assign the control to the menu item's Tag property for later reference
                                 menuItem.Tag = ctrl;
                                 // Add a click event handler for the menu item
