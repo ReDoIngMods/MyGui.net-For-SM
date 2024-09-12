@@ -53,6 +53,7 @@
             editToolStripMenuItem = new ToolStripMenuItem();
             openLayoutDialog = new OpenFileDialog();
             saveLayoutDialog = new SaveFileDialog();
+            customWidgetColorDialog = new ColorDialog();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -315,5 +316,6 @@
         private Panel tabPage1Panel;
         private OpenFileDialog openLayoutDialog;
         private SaveFileDialog saveLayoutDialog;
+        private ColorDialog customWidgetColorDialog;
     }
 }

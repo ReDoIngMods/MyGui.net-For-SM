@@ -65,7 +65,7 @@ namespace MyGui.net.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap MyGUI_net_Icon_1 {
             get {
-                object obj = ResourceManager.GetObject("MyGUI.net_Icon-1", resourceCulture);
+                object obj = ResourceManager.GetObject("MyGUI_net_Icon_1", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

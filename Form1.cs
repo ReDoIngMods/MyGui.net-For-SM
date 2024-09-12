@@ -54,20 +54,26 @@ namespace MyGui.net
         }
 
         static bool _draggingViewport;
+        static bool _draggingWidget;
         static Point _mouseLoc = new Point(0, 0);
 
-        public Form1()
+        public Form1(string _DefaultOpenedDir = "")
         {
             InitializeComponent();
-            HandleLoad();
+            HandleLoad(_DefaultOpenedDir);
         }
 
-        void HandleLoad()
+        void HandleLoad(string autoloadPath = "")
         {
-            //Debug.WriteLine(_currentLayoutPath);
-            //_currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
-            //Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
-            //Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+            if (autoloadPath != "")
+            {
+                _currentLayoutPath = autoloadPath;
+                _currentLayoutSavePath = autoloadPath;
+                //Debug.WriteLine(_currentLayoutPath);
+                _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
+                Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
+                //Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+            }
 
             HandleWidgetSelection();
 
@@ -115,7 +121,6 @@ namespace MyGui.net
             tableLayoutPanel.SuspendLayout();
             foreach (var category in MyGuiWidgetProperties.categories)
             {
-                // Optional: Add a row for the category title (full width)
                 Label categoryLabel = new Label
                 {
                     Text = category.title,
@@ -123,7 +128,8 @@ namespace MyGui.net
                     TextAlign = ContentAlignment.MiddleCenter,
                     Height = 23,
                     Width = 1,
-                    Dock = DockStyle.Fill
+                    Dock = DockStyle.Fill,
+                    BackColor = Color.FromKnownColor(KnownColor.ControlLight),
                 };
                 tableLayoutPanel.Controls.Add(categoryLabel, 0, tableLayoutPanel.RowCount);
                 tableLayoutPanel.SetColumnSpan(categoryLabel, 2); // Span across both columns
@@ -197,6 +203,7 @@ namespace MyGui.net
                             pointBoxLayout.AutoSize = true;
                             pointBoxLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
                             pointBoxLayout.Dock = DockStyle.Top;
+                            pointBoxLayout.Margin = Padding.Empty;
 
                             NumericUpDown pointBoxLayoutXCoord = new NumericUpDown
                             {
@@ -235,6 +242,56 @@ namespace MyGui.net
                             };
                             break;
 
+                        case MyGuiWidgetPropertyType.ColorBox:
+                            TableLayoutPanel colorBoxLayout = new TableLayoutPanel();
+                            colorBoxLayout.ColumnCount = 3;
+                            colorBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 23)); // First column
+                            colorBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F)); // Second column
+                            colorBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F)); // Third column
+                            colorBoxLayout.RowCount = 1;
+                            colorBoxLayout.AutoSize = true;
+                            colorBoxLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                            colorBoxLayout.Dock = DockStyle.Top;
+                            colorBoxLayout.Margin = Padding.Empty;
+
+                            TextBox colorBoxHexInput = new TextBox
+                            {
+                                Width = 1,
+                                Dock = DockStyle.Fill,
+                                PlaceholderText = "ffffff",
+                            };
+
+                            Button colorBoxPickerButton = new Button
+                            {
+                                Width = 1,
+                                Dock = DockStyle.Fill,
+                                Text = "Pick"
+                            };
+                            colorBoxPickerButton.Click += selectCustomWidgetColor_Click;
+
+                            Panel colorBoxPickerPreview = new Panel
+                            {
+                                BorderStyle = BorderStyle.FixedSingle,
+                                BackColor = Color.FromArgb(255, 255, 255),
+                                Height = 23,
+                            };
+
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
+                            /*if (valueInWidgetData != null && valueInWidgetData.GetType() == typeof(Point))
+                            {
+                                Point valueInWidgetDataPoint = (Point)valueInWidgetData;
+                                pointBoxLayoutXCoord.Value = valueInWidgetDataPoint.X;
+                                pointBoxLayoutYCoord.Value = valueInWidgetDataPoint.Y;
+                            }*/
+
+                            // Add controls to TableLayoutPanel
+                            colorBoxLayout.Controls.Add(colorBoxPickerPreview, 0, 0);
+                            colorBoxLayout.Controls.Add(colorBoxHexInput, 1, 0);
+                            colorBoxLayout.Controls.Add(colorBoxPickerButton, 2, 0);
+                            control = colorBoxLayout;
+                            break;
+
                             // Add more cases for other control types like ColorBox, etc.
                     }
 
@@ -258,6 +315,12 @@ namespace MyGui.net
             tabPage1Panel.Controls.Add(tableLayoutPanel);
             tabPage1Panel.ResumeLayout();
         }
+        #region Property Ui functions
+        private void selectCustomWidgetColor_Click(object senderAny, EventArgs e)
+        {
+            customWidgetColorDialog.ShowDialog();
+        }
+        #endregion
 
         void Form1_Load(object sender, EventArgs e)
         {
@@ -367,6 +430,9 @@ namespace MyGui.net
                     else
                     {
                         Debug.WriteLine("Drag Widget now!");
+                        _draggingWidget = true;
+                        _mouseLoc = e.Location;
+                        //sender.Cursor = Cursors.WaitCursor;
                     }
                 }
             }
@@ -408,6 +474,7 @@ namespace MyGui.net
             if (result == DialogResult.Yes)
             {
                 _currentLayoutPath = "";
+                _currentLayoutSavePath = "";
                 _currentLayout = new List<MyGuiWidgetData>();
                 for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
                 {
@@ -422,6 +489,7 @@ namespace MyGui.net
             if (openLayoutDialog.ShowDialog(this) == DialogResult.OK)
             {
                 _currentLayoutPath = openLayoutDialog.FileName;
+                _currentLayoutSavePath = _currentLayoutPath;
                 _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
                 //Refresh ui
                 for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)

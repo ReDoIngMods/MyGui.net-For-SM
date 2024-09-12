@@ -422,8 +422,7 @@ namespace MyGui.net
             // Check if the point is within the bounds of the parent control
             if (parent.ClientRectangle.Contains(clientPoint))
             {
-                // Check child controls in reverse order to find the topmost control
-                for (int i = parent.Controls.Count - 1; i >= 0; i--)
+                for (int i = 0; i < parent.Controls.Count; i++)
                 {
                     Control child = parent.Controls[i];
                     // Recursively search in child controls
@@ -470,8 +469,7 @@ namespace MyGui.net
             // Check if the point is within the bounds of the parent control
             if (parent.ClientRectangle.Contains(clientPoint))
             {
-                // Check child controls in reverse order to get them from top to bottom
-                for (int i = parent.Controls.Count - 1; i >= 0; i--)
+                for (int i = 0; i < parent.Controls.Count; i++)
                 {
                     Control child = parent.Controls[i];
                     controls.AddRange(GetAllControlsAtPoint(child, screenPoint, excludeParent));
