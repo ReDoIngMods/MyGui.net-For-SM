@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace MyGui.net
@@ -254,6 +255,33 @@ namespace MyGui.net
             return layoutWidgetData;
         }
 
+        public static string FormatXmlString(string xmlString)
+        {
+            try
+            {
+                var stringBuilder = new StringBuilder();
+
+                using (var stringReader = new StringReader(xmlString))
+                using (var xmlReader = XmlReader.Create(stringReader, new XmlReaderSettings { ConformanceLevel = ConformanceLevel.Document }))
+                using (var xmlWriter = XmlWriter.Create(stringBuilder, new XmlWriterSettings { Indent = true, IndentChars = "\t", NewLineChars = "\n", NewLineHandling = NewLineHandling.Replace, OmitXmlDeclaration = true }))
+                {
+                    xmlWriter.WriteNode(xmlReader, true);
+                }
+
+                return stringBuilder.ToString();
+            }
+            catch (XmlException ex)
+            {
+                Console.WriteLine($"XML Exception: {ex.Message}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"General Exception: {ex.Message}");
+                return null;
+            }
+        }
+
         public static string ExportLayoutToXmlString(List<MyGuiWidgetData> layout)
         {
             XElement root = new("MyGUI",
@@ -261,7 +289,7 @@ namespace MyGui.net
                 new XAttribute("version", "3.2.0")
             );
             AddChildrenToElement(root, layout, new(1920, 1080));
-            return root.ToString();
+            return FormatXmlString(root.ToString(SaveOptions.DisableFormatting));
         }
 
         public static void AddChildrenToElement(XElement element, List<MyGuiWidgetData> children, Point parentSize)
