@@ -260,7 +260,17 @@
             // 
             openLayoutDialog.DefaultExt = "layout";
             openLayoutDialog.Filter = "MyGui Layout|*.layout|XML|*.xml";
+            openLayoutDialog.ShowHiddenFiles = true;
             openLayoutDialog.Title = "Open Layout";
+            // 
+            // saveLayoutDialog
+            // 
+            saveLayoutDialog.Filter = "MyGui Layout|*.layout|XML|*.xml";
+            saveLayoutDialog.ShowHiddenFiles = true;
+            // 
+            // customWidgetColorDialog
+            // 
+            customWidgetColorDialog.FullOpen = true;
             // 
             // Form1
             // 

@@ -497,6 +497,58 @@ namespace MyGui.net
 
             return controls;
         }
+
+        public enum BorderPosition
+        {
+            None,
+            Left,
+            Right,
+            Top,
+            Bottom,
+            TopLeft,
+            TopRight,
+            BottomLeft,
+            BottomRight,
+            Center
+        }
+
+        public static BorderPosition DetectBorder(Control widget, Point mousePosition)
+        {
+
+            // Convert the mouse position to the widget's coordinates, considering the scroll offset
+            Point widgetRelativePosition = widget.PointToClient(new Point(mousePosition.X, mousePosition.Y));
+
+            int widgetWidth = widget.Width;
+            int widgetHeight = widget.Height;
+
+            int BorderThreshold = 7;
+
+            bool isOnLeft = widgetRelativePosition.X >= -BorderThreshold && widgetRelativePosition.X <= 0;
+            bool isOnRight = widgetRelativePosition.X <= widgetWidth && widgetRelativePosition.X >= widgetWidth - BorderThreshold;
+            bool isOnTop = widgetRelativePosition.Y >= -BorderThreshold && widgetRelativePosition.Y <= 0;
+            bool isOnBottom = widgetRelativePosition.Y <= widgetHeight && widgetRelativePosition.Y >= widgetHeight - BorderThreshold;
+
+            // Determine the specific border or corner the mouse is on
+            if (isOnLeft && isOnTop) return BorderPosition.TopLeft;
+            if (isOnLeft && isOnBottom) return BorderPosition.BottomLeft;
+            if (isOnRight && isOnTop) return BorderPosition.TopRight;
+            if (isOnRight && isOnBottom) return BorderPosition.BottomRight;
+            if (isOnLeft) return BorderPosition.Left;
+            if (isOnRight) return BorderPosition.Right;
+            if (isOnTop) return BorderPosition.Top;
+            if (isOnBottom) return BorderPosition.Bottom;
+
+            // Determine if the mouse is inside the widget but not on the border
+            if (widgetRelativePosition.X > 0 &&
+                widgetRelativePosition.X < widgetWidth &&
+                widgetRelativePosition.Y > 0 &&
+                widgetRelativePosition.Y < widgetHeight)
+            {
+                return BorderPosition.Center;
+            }
+
+            return BorderPosition.None;
+        }
         #endregion
     }
 }

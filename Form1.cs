@@ -3,6 +3,9 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
+using static MyGui.net.Util;
+using static System.Windows.Forms.LinkLabel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace MyGui.net
 {
@@ -211,12 +214,14 @@ namespace MyGui.net
                                 Width = 1,
                                 Minimum = 0,
                                 Maximum = 1920,
+                                Name = property.name + "_X",
                             };
                             NumericUpDown pointBoxLayoutYCoord = new NumericUpDown
                             {
                                 Anchor = AnchorStyles.Left | AnchorStyles.Right,
                                 Width = 1,
                                 Maximum = 1080,
+                                Name = property.name + "_Y",
                             };
 
                             valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
@@ -227,6 +232,9 @@ namespace MyGui.net
                                 pointBoxLayoutXCoord.Value = valueInWidgetDataPoint.X;
                                 pointBoxLayoutYCoord.Value = valueInWidgetDataPoint.Y;
                             }
+
+                            pointBoxLayoutXCoord.ValueChanged += pointBox_ValueChanged;
+                            pointBoxLayoutYCoord.ValueChanged += pointBox_ValueChanged;
 
                             // Add controls to TableLayoutPanel
                             pointBoxLayout.Controls.Add(pointBoxLayoutXCoord, 0, 0);
@@ -320,6 +328,35 @@ namespace MyGui.net
         {
             customWidgetColorDialog.ShowDialog();
         }
+        private void pointBox_ValueChanged(object senderAny, EventArgs e)
+        {
+            NumericUpDown sender = (NumericUpDown)senderAny;
+            if (_currentSelectedWidget != null)
+            {
+                Debug.WriteLine(sender.Name);
+                switch (sender.Name)
+                {
+                    case "Position_X":
+                        _currentSelectedWidget.Left =(int)sender.Value;
+                        ((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
+                        break;
+                    case "Position_Y":
+                        _currentSelectedWidget.Top = (int)sender.Value;
+                        ((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
+                        break;
+                    case "Size_X":
+                        _currentSelectedWidget.Width = (int)sender.Value;
+                        ((MyGuiWidgetData)_currentSelectedWidget.Tag).size = (Point)_currentSelectedWidget.Size;
+                        break;
+                    case "Size_Y":
+                        _currentSelectedWidget.Height = (int)sender.Value;
+                        ((MyGuiWidgetData)_currentSelectedWidget.Tag).size = (Point)_currentSelectedWidget.Size;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         #endregion
 
         void Form1_Load(object sender, EventArgs e)
@@ -344,20 +381,44 @@ namespace MyGui.net
         private void selectWidget_Click(object senderAny, EventArgs e)
         {
             ToolStripMenuItem sender = (ToolStripMenuItem)senderAny;
-            if (_currentSelectedWidget != null)
+            /*if (_currentSelectedWidget != null)
             {
-                _currentSelectedWidget.BackColor = Color.FromArgb(Util.rand.Next(0, 255), Util.rand.Next(0, 255), Util.rand.Next(0, 255));
-            }
+                _currentSelectedWidget.Padding = new Padding(0);
+            }*/
             _currentSelectedWidget = (Control?)sender.Tag == _currentSelectedWidget ? null : (Control?)sender.Tag;
-            Debug.WriteLine("NEW SELECTED WIDGET");
+            /*Debug.WriteLine("NEW SELECTED WIDGET");
             if (_currentSelectedWidget != null)
             {
                 Debug.WriteLine(_currentSelectedWidget.Name);
-                _currentSelectedWidget.BackColor = Color.Green;
-            }
+                _currentSelectedWidget.Padding = new Padding(10);
+            }*/
             HandleWidgetSelection();
             //_currentSelectedWidget = (Control?)sender;
         }
+
+        /*private void MainForm_Paint(object sender, PaintEventArgs e)
+        {
+            if (_currentSelectedWidget != null && Viewport != null)
+            {
+                // Get the widget's bounds relative to the scrolling panel
+                Rectangle widgetBounds = _currentSelectedWidget.Bounds;
+                widgetBounds.Offset(Viewport.PointToClient(_currentSelectedWidget.PointToScreen(_currentSelectedWidget.Location)));
+
+                // Adjust the bounds by the scrolling position
+                //Point offset = Viewport.AutoScrollPosition;
+                //widgetBounds.Offset(offset.X, offset.Y);
+
+                // Inflate the rectangle to include the border
+                widgetBounds.Inflate(10, 10);
+
+                // Draw the border
+                using (Pen borderPen = new Pen(Color.SpringGreen, 10))
+                {
+                    e.Graphics.DrawRectangle(borderPen, widgetBounds);
+                    Debug.WriteLine("REDRAW!");
+                }
+            }
+        }*/
 
         void Viewport_MouseDown(object senderAny, MouseEventArgs e)
         {
@@ -375,12 +436,12 @@ namespace MyGui.net
                 {
                     if (_currentSelectedWidget != thing)
                     {
-                        if (_currentSelectedWidget != null)
+                        /*if (_currentSelectedWidget != null)
                         {
-                            _currentSelectedWidget.BackColor = Color.FromArgb(Util.rand.Next(0, 255), Util.rand.Next(0, 255), Util.rand.Next(0, 255));
-                        }
+                            _currentSelectedWidget.Padding = new Padding(0);
+                        }*/
                         _currentSelectedWidget = thing;
-                        _currentSelectedWidget.BackColor = Color.SpringGreen;
+                        //_currentSelectedWidget.Padding = new Padding(10);
                         HandleWidgetSelection();
                     }
                     else if (e.Clicks > 1)
@@ -432,7 +493,6 @@ namespace MyGui.net
                         Debug.WriteLine("Drag Widget now!");
                         _draggingWidget = true;
                         _mouseLoc = e.Location;
-                        //sender.Cursor = Cursors.WaitCursor;
                     }
                 }
             }
@@ -455,6 +515,37 @@ namespace MyGui.net
                     Viewport.Refresh();
                 }
             }
+            else if (_currentSelectedWidget != null)
+            {
+                BorderPosition border = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
+
+                // Change the cursor based on the detected border
+                switch (border)
+                {
+                    case BorderPosition.TopLeft:
+                    case BorderPosition.BottomRight:
+                        Cursor = Cursors.SizeNWSE; // Diagonal resize NW-SE
+                        break;
+                    case BorderPosition.TopRight:
+                    case BorderPosition.BottomLeft:
+                        Cursor = Cursors.SizeNESW; // Diagonal resize NE-SW
+                        break;
+                    case BorderPosition.Left:
+                    case BorderPosition.Right:
+                        Cursor = Cursors.SizeWE; // Horizontal resize (West-East)
+                        break;
+                    case BorderPosition.Top:
+                    case BorderPosition.Bottom:
+                        Cursor = Cursors.SizeNS; // Vertical resize (North-South)
+                        break;
+                    case BorderPosition.Center:
+                        Cursor = Cursors.SizeAll;
+                        break;
+                    default:
+                        Cursor = Cursors.Default; // Normal cursor
+                        break;
+                }
+            }
         }
 
         void Viewport_MouseUp(object senderAny, MouseEventArgs e)
@@ -473,9 +564,11 @@ namespace MyGui.net
             DialogResult result = Settings.Default.ShowWarnings ? MessageBox.Show("Are you sure you want to clear the Workspace? This cannot be undone!", "New Workspace", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) : DialogResult.Yes;
             if (result == DialogResult.Yes)
             {
+                _currentSelectedWidget = null;
                 _currentLayoutPath = "";
                 _currentLayoutSavePath = "";
                 _currentLayout = new List<MyGuiWidgetData>();
+                HandleWidgetSelection();
                 for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
                 {
                     mainPanel.Controls[i].Dispose();
@@ -509,6 +602,10 @@ namespace MyGui.net
                     _currentLayoutSavePath = saveLayoutDialog.FileName;
                 }
             }
+            using (StreamWriter outputFile = new StreamWriter(_currentLayoutSavePath))
+            {
+                outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+            }
             //TODO: Save the file eventually
         }
 
@@ -517,7 +614,10 @@ namespace MyGui.net
             if (saveLayoutDialog.ShowDialog(this) == DialogResult.OK)
             {
                 _currentLayoutSavePath = saveLayoutDialog.FileName;
-                //TODO: Save the file eventually
+                using (StreamWriter outputFile = new StreamWriter(_currentLayoutSavePath))
+                {
+                    outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+                }
             }
         }
 
