@@ -20,11 +20,13 @@ namespace MyGui.net
         static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
         static string _currentLayoutSavePath = "";
         static Control? _currentSelectedWidget;
+        static Dictionary<string, Control> _editorProperties = new Dictionary<string, Control>();
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
         {
-            get {
+            get
+            {
                 if (Settings.Default.ScrapMechanicPath == null || Settings.Default.ScrapMechanicPath == "" || !Util.IsValidPath(Settings.Default.ScrapMechanicPath, true))
                 {
                     string? gamePathFromSteam = Util.GetGameInstallPath("387990");
@@ -57,7 +59,7 @@ namespace MyGui.net
         }
 
         static bool _draggingViewport;
-        static bool _draggingWidget;
+        static BorderPosition _draggingWidgetAt = BorderPosition.None;
         static Point _mouseLoc = new Point(0, 0);
 
         public Form1(string _DefaultOpenedDir = "")
@@ -216,6 +218,7 @@ namespace MyGui.net
                                 Maximum = 1920,
                                 Name = property.name + "_X",
                             };
+                            _editorProperties[property.name + "_X"] = pointBoxLayoutXCoord;
                             NumericUpDown pointBoxLayoutYCoord = new NumericUpDown
                             {
                                 Anchor = AnchorStyles.Left | AnchorStyles.Right,
@@ -223,6 +226,7 @@ namespace MyGui.net
                                 Maximum = 1080,
                                 Name = property.name + "_Y",
                             };
+                            _editorProperties[property.name + "_Y"] = pointBoxLayoutYCoord;
 
                             valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
                             //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
@@ -331,13 +335,13 @@ namespace MyGui.net
         private void pointBox_ValueChanged(object senderAny, EventArgs e)
         {
             NumericUpDown sender = (NumericUpDown)senderAny;
-            if (_currentSelectedWidget != null)
+            if (_currentSelectedWidget != null && _draggingWidgetAt == BorderPosition.None)
             {
                 Debug.WriteLine(sender.Name);
                 switch (sender.Name)
                 {
                     case "Position_X":
-                        _currentSelectedWidget.Left =(int)sender.Value;
+                        _currentSelectedWidget.Left = (int)sender.Value;
                         ((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
                         break;
                     case "Position_Y":
@@ -450,12 +454,13 @@ namespace MyGui.net
                         Point screenPoint = Cursor.Position;//Viewport.PointToScreen(e.Location);
 
                         // Get all controls at the clicked point (from topmost to furthest back)
-                        List<Control> controlsAtPoint = Util.GetAllControlsAtPoint(mainPanel, screenPoint, new Control[]{ Viewport, mainPanel });
-                         
+                        List<Control> controlsAtPoint = Util.GetAllControlsAtPoint(mainPanel, screenPoint, new Control[] { Viewport, mainPanel });
+
                         if (controlsAtPoint.Count > 0)
                         {
                             // Create a context menu to show the controls
-                            ContextMenuStrip contextMenu = new ContextMenuStrip { 
+                            ContextMenuStrip contextMenu = new ContextMenuStrip
+                            {
                                 RenderMode = ToolStripRenderMode.System,
                                 LayoutStyle = ToolStripLayoutStyle.Table
                             };
@@ -488,12 +493,12 @@ namespace MyGui.net
                             contextMenu.Show(screenPoint);
                         }
                     }
-                    else
-                    {
-                        Debug.WriteLine("Drag Widget now!");
-                        _draggingWidget = true;
-                        _mouseLoc = e.Location;
-                    }
+                }
+                if (_currentSelectedWidget != null && e.Clicks == 1)
+                {
+                    Debug.WriteLine("Drag Widget now!");
+                    _draggingWidgetAt = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
+                    _mouseLoc = e.Location;
                 }
             }
         }
@@ -517,7 +522,7 @@ namespace MyGui.net
             }
             else if (_currentSelectedWidget != null)
             {
-                BorderPosition border = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
+                BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
 
                 // Change the cursor based on the detected border
                 switch (border)
@@ -545,6 +550,53 @@ namespace MyGui.net
                         Cursor = Cursors.Default; // Normal cursor
                         break;
                 }
+
+                //Dragging
+                //Debug.WriteLine(_draggingWidgetAt);
+                if (_draggingWidgetAt != BorderPosition.None)
+                {
+                    Point localLocCurr = e.Location - (Size)sender.Location;
+                    Point localLocPrev = _mouseLoc - (Size)sender.Location;
+                    Point deltaLoc = new Point(localLocCurr.X - localLocPrev.X, localLocCurr.Y - localLocPrev.Y);
+
+                    if (_draggingWidgetAt == BorderPosition.Center)
+                    {
+                        // Move the widget
+                        _currentSelectedWidget.Location = new Point(Math.Clamp(_currentSelectedWidget.Location.X + deltaLoc.X, 0, 1920), Math.Clamp(_currentSelectedWidget.Location.Y + deltaLoc.Y, 0, 1080));
+                    }
+                    else
+                    {
+                        // Handle horizontal resizing
+                        if (_draggingWidgetAt == BorderPosition.Left || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.BottomLeft)
+                        {
+                            _currentSelectedWidget.Width = Math.Max(_currentSelectedWidget.Width - deltaLoc.X, 0);
+                            _currentSelectedWidget.Left = Math.Clamp(_currentSelectedWidget.Left + deltaLoc.X, 0, 1920);
+                        }
+                        else if (_draggingWidgetAt == BorderPosition.Right || _draggingWidgetAt == BorderPosition.TopRight || _draggingWidgetAt == BorderPosition.BottomRight)
+                        {
+                            _currentSelectedWidget.Width += deltaLoc.X;
+                        }
+
+                        // Handle vertical resizing
+                        if (_draggingWidgetAt == BorderPosition.Top || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.TopRight)
+                        {
+                            _currentSelectedWidget.Height = Math.Max(_currentSelectedWidget.Height - deltaLoc.Y, 0);
+                            _currentSelectedWidget.Top = Math.Clamp(_currentSelectedWidget.Top + deltaLoc.Y, 0, 1080);
+                        }
+                        else if (_draggingWidgetAt == BorderPosition.Bottom || _draggingWidgetAt == BorderPosition.BottomLeft || _draggingWidgetAt == BorderPosition.BottomRight)
+                        {
+                            _currentSelectedWidget.Height += deltaLoc.Y;
+                        }
+                    }
+
+                    ((NumericUpDown)_editorProperties["Position_X"]).Value = _currentSelectedWidget.Left;
+                    ((NumericUpDown)_editorProperties["Position_Y"]).Value = _currentSelectedWidget.Top;
+                    ((NumericUpDown)_editorProperties["Size_X"]).Value = _currentSelectedWidget.Width;
+                    ((NumericUpDown)_editorProperties["Size_Y"]).Value = _currentSelectedWidget.Height;
+
+                    // Update the previous mouse location
+                    _mouseLoc = e.Location;
+                }
             }
         }
 
@@ -555,6 +607,15 @@ namespace MyGui.net
             {
                 _draggingViewport = false;
                 sender.Cursor = Cursors.Default;
+            }
+            else if (e.Button == MouseButtons.Left)
+            {
+                if (_draggingWidgetAt != BorderPosition.None)
+                {
+                    _draggingWidgetAt = BorderPosition.None;
+                    ((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
+                    ((MyGuiWidgetData)_currentSelectedWidget.Tag).size = (Point)_currentSelectedWidget.Size;
+                }
             }
         }
 

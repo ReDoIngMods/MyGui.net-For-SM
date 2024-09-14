@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="textBox1.Text" xml:space="preserve">
-    <value>MyGui.net is a rewrite of the original MyGui built using .NET and WinForms by The Red Builder (Github Link) and Fagiano (GitHub Link). This version was specifically created for Scrap Mechanic Layout making.
+    <value>MyGui.net is a rewrite of the original MyGui built using .NET and WinForms by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.
 This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.</value>
   </data>
   <metadata name="smPathDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

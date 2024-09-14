@@ -544,6 +544,10 @@ namespace MyGui.net
         {
 
             // Convert the mouse position to the widget's coordinates, considering the scroll offset
+            if (widget.IsDisposed)
+            {
+                return BorderPosition.TopRight;
+            }
             Point widgetRelativePosition = widget.PointToClient(new Point(mousePosition.X, mousePosition.Y));
 
             int widgetWidth = widget.Width;
