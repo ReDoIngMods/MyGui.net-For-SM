@@ -436,6 +436,14 @@ namespace MyGui.net
             else if (e.Button == MouseButtons.Left)
             {
                 Control? thing = Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel });
+                //TODO make selecting stuff when in center
+                if (_currentSelectedWidget != null && e.Clicks == 1 && Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.None)
+                {
+                    Debug.WriteLine("Drag Widget now!");
+                    _draggingWidgetAt = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
+                    _mouseLoc = e.Location;
+                    return;
+                }
                 if (thing != null)
                 {
                     if (_currentSelectedWidget != thing)
@@ -493,12 +501,6 @@ namespace MyGui.net
                             contextMenu.Show(screenPoint);
                         }
                     }
-                }
-                if (_currentSelectedWidget != null && e.Clicks == 1)
-                {
-                    Debug.WriteLine("Drag Widget now!");
-                    _draggingWidgetAt = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
-                    _mouseLoc = e.Location;
                 }
             }
         }
