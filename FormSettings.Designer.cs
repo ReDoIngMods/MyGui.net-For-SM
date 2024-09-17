@@ -50,6 +50,8 @@
             tabPage2 = new TabPage();
             flowLayoutPanel2 = new FlowLayoutPanel();
             groupBox6 = new GroupBox();
+            widgetGridSpacingNumericUpDown = new CustomNumericUpDown();
+            label2 = new Label();
             showTypesForNamedWidgetsCheckBox = new CheckBox();
             tabPage4 = new TabPage();
             textBox1 = new TextBox();
@@ -68,6 +70,7 @@
             tabPage2.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
             groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
             tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -298,13 +301,34 @@
             // 
             // groupBox6
             // 
+            groupBox6.Controls.Add(widgetGridSpacingNumericUpDown);
+            groupBox6.Controls.Add(label2);
             groupBox6.Controls.Add(showTypesForNamedWidgetsCheckBox);
             groupBox6.Location = new Point(3, 3);
             groupBox6.Name = "groupBox6";
-            groupBox6.Size = new Size(201, 50);
+            groupBox6.Size = new Size(201, 116);
             groupBox6.TabIndex = 6;
             groupBox6.TabStop = false;
             groupBox6.Text = "Editing";
+            // 
+            // widgetGridSpacingNumericUpDown
+            // 
+            widgetGridSpacingNumericUpDown.Location = new Point(6, 42);
+            widgetGridSpacingNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            widgetGridSpacingNumericUpDown.Name = "widgetGridSpacingNumericUpDown";
+            widgetGridSpacingNumericUpDown.Size = new Size(85, 23);
+            widgetGridSpacingNumericUpDown.TabIndex = 3;
+            widgetGridSpacingNumericUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            widgetGridSpacingNumericUpDown.ValueChanged += widgetGridSpacingNumericUpDown_ValueChanged;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(97, 44);
+            label2.Name = "label2";
+            label2.Size = new Size(98, 15);
+            label2.TabIndex = 2;
+            label2.Text = "Grid Spacing (px)";
             // 
             // showTypesForNamedWidgetsCheckBox
             // 
@@ -425,6 +449,7 @@
             flowLayoutPanel2.ResumeLayout(false);
             groupBox6.ResumeLayout(false);
             groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
             tabPage4.ResumeLayout(false);
             tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -462,5 +487,7 @@
         private FlowLayoutPanel flowLayoutPanel2;
         private GroupBox groupBox6;
         private CheckBox showTypesForNamedWidgetsCheckBox;
+        private Label label2;
+        private CustomNumericUpDown widgetGridSpacingNumericUpDown;
     }
 }

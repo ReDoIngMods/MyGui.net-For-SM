@@ -21,6 +21,7 @@ namespace MyGui.net
         static string _currentLayoutSavePath = "";
         static Control? _currentSelectedWidget;
         static Dictionary<string, Control> _editorProperties = new Dictionary<string, Control>();
+        static FormSideBar? _sidebarForm;
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
@@ -59,7 +60,10 @@ namespace MyGui.net
         }
 
         static bool _draggingViewport;
+        static int _gridSpacing = Settings.Default.WidgetGridSpacing;
         static BorderPosition _draggingWidgetAt = BorderPosition.None;
+        static Point _draggedWidgetPosition = new Point(0, 0);
+        static Size _draggedWidgetSize = new Size(0, 0);
         static Point _mouseLoc = new Point(0, 0);
 
         public Form1(string _DefaultOpenedDir = "")
@@ -70,6 +74,7 @@ namespace MyGui.net
 
         void HandleLoad(string autoloadPath = "")
         {
+            Settings.Default.PropertyChanged += Settings_PropertyChanged;
             if (autoloadPath != "")
             {
                 _currentLayoutPath = autoloadPath;
@@ -99,6 +104,8 @@ namespace MyGui.net
             {
                 return;
             }
+            _draggedWidgetPosition = ((MyGuiWidgetData)_currentSelectedWidget.Tag).position;
+            _draggedWidgetSize = (Size)((MyGuiWidgetData)_currentSelectedWidget.Tag).size;
             AddProperties();
         }
 
@@ -210,21 +217,23 @@ namespace MyGui.net
                             pointBoxLayout.Dock = DockStyle.Top;
                             pointBoxLayout.Margin = Padding.Empty;
 
-                            NumericUpDown pointBoxLayoutXCoord = new NumericUpDown
+                            CustomNumericUpDown pointBoxLayoutXCoord = new CustomNumericUpDown
                             {
                                 Anchor = AnchorStyles.Left | AnchorStyles.Right,
                                 Width = 1,
                                 Minimum = 0,
                                 Maximum = 1920,
                                 Name = property.name + "_X",
+                                Increment = _gridSpacing,
                             };
                             _editorProperties[property.name + "_X"] = pointBoxLayoutXCoord;
-                            NumericUpDown pointBoxLayoutYCoord = new NumericUpDown
+                            CustomNumericUpDown pointBoxLayoutYCoord = new CustomNumericUpDown
                             {
                                 Anchor = AnchorStyles.Left | AnchorStyles.Right,
                                 Width = 1,
                                 Maximum = 1080,
                                 Name = property.name + "_Y",
+                                Increment = _gridSpacing,
                             };
                             _editorProperties[property.name + "_Y"] = pointBoxLayoutYCoord;
 
@@ -382,6 +391,22 @@ namespace MyGui.net
             }
         }
 
+        private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Settings.Default.WidgetGridSpacing) && Settings.Default.WidgetGridSpacing != _gridSpacing)
+            {
+                // Handle the change in GlobalValue setting
+                _gridSpacing = Settings.Default.WidgetGridSpacing;
+                if (_editorProperties.ContainsKey("Position_X"))
+                {
+                    ((NumericUpDown)_editorProperties["Position_X"]).Increment = _gridSpacing;
+                    ((NumericUpDown)_editorProperties["Position_Y"]).Increment = _gridSpacing;
+                    ((NumericUpDown)_editorProperties["Size_X"]).Increment = _gridSpacing;
+                    ((NumericUpDown)_editorProperties["Size_Y"]).Increment = _gridSpacing;
+                }
+            }
+        }
+
         private void selectWidget_Click(object senderAny, EventArgs e)
         {
             ToolStripMenuItem sender = (ToolStripMenuItem)senderAny;
@@ -441,8 +466,13 @@ namespace MyGui.net
                 {
                     Debug.WriteLine("Drag Widget now!");
                     _draggingWidgetAt = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
+                    _draggedWidgetPosition = ((MyGuiWidgetData)_currentSelectedWidget.Tag).position;
+                    _draggedWidgetSize = (Size)((MyGuiWidgetData)_currentSelectedWidget.Tag).size;
                     _mouseLoc = e.Location;
-                    return;
+                    if (Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.Center)
+                    {
+                        return;
+                    }
                 }
                 if (thing != null)
                 {
@@ -561,38 +591,55 @@ namespace MyGui.net
                     Point localLocPrev = _mouseLoc - (Size)sender.Location;
                     Point deltaLoc = new Point(localLocCurr.X - localLocPrev.X, localLocCurr.Y - localLocPrev.Y);
 
+                    //_draggedWidgetPosition = ((MyGuiWidgetData)_currentSelectedWidget.Tag).position;
+                    //_draggedWidgetSize = (Size)((MyGuiWidgetData)_currentSelectedWidget.Tag).size;
+
                     if (_draggingWidgetAt == BorderPosition.Center)
                     {
                         // Move the widget
-                        _currentSelectedWidget.Location = new Point(Math.Clamp(_currentSelectedWidget.Location.X + deltaLoc.X, 0, 1920), Math.Clamp(_currentSelectedWidget.Location.Y + deltaLoc.Y, 0, 1080));
+                        _draggedWidgetPosition = new Point(Math.Clamp(_draggedWidgetPosition.X + deltaLoc.X, 0, 1920), Math.Clamp(_draggedWidgetPosition.Y + deltaLoc.Y, 0, 1080));
+
+                        _currentSelectedWidget.Location = new Point((int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing, (int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing);
                     }
                     else
                     {
                         // Handle horizontal resizing
                         if (_draggingWidgetAt == BorderPosition.Left || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.BottomLeft)
                         {
-                            _currentSelectedWidget.Width = Math.Max(_currentSelectedWidget.Width - deltaLoc.X, 0);
-                            _currentSelectedWidget.Left = Math.Clamp(_currentSelectedWidget.Left + deltaLoc.X, 0, 1920);
+                            _draggedWidgetPosition = new Point(Math.Clamp(_draggedWidgetPosition.X + deltaLoc.X, 0, 1920), _draggedWidgetPosition.Y);
+
+                            _draggedWidgetSize = new Size(Math.Max(_draggedWidgetSize.Width - deltaLoc.X, 0), _draggedWidgetSize.Height);
+
+                            _currentSelectedWidget.Width = (int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing;
+                            _currentSelectedWidget.Left = (int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing;
                         }
                         else if (_draggingWidgetAt == BorderPosition.Right || _draggingWidgetAt == BorderPosition.TopRight || _draggingWidgetAt == BorderPosition.BottomRight)
                         {
-                            _currentSelectedWidget.Width += deltaLoc.X;
+                            _draggedWidgetSize = new Size(Math.Max(_draggedWidgetSize.Width + deltaLoc.X, 0), _draggedWidgetSize.Height);
+
+                            _currentSelectedWidget.Width = (int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing;
                         }
 
                         // Handle vertical resizing
                         if (_draggingWidgetAt == BorderPosition.Top || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.TopRight)
                         {
-                            _currentSelectedWidget.Height = Math.Max(_currentSelectedWidget.Height - deltaLoc.Y, 0);
-                            _currentSelectedWidget.Top = Math.Clamp(_currentSelectedWidget.Top + deltaLoc.Y, 0, 1080);
+                            _draggedWidgetPosition = new Point(_draggedWidgetPosition.X, Math.Clamp(_draggedWidgetPosition.Y + deltaLoc.Y, 0, 1920));
+
+                            _draggedWidgetSize = new Size(_draggedWidgetSize.Width, Math.Max(_draggedWidgetSize.Height - deltaLoc.Y, 0));
+
+                            _currentSelectedWidget.Height = (int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing;
+                            _currentSelectedWidget.Top = (int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing;
                         }
                         else if (_draggingWidgetAt == BorderPosition.Bottom || _draggingWidgetAt == BorderPosition.BottomLeft || _draggingWidgetAt == BorderPosition.BottomRight)
                         {
-                            _currentSelectedWidget.Height += deltaLoc.Y;
+                            _draggedWidgetSize = new Size(_draggedWidgetSize.Width, Math.Max(_draggedWidgetSize.Height + deltaLoc.Y, 0));
+
+                            _currentSelectedWidget.Height = (int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing;
                         }
                     }
 
-                    ((NumericUpDown)_editorProperties["Position_X"]).Value = _currentSelectedWidget.Left;
-                    ((NumericUpDown)_editorProperties["Position_Y"]).Value = _currentSelectedWidget.Top;
+                    ((NumericUpDown)_editorProperties["Position_X"]).Value = (int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing;
+                    ((NumericUpDown)_editorProperties["Position_Y"]).Value = (int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing;
                     ((NumericUpDown)_editorProperties["Size_X"]).Value = _currentSelectedWidget.Width;
                     ((NumericUpDown)_editorProperties["Size_Y"]).Value = _currentSelectedWidget.Height;
 
@@ -716,6 +763,35 @@ namespace MyGui.net
                 // Cancel the close event
                 e.Cancel = true;
             }
+        }
+
+        //Sidebar
+        private void sidebarToNewWindowButton_Click(object sender, EventArgs e)
+        {
+            if (splitContainer1.Panel2Collapsed && _sidebarForm != null)
+            {
+                _sidebarForm.Close();
+            }
+            else
+            {
+                _sidebarForm = new FormSideBar();
+
+                _sidebarForm.Size = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
+                _sidebarForm.Location = new Point(this.Location.X + this.Width - _sidebarForm.Width, this.Location.Y + 5);
+                _sidebarForm.Owner = this;
+
+                _sidebarForm.Controls.Add(tabControl1);
+                tabControl1.Dock = DockStyle.Fill;
+                _sidebarForm.FormClosing += ReattachSidebar;
+                splitContainer1.Panel2Collapsed = true;
+                _sidebarForm.Show();
+            }
+        }
+
+        private void ReattachSidebar(object sender, FormClosingEventArgs e)
+        {
+            splitContainer1.Panel2Collapsed = false;
+            splitContainer1.Panel2.Controls.Add(tabControl1);
         }
     }
 }

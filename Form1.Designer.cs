@@ -54,6 +54,7 @@
             openLayoutDialog = new OpenFileDialog();
             saveLayoutDialog = new SaveFileDialog();
             customWidgetColorDialog = new ColorDialog();
+            sidebarToNewWindowButton = new Button();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -272,11 +273,23 @@
             // 
             customWidgetColorDialog.FullOpen = true;
             // 
+            // sidebarToNewWindowButton
+            // 
+            sidebarToNewWindowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            sidebarToNewWindowButton.Location = new Point(1252, 27);
+            sidebarToNewWindowButton.Name = "sidebarToNewWindowButton";
+            sidebarToNewWindowButton.Size = new Size(12, 32);
+            sidebarToNewWindowButton.TabIndex = 3;
+            sidebarToNewWindowButton.Text = "☰";
+            sidebarToNewWindowButton.UseVisualStyleBackColor = true;
+            sidebarToNewWindowButton.Click += sidebarToNewWindowButton_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 681);
+            Controls.Add(sidebarToNewWindowButton);
             Controls.Add(splitContainer1);
             Controls.Add(menuStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -327,5 +340,6 @@
         private OpenFileDialog openLayoutDialog;
         private SaveFileDialog saveLayoutDialog;
         private ColorDialog customWidgetColorDialog;
+        private Button sidebarToNewWindowButton;
     }
 }

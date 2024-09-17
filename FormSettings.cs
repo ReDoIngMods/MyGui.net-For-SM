@@ -48,6 +48,8 @@ namespace MyGui.net
             //TAB PROJECT
             showTypesForNamedWidgetsCheckBox.Checked = Settings.Default.ShowTypesForNamedWidgets;
 
+            widgetGridSpacingNumericUpDown.Value = Settings.Default.WidgetGridSpacing;
+
             _formLoaded = true;
         }
 
@@ -103,6 +105,13 @@ namespace MyGui.net
         {
             CheckBox sender = (CheckBox)senderAny;
             Settings.Default.ShowTypesForNamedWidgets = sender.Checked;
+            OnSettingChange();
+        }
+
+        private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+        {
+            NumericUpDown sender = (NumericUpDown)senderAny;
+            Settings.Default.WidgetGridSpacing = (int)sender.Value;
             OnSettingChange();
         }
 

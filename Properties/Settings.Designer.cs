@@ -83,5 +83,17 @@ namespace MyGui.net.Properties {
                 this["ShowTypesForNamedWidgets"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int WidgetGridSpacing {
+            get {
+                return ((int)(this["WidgetGridSpacing"]));
+            }
+            set {
+                this["WidgetGridSpacing"] = value;
+            }
+        }
     }
 }
