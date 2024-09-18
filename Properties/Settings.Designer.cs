@@ -95,5 +95,65 @@ namespace MyGui.net.Properties {
                 this["WidgetGridSpacing"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MainWindomMaximized {
+            get {
+                return ((bool)(this["MainWindomMaximized"]));
+            }
+            set {
+                this["MainWindomMaximized"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string EditorBackgroundImagePath {
+            get {
+                return ((string)(this["EditorBackgroundImagePath"]));
+            }
+            set {
+                this["EditorBackgroundImagePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public global::System.Drawing.Color EditorBackgroundColor {
+            get {
+                return ((global::System.Drawing.Color)(this["EditorBackgroundColor"]));
+            }
+            set {
+                this["EditorBackgroundColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int EditorBackgroundMode {
+            get {
+                return ((int)(this["EditorBackgroundMode"]));
+            }
+            set {
+                this["EditorBackgroundMode"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseDoubleBuffering {
+            get {
+                return ((bool)(this["UseDoubleBuffering"]));
+            }
+            set {
+                this["UseDoubleBuffering"] = value;
+            }
+        }
     }
 }

@@ -43,8 +43,15 @@
             exportAskRadioButton = new RadioButton();
             exportAsPxRadioButton = new RadioButton();
             groupBox1 = new GroupBox();
+            useDoubleDrawCheckBox = new CheckBox();
             useSlowDrawRadioButton = new RadioButton();
             useFastDrawRadioButton = new RadioButton();
+            groupBox5 = new GroupBox();
+            useBackgroundImageGrid = new RadioButton();
+            useBackgroundImageCustom = new RadioButton();
+            useBackgroundImageColor = new RadioButton();
+            backgroundImagePathTextBox = new TextBox();
+            backgroundImageSelectButton = new Button();
             groupBox3 = new GroupBox();
             showWarningsCheckBox = new CheckBox();
             tabPage2 = new TabPage();
@@ -60,12 +67,16 @@
             smPathDialog = new FolderBrowserDialog();
             applySettingsButton = new Button();
             resetSettingsButton = new Button();
+            autoApplyCheckBox = new CheckBox();
+            editorBackgroundPathDialog = new OpenFileDialog();
+            editorBackgroundColorDialog = new ColorDialog();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox4.SuspendLayout();
             groupBox1.SuspendLayout();
+            groupBox5.SuspendLayout();
             groupBox3.SuspendLayout();
             tabPage2.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
@@ -104,6 +115,7 @@
             flowLayoutPanel1.Controls.Add(groupBox2);
             flowLayoutPanel1.Controls.Add(groupBox4);
             flowLayoutPanel1.Controls.Add(groupBox1);
+            flowLayoutPanel1.Controls.Add(groupBox5);
             flowLayoutPanel1.Controls.Add(groupBox3);
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.Location = new Point(3, 3);
@@ -224,14 +236,26 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(useDoubleDrawCheckBox);
             groupBox1.Controls.Add(useSlowDrawRadioButton);
             groupBox1.Controls.Add(useFastDrawRadioButton);
             groupBox1.Location = new Point(3, 82);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(263, 73);
+            groupBox1.Size = new Size(263, 95);
             groupBox1.TabIndex = 2;
             groupBox1.TabStop = false;
             groupBox1.Text = "Redraw";
+            // 
+            // useDoubleDrawCheckBox
+            // 
+            useDoubleDrawCheckBox.AutoSize = true;
+            useDoubleDrawCheckBox.Location = new Point(6, 70);
+            useDoubleDrawCheckBox.Name = "useDoubleDrawCheckBox";
+            useDoubleDrawCheckBox.Size = new Size(245, 19);
+            useDoubleDrawCheckBox.TabIndex = 4;
+            useDoubleDrawCheckBox.Text = "Use Double Buffering (can be less glitchy)";
+            useDoubleDrawCheckBox.UseVisualStyleBackColor = true;
+            useDoubleDrawCheckBox.CheckedChanged += useDoubleDrawCheckBox_CheckedChanged;
             // 
             // useSlowDrawRadioButton
             // 
@@ -257,10 +281,78 @@
             useFastDrawRadioButton.UseVisualStyleBackColor = true;
             useFastDrawRadioButton.CheckedChanged += useFastDrawRadioButton_CheckedChanged;
             // 
+            // groupBox5
+            // 
+            groupBox5.Controls.Add(useBackgroundImageGrid);
+            groupBox5.Controls.Add(useBackgroundImageCustom);
+            groupBox5.Controls.Add(useBackgroundImageColor);
+            groupBox5.Controls.Add(backgroundImagePathTextBox);
+            groupBox5.Controls.Add(backgroundImageSelectButton);
+            groupBox5.Location = new Point(272, 82);
+            groupBox5.Name = "groupBox5";
+            groupBox5.Size = new Size(348, 73);
+            groupBox5.TabIndex = 5;
+            groupBox5.TabStop = false;
+            groupBox5.Text = "Background";
+            // 
+            // useBackgroundImageGrid
+            // 
+            useBackgroundImageGrid.AutoSize = true;
+            useBackgroundImageGrid.Location = new Point(66, 22);
+            useBackgroundImageGrid.Name = "useBackgroundImageGrid";
+            useBackgroundImageGrid.Size = new Size(47, 19);
+            useBackgroundImageGrid.TabIndex = 6;
+            useBackgroundImageGrid.TabStop = true;
+            useBackgroundImageGrid.Text = "Grid";
+            useBackgroundImageGrid.UseVisualStyleBackColor = true;
+            useBackgroundImageGrid.CheckedChanged += backgroundImage_CheckedChanged;
+            // 
+            // useBackgroundImageCustom
+            // 
+            useBackgroundImageCustom.AutoSize = true;
+            useBackgroundImageCustom.Location = new Point(119, 22);
+            useBackgroundImageCustom.Name = "useBackgroundImageCustom";
+            useBackgroundImageCustom.Size = new Size(103, 19);
+            useBackgroundImageCustom.TabIndex = 5;
+            useBackgroundImageCustom.TabStop = true;
+            useBackgroundImageCustom.Text = "Custom Image";
+            useBackgroundImageCustom.UseVisualStyleBackColor = true;
+            useBackgroundImageCustom.CheckedChanged += backgroundImage_CheckedChanged;
+            // 
+            // useBackgroundImageColor
+            // 
+            useBackgroundImageColor.AutoSize = true;
+            useBackgroundImageColor.Location = new Point(6, 22);
+            useBackgroundImageColor.Name = "useBackgroundImageColor";
+            useBackgroundImageColor.Size = new Size(54, 19);
+            useBackgroundImageColor.TabIndex = 4;
+            useBackgroundImageColor.TabStop = true;
+            useBackgroundImageColor.Text = "Color";
+            useBackgroundImageColor.UseVisualStyleBackColor = true;
+            useBackgroundImageColor.CheckedChanged += backgroundImage_CheckedChanged;
+            // 
+            // backgroundImagePathTextBox
+            // 
+            backgroundImagePathTextBox.Location = new Point(73, 46);
+            backgroundImagePathTextBox.Name = "backgroundImagePathTextBox";
+            backgroundImagePathTextBox.ReadOnly = true;
+            backgroundImagePathTextBox.Size = new Size(269, 23);
+            backgroundImagePathTextBox.TabIndex = 3;
+            // 
+            // backgroundImageSelectButton
+            // 
+            backgroundImageSelectButton.Location = new Point(6, 46);
+            backgroundImageSelectButton.Name = "backgroundImageSelectButton";
+            backgroundImageSelectButton.Size = new Size(61, 23);
+            backgroundImageSelectButton.TabIndex = 2;
+            backgroundImageSelectButton.Text = "Select";
+            backgroundImageSelectButton.UseVisualStyleBackColor = true;
+            backgroundImageSelectButton.Click += backgroundImageSelectButton_Click;
+            // 
             // groupBox3
             // 
             groupBox3.Controls.Add(showWarningsCheckBox);
-            groupBox3.Location = new Point(272, 82);
+            groupBox3.Location = new Point(3, 183);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(124, 55);
             groupBox3.TabIndex = 5;
@@ -414,11 +506,33 @@
             resetSettingsButton.UseVisualStyleBackColor = true;
             resetSettingsButton.Click += resetSettingsButton_Click;
             // 
+            // autoApplyCheckBox
+            // 
+            autoApplyCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            autoApplyCheckBox.Location = new Point(364, 431);
+            autoApplyCheckBox.Name = "autoApplyCheckBox";
+            autoApplyCheckBox.Size = new Size(86, 23);
+            autoApplyCheckBox.TabIndex = 5;
+            autoApplyCheckBox.Text = "Auto Apply";
+            autoApplyCheckBox.UseVisualStyleBackColor = true;
+            autoApplyCheckBox.CheckedChanged += autoApplyCheckBox_CheckedChanged;
+            // 
+            // editorBackgroundPathDialog
+            // 
+            editorBackgroundPathDialog.DefaultExt = "png";
+            editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
+            // 
+            // editorBackgroundColorDialog
+            // 
+            editorBackgroundColorDialog.AnyColor = true;
+            editorBackgroundColorDialog.FullOpen = true;
+            // 
             // FormSettings
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 461);
+            Controls.Add(autoApplyCheckBox);
             Controls.Add(resetSettingsButton);
             Controls.Add(applySettingsButton);
             Controls.Add(cancelButton);
@@ -443,6 +557,8 @@
             groupBox4.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            groupBox5.ResumeLayout(false);
+            groupBox5.PerformLayout();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             tabPage2.ResumeLayout(false);
@@ -489,5 +605,15 @@
         private CheckBox showTypesForNamedWidgetsCheckBox;
         private Label label2;
         private CustomNumericUpDown widgetGridSpacingNumericUpDown;
+        private CheckBox autoApplyCheckBox;
+        private OpenFileDialog editorBackgroundPathDialog;
+        private GroupBox groupBox5;
+        private RadioButton useBackgroundImageColor;
+        private TextBox backgroundImagePathTextBox;
+        private Button backgroundImageSelectButton;
+        private ColorDialog editorBackgroundColorDialog;
+        private RadioButton useBackgroundImageGrid;
+        private RadioButton useBackgroundImageCustom;
+        private CheckBox useDoubleDrawCheckBox;
     }
 }

@@ -21,6 +21,7 @@ namespace MyGui.net
 
         static bool _hasChanged = false;
         static bool _formLoaded = false;
+        static bool _autoApply = false;
 
         //Set to current states
         private void FormSettings_Load(object sender, EventArgs e)
@@ -32,6 +33,7 @@ namespace MyGui.net
         {
             _formLoaded = false;
             _hasChanged = false;
+            //editorBackgroundPathDialog.ShowDialog();
             //TAB PROGRAM
             smPathLabel.Text = Settings.Default.ScrapMechanicPath;
 
@@ -42,6 +44,13 @@ namespace MyGui.net
 
             useFastDrawRadioButton.Checked = Settings.Default.DoFastRedraw;
             useSlowDrawRadioButton.Checked = !Settings.Default.DoFastRedraw;
+            useDoubleDrawCheckBox.Checked = Settings.Default.UseDoubleBuffering;
+
+            useBackgroundImageColor.Checked = Settings.Default.EditorBackgroundMode == 0;
+            useBackgroundImageGrid.Checked = Settings.Default.EditorBackgroundMode == 1;
+            useBackgroundImageCustom.Checked = Settings.Default.EditorBackgroundMode == 2;
+            backgroundImageSelectButton.Enabled = Settings.Default.EditorBackgroundMode == 0 || Settings.Default.EditorBackgroundMode == 2;
+            backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "";
 
             showWarningsCheckBox.Checked = Settings.Default.ShowWarnings;
 
@@ -55,6 +64,15 @@ namespace MyGui.net
 
         private void OnSettingChange()
         {
+            backgroundImageSelectButton.Enabled = Settings.Default.EditorBackgroundMode == 0 || Settings.Default.EditorBackgroundMode == 2;
+            backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "";
+            if (_autoApply)
+            {
+                Settings.Default.Save();
+                applySettingsButton.Enabled = false;
+                _hasChanged = false;
+                return;
+            }
             if (_formLoaded)
             {
                 _hasChanged = true;
@@ -66,10 +84,10 @@ namespace MyGui.net
 
         public enum ExportMode
         {
-            exportAsPxRadioButton = 0,
-            exportAsPercentRadioButton = 1,
-            exportAskRadioButton = 2,
-            exportAsBothRadioButton = 3
+            exportAsPxRadioButton,
+            exportAsPercentRadioButton,
+            exportAskRadioButton,
+            exportAsBothRadioButton
         }
 
         private void exportRadioButton_CheckedChanged(object senderAny, EventArgs e)
@@ -91,6 +109,48 @@ namespace MyGui.net
             RadioButton sender = (RadioButton)senderAny;
             Settings.Default.DoFastRedraw = !sender.Checked;
             OnSettingChange();
+        }
+
+        private void useDoubleDrawCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.UseDoubleBuffering = sender.Checked;
+            OnSettingChange();
+        }
+
+        public enum BackgroundMode
+        {
+            useBackgroundImageColor,
+            useBackgroundImageGrid,
+            useBackgroundImageCustom
+        }
+
+        private void backgroundImage_CheckedChanged(object senderAny, EventArgs e)
+        {
+            RadioButton sender = (RadioButton)senderAny;
+            Settings.Default.EditorBackgroundMode = (int)Enum.Parse<BackgroundMode>(sender.Name, true);
+            OnSettingChange();
+        }
+
+        private void backgroundImageSelectButton_Click(object sender, EventArgs e)
+        {
+            if (Settings.Default.EditorBackgroundMode == 0)
+            {
+                if (editorBackgroundColorDialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    //TODO: make work
+                    OnSettingChange();
+                }
+            }
+            else
+            {
+                if (editorBackgroundPathDialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    Settings.Default.EditorBackgroundImagePath = editorBackgroundPathDialog.FileName;
+                    backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundImagePath;
+                    OnSettingChange();
+                }
+            }
         }
 
         private void showWarningsCheckBox_CheckedChanged(object senderAny, EventArgs e)
@@ -169,6 +229,12 @@ namespace MyGui.net
                 Settings.Default.Reset();
                 this.Close();
             }
+        }
+
+        private void autoApplyCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            _autoApply = sender.Checked;
         }
     }
 }

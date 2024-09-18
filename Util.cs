@@ -331,7 +331,7 @@ namespace MyGui.net
             }
         }
 
-        public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Panel? currParent, Panel? defaultParent)
+        public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Control? currParent, Control? defaultParent)
         {
             if (layout == null) return;
             foreach (MyGuiWidgetData data in layout)
@@ -393,7 +393,7 @@ namespace MyGui.net
             return double.NaN;
         }
 
-        public static bool IsValidPath(string path, bool checkRW)
+        public static bool IsValidPath(string path, bool checkRW = false)
         {
             //Check if the path is well-formed
             if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path))
@@ -414,6 +414,49 @@ namespace MyGui.net
                     string testFile = Path.Combine(path, "tempfile.tmp");
                     File.WriteAllText(testFile, "test");
                     File.Delete(testFile);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    return false;
+                }
+                catch (IOException)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public static bool IsValidFile(string path, bool checkRW = false)
+        {
+            // Check if the path is well-formed
+            if (string.IsNullOrWhiteSpace(path) || !Path.IsPathRooted(path))
+            {
+                return false;
+            }
+
+            // Check if the file exists
+            if (!File.Exists(path))
+            {
+                return false;
+            }
+
+            if (checkRW) // Check for read/write access
+            {
+                try
+                {
+                    // Try to open the file for reading and writing
+                    using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        // Optionally, you can write and delete a temporary file to test permissions
+                        string testFile = Path.GetTempFileName();
+                        using (StreamWriter sw = new StreamWriter(testFile))
+                        {
+                            sw.Write("test");
+                        }
+                        File.Delete(testFile);
+                    }
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -580,6 +623,18 @@ namespace MyGui.net
             }
 
             return BorderPosition.None;
+        }
+
+        public static Image MakeImageGrid(Image image, int width, int height)
+        {
+            Bitmap newImage = new Bitmap(width, height);
+            using (Graphics g = Graphics.FromImage(newImage))
+            {
+                // Set the interpolation mode to NearestNeighbor
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+                g.DrawImage(image, 0, 0, 4, 4);
+            }
+            return newImage;
         }
         #endregion
     }

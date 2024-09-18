@@ -1,6 +1,7 @@
 using MyGui.net.Properties;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using static MyGui.net.Util;
@@ -69,7 +70,23 @@ namespace MyGui.net
         public Form1(string _DefaultOpenedDir = "")
         {
             InitializeComponent();
+            this.WindowState = Settings.Default.MainWindomMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
             HandleLoad(_DefaultOpenedDir);
+
+            //Optimize background rendering (using double buffering)
+            if (System.Windows.Forms.SystemInformation.TerminalServerSession || !Settings.Default.UseDoubleBuffering)
+            {
+                return;
+            }
+
+            System.Reflection.PropertyInfo aProp = typeof(System.Windows.Forms.Control).GetProperty( "DoubleBuffered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance );
+
+            aProp.SetValue(mainPanel, true, null);
+
+            System.Reflection.MethodInfo setStyleMethod = typeof(System.Windows.Forms.Control).GetMethod( "SetStyle", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance );
+
+            // Set ControlStyles.OptimizedDoubleBuffer to true
+            setStyleMethod.Invoke(mainPanel, new object[] { ControlStyles.OptimizedDoubleBuffer, true });
         }
 
         void HandleLoad(string autoloadPath = "")
@@ -83,6 +100,28 @@ namespace MyGui.net
                 _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
                 Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
                 //Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+            }
+
+            switch (Settings.Default.EditorBackgroundMode)
+            {
+                case 0:
+                    mainPanel.BackgroundImage = null;
+                    break;
+                case 1:
+                    mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
+                    mainPanel.BackgroundImageLayout = ImageLayout.Tile;
+                    break;
+                case 2:
+                    if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath) || Settings.Default.EditorBackgroundImagePath == "")
+                    {
+                        mainPanel.BackgroundImage = Settings.Default.EditorBackgroundImagePath == "" ? null : Image.FromFile(Settings.Default.EditorBackgroundImagePath);
+                        mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Background Image path is invalid!\nSpecify a new path in the Options.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    break;
             }
 
             HandleWidgetSelection();
@@ -221,7 +260,7 @@ namespace MyGui.net
                             {
                                 Anchor = AnchorStyles.Left | AnchorStyles.Right,
                                 Width = 1,
-                                Minimum = 0,
+                                Minimum = -1920,
                                 Maximum = 1920,
                                 Name = property.name + "_X",
                                 Increment = _gridSpacing,
@@ -231,6 +270,7 @@ namespace MyGui.net
                             {
                                 Anchor = AnchorStyles.Left | AnchorStyles.Right,
                                 Width = 1,
+                                Minimum = -1080,
                                 Maximum = 1080,
                                 Name = property.name + "_Y",
                                 Increment = _gridSpacing,
@@ -397,6 +437,10 @@ namespace MyGui.net
             {
                 // Handle the change in GlobalValue setting
                 _gridSpacing = Settings.Default.WidgetGridSpacing;
+                if (Settings.Default.EditorBackgroundMode == 1)
+                {
+                    mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
+                }
                 if (_editorProperties.ContainsKey("Position_X"))
                 {
                     ((NumericUpDown)_editorProperties["Position_X"]).Increment = _gridSpacing;
@@ -404,6 +448,50 @@ namespace MyGui.net
                     ((NumericUpDown)_editorProperties["Size_X"]).Increment = _gridSpacing;
                     ((NumericUpDown)_editorProperties["Size_Y"]).Increment = _gridSpacing;
                 }
+            }
+
+            if (e.PropertyName == nameof(Settings.Default.EditorBackgroundMode))
+            {
+                switch (Settings.Default.EditorBackgroundMode)
+                {
+                    case 0:
+                        mainPanel.BackgroundImage = null;
+                        break;
+                    case 1:
+                        mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
+                        mainPanel.BackgroundImageLayout = ImageLayout.Tile;
+                        break;
+                    case 2:
+                        if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath) || Settings.Default.EditorBackgroundImagePath == "")
+                        {
+                            mainPanel.BackgroundImage = Settings.Default.EditorBackgroundImagePath == "" ? null : Image.FromFile(Settings.Default.EditorBackgroundImagePath);
+                            mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
+                        }
+                        else
+                        {
+                            MessageBox.Show("Background Image path is invalid!\nSpecify a new path in the Options.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        break;
+                }
+            }
+
+            if (e.PropertyName == nameof(Settings.Default.UseDoubleBuffering))
+            {
+                if (System.Windows.Forms.SystemInformation.TerminalServerSession)
+                {
+                    return;
+                }
+
+                System.Reflection.PropertyInfo aProp = typeof(System.Windows.Forms.Control).GetProperty("DoubleBuffered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                aProp.SetValue(mainPanel, Settings.Default.UseDoubleBuffering, null);
+
+                System.Reflection.MethodInfo setStyleMethod = typeof(System.Windows.Forms.Control).GetMethod("SetStyle", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+                // Set ControlStyles.OptimizedDoubleBuffer to true
+                setStyleMethod.Invoke(mainPanel, new object[] { ControlStyles.OptimizedDoubleBuffer, Settings.Default.UseDoubleBuffering });
+                mainPanel.Invalidate();
+                mainPanel.Refresh();
             }
         }
 
@@ -638,10 +726,10 @@ namespace MyGui.net
                         }
                     }
 
-                    ((NumericUpDown)_editorProperties["Position_X"]).Value = (int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing;
-                    ((NumericUpDown)_editorProperties["Position_Y"]).Value = (int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing;
-                    ((NumericUpDown)_editorProperties["Size_X"]).Value = _currentSelectedWidget.Width;
-                    ((NumericUpDown)_editorProperties["Size_Y"]).Value = _currentSelectedWidget.Height;
+                    ((NumericUpDown)_editorProperties["Position_X"]).Value = Math.Clamp((int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing, 0, 1920);
+                    ((NumericUpDown)_editorProperties["Position_Y"]).Value = Math.Clamp((int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing, 0, 1080);
+                    ((NumericUpDown)_editorProperties["Size_X"]).Value = Math.Clamp(_currentSelectedWidget.Width, 0, 1920);
+                    ((NumericUpDown)_editorProperties["Size_Y"]).Value = Math.Clamp(_currentSelectedWidget.Height, 0, 1080);
 
                     // Update the previous mouse location
                     _mouseLoc = e.Location;
@@ -678,6 +766,7 @@ namespace MyGui.net
                 _currentLayoutPath = "";
                 _currentLayoutSavePath = "";
                 _currentLayout = new List<MyGuiWidgetData>();
+                _draggingWidgetAt = BorderPosition.None;
                 HandleWidgetSelection();
                 for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
                 {
@@ -694,6 +783,9 @@ namespace MyGui.net
                 _currentLayoutPath = openLayoutDialog.FileName;
                 _currentLayoutSavePath = _currentLayoutPath;
                 _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
+
+                _currentSelectedWidget = null;
+                _draggingWidgetAt = BorderPosition.None;
                 //Refresh ui
                 for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
                 {
@@ -734,9 +826,8 @@ namespace MyGui.net
         private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormSettings formSettings = new FormSettings();
-            if (formSettings.ShowDialog() == DialogResult.OK)
-            {
-            }
+            formSettings.Owner = this;
+            formSettings.Show();
         }
 
         private void testToolStripMenuItem_Click(object sender, EventArgs e)
@@ -762,7 +853,10 @@ namespace MyGui.net
             {
                 // Cancel the close event
                 e.Cancel = true;
+                return;
             }
+            Settings.Default.MainWindomMaximized = this.WindowState == FormWindowState.Maximized;
+            Settings.Default.Save();
         }
 
         //Sidebar
@@ -792,6 +886,11 @@ namespace MyGui.net
         {
             splitContainer1.Panel2Collapsed = false;
             splitContainer1.Panel2.Controls.Add(tabControl1);
+        }
+
+        private void mainPanel_Paint(object sender, PaintEventArgs e)
+        {
+            //making it transparent
         }
     }
 }

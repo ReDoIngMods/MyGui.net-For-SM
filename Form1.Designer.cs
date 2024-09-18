@@ -106,12 +106,13 @@
             // 
             // mainPanel
             // 
-            mainPanel.BackColor = SystemColors.InfoText;
+            mainPanel.BackColor = SystemColors.ControlText;
             mainPanel.Enabled = false;
             mainPanel.Location = new Point(5, 5);
             mainPanel.Name = "mainPanel";
             mainPanel.Size = new Size(1920, 1080);
             mainPanel.TabIndex = 0;
+            mainPanel.Paint += mainPanel_Paint;
             // 
             // tabControl1
             // 
@@ -276,9 +277,10 @@
             // sidebarToNewWindowButton
             // 
             sidebarToNewWindowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            sidebarToNewWindowButton.Location = new Point(1252, 27);
+            sidebarToNewWindowButton.Location = new Point(1251, 28);
+            sidebarToNewWindowButton.Margin = new Padding(0);
             sidebarToNewWindowButton.Name = "sidebarToNewWindowButton";
-            sidebarToNewWindowButton.Size = new Size(12, 32);
+            sidebarToNewWindowButton.Size = new Size(13, 28);
             sidebarToNewWindowButton.TabIndex = 3;
             sidebarToNewWindowButton.Text = "☰";
             sidebarToNewWindowButton.UseVisualStyleBackColor = true;

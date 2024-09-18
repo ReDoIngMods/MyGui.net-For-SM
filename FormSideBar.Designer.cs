@@ -35,11 +35,12 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(304, 602);
-            FormBorderStyle = FormBorderStyle.SizableToolWindow;
             MaximizeBox = false;
             MinimizeBox = false;
             MinimumSize = new Size(320, 400);
             Name = "FormSideBar";
+            ShowIcon = false;
+            ShowInTaskbar = false;
             SizeGripStyle = SizeGripStyle.Show;
             StartPosition = FormStartPosition.Manual;
             Text = "Editor Sidebar";
