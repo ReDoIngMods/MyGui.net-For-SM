@@ -74,19 +74,19 @@ namespace MyGui.net
             HandleLoad(_DefaultOpenedDir);
 
             //Optimize background rendering (using double buffering)
-            if (System.Windows.Forms.SystemInformation.TerminalServerSession || !Settings.Default.UseDoubleBuffering)
+            if (System.Windows.Forms.SystemInformation.TerminalServerSession)
             {
                 return;
             }
 
             System.Reflection.PropertyInfo aProp = typeof(System.Windows.Forms.Control).GetProperty( "DoubleBuffered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance );
 
-            aProp.SetValue(mainPanel, true, null);
+            aProp.SetValue(mainPanel, Settings.Default.UseDoubleBuffering, null);
 
             System.Reflection.MethodInfo setStyleMethod = typeof(System.Windows.Forms.Control).GetMethod( "SetStyle", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance );
 
             // Set ControlStyles.OptimizedDoubleBuffer to true
-            setStyleMethod.Invoke(mainPanel, new object[] { ControlStyles.OptimizedDoubleBuffer, true });
+            setStyleMethod.Invoke(mainPanel, new object[] { ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true });
         }
 
         void HandleLoad(string autoloadPath = "")
@@ -489,7 +489,7 @@ namespace MyGui.net
                 System.Reflection.MethodInfo setStyleMethod = typeof(System.Windows.Forms.Control).GetMethod("SetStyle", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
                 // Set ControlStyles.OptimizedDoubleBuffer to true
-                setStyleMethod.Invoke(mainPanel, new object[] { ControlStyles.OptimizedDoubleBuffer, Settings.Default.UseDoubleBuffering });
+                setStyleMethod.Invoke(mainPanel, new object[] { ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true });
                 mainPanel.Invalidate();
                 mainPanel.Refresh();
             }
@@ -778,6 +778,11 @@ namespace MyGui.net
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //openLayoutDialog
+            if (Util.IsValidPath(Path.GetDirectoryName(_currentLayoutPath)))
+            {
+                openLayoutDialog.InitialDirectory = Path.GetDirectoryName(_currentLayoutPath);
+                openLayoutDialog.FileName = Path.GetFileName(_currentLayoutPath);
+            }
             if (openLayoutDialog.ShowDialog(this) == DialogResult.OK)
             {
                 _currentLayoutPath = openLayoutDialog.FileName;
@@ -797,28 +802,66 @@ namespace MyGui.net
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (_currentLayoutSavePath == "")
+            if (_currentLayoutSavePath == "" || !Util.IsValidFile(_currentLayoutSavePath))
             {
                 if (saveLayoutDialog.ShowDialog(this) == DialogResult.OK)
                 {
                     _currentLayoutSavePath = saveLayoutDialog.FileName;
                 }
             }
-            using (StreamWriter outputFile = new StreamWriter(_currentLayoutSavePath))
+            int actualExport = Settings.Default.ExportMode;
+            if (actualExport == 2)
             {
-                outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+                FormExport decideForm = new FormExport();
+                actualExport = (int)decideForm.ShowDialog(this) - 1;
+                Debug.WriteLine(actualExport);
             }
-            //TODO: Save the file eventually
+            if (actualExport == 0 || actualExport == 3)
+            {
+                using (StreamWriter outputFile = new StreamWriter(actualExport == 3 ? Util.AppendToFile(_currentLayoutSavePath, "_pixels") : _currentLayoutSavePath))
+                {
+                    outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1,1), true));
+                }
+            }
+            if (actualExport == 1 || actualExport == 3)
+            {
+                using (StreamWriter outputFile = new StreamWriter(_currentLayoutSavePath))
+                {
+                    outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+                }
+            }
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (Util.IsValidPath(Path.GetDirectoryName(_currentLayoutSavePath)))
+            {
+                saveLayoutDialog.InitialDirectory = Path.GetDirectoryName(_currentLayoutSavePath);
+                saveLayoutDialog.FileName = Path.GetFileName(_currentLayoutSavePath);
+            }
             if (saveLayoutDialog.ShowDialog(this) == DialogResult.OK)
             {
                 _currentLayoutSavePath = saveLayoutDialog.FileName;
-                using (StreamWriter outputFile = new StreamWriter(_currentLayoutSavePath))
+                int actualExport = Settings.Default.ExportMode;
+                if (actualExport == 2)
                 {
-                    outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+                    FormExport decideForm = new FormExport();
+                    actualExport = (int)decideForm.ShowDialog(this) - 1;
+                    Debug.WriteLine(actualExport);
+                }
+                if (actualExport == 0 || actualExport == 3)
+                {
+                    using (StreamWriter outputFile = new StreamWriter(actualExport == 3 ? Util.AppendToFile(_currentLayoutSavePath, "_pixels") : _currentLayoutSavePath))
+                    {
+                        outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
+                    }
+                }
+                if (actualExport == 1 || actualExport == 3)
+                {
+                    using (StreamWriter outputFile = new StreamWriter(_currentLayoutSavePath))
+                    {
+                        outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+                    }
                 }
             }
         }

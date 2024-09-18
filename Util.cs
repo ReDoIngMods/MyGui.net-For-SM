@@ -282,17 +282,18 @@ namespace MyGui.net
             }
         }
 
-        public static string ExportLayoutToXmlString(List<MyGuiWidgetData> layout)
+        public static string ExportLayoutToXmlString(List<MyGuiWidgetData> layout, Point? workspaceSize = null, bool exportAsPx = false)
         {
+            Point actualWorkspaceSize = workspaceSize ?? new Point(1920, 1080);
             XElement root = new("MyGUI",
                 new XAttribute("type", "Layout"),
                 new XAttribute("version", "3.2.0")
             );
-            AddChildrenToElement(root, layout, new(1920, 1080));
+            AddChildrenToElement(root, layout, exportAsPx ? new Point(1, 1) : actualWorkspaceSize, exportAsPx);
             return FormatXmlString(root.ToString(SaveOptions.DisableFormatting));
         }
 
-        public static void AddChildrenToElement(XElement element, List<MyGuiWidgetData> children, Point parentSize)
+        public static void AddChildrenToElement(XElement element, List<MyGuiWidgetData> children, Point parentSize, bool exportAsPx = false)
         {
             foreach (MyGuiWidgetData widget in children)
             {
@@ -305,7 +306,7 @@ namespace MyGui.net
                 if (widget.skin != null) widgetElement.SetAttributeValue("skin", widget.skin);
                 if (widget.name != null) widgetElement.SetAttributeValue("name", widget.name);
                 widgetElement.SetAttributeValue(
-                    "position_real",
+                    exportAsPx ? "position" : "position_real",
                     $"{(double)widget.position.X / parentSize.X} {(double)widget.position.Y / parentSize.Y} {(double)widget.size.X / parentSize.X} {(double)widget.size.Y / parentSize.Y}".Replace(",", ".")
                 );
                 foreach (var property in widget.properties)
@@ -316,7 +317,7 @@ namespace MyGui.net
                     );
                     widgetElement.Add(propertyElement);
                 }
-                AddChildrenToElement(widgetElement, widget.children, widget.size);
+                AddChildrenToElement(widgetElement, widget.children, exportAsPx ? new Point (1,1) : widget.size, exportAsPx);
                 element.Add(widgetElement);
             }
         }
@@ -469,6 +470,15 @@ namespace MyGui.net
             }
 
             return true;
+        }
+
+        public static string AppendToFile(string filePath, string appendant)
+        {
+            string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(filePath);
+            string extension = Path.GetExtension(filePath);
+            string directory = Path.GetDirectoryName(filePath);
+            string newFileName = fileNameWithoutExtension + appendant + extension;
+            return Path.Combine(directory, newFileName);
         }
         #endregion
 

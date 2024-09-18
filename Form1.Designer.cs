@@ -166,6 +166,11 @@
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
             // 
+            // smPathDialog
+            // 
+            smPathDialog.Description = "Choose Scrap Mechanic Folder";
+            smPathDialog.UseDescriptionForTitle = true;
+            // 
             // menuStrip1
             // 
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });

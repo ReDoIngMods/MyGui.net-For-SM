@@ -144,6 +144,7 @@ namespace MyGui.net
             }
             else
             {
+                editorBackgroundPathDialog.InitialDirectory = Util.IsValidPath(Path.GetDirectoryName(Settings.Default.EditorBackgroundImagePath)) ? Path.GetDirectoryName(Settings.Default.EditorBackgroundImagePath) : "C:\\";
                 if (editorBackgroundPathDialog.ShowDialog(this) == DialogResult.OK)
                 {
                     Settings.Default.EditorBackgroundImagePath = editorBackgroundPathDialog.FileName;
@@ -180,11 +181,11 @@ namespace MyGui.net
         private void FormSettings_FormClosing(object sender, FormClosingEventArgs e)
         {
             Settings.Default.Reload();
+            _autoApply = false;
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            Settings.Default.Reload();
             this.Close();
         }
 
@@ -193,11 +194,11 @@ namespace MyGui.net
             Settings.Default.Save();
             _hasChanged = false;
             applySettingsButton.Enabled = _hasChanged;
-            //this.Close();
         }
 
         private void chooseSmPath_Click(object sender, EventArgs e)
         {
+            smPathDialog.InitialDirectory = Util.IsValidPath(Settings.Default.ScrapMechanicPath) ? Settings.Default.ScrapMechanicPath : "C:\\";
             if (smPathDialog.ShowDialog(this) == DialogResult.OK)
             {
                 Settings.Default.ScrapMechanicPath = smPathDialog.SelectedPath;
