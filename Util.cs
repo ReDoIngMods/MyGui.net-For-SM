@@ -6,6 +6,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -299,7 +300,7 @@ namespace MyGui.net
             {
                 XElement widgetElement = new(
                     "Widget",
-                    new XAttribute("type", "Widget")
+                    new XAttribute("type", widget.type ?? "Widget")
                 );
                 if (widget.layer != null) widgetElement.SetAttributeValue("layer", widget.layer);
                 if (widget.align != null) widgetElement.SetAttributeValue("align", widget.align);
@@ -483,6 +484,7 @@ namespace MyGui.net
         #endregion
 
         #region WinForms Utils
+
         public static Control? GetTopmostControlAtMousePosition(Control originControl, Point relativePoint, Control[] excludeParent = null)
         {
             // Convert the relative point (from the MouseDown event) to screen coordinates
@@ -599,7 +601,7 @@ namespace MyGui.net
             // Convert the mouse position to the widget's coordinates, considering the scroll offset
             if (widget.IsDisposed)
             {
-                return BorderPosition.TopRight;
+                return BorderPosition.None;
             }
             Point widgetRelativePosition = widget.PointToClient(new Point(mousePosition.X, mousePosition.Y));
 
@@ -645,6 +647,41 @@ namespace MyGui.net
                 g.DrawImage(image, 0, 0, 4, 4);
             }
             return newImage;
+        }
+        #endregion
+
+        #region Key Utils
+        [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
+        public static extern short GetKeyState(int keyCode);
+
+        /// <summary>
+        /// Gets a list of all currently pressed keys.
+        /// </summary>
+        /// <returns>List of Keys that are pressed.</returns>
+        public static List<Keys> GetPressedKeys()
+        {
+            List<Keys> pressedKeys = new List<Keys>();
+            for (int i = 0; i < 256; i++)
+            {
+                short keyState = GetKeyState(i);
+                if ((keyState & 0x8000) != 0)
+                {
+                    pressedKeys.Add((Keys)i);
+                }
+            }
+
+            return pressedKeys;
+        }
+
+        /// <summary>
+        /// Checks if a specific key is currently pressed.
+        /// </summary>
+        /// <param name="key">The key to check.</param>
+        /// <returns>True if the key is pressed, false otherwise.</returns>
+        public static bool IsKeyPressed(Keys key)
+        {
+            short keyState = GetKeyState((int)key);
+            return (keyState & 0x8000) != 0;
         }
         #endregion
     }
