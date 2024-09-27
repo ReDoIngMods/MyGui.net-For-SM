@@ -206,17 +206,31 @@ namespace MyGui.net
         #region Layout File Reading/Exporting
         public static List<MyGuiWidgetData>? ReadLayoutFile(string path)
         {
-            XDocument xmlDocument = XDocument.Load(path);
-            XElement? root = xmlDocument.Root;
-            if (root == null) {
-                Debug.Fail("Failed to read layout file: '"+path+"'. Root element is null!");
+            XDocument xmlDocument;
+            try
+            {
+                 xmlDocument = XDocument.Load(path);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Failed to read layout file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-
+            XElement? root = xmlDocument.Root;
+            if (root == null) //This should already get caught by the try-catch, but vs complains anyway and this calms it down.
+            {
+                MessageBox.Show("Failed to read layout file! Root element is missing!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            if(root.Name != "MyGUI")
+            {
+                MessageBox.Show("Failed to read layout file! Root element must be 'MyGUI'", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
             return ReadWidgetElements(root.Elements("Widget"), new(1920, 1080));
         }
 
-        public static List<MyGuiWidgetData> ReadWidgetElements(IEnumerable<XElement> elements, Point parentSize)
+        public static List<MyGuiWidgetData>? ReadWidgetElements(IEnumerable<XElement> elements, Point parentSize)
         {
             List<MyGuiWidgetData> layoutWidgetData = new();
 
@@ -227,15 +241,19 @@ namespace MyGui.net
                     align = widget.Attribute("align")?.Value,
                     layer = widget.Attribute("layer")?.Value,
                     name = widget.Attribute("name")?.Value,
-                    type = widget.Attribute("type")?.Value,
-                    skin = widget.Attribute("skin")?.Value,
+                    type = widget.Attribute("type")?.Value ?? "Widget",
+                    skin = widget.Attribute("skin")?.Value ?? "PanelEmpty",
                 };
 
                 string? positionReal = widget.Attribute("position_real")?.Value;
                 string? positionPix = widget.Attribute("position")?.Value;
                 bool isPosReal = positionReal != null;
                 string? positionStr = isPosReal ? positionReal : positionPix;
-                if (positionStr == null) continue;
+                if (positionStr == null)
+                {
+                    MessageBox.Show($"Failed to read layout file!\nWidget {( widgetData.name != null ? $"'{widgetData.name}'" : "" )} is missing 'position' or 'position_real'!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
                 Tuple<Point, Point> posAndSize = GetWidgetPosAndSize(isPosReal, positionStr, parentSize);
                 widgetData.position = posAndSize.Item1;
                 widgetData.size = posAndSize.Item2;
@@ -244,12 +262,23 @@ namespace MyGui.net
                 {
                     string? key = property.Attribute("key")?.Value;
                     string? value = property.Attribute("value")?.Value;
-                    if (key == null || value == null) continue;
+                    if (key == null)
+                    {
+                        MessageBox.Show($"Failed to read layout file!\nA property of widget {( widgetData.name != null ? $"'{widgetData.name}'" : "" )} is missing 'key'!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return null;
+                    }
+                    if (value == null)
+                    {
+                        MessageBox.Show($"Failed to read layout file!\nProperty '{key}' of widget {( widgetData.name != null ? $"'{widgetData.name}'" : "" )} is missing 'value'!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return null;
+                    }
                     if (widgetData.properties.ContainsKey(key)) continue;
                     widgetData.properties.Add(key, value);
                 }
 
-                widgetData.children = ReadWidgetElements(widget.Elements("Widget"), widgetData.size);
+                var children = ReadWidgetElements(widget.Elements("Widget"), widgetData.size);
+                if (children == null) return null; //Error occurred while reading children: stop reading the layout!
+                widgetData.children = children;
 
                 layoutWidgetData.Add(widgetData);
             }
