@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             splitContainer1 = new SplitContainer();
             Viewport = new Panel();
@@ -55,6 +56,7 @@
             saveLayoutDialog = new SaveFileDialog();
             customWidgetColorDialog = new ColorDialog();
             sidebarToNewWindowButton = new Button();
+            customTooltip = new ToolTip(components);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -348,5 +350,6 @@
         private SaveFileDialog saveLayoutDialog;
         private ColorDialog customWidgetColorDialog;
         private Button sidebarToNewWindowButton;
+        private ToolTip customTooltip;
     }
 }

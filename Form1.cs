@@ -5,8 +5,6 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using static MyGui.net.Util;
-using static System.Windows.Forms.LinkLabel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace MyGui.net
 {
@@ -106,6 +104,7 @@ namespace MyGui.net
             {
                 case 0:
                     mainPanel.BackgroundImage = null;
+                    mainPanel.BackColor = Settings.Default.EditorBackgroundColor;
                     break;
                 case 1:
                     mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
@@ -456,10 +455,12 @@ namespace MyGui.net
                 {
                     case 0:
                         mainPanel.BackgroundImage = null;
+                        mainPanel.BackColor = Settings.Default.EditorBackgroundColor;
                         break;
                     case 1:
                         mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
                         mainPanel.BackgroundImageLayout = ImageLayout.Tile;
+                        mainPanel.BackColor = Color.Black;
                         break;
                     case 2:
                         if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath) || Settings.Default.EditorBackgroundImagePath == "")
@@ -472,6 +473,18 @@ namespace MyGui.net
                             MessageBox.Show("Background Image path is invalid!\nSpecify a new path in the Options.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         break;
+                }
+            }
+
+            if (e.PropertyName == nameof(Settings.Default.EditorBackgroundColor))
+            {
+                if (Settings.Default.EditorBackgroundMode == 0)
+                {
+                    mainPanel.BackColor = Settings.Default.EditorBackgroundColor;
+                }
+                else
+                {
+                    mainPanel.BackColor = Color.Black;
                 }
             }
 
@@ -549,15 +562,14 @@ namespace MyGui.net
             else if (e.Button == MouseButtons.Left)
             {
                 Control? thing = Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel });
-                //TODO make selecting stuff when in center
                 if (_currentSelectedWidget != null && e.Clicks == 1 && Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.None)
                 {
-                    Debug.WriteLine("Drag Widget now!");
+                    //Debug.WriteLine("Drag Widget now!");
                     _draggingWidgetAt = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
                     _draggedWidgetPosition = ((MyGuiWidgetData)_currentSelectedWidget.Tag).position;
                     _draggedWidgetSize = (Size)((MyGuiWidgetData)_currentSelectedWidget.Tag).size;
                     _mouseLoc = e.Location;
-                    if (Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.Center)
+                    if (Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.Center || Util.IsKeyPressed(Keys.ControlKey))
                     {
                         return;
                     }
@@ -620,6 +632,13 @@ namespace MyGui.net
                         }
                     }
                 }
+                else
+                {
+                    _currentSelectedWidget = null;
+                    _draggedWidgetPosition = new Point(0, 0);
+                    _draggedWidgetSize = new Size(0, 0);
+                    HandleWidgetSelection();
+                }
             }
         }
 
@@ -669,6 +688,11 @@ namespace MyGui.net
                     default:
                         Cursor = Cursors.Default; // Normal cursor
                         break;
+                }
+
+                if ((Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ControlKey))
+                {
+                    Cursor = Cursors.Hand;
                 }
 
                 //Dragging

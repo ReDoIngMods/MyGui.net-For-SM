@@ -132,7 +132,7 @@
             groupBox2.Location = new Point(3, 3);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(348, 73);
-            groupBox2.TabIndex = 4;
+            groupBox2.TabIndex = 5;
             groupBox2.TabStop = false;
             groupBox2.Text = "Files";
             // 
@@ -141,7 +141,7 @@
             detectSmPath.Location = new Point(73, 37);
             detectSmPath.Name = "detectSmPath";
             detectSmPath.Size = new Size(61, 23);
-            detectSmPath.TabIndex = 4;
+            detectSmPath.TabIndex = 1;
             detectSmPath.Text = "Detect";
             detectSmPath.UseVisualStyleBackColor = true;
             detectSmPath.Click += detectSmPath_Click;
@@ -152,14 +152,14 @@
             smPathLabel.Name = "smPathLabel";
             smPathLabel.ReadOnly = true;
             smPathLabel.Size = new Size(202, 23);
-            smPathLabel.TabIndex = 3;
+            smPathLabel.TabIndex = 2;
             // 
             // chooseSmPath
             // 
             chooseSmPath.Location = new Point(6, 37);
             chooseSmPath.Name = "chooseSmPath";
             chooseSmPath.Size = new Size(61, 23);
-            chooseSmPath.TabIndex = 2;
+            chooseSmPath.TabIndex = 0;
             chooseSmPath.Text = "Select";
             chooseSmPath.UseVisualStyleBackColor = true;
             chooseSmPath.Click += chooseSmPath_Click;
@@ -192,7 +192,7 @@
             exportAsBothRadioButton.Location = new Point(83, 48);
             exportAsBothRadioButton.Name = "exportAsBothRadioButton";
             exportAsBothRadioButton.Size = new Size(50, 19);
-            exportAsBothRadioButton.TabIndex = 5;
+            exportAsBothRadioButton.TabIndex = 3;
             exportAsBothRadioButton.TabStop = true;
             exportAsBothRadioButton.Text = "Both";
             exportAsBothRadioButton.UseVisualStyleBackColor = true;
@@ -204,7 +204,7 @@
             exportAsPercentRadioButton.Location = new Point(83, 23);
             exportAsPercentRadioButton.Name = "exportAsPercentRadioButton";
             exportAsPercentRadioButton.Size = new Size(81, 19);
-            exportAsPercentRadioButton.TabIndex = 4;
+            exportAsPercentRadioButton.TabIndex = 1;
             exportAsPercentRadioButton.TabStop = true;
             exportAsPercentRadioButton.Text = "As Percent";
             exportAsPercentRadioButton.UseVisualStyleBackColor = true;
@@ -216,7 +216,7 @@
             exportAskRadioButton.Location = new Point(6, 48);
             exportAskRadioButton.Name = "exportAskRadioButton";
             exportAskRadioButton.Size = new Size(44, 19);
-            exportAskRadioButton.TabIndex = 3;
+            exportAskRadioButton.TabIndex = 2;
             exportAskRadioButton.TabStop = true;
             exportAskRadioButton.Text = "Ask";
             exportAskRadioButton.UseVisualStyleBackColor = true;
@@ -228,7 +228,7 @@
             exportAsPxRadioButton.Location = new Point(6, 22);
             exportAsPxRadioButton.Name = "exportAsPxRadioButton";
             exportAsPxRadioButton.Size = new Size(71, 19);
-            exportAsPxRadioButton.TabIndex = 2;
+            exportAsPxRadioButton.TabIndex = 0;
             exportAsPxRadioButton.TabStop = true;
             exportAsPxRadioButton.Text = "As Pixels";
             exportAsPxRadioButton.UseVisualStyleBackColor = true;
@@ -241,18 +241,18 @@
             groupBox1.Controls.Add(useFastDrawRadioButton);
             groupBox1.Location = new Point(3, 82);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(263, 95);
-            groupBox1.TabIndex = 2;
+            groupBox1.Size = new Size(263, 103);
+            groupBox1.TabIndex = 7;
             groupBox1.TabStop = false;
             groupBox1.Text = "Redraw";
             // 
             // useDoubleDrawCheckBox
             // 
             useDoubleDrawCheckBox.AutoSize = true;
-            useDoubleDrawCheckBox.Location = new Point(6, 70);
+            useDoubleDrawCheckBox.Location = new Point(6, 73);
             useDoubleDrawCheckBox.Name = "useDoubleDrawCheckBox";
             useDoubleDrawCheckBox.Size = new Size(245, 19);
-            useDoubleDrawCheckBox.TabIndex = 4;
+            useDoubleDrawCheckBox.TabIndex = 2;
             useDoubleDrawCheckBox.Text = "Use Double Buffering (can be less glitchy)";
             useDoubleDrawCheckBox.UseVisualStyleBackColor = true;
             useDoubleDrawCheckBox.CheckedChanged += useDoubleDrawCheckBox_CheckedChanged;
@@ -263,7 +263,7 @@
             useSlowDrawRadioButton.Location = new Point(6, 48);
             useSlowDrawRadioButton.Name = "useSlowDrawRadioButton";
             useSlowDrawRadioButton.Size = new Size(211, 19);
-            useSlowDrawRadioButton.TabIndex = 3;
+            useSlowDrawRadioButton.TabIndex = 1;
             useSlowDrawRadioButton.TabStop = true;
             useSlowDrawRadioButton.Text = "Slow Redraw (Slower, more glitchy)";
             useSlowDrawRadioButton.UseVisualStyleBackColor = true;
@@ -275,7 +275,7 @@
             useFastDrawRadioButton.Location = new Point(6, 22);
             useFastDrawRadioButton.Name = "useFastDrawRadioButton";
             useFastDrawRadioButton.Size = new Size(172, 19);
-            useFastDrawRadioButton.TabIndex = 2;
+            useFastDrawRadioButton.TabIndex = 0;
             useFastDrawRadioButton.TabStop = true;
             useFastDrawRadioButton.Text = "Fast Redraw (GPU intensive)";
             useFastDrawRadioButton.UseVisualStyleBackColor = true;
@@ -291,7 +291,7 @@
             groupBox5.Location = new Point(272, 82);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(348, 73);
-            groupBox5.TabIndex = 5;
+            groupBox5.TabIndex = 8;
             groupBox5.TabStop = false;
             groupBox5.Text = "Background";
             // 
@@ -301,7 +301,7 @@
             useBackgroundImageGrid.Location = new Point(66, 22);
             useBackgroundImageGrid.Name = "useBackgroundImageGrid";
             useBackgroundImageGrid.Size = new Size(47, 19);
-            useBackgroundImageGrid.TabIndex = 6;
+            useBackgroundImageGrid.TabIndex = 1;
             useBackgroundImageGrid.TabStop = true;
             useBackgroundImageGrid.Text = "Grid";
             useBackgroundImageGrid.UseVisualStyleBackColor = true;
@@ -313,7 +313,7 @@
             useBackgroundImageCustom.Location = new Point(119, 22);
             useBackgroundImageCustom.Name = "useBackgroundImageCustom";
             useBackgroundImageCustom.Size = new Size(103, 19);
-            useBackgroundImageCustom.TabIndex = 5;
+            useBackgroundImageCustom.TabIndex = 2;
             useBackgroundImageCustom.TabStop = true;
             useBackgroundImageCustom.Text = "Custom Image";
             useBackgroundImageCustom.UseVisualStyleBackColor = true;
@@ -325,7 +325,7 @@
             useBackgroundImageColor.Location = new Point(6, 22);
             useBackgroundImageColor.Name = "useBackgroundImageColor";
             useBackgroundImageColor.Size = new Size(54, 19);
-            useBackgroundImageColor.TabIndex = 4;
+            useBackgroundImageColor.TabIndex = 0;
             useBackgroundImageColor.TabStop = true;
             useBackgroundImageColor.Text = "Color";
             useBackgroundImageColor.UseVisualStyleBackColor = true;
@@ -337,14 +337,14 @@
             backgroundImagePathTextBox.Name = "backgroundImagePathTextBox";
             backgroundImagePathTextBox.ReadOnly = true;
             backgroundImagePathTextBox.Size = new Size(269, 23);
-            backgroundImagePathTextBox.TabIndex = 3;
+            backgroundImagePathTextBox.TabIndex = 4;
             // 
             // backgroundImageSelectButton
             // 
             backgroundImageSelectButton.Location = new Point(6, 46);
             backgroundImageSelectButton.Name = "backgroundImageSelectButton";
             backgroundImageSelectButton.Size = new Size(61, 23);
-            backgroundImageSelectButton.TabIndex = 2;
+            backgroundImageSelectButton.TabIndex = 3;
             backgroundImageSelectButton.Text = "Select";
             backgroundImageSelectButton.UseVisualStyleBackColor = true;
             backgroundImageSelectButton.Click += backgroundImageSelectButton_Click;
@@ -352,10 +352,10 @@
             // groupBox3
             // 
             groupBox3.Controls.Add(showWarningsCheckBox);
-            groupBox3.Location = new Point(3, 183);
+            groupBox3.Location = new Point(3, 191);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(124, 55);
-            groupBox3.TabIndex = 5;
+            groupBox3.TabIndex = 9;
             groupBox3.TabStop = false;
             groupBox3.Text = "Popups";
             // 
@@ -475,10 +475,10 @@
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cancelButton.Location = new Point(567, 430);
+            cancelButton.Location = new Point(452, 430);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(105, 23);
-            cancelButton.TabIndex = 2;
+            cancelButton.TabIndex = 3;
             cancelButton.Text = "Cancel";
             cancelButton.UseVisualStyleBackColor = true;
             cancelButton.Click += cancelButton_Click;
@@ -487,10 +487,10 @@
             // 
             applySettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             applySettingsButton.Enabled = false;
-            applySettingsButton.Location = new Point(456, 430);
+            applySettingsButton.Location = new Point(563, 430);
             applySettingsButton.Name = "applySettingsButton";
             applySettingsButton.Size = new Size(105, 23);
-            applySettingsButton.TabIndex = 3;
+            applySettingsButton.TabIndex = 4;
             applySettingsButton.Text = "Apply";
             applySettingsButton.UseVisualStyleBackColor = true;
             applySettingsButton.Click += applySettingsButton_Click;
@@ -501,7 +501,7 @@
             resetSettingsButton.Location = new Point(12, 430);
             resetSettingsButton.Name = "resetSettingsButton";
             resetSettingsButton.Size = new Size(77, 23);
-            resetSettingsButton.TabIndex = 4;
+            resetSettingsButton.TabIndex = 1;
             resetSettingsButton.Text = "Default";
             resetSettingsButton.UseVisualStyleBackColor = true;
             resetSettingsButton.Click += resetSettingsButton_Click;
@@ -509,10 +509,10 @@
             // autoApplyCheckBox
             // 
             autoApplyCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            autoApplyCheckBox.Location = new Point(364, 431);
+            autoApplyCheckBox.Location = new Point(95, 430);
             autoApplyCheckBox.Name = "autoApplyCheckBox";
             autoApplyCheckBox.Size = new Size(86, 23);
-            autoApplyCheckBox.TabIndex = 5;
+            autoApplyCheckBox.TabIndex = 2;
             autoApplyCheckBox.Text = "Auto Apply";
             autoApplyCheckBox.UseVisualStyleBackColor = true;
             autoApplyCheckBox.CheckedChanged += autoApplyCheckBox_CheckedChanged;

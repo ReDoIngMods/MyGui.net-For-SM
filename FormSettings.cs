@@ -6,6 +6,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -136,9 +137,11 @@ namespace MyGui.net
         {
             if (Settings.Default.EditorBackgroundMode == 0)
             {
+                editorBackgroundColorDialog.Color = Settings.Default.EditorBackgroundColor;
                 if (editorBackgroundColorDialog.ShowDialog(this) == DialogResult.OK)
                 {
                     //TODO: make work
+                    Settings.Default.EditorBackgroundColor = editorBackgroundColorDialog.Color;
                     OnSettingChange();
                 }
             }
