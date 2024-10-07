@@ -103,6 +103,7 @@
             Viewport.Size = new Size(990, 639);
             Viewport.TabIndex = 0;
             Viewport.MouseDown += Viewport_MouseDown;
+            Viewport.MouseLeave += Viewport_MouseLeave;
             Viewport.MouseMove += Viewport_MouseMove;
             Viewport.MouseUp += Viewport_MouseUp;
             // 

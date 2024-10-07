@@ -77,11 +77,7 @@ namespace MyGui.net
                     {
                         name = "Skin",
                         boundTo = "skin",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "LATER"
-                        }
+                        type = MyGuiWidgetPropertyType.SkinBox,
                     },
                     /*new()
                     {
@@ -189,6 +185,7 @@ namespace MyGui.net
         CheckBox,
         ComboBox,
         ColorBox,
+        SkinBox,
     }
 
     struct MyGuiWidgetProperty

@@ -77,11 +77,11 @@ namespace MyGui.net
                 return;
             }
 
-            System.Reflection.PropertyInfo aProp = typeof(System.Windows.Forms.Control).GetProperty( "DoubleBuffered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance );
+            System.Reflection.PropertyInfo aProp = typeof(System.Windows.Forms.Control).GetProperty("DoubleBuffered", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             aProp.SetValue(mainPanel, Settings.Default.UseDoubleBuffering, null);
 
-            System.Reflection.MethodInfo setStyleMethod = typeof(System.Windows.Forms.Control).GetMethod( "SetStyle", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance );
+            System.Reflection.MethodInfo setStyleMethod = typeof(System.Windows.Forms.Control).GetMethod("SetStyle", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             // Set ControlStyles.OptimizedDoubleBuffer to true
             setStyleMethod.Invoke(mainPanel, new object[] { ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true });
@@ -352,6 +352,50 @@ namespace MyGui.net
                             control = colorBoxLayout;
                             break;
 
+                        case MyGuiWidgetPropertyType.SkinBox:
+                            TableLayoutPanel skinBoxLayout = new TableLayoutPanel();
+                            skinBoxLayout.ColumnCount = 2;
+                            skinBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F)); // Second column
+                            skinBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F)); // Third column
+                            skinBoxLayout.RowCount = 1;
+                            skinBoxLayout.AutoSize = true;
+                            skinBoxLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+                            skinBoxLayout.Dock = DockStyle.Top;
+                            skinBoxLayout.Margin = Padding.Empty;
+
+                            ComboBox skinBoxComboBox = new ComboBox
+                            {
+                                MinimumSize = new Size(1, 1),
+                                Dock = DockStyle.Fill,  // Ensure it resizes within the TableLayoutPanel
+                                DropDownStyle = ComboBoxStyle.DropDownList
+                            };
+                            //skinBoxComboBox.Items.AddRange(property.comboBoxValues.ToArray());
+                            //Set the value from widget data
+                            valueInWidgetData = null;
+                            if (valueInWidgetData != null)
+                            {
+                                skinBoxComboBox.SelectedIndex = skinBoxComboBox.Items.IndexOf(valueInWidgetData);
+                            }
+                            else
+                            {
+                                skinBoxComboBox.SelectedIndex = -1;
+                            }
+
+                            Button skinBoxButton = new Button
+                            {
+                                Width = 1,
+                                Dock = DockStyle.Fill,
+                                Text = "Select"
+                            };
+                            skinBoxButton.Click += selectCustomWidgetSkin_Click;
+
+                            //valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            // Add controls to TableLayoutPanel
+                            skinBoxLayout.Controls.Add(skinBoxComboBox, 0, 0);
+                            skinBoxLayout.Controls.Add(skinBoxButton, 1, 0);
+                            control = skinBoxLayout;
+                            break;
+
                             // Add more cases for other control types like ColorBox, etc.
                     }
 
@@ -376,6 +420,12 @@ namespace MyGui.net
             tabPage1Panel.ResumeLayout();
         }
         #region Property Ui functions
+        private void selectCustomWidgetSkin_Click(object senderAny, EventArgs e)
+        {
+            FormSkin formSkin = new FormSkin();
+            formSkin.Owner = this;
+            formSkin.ShowDialog();
+        }
         private void selectCustomWidgetColor_Click(object senderAny, EventArgs e)
         {
             customWidgetColorDialog.ShowDialog();
@@ -663,6 +713,12 @@ namespace MyGui.net
             {
                 BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
 
+                if ((Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ControlKey))
+                {
+                    Cursor = Cursors.Hand;
+                    goto skipCursorChange;
+                }
+
                 // Change the cursor based on the detected border
                 switch (border)
                 {
@@ -690,11 +746,7 @@ namespace MyGui.net
                         break;
                 }
 
-                if ((Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ControlKey))
-                {
-                    Cursor = Cursors.Hand;
-                }
-
+                skipCursorChange:
                 //Dragging
                 //Debug.WriteLine(_draggingWidgetAt);
                 if (_draggingWidgetAt != BorderPosition.None)
@@ -780,6 +832,11 @@ namespace MyGui.net
             }
         }
 
+        private void Viewport_MouseLeave(object sender, EventArgs e)
+        {
+            Cursor = Cursors.Default;
+        }
+
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //TODO: only pop up when you have unsaved changes
@@ -844,7 +901,7 @@ namespace MyGui.net
             {
                 using (StreamWriter outputFile = new StreamWriter(actualExport == 3 ? Util.AppendToFile(_currentLayoutSavePath, "_pixels") : _currentLayoutSavePath))
                 {
-                    outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1,1), true));
+                    outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
                 }
             }
             if (actualExport == 1 || actualExport == 3)

@@ -508,7 +508,7 @@
             // 
             // autoApplyCheckBox
             // 
-            autoApplyCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            autoApplyCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             autoApplyCheckBox.Location = new Point(95, 430);
             autoApplyCheckBox.Name = "autoApplyCheckBox";
             autoApplyCheckBox.Size = new Size(86, 23);
