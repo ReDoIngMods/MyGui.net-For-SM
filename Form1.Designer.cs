@@ -155,7 +155,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(234, 611);
+            tabPage2.Size = new Size(236, 613);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Widgets";
             tabPage2.UseVisualStyleBackColor = true;
@@ -164,7 +164,7 @@
             // 
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(234, 611);
+            tabPage3.Size = new Size(236, 613);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;

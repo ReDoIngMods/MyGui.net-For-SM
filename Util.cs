@@ -389,6 +389,13 @@ namespace MyGui.net
         }
         #endregion
 
+        #region Resource File Reading/Exporting
+        public static string? ReadResourceFiles(string gamePath)
+        {
+            return "smth";
+        }
+        #endregion
+
         #region Util Utils
         public static Random rand = new();
 

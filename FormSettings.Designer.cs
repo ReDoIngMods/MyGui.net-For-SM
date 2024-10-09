@@ -95,7 +95,7 @@
             tabControl1.Location = new Point(12, 12);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(660, 412);
+            tabControl1.Size = new Size(660, 408);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -104,7 +104,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(652, 384);
+            tabPage1.Size = new Size(652, 380);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Program";
             tabPage1.UseVisualStyleBackColor = true;
@@ -120,7 +120,7 @@
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.Location = new Point(3, 3);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(646, 378);
+            flowLayoutPanel1.Size = new Size(646, 374);
             flowLayoutPanel1.TabIndex = 0;
             // 
             // groupBox2
@@ -376,7 +376,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(652, 384);
+            tabPage2.Size = new Size(652, 380);
             tabPage2.TabIndex = 2;
             tabPage2.Text = "Project";
             tabPage2.UseVisualStyleBackColor = true;
@@ -388,7 +388,7 @@
             flowLayoutPanel2.Dock = DockStyle.Fill;
             flowLayoutPanel2.Location = new Point(3, 3);
             flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(646, 378);
+            flowLayoutPanel2.Size = new Size(646, 374);
             flowLayoutPanel2.TabIndex = 1;
             // 
             // groupBox6
@@ -440,7 +440,7 @@
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(652, 384);
+            tabPage4.Size = new Size(652, 380);
             tabPage4.TabIndex = 1;
             tabPage4.Text = "About";
             tabPage4.UseVisualStyleBackColor = true;
@@ -475,7 +475,7 @@
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cancelButton.Location = new Point(452, 430);
+            cancelButton.Location = new Point(452, 426);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(105, 23);
             cancelButton.TabIndex = 3;
@@ -487,7 +487,7 @@
             // 
             applySettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             applySettingsButton.Enabled = false;
-            applySettingsButton.Location = new Point(563, 430);
+            applySettingsButton.Location = new Point(563, 426);
             applySettingsButton.Name = "applySettingsButton";
             applySettingsButton.Size = new Size(105, 23);
             applySettingsButton.TabIndex = 4;
@@ -498,7 +498,7 @@
             // resetSettingsButton
             // 
             resetSettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            resetSettingsButton.Location = new Point(12, 430);
+            resetSettingsButton.Location = new Point(12, 425);
             resetSettingsButton.Name = "resetSettingsButton";
             resetSettingsButton.Size = new Size(77, 23);
             resetSettingsButton.TabIndex = 1;
@@ -509,7 +509,7 @@
             // autoApplyCheckBox
             // 
             autoApplyCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            autoApplyCheckBox.Location = new Point(95, 430);
+            autoApplyCheckBox.Location = new Point(95, 426);
             autoApplyCheckBox.Name = "autoApplyCheckBox";
             autoApplyCheckBox.Size = new Size(86, 23);
             autoApplyCheckBox.TabIndex = 2;
@@ -537,7 +537,6 @@
             Controls.Add(applySettingsButton);
             Controls.Add(cancelButton);
             Controls.Add(tabControl1);
-            MaximizeBox = false;
             MinimizeBox = false;
             MinimumSize = new Size(435, 300);
             Name = "FormSettings";
