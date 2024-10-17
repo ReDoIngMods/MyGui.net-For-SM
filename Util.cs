@@ -390,9 +390,108 @@ namespace MyGui.net
         #endregion
 
         #region Resource File Reading/Exporting
-        public static string? ReadResourceFiles(string gamePath)
+
+        public static List<MyGuiResource> ReadAllResources(string smPath, int resolutionIdx)
         {
-            return "smth";
+            List<MyGuiResource> resources = ReadResourceFile(Path.Combine(smPath, "Data/Gui/GuiConfig.xml"), smPath) ?? new();
+            foreach (var res in ReadResourcesFromJson(Path.Combine(smPath, "Data/Gui/guiResolutions.json"), smPath, resolutionIdx))
+            {
+                resources.Add(res);
+            }
+            return resources;
+        }
+
+        public static List<MyGuiResource> ReadResourcesFromJson(string path, string smPath, int resolutionIdx)
+        {
+            List<MyGuiResource> resources = new();
+            string jsonString = File.ReadAllText(path);
+            JsonElement jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonString);
+            JsonElement resPathList = jsonElement.GetProperty("resources");
+            string resolutionsPath = Path.Combine(smPath, "Data/Gui/Resolutions", ResolutionIdxToString(resolutionIdx));
+            foreach (JsonElement resPathElement in resPathList.EnumerateArray())
+            {
+                var resourcesInFile = ReadResourceFile(ConvertGameFilesPath(Path.Combine(resolutionsPath, resPathElement.GetString()), smPath), smPath);
+                if (resourcesInFile == null) continue;
+                foreach (var resourceInFile in resourcesInFile)
+                {
+                    resources.Add(resourceInFile);
+                }
+            }
+            return resources;
+        }
+
+        public static List<MyGuiResource>? ReadResourceFile(string path, string smPath)
+        {
+            List<MyGuiResource> resources = new();
+            XDocument xmlDocument;
+            try
+            {
+                xmlDocument = XDocument.Load(path);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to read resource file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            XElement? root = xmlDocument.Root;
+            if(root == null)
+            {
+                MessageBox.Show($"Root element not found in resource file \"{path}\"", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            if (root.Attribute("type")?.Value == "Resource")
+            {
+                var res = root.Elements("Resource");
+                if (res != null)
+                {
+                    foreach (var r in res)
+                    {
+                        MyGuiResource newRes = new()
+                        {
+                            name = r.Attribute("name")?.Value ?? "NO NAME",
+                            path = r.Attribute("texture")?.Value,
+                            pathSpecial = path,
+                            correctType = "",
+                        };
+                        resources.Add(newRes);
+                    }
+                }
+            }
+            else if (root.Attribute("type")?.Value == "List")
+            {
+                var resPathElements = root.Elements("List");
+                if (resPathElements != null)
+                {
+                    foreach (var resPathElement in resPathElements)
+                    {
+                        string resPath = resPathElement.Attribute("file").Value;
+                        if(resPath.StartsWith("$GAME_DATA"))
+                        {
+                            resPath = ConvertGameFilesPath(resPath, smPath);
+                        }
+                        else
+                        {
+                            resPath = Path.Combine(Path.GetDirectoryName(path), resPath);
+                        }
+                        var subResources = ReadResourceFile(resPath, smPath);
+                        foreach (var subRes in subResources)
+                        {
+                            resources.Add(subRes);
+                        }
+                    }
+                }
+            }
+
+            return resources;
+        }
+
+        public static void PrintAllResources(string smPath, int resolutionIdx = 1)
+        {
+            var allResources = ReadAllResources(smPath, resolutionIdx);
+            foreach (var resource in allResources)
+            {
+                Debug.WriteLine($"Name: {resource.name}, Path: {resource.path}, Special: {resource.pathSpecial}, CorrectType: {resource.correctType}");
+            }
         }
         #endregion
 
@@ -429,6 +528,23 @@ namespace MyGui.net
                 return result;
             }
             return double.NaN;
+        }
+
+        public static string ResolutionIdxToString(int idx)
+        {
+            return idx switch
+            {
+                0 => "1280x720",
+                1 => "1920x1080",
+                2 => "2560x1440",
+                3 => "3840x2160",
+                _ => "1920x1080", //Invalid idx, just give 1080p, idk
+            };
+        }
+
+        public static string ConvertGameFilesPath(string path, string smPath)
+        {
+            return path.Replace("$GAME_DATA", Path.Combine(smPath, "Data"));
         }
 
         public static bool IsValidPath(string path, bool checkRW = false)

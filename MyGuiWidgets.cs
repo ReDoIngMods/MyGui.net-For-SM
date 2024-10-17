@@ -195,4 +195,12 @@ namespace MyGui.net
         public MyGuiWidgetPropertyType type;
         public List<string>? comboBoxValues;
     }
+
+    class MyGuiResource
+    {
+        public string name;
+        public string? path;
+        public string? pathSpecial;
+        public string correctType = ""; //TODO: This is currently always ""
+    }
 }
