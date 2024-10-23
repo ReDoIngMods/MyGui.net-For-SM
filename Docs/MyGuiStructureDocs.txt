@@ -1,0 +1,11 @@
+These files are all located in: Scrap Mechanic\Data\Gui\...
+
+- GuiConfig.xml contains all, non scaleable skin references
+- the .xml's can either have the skin definitions themselves (root node looks like: "<MyGUI type="Resource" version="1.1">") or is a list of the skin refs, as i said about the GuiConfig.xml (root node looks like: "<MyGUI type="List">", has paths to the skin definitions folders)
+
+Skin Definiton XML'said
+- there are multiple types: "ResourceSkin" - which is composed of multiple widgets inside of it (not actually, but more or less that) --Havent seen more yet, keeping this open if i come upon more
+
+	ResourceSkin
+	- each skin looks like: "<Resource type="ResourceSkin" name="CheckBoxSkin" size="23 21" texture="MyGUI_BlackOrangeSkins.png">", where texture is the texture to pull it from, size is the default tiling size (not sure??), and is composed of multiple BasisSkin, which have different types, like "SubSkin" or "SimpleText". 
+	- each basis skin has different states (when disabled, when hovered over, when clicked...) and each one of those has a different offset on the texture sprite sheet

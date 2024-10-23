@@ -32,8 +32,9 @@
             tabPage1 = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
             allApprGroupBox = new GroupBox();
-            button1 = new Button();
+            allCompatibleLayoutPanel = new FlowLayoutPanel();
             favGroupBox = new GroupBox();
+            favoritesLayoutPanel = new FlowLayoutPanel();
             tabPage2 = new TabPage();
             applySkinButton = new Button();
             cancelButton = new Button();
@@ -41,6 +42,7 @@
             tabPage1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             allApprGroupBox.SuspendLayout();
+            favGroupBox.SuspendLayout();
             SuspendLayout();
             // 
             // tabControl1
@@ -90,40 +92,51 @@
             allApprGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             allApprGroupBox.AutoSize = true;
             allApprGroupBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            allApprGroupBox.Controls.Add(button1);
-            allApprGroupBox.Location = new Point(0, 20);
+            allApprGroupBox.Controls.Add(allCompatibleLayoutPanel);
+            allApprGroupBox.Location = new Point(0, 35);
             allApprGroupBox.Margin = new Padding(0);
             allApprGroupBox.MinimumSize = new Size(0, 20);
             allApprGroupBox.Name = "allApprGroupBox";
             allApprGroupBox.Padding = new Padding(0);
-            allApprGroupBox.Size = new Size(819, 1608);
+            allApprGroupBox.Size = new Size(836, 35);
             allApprGroupBox.TabIndex = 1;
             allApprGroupBox.TabStop = false;
             allApprGroupBox.Text = "All Compatible";
             // 
-            // button1
+            // allCompatibleLayoutPanel
             // 
-            button1.Location = new Point(571, 214);
-            button1.Name = "button1";
-            button1.Size = new Size(167, 1375);
-            button1.TabIndex = 0;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
+            allCompatibleLayoutPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            allCompatibleLayoutPanel.AutoSize = true;
+            allCompatibleLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            allCompatibleLayoutPanel.Location = new Point(0, 16);
+            allCompatibleLayoutPanel.Name = "allCompatibleLayoutPanel";
+            allCompatibleLayoutPanel.Size = new Size(0, 0);
+            allCompatibleLayoutPanel.TabIndex = 0;
             // 
             // favGroupBox
             // 
             favGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             favGroupBox.AutoSize = true;
             favGroupBox.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            favGroupBox.Controls.Add(favoritesLayoutPanel);
             favGroupBox.Location = new Point(0, 0);
             favGroupBox.Margin = new Padding(0);
             favGroupBox.MinimumSize = new Size(0, 20);
             favGroupBox.Name = "favGroupBox";
             favGroupBox.Padding = new Padding(0);
-            favGroupBox.Size = new Size(819, 20);
+            favGroupBox.Size = new Size(836, 35);
             favGroupBox.TabIndex = 0;
             favGroupBox.TabStop = false;
             favGroupBox.Text = "Favorites";
+            // 
+            // favoritesLayoutPanel
+            // 
+            favoritesLayoutPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            favoritesLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            favoritesLayoutPanel.Location = new Point(0, 16);
+            favoritesLayoutPanel.Name = "favoritesLayoutPanel";
+            favoritesLayoutPanel.Size = new Size(0, 0);
+            favoritesLayoutPanel.TabIndex = 0;
             // 
             // tabPage2
             // 
@@ -138,8 +151,8 @@
             // applySkinButton
             // 
             applySkinButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            applySkinButton.Enabled = false;
-            applySkinButton.Location = new Point(763, 426);
+            applySkinButton.DialogResult = DialogResult.OK;
+            applySkinButton.Location = new Point(652, 426);
             applySkinButton.Name = "applySkinButton";
             applySkinButton.Size = new Size(105, 23);
             applySkinButton.TabIndex = 6;
@@ -149,7 +162,8 @@
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cancelButton.Location = new Point(652, 426);
+            cancelButton.DialogResult = DialogResult.Cancel;
+            cancelButton.Location = new Point(763, 426);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(105, 23);
             cancelButton.TabIndex = 5;
@@ -177,6 +191,8 @@
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
             allApprGroupBox.ResumeLayout(false);
+            allApprGroupBox.PerformLayout();
+            favGroupBox.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -190,6 +206,7 @@
         private TableLayoutPanel tableLayoutPanel1;
         private GroupBox favGroupBox;
         private GroupBox allApprGroupBox;
-        private Button button1;
+        private FlowLayoutPanel allCompatibleLayoutPanel;
+        private FlowLayoutPanel favoritesLayoutPanel;
     }
 }

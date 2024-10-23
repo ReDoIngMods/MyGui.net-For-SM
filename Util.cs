@@ -446,6 +446,7 @@ namespace MyGui.net
                 {
                     foreach (var r in res)
                     {
+                        if (r.Attribute("type")?.Value == "ResourceImageSet") { continue; } //Special cases, "ResourceImageSet" is just set of images (different resources)
                         MyGuiResource newRes = new()
                         {
                             name = r.Attribute("name")?.Value ?? "NO NAME",

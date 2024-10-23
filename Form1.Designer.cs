@@ -52,6 +52,8 @@
             toolStripSeparator2 = new ToolStripSeparator();
             exitToolStripMenuItem = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
+            undoToolStripMenuItem = new ToolStripMenuItem();
+            redoToolStripMenuItem = new ToolStripMenuItem();
             openLayoutDialog = new OpenFileDialog();
             saveLayoutDialog = new SaveFileDialog();
             customWidgetColorDialog = new ColorDialog();
@@ -96,11 +98,10 @@
             Viewport.AutoScrollMargin = new Size(5, 5);
             Viewport.AutoScrollMinSize = new Size(1, 1);
             Viewport.BackColor = SystemColors.ScrollBar;
-            Viewport.BorderStyle = BorderStyle.FixedSingle;
             Viewport.Controls.Add(mainPanel);
             Viewport.Location = new Point(0, 0);
             Viewport.Name = "Viewport";
-            Viewport.Size = new Size(990, 639);
+            Viewport.Size = new Size(990, 640);
             Viewport.TabIndex = 0;
             Viewport.MouseDown += Viewport_MouseDown;
             Viewport.MouseLeave += Viewport_MouseLeave;
@@ -155,7 +156,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(236, 613);
+            tabPage2.Size = new Size(234, 611);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Widgets";
             tabPage2.UseVisualStyleBackColor = true;
@@ -164,14 +165,14 @@
             // 
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(236, 613);
+            tabPage3.Size = new Size(234, 611);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
             // 
             // smPathDialog
             // 
-            smPathDialog.Description = "Choose Scrap Mechanic Folder";
+            smPathDialog.Description = "Choose Scrap Mechanic game folder";
             smPathDialog.UseDescriptionForTitle = true;
             // 
             // menuStrip1
@@ -262,9 +263,28 @@
             // 
             // editToolStripMenuItem
             // 
+            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem });
             editToolStripMenuItem.Name = "editToolStripMenuItem";
             editToolStripMenuItem.Size = new Size(39, 20);
             editToolStripMenuItem.Text = "Edit";
+            // 
+            // undoToolStripMenuItem
+            // 
+            undoToolStripMenuItem.Enabled = false;
+            undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
+            undoToolStripMenuItem.Size = new Size(180, 22);
+            undoToolStripMenuItem.Text = "Undo";
+            undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
+            // 
+            // redoToolStripMenuItem
+            // 
+            redoToolStripMenuItem.Enabled = false;
+            redoToolStripMenuItem.Name = "redoToolStripMenuItem";
+            redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.Z;
+            redoToolStripMenuItem.Size = new Size(180, 22);
+            redoToolStripMenuItem.Text = "Redo";
+            redoToolStripMenuItem.Click += redoToolStripMenuItem_Click;
             // 
             // openLayoutDialog
             // 
@@ -352,5 +372,7 @@
         private ColorDialog customWidgetColorDialog;
         private Button sidebarToNewWindowButton;
         private ToolTip customTooltip;
+        private ToolStripMenuItem undoToolStripMenuItem;
+        private ToolStripMenuItem redoToolStripMenuItem;
     }
 }

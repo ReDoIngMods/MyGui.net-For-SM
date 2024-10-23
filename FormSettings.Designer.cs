@@ -475,7 +475,7 @@
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            cancelButton.Location = new Point(452, 426);
+            cancelButton.Location = new Point(567, 426);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(105, 23);
             cancelButton.TabIndex = 3;
@@ -483,11 +483,16 @@
             cancelButton.UseVisualStyleBackColor = true;
             cancelButton.Click += cancelButton_Click;
             // 
+            // smPathDialog
+            // 
+            smPathDialog.Description = "Choose Scrap Mechanic game folder";
+            smPathDialog.UseDescriptionForTitle = true;
+            // 
             // applySettingsButton
             // 
             applySettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             applySettingsButton.Enabled = false;
-            applySettingsButton.Location = new Point(563, 426);
+            applySettingsButton.Location = new Point(452, 426);
             applySettingsButton.Name = "applySettingsButton";
             applySettingsButton.Size = new Size(105, 23);
             applySettingsButton.TabIndex = 4;
@@ -508,8 +513,8 @@
             // 
             // autoApplyCheckBox
             // 
-            autoApplyCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            autoApplyCheckBox.Location = new Point(95, 426);
+            autoApplyCheckBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            autoApplyCheckBox.Location = new Point(360, 426);
             autoApplyCheckBox.Name = "autoApplyCheckBox";
             autoApplyCheckBox.Size = new Size(86, 23);
             autoApplyCheckBox.TabIndex = 2;
@@ -521,6 +526,7 @@
             // 
             editorBackgroundPathDialog.DefaultExt = "png";
             editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
+            editorBackgroundPathDialog.Title = "Choose background image";
             // 
             // editorBackgroundColorDialog
             // 

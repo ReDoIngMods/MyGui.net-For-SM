@@ -201,6 +201,7 @@ namespace MyGui.net
         public string name;
         public string? path;
         public string? pathSpecial;
+        public Point? size;
         public string correctType = ""; //TODO: This is currently always ""
     }
 }

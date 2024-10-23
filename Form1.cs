@@ -1,7 +1,9 @@
 using MyGui.net.Properties;
 using System;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Media;
 using System.Reflection;
 using System.Windows.Forms;
 using static MyGui.net.Util;
@@ -21,6 +23,7 @@ namespace MyGui.net
         static Control? _currentSelectedWidget;
         static Dictionary<string, Control> _editorProperties = new Dictionary<string, Control>();
         static FormSideBar? _sidebarForm;
+        CommandManager _commandManager = new CommandManager();
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
@@ -63,6 +66,10 @@ namespace MyGui.net
         static BorderPosition _draggingWidgetAt = BorderPosition.None;
         static Point _draggedWidgetPosition = new Point(0, 0);
         static Size _draggedWidgetSize = new Size(0, 0);
+
+        static Point _draggedWidgetPositionStart = new Point(0, 0);
+        static Size _draggedWidgetSizeStart = new Size(0, 0);
+
         static Point _mouseLoc = new Point(0, 0);
 
         public Form1(string _DefaultOpenedDir = "")
@@ -123,6 +130,7 @@ namespace MyGui.net
                     break;
             }
 
+            Util.PrintAllResources(_ScrapMechanicPath);
             HandleWidgetSelection();
 
             //Disposing code (for later)
@@ -145,6 +153,108 @@ namespace MyGui.net
             _draggedWidgetPosition = ((MyGuiWidgetData)_currentSelectedWidget.Tag).position;
             _draggedWidgetSize = (Size)((MyGuiWidgetData)_currentSelectedWidget.Tag).size;
             AddProperties();
+        }
+
+        void ExecuteCommand(IEditorAction command)
+        {
+            undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
+            redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
+            _commandManager.ExecuteCommand(command);
+        }
+
+        void ClearStacks()
+        {
+            _commandManager.clearUndoStack();
+            _commandManager.clearRedoStack();
+            undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
+            redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
+        }
+
+        void UpdateProperties()
+        {
+            if (_currentSelectedWidget == null)
+            {
+                for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
+                {
+                    tabPage1Panel.Controls[i].Dispose();
+                }
+                return;
+            }
+            foreach (var item in _editorProperties)
+            {
+                Debug.WriteLine(item.Key);
+            }
+
+            MyGuiWidgetData currentWidgetData = (MyGuiWidgetData)_currentSelectedWidget.Tag;
+            Debug.WriteLine(currentWidgetData.name);
+
+            foreach (var category in MyGuiWidgetProperties.categories)
+            {
+                foreach (var property in category.properties)
+                {
+                    object valueInWidgetData;
+                    switch (property.type)
+                    {
+                        case MyGuiWidgetPropertyType.ComboBox:
+                            ComboBox comboBox = (ComboBox)_editorProperties[property.name];
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            if (valueInWidgetData != null)
+                            {
+                                comboBox.SelectedIndex = comboBox.Items.IndexOf(valueInWidgetData);
+                            }
+                            else
+                            {
+                                comboBox.SelectedIndex = 0;
+                            }
+                            break;
+
+                        case MyGuiWidgetPropertyType.TextBox:
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo) ?? "";
+                            _editorProperties[property.name].Text = Convert.ToString(valueInWidgetData);
+                            break;
+
+                        case MyGuiWidgetPropertyType.PointBox:
+                            CustomNumericUpDown pointBoxLayoutXCoord = (CustomNumericUpDown)_editorProperties[property.name + "_X"];
+                            CustomNumericUpDown pointBoxLayoutYCoord = (CustomNumericUpDown)_editorProperties[property.name + "_Y"];
+
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            if (valueInWidgetData != null && valueInWidgetData.GetType() == typeof(Point))
+                            {
+                                Point valueInWidgetDataPoint = (Point)valueInWidgetData;
+                                pointBoxLayoutXCoord.Value = valueInWidgetDataPoint.X;
+                                pointBoxLayoutYCoord.Value = valueInWidgetDataPoint.Y;
+                            }
+                            break;
+
+                        case MyGuiWidgetPropertyType.CheckBox:
+                            ((CheckBox)_editorProperties[property.name]).Checked = (bool)(Util.GetPropertyValue(currentWidgetData, property.boundTo) ?? false);
+                            break;
+
+                        case MyGuiWidgetPropertyType.ColorBox:
+                            TextBox colorBoxHexInput = (TextBox)_editorProperties[property.name].Controls[1];
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
+                            if (valueInWidgetData != null)
+                            {
+                                colorBoxHexInput.Text = (string)valueInWidgetData;
+                            }
+                            break;
+
+                        case MyGuiWidgetPropertyType.SkinBox:
+                            ComboBox skinBoxComboBox = (ComboBox)_editorProperties[property.name];
+                            valueInWidgetData = null;
+                            if (valueInWidgetData != null)
+                            {
+                                skinBoxComboBox.SelectedIndex = skinBoxComboBox.Items.IndexOf(valueInWidgetData);
+                            }
+                            else
+                            {
+                                skinBoxComboBox.SelectedIndex = -1;
+                            }
+                            break;
+                    }
+                }
+            }
         }
 
         void AddProperties()
@@ -225,6 +335,9 @@ namespace MyGui.net
                             {
                                 comboBox.SelectedIndex = 0;
                             }
+                            _editorProperties[property.name] = comboBox;
+                            comboBox.Tag = property.boundTo;
+                            comboBox.SelectionChangeCommitted += comboBox_ValueChanged;
                             control = comboBox;
                             break;
 
@@ -241,6 +354,7 @@ namespace MyGui.net
                             {
                                 control.Text = Convert.ToString(valueInWidgetData);
                             }
+                            _editorProperties[property.name] = control;
 
                             break;
 
@@ -300,6 +414,7 @@ namespace MyGui.net
                                 AutoSize = true,
                                 Dock = DockStyle.Left // Align checkbox to the left
                             };
+                            _editorProperties[property.name] = control;
                             break;
 
                         case MyGuiWidgetPropertyType.ColorBox:
@@ -350,6 +465,7 @@ namespace MyGui.net
                             colorBoxLayout.Controls.Add(colorBoxHexInput, 1, 0);
                             colorBoxLayout.Controls.Add(colorBoxPickerButton, 2, 0);
                             control = colorBoxLayout;
+                            _editorProperties[property.name] = control;
                             break;
 
                         case MyGuiWidgetPropertyType.SkinBox:
@@ -393,6 +509,9 @@ namespace MyGui.net
                             // Add controls to TableLayoutPanel
                             skinBoxLayout.Controls.Add(skinBoxComboBox, 0, 0);
                             skinBoxLayout.Controls.Add(skinBoxButton, 1, 0);
+
+                            _editorProperties[property.name] = skinBoxComboBox;
+
                             control = skinBoxLayout;
                             break;
 
@@ -420,6 +539,38 @@ namespace MyGui.net
             tabPage1Panel.ResumeLayout();
         }
         #region Property Ui functions
+        private void comboBox_ValueChanged(object senderAny, EventArgs e)
+        {
+            ComboBox sender = (ComboBox)senderAny;
+            string senderBoundTo = (string)sender.Tag;
+            MyGuiWidgetData currWidgetData = ((MyGuiWidgetData)_currentSelectedWidget.Tag);
+            if (_currentSelectedWidget != null)
+            {
+                Debug.WriteLine(_currentSelectedWidget.Name);
+                Debug.WriteLine($"senderBoundTo: {senderBoundTo}");
+                switch (senderBoundTo)
+                {
+                    case "type":
+                        currWidgetData.type = sender.Text;
+                        break;
+                    case "layer":
+                        currWidgetData.layer = sender.Text;
+                        break;
+                    case "align":
+                        currWidgetData.align = sender.Text;
+                        break;
+                    case "skin":
+                        currWidgetData.skin = sender.Text;
+                        break;
+                    default:
+                        break;
+                }
+                foreach (var property in currWidgetData.properties)
+                {
+                    Debug.WriteLine(property);
+                }
+            }
+        }
         private void selectCustomWidgetSkin_Click(object senderAny, EventArgs e)
         {
             FormSkin formSkin = new FormSkin();
@@ -435,24 +586,28 @@ namespace MyGui.net
             NumericUpDown sender = (NumericUpDown)senderAny;
             if (_currentSelectedWidget != null && _draggingWidgetAt == BorderPosition.None)
             {
-                Debug.WriteLine(sender.Name);
+                //Debug.WriteLine(sender.Name);
                 switch (sender.Name)
                 {
                     case "Position_X":
-                        _currentSelectedWidget.Left = (int)sender.Value;
-                        ((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
+                        ExecuteCommand(new MoveCommand(_currentSelectedWidget, new Point((int)sender.Value, _currentSelectedWidget.Top)));
+                        //_currentSelectedWidget.Left = (int)sender.Value;
+                        //((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
                         break;
                     case "Position_Y":
-                        _currentSelectedWidget.Top = (int)sender.Value;
-                        ((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
+                        ExecuteCommand(new MoveCommand(_currentSelectedWidget, new Point(_currentSelectedWidget.Left, (int)sender.Value)));
+                        //_currentSelectedWidget.Top = (int)sender.Value;
+                        //((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
                         break;
                     case "Size_X":
-                        _currentSelectedWidget.Width = (int)sender.Value;
-                        ((MyGuiWidgetData)_currentSelectedWidget.Tag).size = (Point)_currentSelectedWidget.Size;
+                        ExecuteCommand(new ResizeCommand(_currentSelectedWidget, new Size((int)sender.Value, _currentSelectedWidget.Height)));
+                        //_currentSelectedWidget.Width = (int)sender.Value;
+                        //((MyGuiWidgetData)_currentSelectedWidget.Tag).size = (Point)_currentSelectedWidget.Size;
                         break;
                     case "Size_Y":
-                        _currentSelectedWidget.Height = (int)sender.Value;
-                        ((MyGuiWidgetData)_currentSelectedWidget.Tag).size = (Point)_currentSelectedWidget.Size;
+                        ExecuteCommand(new ResizeCommand(_currentSelectedWidget, new Size(_currentSelectedWidget.Width, (int)sender.Value)));
+                        //_currentSelectedWidget.Height = (int)sender.Value;
+                        //((MyGuiWidgetData)_currentSelectedWidget.Tag).size = (Point)_currentSelectedWidget.Size;
                         break;
                     default:
                         break;
@@ -618,6 +773,10 @@ namespace MyGui.net
                     _draggingWidgetAt = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
                     _draggedWidgetPosition = ((MyGuiWidgetData)_currentSelectedWidget.Tag).position;
                     _draggedWidgetSize = (Size)((MyGuiWidgetData)_currentSelectedWidget.Tag).size;
+
+                    _draggedWidgetPositionStart = _currentSelectedWidget.Location;
+                    _draggedWidgetSizeStart = _currentSelectedWidget.Size;
+
                     _mouseLoc = e.Location;
                     if (Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.Center || Util.IsKeyPressed(Keys.ControlKey))
                     {
@@ -687,6 +846,8 @@ namespace MyGui.net
                     _currentSelectedWidget = null;
                     _draggedWidgetPosition = new Point(0, 0);
                     _draggedWidgetSize = new Size(0, 0);
+                    _draggedWidgetPositionStart = new Point(0, 0);
+                    _draggedWidgetSizeStart = new Size(0, 0);
                     HandleWidgetSelection();
                 }
             }
@@ -746,7 +907,7 @@ namespace MyGui.net
                         break;
                 }
 
-                skipCursorChange:
+            skipCursorChange:
                 //Dragging
                 //Debug.WriteLine(_draggingWidgetAt);
                 if (_draggingWidgetAt != BorderPosition.None)
@@ -825,9 +986,19 @@ namespace MyGui.net
             {
                 if (_draggingWidgetAt != BorderPosition.None)
                 {
+                    Viewport.SuspendLayout();
+
                     _draggingWidgetAt = BorderPosition.None;
-                    ((MyGuiWidgetData)_currentSelectedWidget.Tag).position = _currentSelectedWidget.Location;
-                    ((MyGuiWidgetData)_currentSelectedWidget.Tag).size = (Point)_currentSelectedWidget.Size;
+                    Point draggedWidgetLoc = _currentSelectedWidget.Location;
+                    Size draggedWidgetSize = _currentSelectedWidget.Size;
+
+                    ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location, _draggedWidgetPositionStart));
+                    ExecuteCommand(new ResizeCommand(_currentSelectedWidget, _currentSelectedWidget.Size, _draggedWidgetSizeStart));
+
+                    _draggedWidgetPositionStart = _currentSelectedWidget.Location;
+                    _draggedWidgetSizeStart = _currentSelectedWidget.Size;
+
+                    Viewport.ResumeLayout();
                 }
             }
         }
@@ -839,25 +1010,42 @@ namespace MyGui.net
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //TODO: only pop up when you have unsaved changes
-            DialogResult result = Settings.Default.ShowWarnings ? MessageBox.Show("Are you sure you want to clear the Workspace? This cannot be undone!", "New Workspace", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) : DialogResult.Yes;
-            if (result == DialogResult.Yes)
+            if (_commandManager.getUndoStackCount() != 0)
             {
-                _currentSelectedWidget = null;
-                _currentLayoutPath = "";
-                _currentLayoutSavePath = "";
-                _currentLayout = new List<MyGuiWidgetData>();
-                _draggingWidgetAt = BorderPosition.None;
-                HandleWidgetSelection();
-                for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
+                DialogResult result = MessageBox.Show("Are you sure you want to clear the Workspace? This cannot be undone!", "New Workspace", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                // Check which button was clicked
+                if (result != DialogResult.Yes)
                 {
-                    mainPanel.Controls[i].Dispose();
+                    return;
                 }
+            }
+            ClearStacks();
+
+            _currentSelectedWidget = null;
+            _currentLayoutPath = "";
+            _currentLayoutSavePath = "";
+            _currentLayout = new List<MyGuiWidgetData>();
+            _draggingWidgetAt = BorderPosition.None;
+            HandleWidgetSelection();
+            for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
+            {
+                mainPanel.Controls[i].Dispose();
             }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (_commandManager.getUndoStackCount() != 0)
+            {
+                DialogResult result = MessageBox.Show("Are you sure you want to open another Layout? All your unsaved changes will be lost!", "Open Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                // Check which button was clicked
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+            }
             //openLayoutDialog
             if (Util.IsValidPath(Path.GetDirectoryName(_currentLayoutPath)))
             {
@@ -866,6 +1054,8 @@ namespace MyGui.net
             }
             if (openLayoutDialog.ShowDialog(this) == DialogResult.OK)
             {
+                ClearStacks();
+
                 _currentLayoutPath = openLayoutDialog.FileName;
                 _currentLayoutSavePath = _currentLayoutPath;
                 _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
@@ -895,7 +1085,7 @@ namespace MyGui.net
             {
                 FormExport decideForm = new FormExport();
                 actualExport = (int)decideForm.ShowDialog(this) - 1;
-                Debug.WriteLine(actualExport);
+                //Debug.WriteLine(actualExport);
             }
             if (actualExport == 0 || actualExport == 3)
             {
@@ -911,6 +1101,7 @@ namespace MyGui.net
                     outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
                 }
             }
+            ClearStacks();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -944,6 +1135,7 @@ namespace MyGui.net
                         outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
                     }
                 }
+                ClearStacks();
             }
         }
 
@@ -961,23 +1153,31 @@ namespace MyGui.net
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DialogResult result = Settings.Default.ShowWarnings ? MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) : DialogResult.Yes;
-
-            // Check which button was clicked
-            if (result == DialogResult.Yes)
+            if (_commandManager.getUndoStackCount() != 0)
             {
-                Application.Exit();
+                DialogResult result = MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                // Check which button was clicked
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
             }
+            Application.Exit();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            DialogResult result = Settings.Default.ShowWarnings ? MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) : DialogResult.Yes;
-            if (result == DialogResult.No)
+            if (_commandManager.getUndoStackCount() != 0)
             {
-                // Cancel the close event
-                e.Cancel = true;
-                return;
+                DialogResult result = MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                // Check which button was clicked
+                if (result != DialogResult.Yes)
+                {
+                    e.Cancel = true;
+                    return;
+                }
             }
             Settings.Default.MainWindomMaximized = this.WindowState == FormWindowState.Maximized;
             Settings.Default.Save();
@@ -1015,6 +1215,28 @@ namespace MyGui.net
         private void mainPanel_Paint(object sender, PaintEventArgs e)
         {
             //making it transparent
+        }
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_commandManager.getUndoStackCount() < 1) //Should be handled, but put this here just in case
+            {
+                SystemSounds.Asterisk.Play();
+                return;
+            }
+            _commandManager.Undo();
+            UpdateProperties();
+        }
+
+        private void redoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (_commandManager.getRedoStackCount() < 1) //Should be handled, but put this here just in case
+            {
+                SystemSounds.Asterisk.Play();
+                return;
+            }
+            _commandManager.Redo();
+            UpdateProperties();
         }
     }
 }
