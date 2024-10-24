@@ -17,8 +17,10 @@ using System.Xml.Linq;
 
 namespace MyGui.net
 {
-    internal class Util
+    static class Util
     {
+        public const string programVersion = "0.0.1 DEV";
+        public const string programName = "MyGui.net " + programVersion;
         #region Steam Utils
         public static string? GetSteamInstallPath()
         {

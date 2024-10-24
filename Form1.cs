@@ -17,7 +17,6 @@ namespace MyGui.net
         public static string[] _myGuiWidgetTypes = { };
         #endregion
 
-        public const string programName = "MyGui.net DEV";
         static List<MyGuiWidgetData> _currentLayout = new();
         static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
         static string _currentLayoutSavePath = "";
@@ -97,7 +96,7 @@ namespace MyGui.net
 
         void HandleLoad(string autoloadPath = "")
         {
-            this.Text = $"{programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
             Settings.Default.PropertyChanged += Settings_PropertyChanged;
             if (autoloadPath != "")
             {
@@ -159,7 +158,7 @@ namespace MyGui.net
 
         void ExecuteCommand(IEditorAction command)
         {
-            this.Text = $"{programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
             undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
             redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
             _commandManager.ExecuteCommand(command);
@@ -167,7 +166,7 @@ namespace MyGui.net
 
         void ClearStacks()
         {
-            this.Text = $"{programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
             _commandManager.clearUndoStack();
             _commandManager.clearRedoStack();
             undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
@@ -1025,7 +1024,7 @@ namespace MyGui.net
                 }
             }
             ClearStacks();
-            this.Text = $"{programName} - unnamed";
+            this.Text = $"{Util.programName} - unnamed";
 
             _currentSelectedWidget = null;
             _currentLayoutPath = "";
@@ -1066,7 +1065,7 @@ namespace MyGui.net
                 _currentLayoutSavePath = _currentLayoutPath;
                 _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
 
-                this.Text = $"{programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
+                this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
 
                 _currentSelectedWidget = null;
                 _draggingWidgetAt = BorderPosition.None;
@@ -1227,7 +1226,7 @@ namespace MyGui.net
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Text = $"{programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
             if (_commandManager.getUndoStackCount() < 1) //Should be handled, but put this here just in case
             {
                 SystemSounds.Asterisk.Play();
@@ -1239,7 +1238,7 @@ namespace MyGui.net
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            this.Text = $"{programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
             if (_commandManager.getRedoStackCount() < 1) //Should be handled, but put this here just in case
             {
                 SystemSounds.Asterisk.Play();

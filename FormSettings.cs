@@ -61,6 +61,9 @@ namespace MyGui.net
             widgetGridSpacingNumericUpDown.Value = Settings.Default.WidgetGridSpacing;
 
             _formLoaded = true;
+
+            //Change about text
+            aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET and WinForms by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.\r\nThis project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.";
         }
 
         private void OnSettingChange()

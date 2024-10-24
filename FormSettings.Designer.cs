@@ -61,7 +61,7 @@
             label2 = new Label();
             showTypesForNamedWidgetsCheckBox = new CheckBox();
             tabPage4 = new TabPage();
-            textBox1 = new TextBox();
+            aboutTextBox = new TextBox();
             pictureBox1 = new PictureBox();
             cancelButton = new Button();
             smPathDialog = new FolderBrowserDialog();
@@ -435,7 +435,7 @@
             // 
             // tabPage4
             // 
-            tabPage4.Controls.Add(textBox1);
+            tabPage4.Controls.Add(aboutTextBox);
             tabPage4.Controls.Add(pictureBox1);
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
@@ -445,20 +445,20 @@
             tabPage4.Text = "About";
             tabPage4.UseVisualStyleBackColor = true;
             // 
-            // textBox1
+            // aboutTextBox
             // 
-            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            textBox1.BackColor = SystemColors.ControlLightLight;
-            textBox1.BorderStyle = BorderStyle.None;
-            textBox1.Location = new Point(6, 6);
-            textBox1.Multiline = true;
-            textBox1.Name = "textBox1";
-            textBox1.ReadOnly = true;
-            textBox1.ScrollBars = ScrollBars.Vertical;
-            textBox1.ShortcutsEnabled = false;
-            textBox1.Size = new Size(640, 276);
-            textBox1.TabIndex = 1;
-            textBox1.Text = resources.GetString("textBox1.Text");
+            aboutTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            aboutTextBox.BackColor = SystemColors.ControlLightLight;
+            aboutTextBox.BorderStyle = BorderStyle.None;
+            aboutTextBox.Location = new Point(6, 6);
+            aboutTextBox.Multiline = true;
+            aboutTextBox.Name = "aboutTextBox";
+            aboutTextBox.ReadOnly = true;
+            aboutTextBox.ScrollBars = ScrollBars.Vertical;
+            aboutTextBox.ShortcutsEnabled = false;
+            aboutTextBox.Size = new Size(640, 276);
+            aboutTextBox.TabIndex = 1;
+            aboutTextBox.Text = resources.GetString("aboutTextBox.Text");
             // 
             // pictureBox1
             // 
@@ -586,7 +586,7 @@
         private CheckBox showWarningsCheckBox;
         private Button cancelButton;
         private PictureBox pictureBox1;
-        private TextBox textBox1;
+        private TextBox aboutTextBox;
         private GroupBox groupBox1;
         private RadioButton useFastDrawRadioButton;
         private RadioButton useSlowDrawRadioButton;
