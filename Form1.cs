@@ -96,8 +96,9 @@ namespace MyGui.net
 
         void HandleLoad(string autoloadPath = "")
         {
-            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
+            this.Text = $"{Util.programName} - {(autoloadPath == "" ? "unnamed" : Path.GetFileName(autoloadPath))}";
             Settings.Default.PropertyChanged += Settings_PropertyChanged;
+            widgetGridSpacingNumericUpDown.Value = _gridSpacing;
             if (autoloadPath != "")
             {
                 _currentLayoutPath = autoloadPath;
@@ -161,6 +162,7 @@ namespace MyGui.net
             this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
             undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
             redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
+            redoToolStripMenuItem1.Enabled = _commandManager.getRedoStackCount() > 0;
             _commandManager.ExecuteCommand(command);
         }
 
@@ -171,6 +173,7 @@ namespace MyGui.net
             _commandManager.clearRedoStack();
             undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
             redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
+            redoToolStripMenuItem1.Enabled = _commandManager.getRedoStackCount() > 0;
         }
 
         void UpdateProperties()
@@ -644,6 +647,9 @@ namespace MyGui.net
             {
                 // Handle the change in GlobalValue setting
                 _gridSpacing = Settings.Default.WidgetGridSpacing;
+                widgetGridSpacingNumericUpDown.Tag = true;
+                widgetGridSpacingNumericUpDown.Value = _gridSpacing;
+                widgetGridSpacingNumericUpDown.Tag = false;
                 if (Settings.Default.EditorBackgroundMode == 1)
                 {
                     mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
@@ -781,7 +787,7 @@ namespace MyGui.net
                     _draggedWidgetSizeStart = _currentSelectedWidget.Size;
 
                     _mouseLoc = e.Location;
-                    if (Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.Center || Util.IsKeyPressed(Keys.ControlKey))
+                    if (Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.Center || Util.IsKeyPressed(Keys.ShiftKey))
                     {
                         return;
                     }
@@ -877,7 +883,7 @@ namespace MyGui.net
             {
                 BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
 
-                if ((Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ControlKey))
+                if ((Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
                 {
                     Cursor = Cursors.Hand;
                     goto skipCursorChange;
@@ -1226,6 +1232,7 @@ namespace MyGui.net
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (_draggingWidgetAt != BorderPosition.None) { return; }
             this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
             if (_commandManager.getUndoStackCount() < 1) //Should be handled, but put this here just in case
             {
@@ -1238,6 +1245,7 @@ namespace MyGui.net
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (_draggingWidgetAt != BorderPosition.None) { return; }
             this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
             if (_commandManager.getRedoStackCount() < 1) //Should be handled, but put this here just in case
             {
@@ -1246,6 +1254,18 @@ namespace MyGui.net
             }
             _commandManager.Redo();
             UpdateProperties();
+        }
+
+        //TopBar Utils
+        private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+        {
+            NumericUpDown sender = (NumericUpDown)senderAny;
+
+            if (sender.Tag != null && (bool)sender.Tag)
+                return;
+
+            Settings.Default.WidgetGridSpacing = (int)sender.Value;
+            Settings.Default.Save();
         }
     }
 }

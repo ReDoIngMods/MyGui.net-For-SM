@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             splitContainer1 = new SplitContainer();
             Viewport = new Panel();
@@ -54,11 +53,14 @@
             editToolStripMenuItem = new ToolStripMenuItem();
             undoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem = new ToolStripMenuItem();
+            redoToolStripMenuItem1 = new ToolStripMenuItem();
+            formatToolStripMenuItem = new ToolStripMenuItem();
             openLayoutDialog = new OpenFileDialog();
             saveLayoutDialog = new SaveFileDialog();
             customWidgetColorDialog = new ColorDialog();
             sidebarToNewWindowButton = new Button();
-            customTooltip = new ToolTip(components);
+            widgetGridSpacingNumericUpDown = new CustomNumericUpDown();
+            label2 = new Label();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -67,6 +69,7 @@
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -177,7 +180,8 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem, formatToolStripMenuItem });
+            menuStrip1.LayoutStyle = ToolStripLayoutStyle.HorizontalStackWithOverflow;
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.RenderMode = ToolStripRenderMode.System;
@@ -187,6 +191,7 @@
             // 
             // fileToolStripMenuItem
             // 
+            fileToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, toolStripSeparator1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator3, optionsToolStripMenuItem, testToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
@@ -194,6 +199,7 @@
             // 
             // newToolStripMenuItem
             // 
+            newToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             newToolStripMenuItem.Name = "newToolStripMenuItem";
             newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
             newToolStripMenuItem.Size = new Size(186, 22);
@@ -202,6 +208,7 @@
             // 
             // openToolStripMenuItem
             // 
+            openToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
             openToolStripMenuItem.Size = new Size(186, 22);
@@ -215,6 +222,7 @@
             // 
             // saveToolStripMenuItem
             // 
+            saveToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             saveToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
             saveToolStripMenuItem.Size = new Size(186, 22);
@@ -223,6 +231,7 @@
             // 
             // saveAsToolStripMenuItem
             // 
+            saveAsToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             saveAsToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.S;
             saveAsToolStripMenuItem.Size = new Size(186, 22);
@@ -236,6 +245,7 @@
             // 
             // optionsToolStripMenuItem
             // 
+            optionsToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             optionsToolStripMenuItem.Size = new Size(186, 22);
             optionsToolStripMenuItem.Text = "Options";
@@ -243,6 +253,7 @@
             // 
             // testToolStripMenuItem
             // 
+            testToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             testToolStripMenuItem.Name = "testToolStripMenuItem";
             testToolStripMenuItem.Size = new Size(186, 22);
             testToolStripMenuItem.Text = "Test";
@@ -255,6 +266,7 @@
             // 
             // exitToolStripMenuItem
             // 
+            exitToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             exitToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
             exitToolStripMenuItem.Size = new Size(186, 22);
@@ -263,7 +275,8 @@
             // 
             // editToolStripMenuItem
             // 
-            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem });
+            editToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem, redoToolStripMenuItem1 });
             editToolStripMenuItem.Name = "editToolStripMenuItem";
             editToolStripMenuItem.Size = new Size(39, 20);
             editToolStripMenuItem.Text = "Edit";
@@ -273,7 +286,7 @@
             undoToolStripMenuItem.Enabled = false;
             undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
-            undoToolStripMenuItem.Size = new Size(180, 22);
+            undoToolStripMenuItem.Size = new Size(200, 22);
             undoToolStripMenuItem.Text = "Undo";
             undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
             // 
@@ -281,10 +294,26 @@
             // 
             redoToolStripMenuItem.Enabled = false;
             redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.Z;
-            redoToolStripMenuItem.Size = new Size(180, 22);
+            redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Y;
+            redoToolStripMenuItem.Size = new Size(200, 22);
             redoToolStripMenuItem.Text = "Redo";
             redoToolStripMenuItem.Click += redoToolStripMenuItem_Click;
+            // 
+            // redoToolStripMenuItem1
+            // 
+            redoToolStripMenuItem1.Enabled = false;
+            redoToolStripMenuItem1.Name = "redoToolStripMenuItem1";
+            redoToolStripMenuItem1.ShortcutKeys = Keys.Control | Keys.Shift | Keys.Z;
+            redoToolStripMenuItem1.Size = new Size(200, 22);
+            redoToolStripMenuItem1.Text = "Redo (Alt)";
+            redoToolStripMenuItem1.Visible = false;
+            redoToolStripMenuItem1.Click += redoToolStripMenuItem_Click;
+            // 
+            // formatToolStripMenuItem
+            // 
+            formatToolStripMenuItem.Name = "formatToolStripMenuItem";
+            formatToolStripMenuItem.Size = new Size(57, 20);
+            formatToolStripMenuItem.Text = "Format";
             // 
             // openLayoutDialog
             // 
@@ -314,11 +343,34 @@
             sidebarToNewWindowButton.UseVisualStyleBackColor = true;
             sidebarToNewWindowButton.Click += sidebarToNewWindowButton_Click;
             // 
+            // widgetGridSpacingNumericUpDown
+            // 
+            widgetGridSpacingNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            widgetGridSpacingNumericUpDown.Location = new Point(1177, 0);
+            widgetGridSpacingNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            widgetGridSpacingNumericUpDown.Name = "widgetGridSpacingNumericUpDown";
+            widgetGridSpacingNumericUpDown.Size = new Size(85, 23);
+            widgetGridSpacingNumericUpDown.TabIndex = 5;
+            widgetGridSpacingNumericUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            widgetGridSpacingNumericUpDown.ValueChanged += widgetGridSpacingNumericUpDown_ValueChanged;
+            // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label2.AutoSize = true;
+            label2.Location = new Point(1074, 4);
+            label2.Name = "label2";
+            label2.Size = new Size(98, 15);
+            label2.TabIndex = 4;
+            label2.Text = "Grid Spacing (px)";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 681);
+            Controls.Add(widgetGridSpacingNumericUpDown);
+            Controls.Add(label2);
             Controls.Add(sidebarToNewWindowButton);
             Controls.Add(splitContainer1);
             Controls.Add(menuStrip1);
@@ -339,6 +391,7 @@
             tabPage1.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -371,8 +424,11 @@
         private SaveFileDialog saveLayoutDialog;
         private ColorDialog customWidgetColorDialog;
         private Button sidebarToNewWindowButton;
-        private ToolTip customTooltip;
         private ToolStripMenuItem undoToolStripMenuItem;
         private ToolStripMenuItem redoToolStripMenuItem;
+        private ToolStripMenuItem redoToolStripMenuItem1;
+        private ToolStripMenuItem formatToolStripMenuItem;
+        private CustomNumericUpDown widgetGridSpacingNumericUpDown;
+        private Label label2;
     }
 }
