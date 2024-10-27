@@ -161,20 +161,14 @@ namespace MyGui.net
         void ExecuteCommand(IEditorAction command)
         {
             _commandManager.ExecuteCommand(command);
-            UpdateUndoRedo();
+            UpdateUndoRedo(false);
         }
 
         void ClearStacks()
         {
-            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
             _commandManager.clearUndoStack();
             _commandManager.clearRedoStack();
-            undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
-            redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
-            redoToolStripMenuItem1.Enabled = _commandManager.getRedoStackCount() > 0;
-
-            undoToolStripMenuItem.Text = $"Undo{(undoToolStripMenuItem.Enabled ? $" ({_commandManager.getUndoStackCount()})" : "")}";
-            redoToolStripMenuItem.Text = $"Redo{(redoToolStripMenuItem.Enabled ? $" ({_commandManager.getRedoStackCount()})" : "")}";
+            UpdateUndoRedo(false);
         }
 
         void UpdateProperties()
@@ -380,8 +374,8 @@ namespace MyGui.net
                             {
                                 Anchor = AnchorStyles.Left | AnchorStyles.Right,
                                 Width = 1,
-                                Minimum = -1920,
-                                Maximum = 1920,
+                                Minimum = -65536,
+                                Maximum = 65536,
                                 Name = property.name + "_X",
                                 Increment = _gridSpacing,
                             };
@@ -390,8 +384,8 @@ namespace MyGui.net
                             {
                                 Anchor = AnchorStyles.Left | AnchorStyles.Right,
                                 Width = 1,
-                                Minimum = -1080,
-                                Maximum = 1080,
+                                Minimum = -65536,
+                                Maximum = 65536,
                                 Name = property.name + "_Y",
                                 Increment = _gridSpacing,
                             };
@@ -1015,19 +1009,13 @@ namespace MyGui.net
             {
                 if (_draggingWidgetAt != BorderPosition.None)
                 {
-                    Viewport.SuspendLayout();
-
                     _draggingWidgetAt = BorderPosition.None;
-                    Point draggedWidgetLoc = _currentSelectedWidget.Location;
-                    Size draggedWidgetSize = _currentSelectedWidget.Size;
 
                     ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location, _draggedWidgetPositionStart));
                     ExecuteCommand(new ResizeCommand(_currentSelectedWidget, _currentSelectedWidget.Size, _draggedWidgetSizeStart));
 
                     _draggedWidgetPositionStart = _currentSelectedWidget.Location;
                     _draggedWidgetSizeStart = _currentSelectedWidget.Size;
-
-                    Viewport.ResumeLayout();
                 }
             }
         }
@@ -1272,7 +1260,7 @@ namespace MyGui.net
             UpdateUndoRedo();
         }
 
-        private void UpdateUndoRedo()
+        private void UpdateUndoRedo( bool updateProperties = true )
         {
             this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath  : Path.GetFileName(_currentLayoutPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
 
@@ -1282,8 +1270,10 @@ namespace MyGui.net
 
             undoToolStripMenuItem.Text = $"Undo{(undoToolStripMenuItem.Enabled ? $" ({_commandManager.getUndoStackCount()})" : "")}";
             redoToolStripMenuItem.Text = $"Redo{(redoToolStripMenuItem.Enabled ? $" ({_commandManager.getRedoStackCount()})" : "")}";
-
-            UpdateProperties();
+            if (updateProperties)
+            {
+                UpdateProperties();
+            }
         }
 
         //TopBar Utils
