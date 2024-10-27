@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             splitContainer1 = new SplitContainer();
             Viewport = new Panel();
@@ -61,6 +62,9 @@
             sidebarToNewWindowButton = new Button();
             widgetGridSpacingNumericUpDown = new CustomNumericUpDown();
             label2 = new Label();
+            editorMenuStrip = new ContextMenuStrip(components);
+            copyToolStripMenuItem = new ToolStripMenuItem();
+            pasteToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -70,6 +74,7 @@
             tabPage1.SuspendLayout();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
+            editorMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
             // splitContainer1
@@ -107,6 +112,7 @@
             Viewport.Size = new Size(990, 640);
             Viewport.TabIndex = 0;
             Viewport.MouseDown += Viewport_MouseDown;
+            Viewport.MouseEnter += Viewport_MouseEnter;
             Viewport.MouseLeave += Viewport_MouseLeave;
             Viewport.MouseMove += Viewport_MouseMove;
             Viewport.MouseUp += Viewport_MouseUp;
@@ -268,7 +274,7 @@
             // 
             exitToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
+            exitToolStripMenuItem.ShortcutKeyDisplayString = "Alt + F4";
             exitToolStripMenuItem.Size = new Size(186, 22);
             exitToolStripMenuItem.Text = "Exit";
             exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
@@ -346,10 +352,10 @@
             // widgetGridSpacingNumericUpDown
             // 
             widgetGridSpacingNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            widgetGridSpacingNumericUpDown.Location = new Point(1177, 0);
+            widgetGridSpacingNumericUpDown.Location = new Point(1213, 0);
             widgetGridSpacingNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             widgetGridSpacingNumericUpDown.Name = "widgetGridSpacingNumericUpDown";
-            widgetGridSpacingNumericUpDown.Size = new Size(85, 23);
+            widgetGridSpacingNumericUpDown.Size = new Size(49, 23);
             widgetGridSpacingNumericUpDown.TabIndex = 5;
             widgetGridSpacingNumericUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
             widgetGridSpacingNumericUpDown.ValueChanged += widgetGridSpacingNumericUpDown_ValueChanged;
@@ -358,11 +364,34 @@
             // 
             label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label2.AutoSize = true;
-            label2.Location = new Point(1074, 4);
+            label2.Location = new Point(1110, 4);
             label2.Name = "label2";
             label2.Size = new Size(98, 15);
             label2.TabIndex = 4;
             label2.Text = "Grid Spacing (px)";
+            // 
+            // editorMenuStrip
+            // 
+            editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, pasteToolStripMenuItem });
+            editorMenuStrip.Name = "editorMenuStrip";
+            editorMenuStrip.RenderMode = ToolStripRenderMode.System;
+            editorMenuStrip.Size = new Size(151, 48);
+            // 
+            // copyToolStripMenuItem
+            // 
+            copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            copyToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + C";
+            copyToolStripMenuItem.Size = new Size(150, 22);
+            copyToolStripMenuItem.Text = "Copy";
+            copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
+            // 
+            // pasteToolStripMenuItem
+            // 
+            pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            pasteToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + V";
+            pasteToolStripMenuItem.Size = new Size(150, 22);
+            pasteToolStripMenuItem.Text = "Paste";
+            pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
             // 
             // Form1
             // 
@@ -374,7 +403,9 @@
             Controls.Add(sidebarToNewWindowButton);
             Controls.Add(splitContainer1);
             Controls.Add(menuStrip1);
+            DoubleBuffered = true;
             Icon = (Icon)resources.GetObject("$this.Icon");
+            KeyPreview = true;
             MainMenuStrip = menuStrip1;
             MinimumSize = new Size(640, 480);
             Name = "Form1";
@@ -382,6 +413,7 @@
             Text = "MyGui.net";
             FormClosing += Form1_FormClosing;
             Load += Form1_Load;
+            KeyDown += Form1_KeyDown;
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
@@ -392,6 +424,7 @@
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
+            editorMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -430,5 +463,8 @@
         private ToolStripMenuItem formatToolStripMenuItem;
         private CustomNumericUpDown widgetGridSpacingNumericUpDown;
         private Label label2;
+        private ContextMenuStrip editorMenuStrip;
+        private ToolStripMenuItem copyToolStripMenuItem;
+        private ToolStripMenuItem pasteToolStripMenuItem;
     }
 }

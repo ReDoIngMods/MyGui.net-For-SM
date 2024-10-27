@@ -37,6 +37,7 @@ namespace MyGui.net
             //editorBackgroundPathDialog.ShowDialog();
             //TAB PROGRAM
             smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+            showFullFilePathCheckBox.Checked = Settings.Default.ShowFullFilePathInTitle;
 
             exportAsPxRadioButton.Checked = Settings.Default.ExportMode == 0;
             exportAsPercentRadioButton.Checked = Settings.Default.ExportMode == 1;
@@ -85,6 +86,13 @@ namespace MyGui.net
         }
 
         //TAB PROGRAM
+
+        private void showFullFilePathCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.ShowFullFilePathInTitle = sender.Checked;
+            OnSettingChange();
+        }
 
         public enum ExportMode
         {

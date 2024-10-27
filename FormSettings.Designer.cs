@@ -70,6 +70,7 @@
             autoApplyCheckBox = new CheckBox();
             editorBackgroundPathDialog = new OpenFileDialog();
             editorBackgroundColorDialog = new ColorDialog();
+            showFullFilePathCheckBox = new CheckBox();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -125,13 +126,14 @@
             // 
             // groupBox2
             // 
+            groupBox2.Controls.Add(showFullFilePathCheckBox);
             groupBox2.Controls.Add(detectSmPath);
             groupBox2.Controls.Add(smPathLabel);
             groupBox2.Controls.Add(chooseSmPath);
             groupBox2.Controls.Add(label1);
             groupBox2.Location = new Point(3, 3);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(348, 73);
+            groupBox2.Size = new Size(348, 95);
             groupBox2.TabIndex = 5;
             groupBox2.TabStop = false;
             groupBox2.Text = "Files";
@@ -239,7 +241,7 @@
             groupBox1.Controls.Add(useDoubleDrawCheckBox);
             groupBox1.Controls.Add(useSlowDrawRadioButton);
             groupBox1.Controls.Add(useFastDrawRadioButton);
-            groupBox1.Location = new Point(3, 82);
+            groupBox1.Location = new Point(3, 104);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(263, 103);
             groupBox1.TabIndex = 7;
@@ -288,7 +290,7 @@
             groupBox5.Controls.Add(useBackgroundImageColor);
             groupBox5.Controls.Add(backgroundImagePathTextBox);
             groupBox5.Controls.Add(backgroundImageSelectButton);
-            groupBox5.Location = new Point(272, 82);
+            groupBox5.Location = new Point(272, 104);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(348, 73);
             groupBox5.TabIndex = 8;
@@ -352,7 +354,7 @@
             // groupBox3
             // 
             groupBox3.Controls.Add(showWarningsCheckBox);
-            groupBox3.Location = new Point(3, 191);
+            groupBox3.Location = new Point(3, 213);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(124, 55);
             groupBox3.TabIndex = 9;
@@ -533,6 +535,17 @@
             editorBackgroundColorDialog.AnyColor = true;
             editorBackgroundColorDialog.FullOpen = true;
             // 
+            // showFullFilePathCheckBox
+            // 
+            showFullFilePathCheckBox.AutoSize = true;
+            showFullFilePathCheckBox.Location = new Point(6, 66);
+            showFullFilePathCheckBox.Name = "showFullFilePathCheckBox";
+            showFullFilePathCheckBox.Size = new Size(181, 19);
+            showFullFilePathCheckBox.TabIndex = 3;
+            showFullFilePathCheckBox.Text = "Show Full Layout Path in Title";
+            showFullFilePathCheckBox.UseVisualStyleBackColor = true;
+            showFullFilePathCheckBox.CheckedChanged += showFullFilePathCheckBox_CheckedChanged;
+            // 
             // FormSettings
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -620,5 +633,6 @@
         private RadioButton useBackgroundImageGrid;
         private RadioButton useBackgroundImageCustom;
         private CheckBox useDoubleDrawCheckBox;
+        private CheckBox showFullFilePathCheckBox;
     }
 }

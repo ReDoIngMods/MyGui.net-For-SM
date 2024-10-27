@@ -3,20 +3,19 @@ using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Xml.Linq;
 using static MyGui.net.Util;
 
 namespace MyGui.net
 {
+    //TODO: Migrate to PropertyGrid for the widget property window thing, it is like 10x better
+    //TODO: Add an undo/redo history window
     public partial class Form1 : Form
     {
-        #region MyGui Constants
-        public static string[] _myGuiWidgetSkins = { };
-        public static string[] _myGuiWidgetTypes = { };
-        #endregion
-
         static List<MyGuiWidgetData> _currentLayout = new();
         static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
         static string _currentLayoutSavePath = "";
@@ -62,6 +61,8 @@ namespace MyGui.net
         }
 
         static bool _draggingViewport;
+        static bool _movedViewport;
+        static bool _viewportFocused = false;
         static int _gridSpacing = Settings.Default.WidgetGridSpacing;
         static BorderPosition _draggingWidgetAt = BorderPosition.None;
         static Point _draggedWidgetPosition = new Point(0, 0);
@@ -96,7 +97,7 @@ namespace MyGui.net
 
         void HandleLoad(string autoloadPath = "")
         {
-            this.Text = $"{Util.programName} - {(autoloadPath == "" ? "unnamed" : Path.GetFileName(autoloadPath))}";
+            this.Text = $"{Util.programName} - {(autoloadPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? autoloadPath : Path.GetFileName(autoloadPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
             Settings.Default.PropertyChanged += Settings_PropertyChanged;
             widgetGridSpacingNumericUpDown.Value = _gridSpacing;
             if (autoloadPath != "")
@@ -159,21 +160,21 @@ namespace MyGui.net
 
         void ExecuteCommand(IEditorAction command)
         {
-            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
-            undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
-            redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
-            redoToolStripMenuItem1.Enabled = _commandManager.getRedoStackCount() > 0;
             _commandManager.ExecuteCommand(command);
+            UpdateUndoRedo();
         }
 
         void ClearStacks()
         {
-            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
             _commandManager.clearUndoStack();
             _commandManager.clearRedoStack();
             undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
             redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
             redoToolStripMenuItem1.Enabled = _commandManager.getRedoStackCount() > 0;
+
+            undoToolStripMenuItem.Text = $"Undo{(undoToolStripMenuItem.Enabled ? $" ({_commandManager.getUndoStackCount()})" : "")}";
+            redoToolStripMenuItem.Text = $"Redo{(redoToolStripMenuItem.Enabled ? $" ({_commandManager.getRedoStackCount()})" : "")}";
         }
 
         void UpdateProperties()
@@ -186,13 +187,13 @@ namespace MyGui.net
                 }
                 return;
             }
-            foreach (var item in _editorProperties)
+            /*foreach (var item in _editorProperties)
             {
                 Debug.WriteLine(item.Key);
-            }
+            }*/
 
             MyGuiWidgetData currentWidgetData = (MyGuiWidgetData)_currentSelectedWidget.Tag;
-            Debug.WriteLine(currentWidgetData.name);
+            //Debug.WriteLine(currentWidgetData.name);
 
             foreach (var category in MyGuiWidgetProperties.categories)
             {
@@ -274,7 +275,7 @@ namespace MyGui.net
                 return;
             }
             MyGuiWidgetData currentWidgetData = (MyGuiWidgetData)_currentSelectedWidget.Tag;
-            Debug.WriteLine(currentWidgetData.name);
+            //Debug.WriteLine(currentWidgetData.name);
 
             TableLayoutPanel tableLayoutPanel = new TableLayoutPanel
             {
@@ -552,29 +553,29 @@ namespace MyGui.net
             MyGuiWidgetData currWidgetData = ((MyGuiWidgetData)_currentSelectedWidget.Tag);
             if (_currentSelectedWidget != null)
             {
-                Debug.WriteLine(_currentSelectedWidget.Name);
-                Debug.WriteLine($"senderBoundTo: {senderBoundTo}");
+                //Debug.WriteLine(_currentSelectedWidget.Name);
+                //Debug.WriteLine($"senderBoundTo: {senderBoundTo}");
                 switch (senderBoundTo)
                 {
                     case "type":
-                        currWidgetData.type = sender.Text;
+                        ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "type", sender.Text, currWidgetData.type));
                         break;
                     case "layer":
-                        currWidgetData.layer = sender.Text;
+                        ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "layer", sender.Text, currWidgetData.layer));
                         break;
                     case "align":
-                        currWidgetData.align = sender.Text;
+                        ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "align", sender.Text, currWidgetData.align));
                         break;
                     case "skin":
-                        currWidgetData.skin = sender.Text;
+                        ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "skin", sender.Text, currWidgetData.skin));
                         break;
                     default:
                         break;
                 }
-                foreach (var property in currWidgetData.properties)
+                /*foreach (var property in currWidgetData.properties)
                 {
                     Debug.WriteLine(property);
-                }
+                }*/
             }
         }
         private void selectCustomWidgetSkin_Click(object senderAny, EventArgs e)
@@ -770,6 +771,7 @@ namespace MyGui.net
             if (e.Button == MouseButtons.Right)
             {
                 _draggingViewport = true;
+                _movedViewport = false;
                 _mouseLoc = e.Location;
                 sender.Cursor = Cursors.NoMove2D;
             }
@@ -867,6 +869,7 @@ namespace MyGui.net
             Panel sender = (Panel)senderAny;
             if (_draggingViewport)
             {
+                _movedViewport = true;
                 //Debug.WriteLine(_mouseLoc);
                 Point localLocCurr = e.Location - (Size)sender.Location;
                 Point localLocPrev = _mouseLoc - (Size)sender.Location;
@@ -988,7 +991,24 @@ namespace MyGui.net
             Panel sender = (Panel)senderAny;
             if (e.Button == MouseButtons.Right)
             {
+                if (!_movedViewport)
+                {
+                    Control? thing = Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel });
+                    if (thing != null)
+                    {
+                        if (_currentSelectedWidget != thing)
+                        {
+                            _currentSelectedWidget = thing;
+                            HandleWidgetSelection();
+                        }
+                    }
+                    if (_currentSelectedWidget != null)
+                    {
+                        editorMenuStrip.Show(e.Location);
+                    }
+                }
                 _draggingViewport = false;
+                _movedViewport = false;
                 sender.Cursor = Cursors.Default;
             }
             else if (e.Button == MouseButtons.Left)
@@ -1012,9 +1032,15 @@ namespace MyGui.net
             }
         }
 
+        private void Viewport_MouseEnter(object sender, EventArgs e)
+        {
+            _viewportFocused = true;
+        }
+
         private void Viewport_MouseLeave(object sender, EventArgs e)
         {
             Cursor = Cursors.Default;
+            _viewportFocused = false;
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1071,7 +1097,7 @@ namespace MyGui.net
                 _currentLayoutSavePath = _currentLayoutPath;
                 _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
 
-                this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}";
+                this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
 
                 _currentSelectedWidget = null;
                 _draggingWidgetAt = BorderPosition.None;
@@ -1132,7 +1158,7 @@ namespace MyGui.net
                 {
                     FormExport decideForm = new FormExport();
                     actualExport = (int)decideForm.ShowDialog(this) - 1;
-                    Debug.WriteLine(actualExport);
+                    //Debug.WriteLine(actualExport);
                 }
                 if (actualExport == 0 || actualExport == 3)
                 {
@@ -1233,26 +1259,30 @@ namespace MyGui.net
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_draggingWidgetAt != BorderPosition.None) { return; }
-            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
-            if (_commandManager.getUndoStackCount() < 1) //Should be handled, but put this here just in case
-            {
-                SystemSounds.Asterisk.Play();
-                return;
-            }
             _commandManager.Undo();
-            UpdateProperties();
+
+            UpdateUndoRedo();
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (_draggingWidgetAt != BorderPosition.None) { return; }
-            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : Path.GetFileName(_currentLayoutPath))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
-            if (_commandManager.getRedoStackCount() < 1) //Should be handled, but put this here just in case
-            {
-                SystemSounds.Asterisk.Play();
-                return;
-            }
             _commandManager.Redo();
+
+            UpdateUndoRedo();
+        }
+
+        private void UpdateUndoRedo()
+        {
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath  : Path.GetFileName(_currentLayoutPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
+
+            undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
+            redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
+            redoToolStripMenuItem1.Enabled = _commandManager.getRedoStackCount() > 0;
+
+            undoToolStripMenuItem.Text = $"Undo{(undoToolStripMenuItem.Enabled ? $" ({_commandManager.getUndoStackCount()})" : "")}";
+            redoToolStripMenuItem.Text = $"Redo{(redoToolStripMenuItem.Enabled ? $" ({_commandManager.getRedoStackCount()})" : "")}";
+
             UpdateProperties();
         }
 
@@ -1266,6 +1296,78 @@ namespace MyGui.net
 
             Settings.Default.WidgetGridSpacing = (int)sender.Value;
             Settings.Default.Save();
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (_currentSelectedWidget != null && _viewportFocused && e.Control)
+            {
+                if (e.KeyCode == Keys.C)
+                {
+                    List<MyGuiWidgetData> myGuiWidgetDatas = [(MyGuiWidgetData)_currentSelectedWidget.Tag];
+                    if (Clipboard.ContainsText())
+                    {
+                        Clipboard.Clear(); // Optional: clear the clipboard before setting text.
+                    }
+                    Clipboard.SetText(Util.ExportLayoutToXmlString(myGuiWidgetDatas, new Point(1, 1), true, false), TextDataFormat.Text);
+
+                    e.Handled = true;
+                }
+                else if (e.KeyCode == Keys.V)
+                {
+                    if (Clipboard.ContainsText())
+                    {
+                        string clipboardText = Clipboard.GetText();
+
+                        try
+                        {
+                            // Try to parse the clipboard text as XML
+                            XDocument doc = XDocument.Parse(clipboardText);
+
+                            // Check if it matches expected XML structure (either with or without root)
+                            // For example, ensure it has elements of type "Widget"
+                            if (doc.Root == null || doc.Root.Name != "MyGUI")
+                            {
+                                var elementsWithoutRoot = doc.Elements("Widget").ToList();
+                                doc = new XDocument(new XElement("MyGUI",
+                                    new XAttribute("type", "Layout"),
+                                    new XAttribute("version", "3.2.0"),
+                                    elementsWithoutRoot
+                                ));
+                            }
+
+                            List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc);
+                            Util.AddChildrenToWidget(((MyGuiWidgetData)_currentSelectedWidget.Tag), doc.Root.Elements("Widget").ToList(), (Point)_currentSelectedWidget.Size);
+                            //Debug.WriteLine(((MyGuiWidgetData)_currentSelectedWidget.Tag).children.Count);
+                            Util.SpawnLayoutWidgets(parsedLayout, _currentSelectedWidget, _currentSelectedWidget);
+                        }
+                        catch (Exception)
+                        {
+                            // Parsing failed, so it's not valid XML
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Clipboard does not contain text.");
+                        return;
+                    }
+
+                    e.Handled = true;
+                }
+            }
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _viewportFocused = true;
+            Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.C));
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _viewportFocused = true;
+            Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.V));
         }
     }
 }

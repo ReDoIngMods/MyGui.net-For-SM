@@ -36,8 +36,10 @@ namespace MyGui.net
         {
             if (command.Execute()) //If command succeeded
             {
+                Debug.WriteLine($"command: {command.ToString()} executed!");
                 _undoStack.Push(command);
                 _redoStack.Clear();
+                this.PrintStacks();
             }
         }
 

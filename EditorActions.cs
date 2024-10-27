@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -45,7 +47,6 @@ namespace MyGui.net
 
         public override string ToString()
         {
-            Console.WriteLine("haiii from the movecmd!");
             return $"MoveCommand: {_control.Name} from {_oldPosition} to {_newPosition}";
         }
     }
@@ -100,6 +101,7 @@ namespace MyGui.net
         public ChangePropertyCommand(Control control, string property, object newValue)
         {
             _control = control;
+            _property = property;
             _oldValue = Util.GetPropertyValue(((MyGuiWidgetData)control.Tag), property);
             _newValue = newValue;
         }
@@ -107,6 +109,7 @@ namespace MyGui.net
         public ChangePropertyCommand(Control control, string property, object newValue, object oldValue)
         {
             _control = control;
+            _property = property;
             _oldValue = oldValue;
             _newValue = newValue;
         }
@@ -124,6 +127,88 @@ namespace MyGui.net
         public override string ToString()
         {
             return $"ChangePropertyCommand: {_control.Name} changed property {_property} from {_oldValue} to {_newValue}";
+        }
+    }
+
+    public class CreateControlCommand : IEditorAction
+    {
+        private Control _control;
+        private Control _parent;
+
+        public CreateControlCommand(Control control, Control parent)
+        {
+            _control = control;
+            _parent = parent;
+        }
+
+        public bool Execute()
+        {
+            _parent.Controls.Add(_control); // Add the control to the parent container
+            if (_control.Tag != null && (MyGuiWidgetData)_control.Tag != null)
+            {
+                ((MyGuiWidgetData)_parent.Tag).children.Add((MyGuiWidgetData)_control.Tag);
+            }
+            else
+            {
+                ((MyGuiWidgetData)_parent.Tag).children.Add(new MyGuiWidgetData());
+            }
+            return true;
+        }
+
+        public bool Undo()
+        {
+            int childIndex = _parent.Controls.GetChildIndex(_control);
+            _parent.Controls.Remove(_control); // Remove the control from the parent container
+            if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
+            {
+                ((MyGuiWidgetData)_control.Tag).children.RemoveAt(childIndex);
+            }
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return $"CreateControlCommand: created control {_control} with parent {_parent}";
+        }
+    }
+
+    public class DeleteControlCommand : IEditorAction
+    {
+        private Control _control;
+        private Control _parent;
+        private int _index; // Store the index to restore control in the correct position
+
+        public DeleteControlCommand(Control control, Control parent)
+        {
+            _control = control;
+            _parent = parent;
+            _index = _parent.Controls.IndexOf(control); // Store the original position
+        }
+
+        public bool Execute()
+        {
+            _parent.Controls.Remove(_control); // Remove the control from its parent
+            if (_control.Tag != null && (MyGuiWidgetData)_control.Tag != null)
+            {
+                ((MyGuiWidgetData)_control.Tag).children.RemoveAt(_index);
+            }
+            return true;
+        }
+
+        public bool Undo()
+        {
+            _parent.Controls.Add(_control);  // Re-add the control to its parent
+            _parent.Controls.SetChildIndex(_control, _index); // Restore to original position
+            if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
+            {
+                ((MyGuiWidgetData)_parent.Tag).children.Insert(_index, (MyGuiWidgetData)_control.Tag);
+            }
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return $"DeleteControlCommand: deleted control {_control} from parent {_parent} at index {_index}";
         }
     }
 }

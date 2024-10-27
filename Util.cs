@@ -218,13 +218,18 @@ namespace MyGui.net
                 MessageBox.Show($"Failed to read layout file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
+            return ParseLayoutFile(xmlDocument);
+        }
+
+        public static List<MyGuiWidgetData>? ParseLayoutFile(XDocument xmlDocument)
+        {
             XElement? root = xmlDocument.Root;
             if (root == null) //This should already get caught by the try-catch, but vs complains anyway and this calms it down.
             {
                 MessageBox.Show("Failed to read layout file! Root element is missing!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-            if(root.Name != "MyGUI")
+            if (root.Name != "MyGUI")
             {
                 MessageBox.Show("Failed to read layout file! Root element must be 'MyGUI'", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
@@ -314,18 +319,27 @@ namespace MyGui.net
             }
         }
 
-        public static string ExportLayoutToXmlString(List<MyGuiWidgetData> layout, Point? workspaceSize = null, bool exportAsPx = false)
+        public static string ExportLayoutToXmlString(List<MyGuiWidgetData> layout, Point? workspaceSize = null, bool exportAsPx = false, bool createRoot = true)
         {
             Point actualWorkspaceSize = workspaceSize ?? new Point(1920, 1080);
-            XElement root = new("MyGUI",
+
+            // If createRoot is true, add elements under "MyGUI" root
+            XElement root = createRoot ? new("MyGUI",
                 new XAttribute("type", "Layout"),
                 new XAttribute("version", "3.2.0")
-            );
-            AddChildrenToElement(root, layout, exportAsPx ? new Point(1, 1) : actualWorkspaceSize, exportAsPx);
-            return FormatXmlString(root.ToString(SaveOptions.DisableFormatting));
+            ) : null;
+
+            // Collect all elements as children, either with or without a root
+            List<XElement> elements = new();
+            AddChildrenToElement(createRoot ? root : elements, layout, exportAsPx ? new Point(1, 1) : actualWorkspaceSize, exportAsPx);
+
+            // Format output based on root existence
+            return createRoot
+                ? FormatXmlString(root.ToString(SaveOptions.DisableFormatting))
+                : FormatXmlString(string.Join(Environment.NewLine, elements.Select(e => e.ToString(SaveOptions.DisableFormatting))));
         }
 
-        public static void AddChildrenToElement(XElement element, List<MyGuiWidgetData> children, Point parentSize, bool exportAsPx = false)
+        public static void AddChildrenToElement(object target, List<MyGuiWidgetData> children, Point parentSize, bool exportAsPx = false)
         {
             foreach (MyGuiWidgetData widget in children)
             {
@@ -341,6 +355,7 @@ namespace MyGui.net
                     exportAsPx ? "position" : "position_real",
                     $"{(double)widget.position.X / parentSize.X} {(double)widget.position.Y / parentSize.Y} {(double)widget.size.X / parentSize.X} {(double)widget.size.Y / parentSize.Y}".Replace(",", ".")
                 );
+
                 foreach (var property in widget.properties)
                 {
                     XElement propertyElement = new("Property",
@@ -349,8 +364,25 @@ namespace MyGui.net
                     );
                     widgetElement.Add(propertyElement);
                 }
-                AddChildrenToElement(widgetElement, widget.children, exportAsPx ? new Point (1,1) : widget.size, exportAsPx);
-                element.Add(widgetElement);
+
+                // Recursively add child elements
+                AddChildrenToElement(widgetElement, widget.children, exportAsPx ? new Point(1, 1) : widget.size, exportAsPx);
+
+                // Add to root or list depending on target type
+                if (target is XElement rootElement)
+                    rootElement.Add(widgetElement);
+                else if (target is List<XElement> elementsList)
+                    elementsList.Add(widgetElement);
+            }
+        }
+
+        public static void AddChildrenToWidget(MyGuiWidgetData target, List<XElement> children, Point parentSize, bool exportAsPx = false)
+        {
+            List<MyGuiWidgetData> parsedData = ReadWidgetElements(children, parentSize);
+
+            foreach (var item in parsedData)
+            {
+                target.children.Add(item);
             }
         }
 
