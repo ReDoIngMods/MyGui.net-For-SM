@@ -33,6 +33,7 @@
             tabPage1 = new TabPage();
             flowLayoutPanel1 = new FlowLayoutPanel();
             groupBox2 = new GroupBox();
+            showFullFilePathCheckBox = new CheckBox();
             detectSmPath = new Button();
             smPathLabel = new TextBox();
             chooseSmPath = new Button();
@@ -70,7 +71,7 @@
             autoApplyCheckBox = new CheckBox();
             editorBackgroundPathDialog = new OpenFileDialog();
             editorBackgroundColorDialog = new ColorDialog();
-            showFullFilePathCheckBox = new CheckBox();
+            pictureBox2 = new PictureBox();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -85,6 +86,7 @@
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
             tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             SuspendLayout();
             // 
             // tabControl1
@@ -137,6 +139,17 @@
             groupBox2.TabIndex = 5;
             groupBox2.TabStop = false;
             groupBox2.Text = "Files";
+            // 
+            // showFullFilePathCheckBox
+            // 
+            showFullFilePathCheckBox.AutoSize = true;
+            showFullFilePathCheckBox.Location = new Point(6, 66);
+            showFullFilePathCheckBox.Name = "showFullFilePathCheckBox";
+            showFullFilePathCheckBox.Size = new Size(181, 19);
+            showFullFilePathCheckBox.TabIndex = 3;
+            showFullFilePathCheckBox.Text = "Show Full Layout Path in Title";
+            showFullFilePathCheckBox.UseVisualStyleBackColor = true;
+            showFullFilePathCheckBox.CheckedChanged += showFullFilePathCheckBox_CheckedChanged;
             // 
             // detectSmPath
             // 
@@ -437,6 +450,7 @@
             // 
             // tabPage4
             // 
+            tabPage4.Controls.Add(pictureBox2);
             tabPage4.Controls.Add(aboutTextBox);
             tabPage4.Controls.Add(pictureBox1);
             tabPage4.Location = new Point(4, 24);
@@ -535,16 +549,17 @@
             editorBackgroundColorDialog.AnyColor = true;
             editorBackgroundColorDialog.FullOpen = true;
             // 
-            // showFullFilePathCheckBox
+            // pictureBox2
             // 
-            showFullFilePathCheckBox.AutoSize = true;
-            showFullFilePathCheckBox.Location = new Point(6, 66);
-            showFullFilePathCheckBox.Name = "showFullFilePathCheckBox";
-            showFullFilePathCheckBox.Size = new Size(181, 19);
-            showFullFilePathCheckBox.TabIndex = 3;
-            showFullFilePathCheckBox.Text = "Show Full Layout Path in Title";
-            showFullFilePathCheckBox.UseVisualStyleBackColor = true;
-            showFullFilePathCheckBox.CheckedChanged += showFullFilePathCheckBox_CheckedChanged;
+            pictureBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
+            pictureBox2.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
+            pictureBox2.Location = new Point(556, 288);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(90, 90);
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.TabIndex = 2;
+            pictureBox2.TabStop = false;
             // 
             // FormSettings
             // 
@@ -587,6 +602,7 @@
             tabPage4.ResumeLayout(false);
             tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);
         }
 
@@ -634,5 +650,6 @@
         private RadioButton useBackgroundImageCustom;
         private CheckBox useDoubleDrawCheckBox;
         private CheckBox showFullFilePathCheckBox;
+        private PictureBox pictureBox2;
     }
 }

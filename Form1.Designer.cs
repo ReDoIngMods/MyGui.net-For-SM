@@ -65,6 +65,7 @@
             editorMenuStrip = new ContextMenuStrip(components);
             copyToolStripMenuItem = new ToolStripMenuItem();
             pasteToolStripMenuItem = new ToolStripMenuItem();
+            deleteToolStripMenuItem = new ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -94,9 +95,9 @@
             // 
             splitContainer1.Panel2.BackColor = SystemColors.Control;
             splitContainer1.Panel2.Controls.Add(tabControl1);
-            splitContainer1.Panel2MinSize = 240;
+            splitContainer1.Panel2MinSize = 300;
             splitContainer1.Size = new Size(1240, 641);
-            splitContainer1.SplitterDistance = 992;
+            splitContainer1.SplitterDistance = 921;
             splitContainer1.TabIndex = 1;
             // 
             // Viewport
@@ -109,7 +110,7 @@
             Viewport.Controls.Add(mainPanel);
             Viewport.Location = new Point(0, 0);
             Viewport.Name = "Viewport";
-            Viewport.Size = new Size(990, 640);
+            Viewport.Size = new Size(919, 640);
             Viewport.TabIndex = 0;
             Viewport.MouseDown += Viewport_MouseDown;
             Viewport.MouseEnter += Viewport_MouseEnter;
@@ -137,7 +138,7 @@
             tabControl1.Margin = new Padding(0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(242, 639);
+            tabControl1.Size = new Size(313, 639);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -146,7 +147,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(234, 611);
+            tabPage1.Size = new Size(305, 611);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Properties";
             tabPage1.UseVisualStyleBackColor = true;
@@ -157,7 +158,7 @@
             tabPage1Panel.Dock = DockStyle.Fill;
             tabPage1Panel.Location = new Point(3, 3);
             tabPage1Panel.Name = "tabPage1Panel";
-            tabPage1Panel.Size = new Size(228, 605);
+            tabPage1Panel.Size = new Size(299, 605);
             tabPage1Panel.TabIndex = 0;
             // 
             // tabPage2
@@ -165,7 +166,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(234, 611);
+            tabPage2.Size = new Size(305, 611);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Widgets";
             tabPage2.UseVisualStyleBackColor = true;
@@ -174,7 +175,7 @@
             // 
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(234, 611);
+            tabPage3.Size = new Size(305, 611);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
@@ -372,10 +373,10 @@
             // 
             // editorMenuStrip
             // 
-            editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, pasteToolStripMenuItem });
+            editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, pasteToolStripMenuItem, deleteToolStripMenuItem });
             editorMenuStrip.Name = "editorMenuStrip";
             editorMenuStrip.RenderMode = ToolStripRenderMode.System;
-            editorMenuStrip.Size = new Size(151, 48);
+            editorMenuStrip.Size = new Size(151, 70);
             // 
             // copyToolStripMenuItem
             // 
@@ -393,6 +394,14 @@
             pasteToolStripMenuItem.Text = "Paste";
             pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
             // 
+            // deleteToolStripMenuItem
+            // 
+            deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            deleteToolStripMenuItem.ShortcutKeyDisplayString = "Delete";
+            deleteToolStripMenuItem.Size = new Size(150, 22);
+            deleteToolStripMenuItem.Text = "Delete";
+            deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -403,7 +412,6 @@
             Controls.Add(sidebarToNewWindowButton);
             Controls.Add(splitContainer1);
             Controls.Add(menuStrip1);
-            DoubleBuffered = true;
             Icon = (Icon)resources.GetObject("$this.Icon");
             KeyPreview = true;
             MainMenuStrip = menuStrip1;
@@ -414,6 +422,7 @@
             FormClosing += Form1_FormClosing;
             Load += Form1_Load;
             KeyDown += Form1_KeyDown;
+            KeyUp += Form1_KeyUp;
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
@@ -466,5 +475,6 @@
         private ContextMenuStrip editorMenuStrip;
         private ToolStripMenuItem copyToolStripMenuItem;
         private ToolStripMenuItem pasteToolStripMenuItem;
+        private ToolStripMenuItem deleteToolStripMenuItem;
     }
 }

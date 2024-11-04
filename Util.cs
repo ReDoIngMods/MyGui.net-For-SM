@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -113,54 +114,143 @@ namespace MyGui.net
         public static object? GetPropertyValue(object obj, string name)
         {
             if (obj == null || string.IsNullOrEmpty(name))
-                //throw new ArgumentNullException("Object or name cannot be null.");
                 return null;
 
-            Type objType = obj.GetType();
-
-            // Try to get the property
-            PropertyInfo propInfo = objType.GetProperty(name);
-            if (propInfo != null)
+            foreach (var part in name.Split('.'))
             {
-                return propInfo.GetValue(obj);
+                if (obj == null)
+                    return null;
+
+                Type objType = obj.GetType();
+
+                // Check if current part is an index for a list or array
+                if (int.TryParse(part, out int index) && obj is IList list)
+                {
+                    obj = index >= 0 && index < list.Count ? list[index] : null;
+                    continue;
+                }
+
+                // Check if obj is a dictionary and part is a key
+                if (obj is IDictionary dict && dict.Contains(part))
+                {
+                    obj = dict[part];
+                    continue;
+                }
+
+                // Try to get the property
+                PropertyInfo propInfo = objType.GetProperty(part);
+                if (propInfo != null)
+                {
+                    obj = propInfo.GetValue(obj);
+                    continue;
+                }
+
+                // Try to get the field
+                FieldInfo fieldInfo = objType.GetField(part);
+                if (fieldInfo != null)
+                {
+                    obj = fieldInfo.GetValue(obj);
+                    continue;
+                }
+
+                // If neither is found, return null
+                return null;
             }
 
-            // Try to get the field
-            FieldInfo fieldInfo = objType.GetField(name);
-            if (fieldInfo != null)
-            {
-                return fieldInfo.GetValue(obj);
-            }
-
-            // Return null if neither property nor field is found
-            return null;
+            return obj;
         }
 
-        // Setter method
         public static bool SetPropertyValue(object obj, string name, object value)
         {
             if (obj == null || string.IsNullOrEmpty(name))
                 return false;
 
-            Type objType = obj.GetType();
-
-            // Try to set the property
-            PropertyInfo propInfo = objType.GetProperty(name);
-            if (propInfo != null && propInfo.CanWrite)
+            string[] parts = name.Split('.');
+            for (int i = 0; i < parts.Length - 1; i++)
             {
-                propInfo.SetValue(obj, value);
+                if (obj == null)
+                    return false;
+
+                Type objType = obj.GetType();
+                string part = parts[i];
+
+                // Check if current part is an index for a list or array
+                if (int.TryParse(part, out int index) && obj is IList list)
+                {
+                    obj = index >= 0 && index < list.Count ? list[index] : null;
+                    continue;
+                }
+
+                // Check if obj is a dictionary
+                if (obj is IDictionary dict)
+                {
+                    // If the key doesn't exist, add a new nested dictionary
+                    if (!dict.Contains(part))
+                        dict[part] = new Dictionary<string, string>();
+
+                    obj = dict[part];
+                    continue;
+                }
+
+                // Try to get the property
+                PropertyInfo propInfo = objType.GetProperty(part);
+                if (propInfo != null)
+                {
+                    obj = propInfo.GetValue(obj);
+                    continue;
+                }
+
+                // Try to get the field
+                FieldInfo fieldInfo = objType.GetField(part);
+                if (fieldInfo != null)
+                {
+                    obj = fieldInfo.GetValue(obj);
+                    continue;
+                }
+
+                // If neither is found, return false
+                return false;
+            }
+
+            // Now, set the final property or field
+            string lastPart = parts[^1];
+            Type finalType = obj.GetType();
+
+            // Check if obj is a dictionary and handle setting or removing the key
+            if (obj is IDictionary finalDict)
+            {
+                if (value == null)
+                {
+                    // Remove the key if value is null
+                    if (finalDict.Contains(lastPart))
+                    {
+                        finalDict.Remove(lastPart);
+                        return true;
+                    }
+                    return false;
+                }
+                else
+                {
+                    // Otherwise, set or create the key
+                    finalDict[lastPart] = value;
+                    return true;
+                }
+            }
+
+            PropertyInfo finalPropInfo = finalType.GetProperty(lastPart);
+            if (finalPropInfo != null && finalPropInfo.CanWrite)
+            {
+                finalPropInfo.SetValue(obj, value);
                 return true;
             }
 
-            // Try to set the field
-            FieldInfo fieldInfo = objType.GetField(name);
-            if (fieldInfo != null)
+            FieldInfo finalFieldInfo = finalType.GetField(lastPart);
+            if (finalFieldInfo != null)
             {
-                fieldInfo.SetValue(obj, value);
+                finalFieldInfo.SetValue(obj, value);
                 return true;
             }
 
-            // Return false if neither property nor field is found or not writable
             return false;
         }
 
@@ -668,6 +758,51 @@ namespace MyGui.net
             string newFileName = fileNameWithoutExtension + appendant + extension;
             return Path.Combine(directory, newFileName);
         }
+
+        public static Color? ParseColorFromString(string colorString)
+        {
+            // Split the string by spaces
+            if (string.IsNullOrWhiteSpace(colorString))
+            {
+                return null;
+            }
+            string[] parts = colorString.Split(' ');
+
+            if (parts.Length != 3)
+                throw new FormatException("Color string must be in the format 'r g b'");
+
+            // Parse each component with InvariantCulture and scale from [0, 1] to [0, 255]
+            int r = (int)(double.Parse(parts[0], CultureInfo.InvariantCulture) * 255);
+            int g = (int)(double.Parse(parts[1], CultureInfo.InvariantCulture) * 255);
+            int b = (int)(double.Parse(parts[2], CultureInfo.InvariantCulture) * 255);
+
+            return Color.FromArgb(r, g, b);
+        }
+
+        public static string ColorToString(Color color)
+        {
+            // Convert each component to a 0-1 double, using InvariantCulture for full precision
+            double r = color.R / 255.0;
+            double g = color.G / 255.0;
+            double b = color.B / 255.0;
+
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", r, g, b);
+        }
+
+        public static string ColorToHexString(Color color)
+        {
+            // Get the HTML color string from ColorTranslator
+            string htmlColor = ColorTranslator.ToHtml(color);
+
+            // If the result is a named color (e.g., "White"), convert it to hex manually
+            if (!htmlColor.StartsWith("#"))
+            {
+                return $"{color.R:X2}{color.G:X2}{color.B:X2}";
+            }
+
+            // Otherwise, it's already in hex format, so just remove the #
+            return htmlColor.Substring(1);
+        }
         #endregion
 
         #region WinForms Utils
@@ -784,7 +919,10 @@ namespace MyGui.net
 
         public static BorderPosition DetectBorder(Control widget, Point mousePosition)
         {
-
+            if (widget == null)
+            {
+                return BorderPosition.None;
+            }
             // Convert the mouse position to the widget's coordinates, considering the scroll offset
             if (widget.IsDisposed)
             {

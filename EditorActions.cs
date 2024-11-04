@@ -91,6 +91,57 @@ namespace MyGui.net
         }
     }
 
+    public class MoveResizeCommand : IEditorAction
+    {
+        private Control _control;
+        private Point _oldPosition;
+        private Point _newPosition;
+        private Size _oldSize;
+        private Size _newSize;
+
+        public MoveResizeCommand(Control control, Point newPosition, Size newSize)
+        {
+            _control = control;
+            _oldPosition = control.Location; // Store the initial position
+            _newPosition = newPosition;
+            _oldSize = control.Size;
+            _newSize = newSize;
+        }
+
+        public MoveResizeCommand(Control control, Point newPosition, Size newSize, Point oldPosition, Size oldSize)
+        {
+            _control = control;
+            _oldPosition = oldPosition; // Store the initial position
+            _newPosition = newPosition;
+            _oldSize = oldSize;
+            _newSize = newSize;
+        }
+
+        public bool Execute()
+        {
+            if (_oldPosition == _newPosition && _oldSize == _newSize) { return false; }
+            _control.Location = _newPosition; // Move to the new position
+            ((MyGuiWidgetData)_control.Tag).position = _newPosition;
+            _control.Size = _newSize;
+            ((MyGuiWidgetData)_control.Tag).size = (Point)_newSize;
+            return true;
+        }
+
+        public bool Undo()
+        {
+            _control.Location = _oldPosition; // Revert to the old position
+            ((MyGuiWidgetData)_control.Tag).position = _oldPosition;
+            _control.Size = _oldSize;
+            ((MyGuiWidgetData)_control.Tag).size = (Point)_oldSize;
+            return true;
+        }
+
+        public override string ToString()
+        {
+            return $"MoveResizeCommand: {_control.Name} from {_oldPosition} to {_newPosition}";
+        }
+    }
+
     public class ChangePropertyCommand : IEditorAction
     {
         private Control _control;
@@ -178,6 +229,13 @@ namespace MyGui.net
         private Control _parent;
         private int _index; // Store the index to restore control in the correct position
 
+        public DeleteControlCommand(Control control)
+        {
+            _control = control;
+            _parent = control.Parent;
+            _index = _parent.Controls.IndexOf(control); // Store the original position
+        }
+
         public DeleteControlCommand(Control control, Control parent)
         {
             _control = control;
@@ -188,9 +246,9 @@ namespace MyGui.net
         public bool Execute()
         {
             _parent.Controls.Remove(_control); // Remove the control from its parent
-            if (_control.Tag != null && (MyGuiWidgetData)_control.Tag != null)
+            if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
             {
-                ((MyGuiWidgetData)_control.Tag).children.RemoveAt(_index);
+                ((MyGuiWidgetData)_parent.Tag).children.RemoveAt(_index);
             }
             return true;
         }

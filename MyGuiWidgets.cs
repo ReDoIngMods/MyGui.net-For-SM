@@ -95,68 +95,96 @@
                     new()
                     {
                         name = "Alpha",
-                        boundTo = "alpha",
+                        boundTo = "properties.Alpha",
                         type = MyGuiWidgetPropertyType.TextBox
                     },
                     new()
                     {
-                        name = "Colour",
-                        boundTo = "colour",
+                        name = "Color",
+                        boundTo = "properties.Colour",
                         type = MyGuiWidgetPropertyType.ColorBox
                     },
                     new()
                     {
                         name = "Enabled",
-                        boundTo = "enabled",
-                        type = MyGuiWidgetPropertyType.CheckBox
+                        boundTo = "properties.Enabled",
+                        type = MyGuiWidgetPropertyType.ComboBox,
+                        comboBoxValues = new()
+                        {
+                            "[DEFAULT]", "true", "false"
+                        }
                     },
                     new()
                     {
                         name = "InheritsAlpha",
-                        boundTo = "inheritsAlpha",
-                        type = MyGuiWidgetPropertyType.CheckBox
+                        boundTo = "properties.InheritsAlpha",
+                        type = MyGuiWidgetPropertyType.ComboBox,
+                        comboBoxValues = new()
+                        {
+                            "[DEFAULT]", "true", "false"
+                        }
                     },
                     new()
                     {
                         name = "InheritsPick",
-                        boundTo = "inheritsPick",
-                        type = MyGuiWidgetPropertyType.CheckBox
+                        boundTo = "properties.InheritsPick",
+                        type = MyGuiWidgetPropertyType.ComboBox,
+                        comboBoxValues = new()
+                        {
+                            "[DEFAULT]", "true", "false"
+                        }
                     },
                     new()
                     {
                         name = "MaskPick",
-                        boundTo = "maskPick",
+                        boundTo = "properties.MaskPick",
                         type = MyGuiWidgetPropertyType.TextBox
                     },
                     new()
                     {
                         name = "NeedKey",
-                        boundTo = "needKey",
-                        type = MyGuiWidgetPropertyType.CheckBox
+                        boundTo = "properties.NeedKey",
+                        type = MyGuiWidgetPropertyType.ComboBox,
+                        comboBoxValues = new()
+                        {
+                            "[DEFAULT]", "true", "false"
+                        }
                     },
                     new()
                     {
                         name = "NeedMouse",
-                        boundTo = "needMouse",
-                        type = MyGuiWidgetPropertyType.CheckBox
+                        boundTo = "properties.NeedMouse",
+                        type = MyGuiWidgetPropertyType.ComboBox,
+                        comboBoxValues = new()
+                        {
+                            "[DEFAULT]", "true", "false"
+                        }
                     },
                     new()
                     {
                         name = "NeedTooltip",
-                        boundTo = "needToolTip",
-                        type = MyGuiWidgetPropertyType.CheckBox
+                        boundTo = "properties.NeedToolTip",
+                        type = MyGuiWidgetPropertyType.ComboBox,
+                        comboBoxValues = new()
+                        {
+                            "[DEFAULT]", "true", "false"
+                        }
                     },
                     new()
                     {
                         name = "Pointer",
-                        boundTo = "pointer",
+                        boundTo = "properties.Pointer",
                         type = MyGuiWidgetPropertyType.TextBox
                     },
                     new()
                     {
                         name = "Visible",
-                        boundTo = "visible",
-                        type = MyGuiWidgetPropertyType.CheckBox
+                        boundTo = "properties.Visible",
+                        type = MyGuiWidgetPropertyType.ComboBox,
+                        comboBoxValues = new()
+                        {
+                            "[DEFAULT]", "true", "false"
+                        }
                     }
                 }
             }
@@ -176,7 +204,7 @@
         CheckBox,
         ComboBox,
         ColorBox,
-        SkinBox,
+        SkinBox
     }
 
     struct MyGuiWidgetProperty

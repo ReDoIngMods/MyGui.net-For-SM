@@ -1,12 +1,5 @@
 using MyGui.net.Properties;
-using System;
-using System.Configuration;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Media;
-using System.Reflection;
-using System.Windows.Forms;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 
@@ -199,6 +192,7 @@ namespace MyGui.net
                         case MyGuiWidgetPropertyType.ComboBox:
                             ComboBox comboBox = (ComboBox)_editorProperties[property.name];
                             valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            //Debug.WriteLine($"Value of \"{property.boundTo}\" in widget {currentWidgetData.name} is {valueInWidgetData}");
                             if (valueInWidgetData != null)
                             {
                                 comboBox.SelectedIndex = comboBox.Items.IndexOf(valueInWidgetData);
@@ -233,12 +227,12 @@ namespace MyGui.net
 
                         case MyGuiWidgetPropertyType.ColorBox:
                             TextBox colorBoxHexInput = (TextBox)_editorProperties[property.name].Controls[1];
+                            Panel colorBoxPickerPreview = (Panel)_editorProperties[property.name].Controls[0];
                             valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
                             //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
-                            if (valueInWidgetData != null)
-                            {
-                                colorBoxHexInput.Text = (string)valueInWidgetData;
-                            }
+                            colorBoxHexInput.Text = valueInWidgetData != null ? Util.ColorToHexString((Color)Util.ParseColorFromString((string)valueInWidgetData)) : "";
+
+                            colorBoxPickerPreview.BackColor = Util.ParseColorFromString((string)valueInWidgetData) ?? Color.FromArgb(255, 255, 255);
                             break;
 
                         case MyGuiWidgetPropertyType.SkinBox:
@@ -435,6 +429,7 @@ namespace MyGui.net
                                 Width = 1,
                                 Dock = DockStyle.Fill,
                                 PlaceholderText = "ffffff",
+                                MaxLength = 6
                             };
 
                             Button colorBoxPickerButton = new Button
@@ -453,6 +448,9 @@ namespace MyGui.net
                             };
 
                             valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
+                            colorBoxHexInput.Text = valueInWidgetData != null ? Util.ColorToHexString((Color)Util.ParseColorFromString((string)valueInWidgetData)) : "";
+
+                            colorBoxPickerPreview.BackColor = Util.ParseColorFromString((string)valueInWidgetData) ?? Color.FromArgb(255, 255, 255);
                             //Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
                             /*if (valueInWidgetData != null && valueInWidgetData.GetType() == typeof(Point))
                             {
@@ -465,6 +463,7 @@ namespace MyGui.net
                             colorBoxLayout.Controls.Add(colorBoxPickerPreview, 0, 0);
                             colorBoxLayout.Controls.Add(colorBoxHexInput, 1, 0);
                             colorBoxLayout.Controls.Add(colorBoxPickerButton, 2, 0);
+                            colorBoxLayout.Tag = property.boundTo;
                             control = colorBoxLayout;
                             _editorProperties[property.name] = control;
                             break;
@@ -564,6 +563,7 @@ namespace MyGui.net
                         ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "skin", sender.Text, currWidgetData.skin));
                         break;
                     default:
+                        ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "[DEFAULT]" ? null : sender.Text, Util.GetPropertyValue(currWidgetData, senderBoundTo)));
                         break;
                 }
                 /*foreach (var property in currWidgetData.properties)
@@ -580,7 +580,19 @@ namespace MyGui.net
         }
         private void selectCustomWidgetColor_Click(object senderAny, EventArgs e)
         {
-            customWidgetColorDialog.ShowDialog();
+            Button sender = (Button)senderAny;
+            string senderBoundTo = (string)sender.Parent.Tag;
+            //Debug.WriteLine(senderBoundTo);
+            MyGuiWidgetData currWidgetData = ((MyGuiWidgetData)_currentSelectedWidget.Tag);
+
+            customWidgetColorDialog.Color = Util.ParseColorFromString(((string)Util.GetPropertyValue(currWidgetData, senderBoundTo))) ?? Color.FromArgb(255, 255, 255, 255);
+            if (customWidgetColorDialog.ShowDialog() == DialogResult.OK)
+            {
+                bool isDefault = ColorTranslator.ToHtml(customWidgetColorDialog.Color) == "White";
+                ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, isDefault ? null : Util.ColorToString(customWidgetColorDialog.Color), Util.GetPropertyValue(currWidgetData, senderBoundTo)));
+                sender.Parent.Controls[0].BackColor = customWidgetColorDialog.Color;
+                sender.Parent.Controls[1].Text = isDefault ? "" : Util.ColorToHexString(customWidgetColorDialog.Color);
+            }
         }
         private void pointBox_ValueChanged(object senderAny, EventArgs e)
         {
@@ -720,48 +732,14 @@ namespace MyGui.net
         private void selectWidget_Click(object senderAny, EventArgs e)
         {
             ToolStripMenuItem sender = (ToolStripMenuItem)senderAny;
-            /*if (_currentSelectedWidget != null)
-            {
-                _currentSelectedWidget.Padding = new Padding(0);
-            }*/
             _currentSelectedWidget = (Control?)sender.Tag == _currentSelectedWidget ? null : (Control?)sender.Tag;
-            /*Debug.WriteLine("NEW SELECTED WIDGET");
-            if (_currentSelectedWidget != null)
-            {
-                Debug.WriteLine(_currentSelectedWidget.Name);
-                _currentSelectedWidget.Padding = new Padding(10);
-            }*/
             HandleWidgetSelection();
-            //_currentSelectedWidget = (Control?)sender;
         }
-
-        /*private void MainForm_Paint(object sender, PaintEventArgs e)
-        {
-            if (_currentSelectedWidget != null && Viewport != null)
-            {
-                // Get the widget's bounds relative to the scrolling panel
-                Rectangle widgetBounds = _currentSelectedWidget.Bounds;
-                widgetBounds.Offset(Viewport.PointToClient(_currentSelectedWidget.PointToScreen(_currentSelectedWidget.Location)));
-
-                // Adjust the bounds by the scrolling position
-                //Point offset = Viewport.AutoScrollPosition;
-                //widgetBounds.Offset(offset.X, offset.Y);
-
-                // Inflate the rectangle to include the border
-                widgetBounds.Inflate(10, 10);
-
-                // Draw the border
-                using (Pen borderPen = new Pen(Color.SpringGreen, 10))
-                {
-                    e.Graphics.DrawRectangle(borderPen, widgetBounds);
-                    Debug.WriteLine("REDRAW!");
-                }
-            }
-        }*/
 
         void Viewport_MouseDown(object senderAny, MouseEventArgs e)
         {
             Panel sender = (Panel)senderAny;
+
             if (e.Button == MouseButtons.Right)
             {
                 _draggingViewport = true;
@@ -771,88 +749,75 @@ namespace MyGui.net
             }
             else if (e.Button == MouseButtons.Left)
             {
-                Control? thing = Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel });
-                if (_currentSelectedWidget != null && e.Clicks == 1 && Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.None)
+                Control? clickedControl = Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel });
+
+                bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.None;
+
+                if (canDragWidget && (_currentSelectedWidget == clickedControl || clickedControl == null || Util.IsKeyPressed(Keys.ShiftKey)))
                 {
-                    //Debug.WriteLine("Drag Widget now!");
                     _draggingWidgetAt = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
                     _draggedWidgetPosition = ((MyGuiWidgetData)_currentSelectedWidget.Tag).position;
                     _draggedWidgetSize = (Size)((MyGuiWidgetData)_currentSelectedWidget.Tag).size;
 
                     _draggedWidgetPositionStart = _currentSelectedWidget.Location;
                     _draggedWidgetSizeStart = _currentSelectedWidget.Size;
-
                     _mouseLoc = e.Location;
-                    if (Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.Center || Util.IsKeyPressed(Keys.ShiftKey))
+
+                    // Check if dragging should continue or exit
+                    Debug.WriteLine(_draggingWidgetAt);
+                    if (_draggingWidgetAt != BorderPosition.Center || Util.IsKeyPressed(Keys.ShiftKey))
                     {
                         return;
                     }
                 }
-                if (thing != null)
+                else if (clickedControl != null)
                 {
-                    if (_currentSelectedWidget != thing)
+                    if (_currentSelectedWidget != clickedControl)
                     {
-                        /*if (_currentSelectedWidget != null)
-                        {
-                            _currentSelectedWidget.Padding = new Padding(0);
-                        }*/
-                        _currentSelectedWidget = thing;
-                        //_currentSelectedWidget.Padding = new Padding(10);
+                        // Update the selected widget
+                        _currentSelectedWidget = clickedControl;
                         HandleWidgetSelection();
                     }
                     else if (e.Clicks > 1)
                     {
-                        // Convert relative point to screen coordinates
-                        Point screenPoint = Cursor.Position;//Viewport.PointToScreen(e.Location);
-
-                        // Get all controls at the clicked point (from topmost to furthest back)
+                        Point screenPoint = Cursor.Position; // Get the screen position of the mouse
                         List<Control> controlsAtPoint = Util.GetAllControlsAtPoint(mainPanel, screenPoint, new Control[] { Viewport, mainPanel });
 
                         if (controlsAtPoint.Count > 0)
                         {
-                            // Create a context menu to show the controls
                             ContextMenuStrip contextMenu = new ContextMenuStrip
                             {
                                 RenderMode = ToolStripRenderMode.System,
                                 LayoutStyle = ToolStripLayoutStyle.Table
                             };
 
-                            // Add each control to the context menu
+                            // Populate the context menu with controls at the clicked point
                             foreach (Control ctrl in controlsAtPoint)
                             {
-                                string menuItemName = "";
-                                if (ctrl == _currentSelectedWidget)
-                                {
-                                    menuItemName = "[DESELECT]";
-                                }
-                                else if (ctrl.Name == "")
-                                {
-                                    menuItemName = $"[DEFAULT] ({((MyGuiWidgetData)ctrl.Tag).type})";
-                                }
-                                else
-                                {
-                                    menuItemName = ctrl.Name + (Settings.Default.ShowTypesForNamedWidgets ? $" ({((MyGuiWidgetData)ctrl.Tag).type})" : "");
-                                }
-                                ToolStripMenuItem menuItem = new ToolStripMenuItem(menuItemName);
-                                // Assign the control to the menu item's Tag property for later reference
-                                menuItem.Tag = ctrl;
-                                // Add a click event handler for the menu item
-                                menuItem.Click += selectWidget_Click;
+                                string menuItemName = (ctrl == _currentSelectedWidget)
+                                    ? "[DESELECT]"
+                                    : string.IsNullOrEmpty(ctrl.Name)
+                                        ? $"[DEFAULT] ({((MyGuiWidgetData)ctrl.Tag).type})"
+                                        : $"{ctrl.Name}{(Settings.Default.ShowTypesForNamedWidgets ? $" ({((MyGuiWidgetData)ctrl.Tag).type})" : "")}";
+
+                                ToolStripMenuItem menuItem = new ToolStripMenuItem(menuItemName) { Tag = ctrl };
+                                menuItem.Click += selectWidget_Click; // Attach click event handler
                                 contextMenu.Items.Add(menuItem);
                             }
 
-                            // Show the context menu at the clicked position
+                            // Show the context menu at the mouse position
                             contextMenu.Show(screenPoint);
                         }
                     }
                 }
                 else
                 {
+                    // No control was clicked, reset selections
                     _currentSelectedWidget = null;
-                    _draggedWidgetPosition = new Point(0, 0);
-                    _draggedWidgetSize = new Size(0, 0);
-                    _draggedWidgetPositionStart = new Point(0, 0);
-                    _draggedWidgetSizeStart = new Size(0, 0);
+                    _draggedWidgetPosition = Point.Empty;
+                    _draggedWidgetSize = Size.Empty;
+                    _draggedWidgetPositionStart = Point.Empty;
+                    _draggedWidgetSizeStart = Size.Empty;
                     HandleWidgetSelection();
                 }
             }
@@ -883,6 +848,10 @@ namespace MyGui.net
                 if ((Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
                 {
                     Cursor = Cursors.Hand;
+                    if (_currentSelectedWidget == null)
+                    {
+                        return;
+                    }
                     goto skipCursorChange;
                 }
 
@@ -978,6 +947,13 @@ namespace MyGui.net
                     _mouseLoc = e.Location;
                 }
             }
+            else
+            {
+                if (Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) != null)
+                {
+                    Cursor = Cursors.Hand;
+                }
+            }
         }
 
         void Viewport_MouseUp(object senderAny, MouseEventArgs e)
@@ -1011,8 +987,7 @@ namespace MyGui.net
                 {
                     _draggingWidgetAt = BorderPosition.None;
 
-                    ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location, _draggedWidgetPositionStart));
-                    ExecuteCommand(new ResizeCommand(_currentSelectedWidget, _currentSelectedWidget.Size, _draggedWidgetSizeStart));
+                    ExecuteCommand(new MoveResizeCommand(_currentSelectedWidget, _currentSelectedWidget.Location, _currentSelectedWidget.Size, _draggedWidgetPositionStart, _draggedWidgetSizeStart));
 
                     _draggedWidgetPositionStart = _currentSelectedWidget.Location;
                     _draggedWidgetSizeStart = _currentSelectedWidget.Size;
@@ -1260,9 +1235,9 @@ namespace MyGui.net
             UpdateUndoRedo();
         }
 
-        private void UpdateUndoRedo( bool updateProperties = true )
+        private void UpdateUndoRedo(bool updateProperties = true)
         {
-            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath  : Path.GetFileName(_currentLayoutPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
 
             undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
             redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
@@ -1290,9 +1265,9 @@ namespace MyGui.net
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (_currentSelectedWidget != null && _viewportFocused && e.Control)
+            if (_currentSelectedWidget != null && _viewportFocused)
             {
-                if (e.KeyCode == Keys.C)
+                if (e.Control && e.KeyCode == Keys.C)
                 {
                     List<MyGuiWidgetData> myGuiWidgetDatas = [(MyGuiWidgetData)_currentSelectedWidget.Tag];
                     if (Clipboard.ContainsText())
@@ -1303,7 +1278,7 @@ namespace MyGui.net
 
                     e.Handled = true;
                 }
-                else if (e.KeyCode == Keys.V)
+                else if (e.Control && e.KeyCode == Keys.V)
                 {
                     if (Clipboard.ContainsText())
                     {
@@ -1334,17 +1309,55 @@ namespace MyGui.net
                         catch (Exception)
                         {
                             // Parsing failed, so it's not valid XML
+                            if (Settings.Default.ShowWarnings)
+                            {
+                                MessageBox.Show("The clipboard content is not a valid MyGui Widget XML.", "Paste Widget Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
                             return;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Clipboard does not contain text.");
                         return;
                     }
 
                     e.Handled = true;
                 }
+                //HEAVILY WIP, FIX THIS TRB
+                if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+                {
+                    if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.Location; }
+                    _currentSelectedWidget.Location += new Size(0, _gridSpacing * (e.KeyCode == Keys.Up ? -1 : 1));
+                    e.Handled = true;
+                }
+                if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+                {
+                    if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.Location; }
+                    _currentSelectedWidget.Location += new Size(_gridSpacing * (e.KeyCode == Keys.Left ? -1 : 1), 0);
+                    e.Handled = true;
+                }
+                if (e.KeyCode == Keys.Delete)
+                {
+                    ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget));
+                    _currentSelectedWidget = null;
+                    HandleWidgetSelection();
+                }
+            }
+        }
+
+        private void Form1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+            {
+                ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location + new Size(0, _gridSpacing * (e.KeyCode == Keys.Up ? -1 : 1)), _draggedWidgetPositionStart));
+                _draggedWidgetPositionStart = new Point(0, 0);
+                e.Handled = true;
+            }
+            if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+            {
+                ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location + new Size(_gridSpacing * (e.KeyCode == Keys.Left ? -1 : 1), 0), _draggedWidgetPositionStart));
+                _draggedWidgetPositionStart = new Point(0, 0);
+                e.Handled = true;
             }
         }
 
@@ -1358,6 +1371,12 @@ namespace MyGui.net
         {
             _viewportFocused = true;
             Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.V));
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            _viewportFocused = true;
+            Form1_KeyDown(sender, new KeyEventArgs(Keys.Delete));
         }
     }
 }
