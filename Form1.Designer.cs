@@ -83,6 +83,7 @@
             splitContainer1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             splitContainer1.BackColor = SystemColors.Control;
             splitContainer1.BorderStyle = BorderStyle.FixedSingle;
+            splitContainer1.FixedPanel = FixedPanel.Panel2;
             splitContainer1.Location = new Point(12, 28);
             splitContainer1.Name = "splitContainer1";
             // 
@@ -97,7 +98,8 @@
             splitContainer1.Panel2.Controls.Add(tabControl1);
             splitContainer1.Panel2MinSize = 300;
             splitContainer1.Size = new Size(1240, 641);
-            splitContainer1.SplitterDistance = 921;
+            splitContainer1.SplitterDistance = 923;
+            splitContainer1.SplitterWidth = 3;
             splitContainer1.TabIndex = 1;
             // 
             // Viewport
@@ -110,7 +112,7 @@
             Viewport.Controls.Add(mainPanel);
             Viewport.Location = new Point(0, 0);
             Viewport.Name = "Viewport";
-            Viewport.Size = new Size(919, 640);
+            Viewport.Size = new Size(921, 640);
             Viewport.TabIndex = 0;
             Viewport.MouseDown += Viewport_MouseDown;
             Viewport.MouseEnter += Viewport_MouseEnter;
@@ -138,7 +140,7 @@
             tabControl1.Margin = new Padding(0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(313, 639);
+            tabControl1.Size = new Size(312, 639);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -147,7 +149,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(305, 611);
+            tabPage1.Size = new Size(304, 611);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Properties";
             tabPage1.UseVisualStyleBackColor = true;
@@ -158,7 +160,7 @@
             tabPage1Panel.Dock = DockStyle.Fill;
             tabPage1Panel.Location = new Point(3, 3);
             tabPage1Panel.Name = "tabPage1Panel";
-            tabPage1Panel.Size = new Size(299, 605);
+            tabPage1Panel.Size = new Size(298, 605);
             tabPage1Panel.TabIndex = 0;
             // 
             // tabPage2
@@ -166,7 +168,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(305, 611);
+            tabPage2.Size = new Size(306, 611);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Widgets";
             tabPage2.UseVisualStyleBackColor = true;
@@ -175,7 +177,7 @@
             // 
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(305, 611);
+            tabPage3.Size = new Size(306, 611);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
