@@ -1095,7 +1095,7 @@ namespace MyGui.net
                 {
                     return;
                 }
-                Debug.WriteLine(actualExport);
+                //Debug.WriteLine(actualExport);
             }
             if (actualExport == 0 || actualExport == 3)
             {
