@@ -1,6 +1,6 @@
 ﻿namespace MyGui.net
 {
-    class MyGuiWidgetData
+    public class MyGuiWidgetData
     {
         public string? layer;
         public string? align;

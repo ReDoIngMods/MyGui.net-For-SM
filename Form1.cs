@@ -1087,6 +1087,14 @@ namespace MyGui.net
             {
                 FormExport decideForm = new FormExport();
                 actualExport = (int)decideForm.ShowDialog(this) - 1;
+                if (actualExport == 4) //Cant use the cancel form result, got to use another one
+                {
+                    actualExport = 1;
+                }
+                else if (actualExport == 1)
+                {
+                    return;
+                }
                 //Debug.WriteLine(actualExport);
             }
             if (actualExport == 0 || actualExport == 3)
@@ -1265,9 +1273,9 @@ namespace MyGui.net
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (_currentSelectedWidget != null && _viewportFocused)
+            if (_viewportFocused)
             {
-                if (e.Control && e.KeyCode == Keys.C)
+                if (e.Control && e.KeyCode == Keys.C && _currentSelectedWidget != null)
                 {
                     List<MyGuiWidgetData> myGuiWidgetDatas = [(MyGuiWidgetData)_currentSelectedWidget.Tag];
                     if (Clipboard.ContainsText())
@@ -1302,9 +1310,7 @@ namespace MyGui.net
                             }
 
                             List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc);
-                            Util.AddChildrenToWidget(((MyGuiWidgetData)_currentSelectedWidget.Tag), doc.Root.Elements("Widget").ToList(), (Point)_currentSelectedWidget.Size);
-                            //Debug.WriteLine(((MyGuiWidgetData)_currentSelectedWidget.Tag).children.Count);
-                            Util.SpawnLayoutWidgets(parsedLayout, _currentSelectedWidget, _currentSelectedWidget);
+                            ExecuteCommand(new CreateControlCommand(CreateLayoutWidgetsControls(parsedLayout), _currentSelectedWidget ?? mainPanel, _currentLayout));
                         }
                         catch (Exception)
                         {
@@ -1323,24 +1329,26 @@ namespace MyGui.net
 
                     e.Handled = true;
                 }
-                //HEAVILY WIP, FIX THIS TRB
-                if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+                if (_currentSelectedWidget != null)
                 {
-                    if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.Location; }
-                    _currentSelectedWidget.Location += new Size(0, _gridSpacing * (e.KeyCode == Keys.Up ? -1 : 1));
-                    e.Handled = true;
-                }
-                if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
-                {
-                    if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.Location; }
-                    _currentSelectedWidget.Location += new Size(_gridSpacing * (e.KeyCode == Keys.Left ? -1 : 1), 0);
-                    e.Handled = true;
-                }
-                if (e.KeyCode == Keys.Delete)
-                {
-                    ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget));
-                    _currentSelectedWidget = null;
-                    HandleWidgetSelection();
+                    if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+                    {
+                        if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.Location; }
+                        _currentSelectedWidget.Location += new Size(0, _gridSpacing * (e.KeyCode == Keys.Up ? -1 : 1));
+                        e.Handled = true;
+                    }
+                    if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+                    {
+                        if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.Location; }
+                        _currentSelectedWidget.Location += new Size(_gridSpacing * (e.KeyCode == Keys.Left ? -1 : 1), 0);
+                        e.Handled = true;
+                    }
+                    if (e.KeyCode == Keys.Delete)
+                    {
+                        ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, _currentLayout));
+                        _currentSelectedWidget = null;
+                        HandleWidgetSelection();
+                    }
                 }
             }
         }

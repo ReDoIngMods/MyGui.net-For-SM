@@ -486,7 +486,7 @@ namespace MyGui.net
             }
         }
 
-        public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Control? currParent, Control? defaultParent)
+        public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Control? currParent = null, Control? defaultParent = null)
         {
             if (layout == null) return;
             foreach (MyGuiWidgetData data in layout)
@@ -510,6 +510,38 @@ namespace MyGui.net
 
                 SpawnLayoutWidgets(data.children, newWidget, defaultParent);
             }
+        }
+
+        public static Control? CreateLayoutWidgetsControls(List<MyGuiWidgetData>? layout, Control? currParent = null, Control? defaultParent = null)
+        {
+            if (layout == null) return null;
+            Control mainParent = null;
+            foreach (MyGuiWidgetData data in layout)
+            {
+                // Create the widget
+                Panel newWidget = new();
+                newWidget.Name = data.name;
+                newWidget.Tag = data;
+                newWidget.BackColor = Color.FromArgb(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255));
+                newWidget.Location = data.position;
+                newWidget.Size = (Size)data.size;
+
+                if (mainParent == null)
+                {
+                    mainParent = newWidget;
+                }
+                if (currParent != null)
+                {
+                    currParent.Controls.Add(newWidget);
+                }
+                else if (defaultParent != null)
+                {
+                    defaultParent.Controls.Add(newWidget);
+                }
+
+                SpawnLayoutWidgets(data.children, newWidget, defaultParent);
+            }
+            return mainParent;
         }
         #endregion
 

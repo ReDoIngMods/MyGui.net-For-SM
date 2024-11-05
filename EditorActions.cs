@@ -185,16 +185,26 @@ namespace MyGui.net
     {
         private Control _control;
         private Control _parent;
+        private List<MyGuiWidgetData> _defaultList;
 
-        public CreateControlCommand(Control control, Control parent)
+        public CreateControlCommand(Control control, Control parent, List<MyGuiWidgetData> defaultList = null)
         {
             _control = control;
             _parent = parent;
+            _defaultList = defaultList;
         }
 
         public bool Execute()
         {
             _parent.Controls.Add(_control); // Add the control to the parent container
+            if (_parent.Tag == null)
+            {
+                if (_defaultList != null)
+                {
+                    _defaultList.Add((MyGuiWidgetData)_control.Tag);
+                }
+                return true;
+            }
             if (_control.Tag != null && (MyGuiWidgetData)_control.Tag != null)
             {
                 ((MyGuiWidgetData)_parent.Tag).children.Add((MyGuiWidgetData)_control.Tag);
@@ -214,6 +224,10 @@ namespace MyGui.net
             {
                 ((MyGuiWidgetData)_control.Tag).children.RemoveAt(childIndex);
             }
+            else if (_defaultList != null)
+            {
+                _defaultList.RemoveAt(childIndex);
+            }
             return true;
         }
 
@@ -227,20 +241,23 @@ namespace MyGui.net
     {
         private Control _control;
         private Control _parent;
+        private List<MyGuiWidgetData> _defaultList;
         private int _index; // Store the index to restore control in the correct position
 
-        public DeleteControlCommand(Control control)
+        public DeleteControlCommand(Control control, List<MyGuiWidgetData> defaultList = null)
         {
             _control = control;
             _parent = control.Parent;
-            _index = _parent.Controls.IndexOf(control); // Store the original position
+            _defaultList = defaultList;
+            _index = _parent == null ? _defaultList.IndexOf((MyGuiWidgetData)control.Tag) : _parent.Controls.IndexOf(control); // Store the original position
         }
 
-        public DeleteControlCommand(Control control, Control parent)
+        public DeleteControlCommand(Control control, Control parent, List<MyGuiWidgetData> defaultList = null)
         {
             _control = control;
             _parent = parent;
-            _index = _parent.Controls.IndexOf(control); // Store the original position
+            _defaultList = defaultList;
+            _index = _parent == null ? _defaultList.IndexOf((MyGuiWidgetData)control.Tag) : _parent.Controls.IndexOf(control); // Store the original position
         }
 
         public bool Execute()
@@ -249,6 +266,10 @@ namespace MyGui.net
             if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
             {
                 ((MyGuiWidgetData)_parent.Tag).children.RemoveAt(_index);
+            }
+            else if (_defaultList != null)
+            {
+                _defaultList.RemoveAt(_index);
             }
             return true;
         }
@@ -260,6 +281,10 @@ namespace MyGui.net
             if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
             {
                 ((MyGuiWidgetData)_parent.Tag).children.Insert(_index, (MyGuiWidgetData)_control.Tag);
+            }
+            else if (_defaultList != null)
+            {
+                _defaultList.Insert(_index, (MyGuiWidgetData)_control.Tag);
             }
             return true;
         }

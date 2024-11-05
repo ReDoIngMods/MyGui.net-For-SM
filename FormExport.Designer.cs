@@ -65,7 +65,7 @@
             // 
             // asPercentButton
             // 
-            asPercentButton.DialogResult = DialogResult.Cancel;
+            asPercentButton.DialogResult = DialogResult.Ignore;
             asPercentButton.Location = new Point(250, 50);
             asPercentButton.Name = "asPercentButton";
             asPercentButton.Size = new Size(113, 23);
