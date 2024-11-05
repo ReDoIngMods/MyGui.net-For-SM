@@ -222,7 +222,7 @@ namespace MyGui.net
             _parent.Controls.Remove(_control); // Remove the control from the parent container
             if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
             {
-                ((MyGuiWidgetData)_control.Tag).children.RemoveAt(childIndex);
+                ((MyGuiWidgetData)_parent.Tag).children.RemoveAt(childIndex);
             }
             else if (_defaultList != null)
             {
