@@ -238,7 +238,7 @@ namespace MyGui.net
 
         private void resetSettingsButton_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Are you sure you want to reset your optiosn to default? This cannot be undone!", "Default Options", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            DialogResult result = MessageBox.Show("Are you sure you want to reset your options to default? This cannot be undone!", "Default Options", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (result == DialogResult.Yes)
             {
                 Settings.Default.Reset();
