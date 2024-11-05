@@ -1355,16 +1355,11 @@ namespace MyGui.net
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
             {
-                ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location + new Size(0, _gridSpacing * (e.KeyCode == Keys.Up ? -1 : 1)), _draggedWidgetPositionStart));
+                ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location, _draggedWidgetPositionStart));
                 _draggedWidgetPositionStart = new Point(0, 0);
-                e.Handled = true;
-            }
-            if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
-            {
-                ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location + new Size(_gridSpacing * (e.KeyCode == Keys.Left ? -1 : 1), 0), _draggedWidgetPositionStart));
-                _draggedWidgetPositionStart = new Point(0, 0);
+                UpdateProperties();
                 e.Handled = true;
             }
         }
