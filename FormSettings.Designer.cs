@@ -62,6 +62,7 @@
             label2 = new Label();
             showTypesForNamedWidgetsCheckBox = new CheckBox();
             tabPage4 = new TabPage();
+            pictureBox2 = new PictureBox();
             aboutTextBox = new TextBox();
             pictureBox1 = new PictureBox();
             cancelButton = new Button();
@@ -71,7 +72,6 @@
             autoApplyCheckBox = new CheckBox();
             editorBackgroundPathDialog = new OpenFileDialog();
             editorBackgroundColorDialog = new ColorDialog();
-            pictureBox2 = new PictureBox();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -85,8 +85,8 @@
             groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
             tabPage4.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // tabControl1
@@ -461,6 +461,18 @@
             tabPage4.Text = "About";
             tabPage4.UseVisualStyleBackColor = true;
             // 
+            // pictureBox2
+            // 
+            pictureBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
+            pictureBox2.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
+            pictureBox2.Location = new Point(556, 288);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(90, 90);
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.TabIndex = 2;
+            pictureBox2.TabStop = false;
+            // 
             // aboutTextBox
             // 
             aboutTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -471,7 +483,6 @@
             aboutTextBox.Name = "aboutTextBox";
             aboutTextBox.ReadOnly = true;
             aboutTextBox.ScrollBars = ScrollBars.Vertical;
-            aboutTextBox.ShortcutsEnabled = false;
             aboutTextBox.Size = new Size(640, 276);
             aboutTextBox.TabIndex = 1;
             aboutTextBox.Text = resources.GetString("aboutTextBox.Text");
@@ -549,18 +560,6 @@
             editorBackgroundColorDialog.AnyColor = true;
             editorBackgroundColorDialog.FullOpen = true;
             // 
-            // pictureBox2
-            // 
-            pictureBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
-            pictureBox2.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
-            pictureBox2.Location = new Point(556, 288);
-            pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(90, 90);
-            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.TabIndex = 2;
-            pictureBox2.TabStop = false;
-            // 
             // FormSettings
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -601,8 +600,8 @@
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
             tabPage4.ResumeLayout(false);
             tabPage4.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
         }
 

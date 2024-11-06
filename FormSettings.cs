@@ -52,7 +52,7 @@ namespace MyGui.net
             useBackgroundImageGrid.Checked = Settings.Default.EditorBackgroundMode == 1;
             useBackgroundImageCustom.Checked = Settings.Default.EditorBackgroundMode == 2;
             backgroundImageSelectButton.Enabled = Settings.Default.EditorBackgroundMode == 0 || Settings.Default.EditorBackgroundMode == 2;
-            backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "";
+            backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 0 ? Util.ColorToHexString(Settings.Default.EditorBackgroundColor) : (Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "");
 
             showWarningsCheckBox.Checked = Settings.Default.ShowWarnings;
 
@@ -70,7 +70,7 @@ namespace MyGui.net
         private void OnSettingChange()
         {
             backgroundImageSelectButton.Enabled = Settings.Default.EditorBackgroundMode == 0 || Settings.Default.EditorBackgroundMode == 2;
-            backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "";
+            backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 0 ? Util.ColorToHexString(Settings.Default.EditorBackgroundColor) : (Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "");
             if (_autoApply)
             {
                 Settings.Default.Save();
