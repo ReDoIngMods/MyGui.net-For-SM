@@ -277,6 +277,35 @@ namespace MyGui.net
             }
         }
 
+        public static bool IsAnyOf<T>(T item, IEnumerable<T> collection)
+        {
+            foreach (var element in collection)
+            {
+                if (EqualityComparer<T>.Default.Equals(item, element))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool AreAnyOf<T>(IEnumerable<T> list1, IEnumerable<T> list2)
+        {
+            // Convert one of the lists to a HashSet for efficient lookups
+            var set = new HashSet<T>(list2);
+
+            // Check if any element in list1 exists in the set
+            foreach (var item in list1)
+            {
+                if (set.Contains(item))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public static dynamic AutoConvert(object obj)
         {
             if (obj == null)

@@ -53,6 +53,9 @@
             useBackgroundImageColor = new RadioButton();
             backgroundImagePathTextBox = new TextBox();
             backgroundImageSelectButton = new Button();
+            groupBox7 = new GroupBox();
+            useCustomLayoutCheckBox = new CheckBox();
+            saveCustomLayoutCheckBox = new CheckBox();
             groupBox3 = new GroupBox();
             showWarningsCheckBox = new CheckBox();
             tabPage2 = new TabPage();
@@ -79,6 +82,7 @@
             groupBox4.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox5.SuspendLayout();
+            groupBox7.SuspendLayout();
             groupBox3.SuspendLayout();
             tabPage2.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
@@ -119,6 +123,7 @@
             flowLayoutPanel1.Controls.Add(groupBox4);
             flowLayoutPanel1.Controls.Add(groupBox1);
             flowLayoutPanel1.Controls.Add(groupBox5);
+            flowLayoutPanel1.Controls.Add(groupBox7);
             flowLayoutPanel1.Controls.Add(groupBox3);
             flowLayoutPanel1.Dock = DockStyle.Fill;
             flowLayoutPanel1.Location = new Point(3, 3);
@@ -364,10 +369,43 @@
             backgroundImageSelectButton.UseVisualStyleBackColor = true;
             backgroundImageSelectButton.Click += backgroundImageSelectButton_Click;
             // 
+            // groupBox7
+            // 
+            groupBox7.Controls.Add(useCustomLayoutCheckBox);
+            groupBox7.Controls.Add(saveCustomLayoutCheckBox);
+            groupBox7.Location = new Point(3, 213);
+            groupBox7.Name = "groupBox7";
+            groupBox7.Size = new Size(263, 75);
+            groupBox7.TabIndex = 10;
+            groupBox7.TabStop = false;
+            groupBox7.Text = "Layout";
+            // 
+            // useCustomLayoutCheckBox
+            // 
+            useCustomLayoutCheckBox.AutoSize = true;
+            useCustomLayoutCheckBox.Location = new Point(6, 46);
+            useCustomLayoutCheckBox.Name = "useCustomLayoutCheckBox";
+            useCustomLayoutCheckBox.Size = new Size(167, 19);
+            useCustomLayoutCheckBox.TabIndex = 1;
+            useCustomLayoutCheckBox.Text = "Use Saved Program Layout";
+            useCustomLayoutCheckBox.UseVisualStyleBackColor = true;
+            useCustomLayoutCheckBox.CheckedChanged += useCustomLayoutCheckBox_CheckedChanged;
+            // 
+            // saveCustomLayoutCheckBox
+            // 
+            saveCustomLayoutCheckBox.AutoSize = true;
+            saveCustomLayoutCheckBox.Location = new Point(6, 22);
+            saveCustomLayoutCheckBox.Name = "saveCustomLayoutCheckBox";
+            saveCustomLayoutCheckBox.Size = new Size(138, 19);
+            saveCustomLayoutCheckBox.TabIndex = 0;
+            saveCustomLayoutCheckBox.Text = "Save Program Layout";
+            saveCustomLayoutCheckBox.UseVisualStyleBackColor = true;
+            saveCustomLayoutCheckBox.CheckedChanged += saveCustomLayoutCheckBox_CheckedChanged;
+            // 
             // groupBox3
             // 
             groupBox3.Controls.Add(showWarningsCheckBox);
-            groupBox3.Location = new Point(3, 213);
+            groupBox3.Location = new Point(272, 213);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(124, 55);
             groupBox3.TabIndex = 9;
@@ -591,6 +629,8 @@
             groupBox1.PerformLayout();
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
+            groupBox7.ResumeLayout(false);
+            groupBox7.PerformLayout();
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             tabPage2.ResumeLayout(false);
@@ -650,5 +690,8 @@
         private CheckBox useDoubleDrawCheckBox;
         private CheckBox showFullFilePathCheckBox;
         private PictureBox pictureBox2;
+        private GroupBox groupBox7;
+        private CheckBox saveCustomLayoutCheckBox;
+        private CheckBox useCustomLayoutCheckBox;
     }
 }

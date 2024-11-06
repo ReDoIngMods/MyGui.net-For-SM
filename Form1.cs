@@ -1,5 +1,7 @@
 using MyGui.net.Properties;
 using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 
@@ -69,7 +71,6 @@ namespace MyGui.net
         public Form1(string _DefaultOpenedDir = "")
         {
             InitializeComponent();
-            this.WindowState = Settings.Default.MainWindomMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
             HandleLoad(_DefaultOpenedDir);
 
             //Optimize background rendering (using double buffering)
@@ -129,11 +130,65 @@ namespace MyGui.net
             Util.PrintAllResources(_ScrapMechanicPath);
             HandleWidgetSelection();
 
-            //Disposing code (for later)
-            /*for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
+            if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
             {
-                tabPage1Panel.Controls[i].Dispose();
-            }*/
+                SaveFormPosition();
+            }
+
+            if (Settings.Default.UseCustomWindowLayout)
+            {
+                this.WindowState = Settings.Default.MainWindomMaximized ? FormWindowState.Maximized : FormWindowState.Normal;
+
+                var targetScreen = Screen.AllScreens.FirstOrDefault(s => s.DeviceName == Settings.Default.MainWindowMonitor);
+                if (targetScreen != null)
+                {
+                    // Ensure position is within the bounds of the saved screen
+                    Rectangle bounds = targetScreen.Bounds;
+                    if (bounds.Contains(Settings.Default.MainWindowPos) || bounds.Contains(Settings.Default.MainWindowPos + Settings.Default.MainWindowSize))
+                    {
+                        this.StartPosition = FormStartPosition.Manual;
+                        this.Location = Settings.Default.MainWindowPos;
+                    }
+                }
+                else
+                {
+                    this.StartPosition = FormStartPosition.CenterScreen;
+                }
+
+                this.Size = Settings.Default.MainWindowSize;
+                //Debug.WriteLine(Settings.Default.MainWindowSize);
+
+                if (Settings.Default.SidePanelAttached)
+                {
+                    splitContainer1.SplitterDistance = splitContainer1.Width - Settings.Default.SidePanelSize.Width;
+                }
+                else
+                {
+                    sidebarToNewWindowButton_Click(this, new EventArgs());
+                }
+
+                if (_sidebarForm != null && !Settings.Default.SidePanelAttached)
+                {
+                    var targetScreenSide = Screen.AllScreens.FirstOrDefault(s => s.DeviceName == Settings.Default.SidePanelMonitor);
+                    if (targetScreenSide != null)
+                    {
+                        // Ensure position is within the bounds of the saved screen
+                        Rectangle bounds = targetScreenSide.Bounds;
+                        if (bounds.Contains(Settings.Default.SidePanelPos) || bounds.Contains(Settings.Default.SidePanelPos + Settings.Default.SidePanelSize))
+                        {
+                            _sidebarForm.StartPosition = FormStartPosition.Manual;
+                            _sidebarForm.Location = Settings.Default.SidePanelPos;
+                        }
+                    }
+                    _sidebarForm.Size = Settings.Default.SidePanelSize;
+                }
+                else
+                {
+                    Settings.Default.SidePanelPos = new Point(this.Location.X + this.Width, this.Location.Y + 5);
+                    Settings.Default.SidePanelSize = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
+                    Settings.Default.SidePanelMonitor = Settings.Default.MainWindowMonitor;
+                }
+            }
         }
 
         void HandleWidgetSelection()
@@ -1053,24 +1108,28 @@ namespace MyGui.net
             }
             if (openLayoutDialog.ShowDialog(this) == DialogResult.OK)
             {
-                ClearStacks();
-
-
-                _currentLayoutPath = openLayoutDialog.FileName;
-                _currentLayoutSavePath = _currentLayoutPath;
-                _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
-
-                this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
-
-                _currentSelectedWidget = null;
-                _draggingWidgetAt = BorderPosition.None;
-                //Refresh ui
-                for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
-                {
-                    mainPanel.Controls[i].Dispose();
-                }
-                Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
+                OpenLayout(openLayoutDialog.FileName);
             }
+        }
+
+        private void OpenLayout( string file )
+        {
+            ClearStacks();
+
+            _currentLayoutPath = file;
+            _currentLayoutSavePath = _currentLayoutPath;
+            _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
+
+            this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
+
+            _currentSelectedWidget = null;
+            _draggingWidgetAt = BorderPosition.None;
+            //Refresh ui
+            for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
+            {
+                mainPanel.Controls[i].Dispose();
+            }
+            Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1189,7 +1248,35 @@ namespace MyGui.net
                     return;
                 }
             }
+            if (Settings.Default.SaveWindowLayout)
+            {
+                SaveFormPosition();
+            }
+        }
+
+        private void SaveFormPosition()
+        {
+            var screen = Screen.FromControl(this);
+
             Settings.Default.MainWindomMaximized = this.WindowState == FormWindowState.Maximized;
+            Settings.Default.MainWindowPos = this.Location;
+            Settings.Default.MainWindowSize = this.Size;
+            Settings.Default.MainWindowMonitor = screen.DeviceName;
+
+            Settings.Default.SidePanelAttached = !splitContainer1.Panel2Collapsed;
+            if (_sidebarForm != null && !_sidebarForm.Disposing && !Settings.Default.SidePanelAttached)
+            {
+                var screenSide = Screen.FromControl(_sidebarForm);
+                Settings.Default.SidePanelPos = _sidebarForm.Location;
+                Settings.Default.SidePanelSize = _sidebarForm.Size;
+                Settings.Default.SidePanelMonitor = screenSide.DeviceName;
+            }
+            else
+            {
+                Settings.Default.SidePanelSize = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
+                Settings.Default.SidePanelPos = new Point(this.Location.X + this.Width - Settings.Default.SidePanelSize.Width, this.Location.Y + 5);
+            }
+
             Settings.Default.Save();
         }
 
@@ -1204,8 +1291,9 @@ namespace MyGui.net
             {
                 _sidebarForm = new FormSideBar();
 
-                _sidebarForm.Size = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
-                _sidebarForm.Location = new Point(this.Location.X + this.Width - _sidebarForm.Width, this.Location.Y + 5);
+
+                _sidebarForm.Size = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10); ;
+                _sidebarForm.Location = new Point(this.Location.X + this.Width - Settings.Default.SidePanelSize.Width, this.Location.Y + 5);
                 _sidebarForm.Owner = this;
 
                 _sidebarForm.Controls.Add(tabControl1);
@@ -1218,8 +1306,14 @@ namespace MyGui.net
 
         private void ReattachSidebar(object sender, FormClosingEventArgs e)
         {
+            if (e.CloseReason != CloseReason.UserClosing) { return; }
             splitContainer1.Panel2Collapsed = false;
             splitContainer1.Panel2.Controls.Add(tabControl1);
+
+            var screenSide = Screen.FromControl(_sidebarForm);
+            Settings.Default.SidePanelPos = _sidebarForm.Location;
+            Settings.Default.SidePanelSize = _sidebarForm.Size;
+            Settings.Default.SidePanelMonitor = screenSide.DeviceName;
         }
 
         private void mainPanel_Paint(object sender, PaintEventArgs e)
@@ -1284,6 +1378,7 @@ namespace MyGui.net
                     }
                     Clipboard.SetText(Util.ExportLayoutToXmlString(myGuiWidgetDatas, new Point(1, 1), true, false), TextDataFormat.Text);
 
+                    this.ActiveControl = null;
                     e.Handled = true;
                 }
                 else if (e.Control && e.KeyCode == Keys.V)
@@ -1326,7 +1421,7 @@ namespace MyGui.net
                     {
                         return;
                     }
-
+                    this.ActiveControl = null;
                     e.Handled = true;
                 }
                 if (_currentSelectedWidget != null)
@@ -1335,12 +1430,14 @@ namespace MyGui.net
                     {
                         if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.Location; }
                         _currentSelectedWidget.Location += new Size(0, _gridSpacing * (e.KeyCode == Keys.Up ? -1 : 1));
+                        this.ActiveControl = null;
                         e.Handled = true;
                     }
                     if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
                     {
                         if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.Location; }
                         _currentSelectedWidget.Location += new Size(_gridSpacing * (e.KeyCode == Keys.Left ? -1 : 1), 0);
+                        this.ActiveControl = null;
                         e.Handled = true;
                     }
                     if (e.KeyCode == Keys.Delete)
@@ -1348,6 +1445,8 @@ namespace MyGui.net
                         ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, _currentLayout));
                         _currentSelectedWidget = null;
                         HandleWidgetSelection();
+                        this.ActiveControl = null;
+                        e.Handled = true;
                     }
                 }
             }
@@ -1380,6 +1479,41 @@ namespace MyGui.net
         {
             _viewportFocused = true;
             Form1_KeyDown(sender, new KeyEventArgs(Keys.Delete));
+        }
+
+        private void Form1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string file = Path.GetExtension(((string[])e.Data.GetData(DataFormats.FileDrop))[0]);
+                if (file == ".layout" || file == ".xml")
+                {
+                    e.Effect = DragDropEffects.Copy;
+                }
+            }
+            else
+            {
+                e.Effect = DragDropEffects.None;
+            }
+        }
+
+        private void Form1_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string file = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
+                if (_commandManager.getUndoStackCount() != 0)
+                {
+                    DialogResult result = MessageBox.Show("Are you sure you want to open another Layout? All your unsaved changes will be lost!", "Open Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                    // Check which button was clicked
+                    if (result != DialogResult.Yes)
+                    {
+                        return;
+                    }
+                }
+                OpenLayout(file);
+            }
         }
     }
 }

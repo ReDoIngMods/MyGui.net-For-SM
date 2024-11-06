@@ -54,6 +54,9 @@ namespace MyGui.net
             backgroundImageSelectButton.Enabled = Settings.Default.EditorBackgroundMode == 0 || Settings.Default.EditorBackgroundMode == 2;
             backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 0 ? Util.ColorToHexString(Settings.Default.EditorBackgroundColor) : (Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "");
 
+            saveCustomLayoutCheckBox.Checked = Settings.Default.SaveWindowLayout;
+            useCustomLayoutCheckBox.Checked = Settings.Default.UseCustomWindowLayout;
+
             showWarningsCheckBox.Checked = Settings.Default.ShowWarnings;
 
             //TAB PROJECT
@@ -166,6 +169,20 @@ namespace MyGui.net
                     OnSettingChange();
                 }
             }
+        }
+
+        private void saveCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.SaveWindowLayout = sender.Checked;
+            OnSettingChange();
+        }
+
+        private void useCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.UseCustomWindowLayout = sender.Checked;
+            OnSettingChange();
         }
 
         private void showWarningsCheckBox_CheckedChanged(object senderAny, EventArgs e)

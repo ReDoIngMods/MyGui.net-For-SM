@@ -167,5 +167,113 @@ namespace MyGui.net.Properties {
                 this["ShowFullFilePathInTitle"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SaveWindowLayout {
+            get {
+                return ((bool)(this["SaveWindowLayout"]));
+            }
+            set {
+                this["SaveWindowLayout"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-69420, 0")]
+        public global::System.Drawing.Point MainWindowPos {
+            get {
+                return ((global::System.Drawing.Point)(this["MainWindowPos"]));
+            }
+            set {
+                this["MainWindowPos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size MainWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["MainWindowSize"]));
+            }
+            set {
+                this["MainWindowSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MainWindowMonitor {
+            get {
+                return ((string)(this["MainWindowMonitor"]));
+            }
+            set {
+                this["MainWindowMonitor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SidePanelAttached {
+            get {
+                return ((bool)(this["SidePanelAttached"]));
+            }
+            set {
+                this["SidePanelAttached"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point SidePanelPos {
+            get {
+                return ((global::System.Drawing.Point)(this["SidePanelPos"]));
+            }
+            set {
+                this["SidePanelPos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size SidePanelSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SidePanelSize"]));
+            }
+            set {
+                this["SidePanelSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SidePanelMonitor {
+            get {
+                return ((string)(this["SidePanelMonitor"]));
+            }
+            set {
+                this["SidePanelMonitor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseCustomWindowLayout {
+            get {
+                return ((bool)(this["UseCustomWindowLayout"]));
+            }
+            set {
+                this["UseCustomWindowLayout"] = value;
+            }
+        }
     }
 }

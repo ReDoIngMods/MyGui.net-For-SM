@@ -55,6 +55,7 @@
             undoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem = new ToolStripMenuItem();
             redoToolStripMenuItem1 = new ToolStripMenuItem();
+            actionHistoryToolStripMenuItem = new ToolStripMenuItem();
             formatToolStripMenuItem = new ToolStripMenuItem();
             openLayoutDialog = new OpenFileDialog();
             saveLayoutDialog = new SaveFileDialog();
@@ -98,8 +99,7 @@
             splitContainer1.Panel2.Controls.Add(tabControl1);
             splitContainer1.Panel2MinSize = 300;
             splitContainer1.Size = new Size(1240, 641);
-            splitContainer1.SplitterDistance = 923;
-            splitContainer1.SplitterWidth = 3;
+            splitContainer1.SplitterDistance = 924;
             splitContainer1.TabIndex = 1;
             // 
             // Viewport
@@ -112,7 +112,7 @@
             Viewport.Controls.Add(mainPanel);
             Viewport.Location = new Point(0, 0);
             Viewport.Name = "Viewport";
-            Viewport.Size = new Size(921, 640);
+            Viewport.Size = new Size(922, 640);
             Viewport.TabIndex = 0;
             Viewport.MouseDown += Viewport_MouseDown;
             Viewport.MouseEnter += Viewport_MouseEnter;
@@ -140,7 +140,7 @@
             tabControl1.Margin = new Padding(0);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(312, 639);
+            tabControl1.Size = new Size(310, 639);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -149,7 +149,7 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(304, 611);
+            tabPage1.Size = new Size(302, 611);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Properties";
             tabPage1.UseVisualStyleBackColor = true;
@@ -160,7 +160,7 @@
             tabPage1Panel.Dock = DockStyle.Fill;
             tabPage1Panel.Location = new Point(3, 3);
             tabPage1Panel.Name = "tabPage1Panel";
-            tabPage1Panel.Size = new Size(298, 605);
+            tabPage1Panel.Size = new Size(296, 605);
             tabPage1Panel.TabIndex = 0;
             // 
             // tabPage2
@@ -168,7 +168,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(306, 611);
+            tabPage2.Size = new Size(304, 613);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Widgets";
             tabPage2.UseVisualStyleBackColor = true;
@@ -177,7 +177,7 @@
             // 
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(306, 611);
+            tabPage3.Size = new Size(304, 613);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
@@ -285,7 +285,7 @@
             // editToolStripMenuItem
             // 
             editToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem, redoToolStripMenuItem1 });
+            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem, redoToolStripMenuItem1, actionHistoryToolStripMenuItem });
             editToolStripMenuItem.Name = "editToolStripMenuItem";
             editToolStripMenuItem.Size = new Size(39, 20);
             editToolStripMenuItem.Text = "Edit";
@@ -317,6 +317,12 @@
             redoToolStripMenuItem1.Text = "Redo (Alt)";
             redoToolStripMenuItem1.Visible = false;
             redoToolStripMenuItem1.Click += redoToolStripMenuItem_Click;
+            // 
+            // actionHistoryToolStripMenuItem
+            // 
+            actionHistoryToolStripMenuItem.Name = "actionHistoryToolStripMenuItem";
+            actionHistoryToolStripMenuItem.Size = new Size(200, 22);
+            actionHistoryToolStripMenuItem.Text = "Action History";
             // 
             // formatToolStripMenuItem
             // 
@@ -406,6 +412,7 @@
             // 
             // Form1
             // 
+            AllowDrop = true;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 681);
@@ -423,6 +430,8 @@
             Text = "MyGui.net";
             FormClosing += Form1_FormClosing;
             Load += Form1_Load;
+            DragDrop += Form1_DragDrop;
+            DragEnter += Form1_DragEnter;
             KeyDown += Form1_KeyDown;
             KeyUp += Form1_KeyUp;
             splitContainer1.Panel1.ResumeLayout(false);
@@ -478,5 +487,6 @@
         private ToolStripMenuItem copyToolStripMenuItem;
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripMenuItem deleteToolStripMenuItem;
+        private ToolStripMenuItem actionHistoryToolStripMenuItem;
     }
 }
