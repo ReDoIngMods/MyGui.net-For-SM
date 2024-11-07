@@ -996,10 +996,10 @@ namespace MyGui.net
 
             int BorderThreshold = 7;
 
-            bool isOnLeft = widgetRelativePosition.X >= -BorderThreshold && widgetRelativePosition.X <= 0;
-            bool isOnRight = widgetRelativePosition.X <= widgetWidth && widgetRelativePosition.X >= widgetWidth - BorderThreshold;
-            bool isOnTop = widgetRelativePosition.Y >= -BorderThreshold && widgetRelativePosition.Y <= 0;
-            bool isOnBottom = widgetRelativePosition.Y <= widgetHeight && widgetRelativePosition.Y >= widgetHeight - BorderThreshold;
+            bool isOnLeft = widgetRelativePosition.X >= -BorderThreshold && widgetRelativePosition.X <= BorderThreshold;
+            bool isOnRight = widgetRelativePosition.X >= widgetWidth - BorderThreshold && widgetRelativePosition.X <= widgetWidth + BorderThreshold;
+            bool isOnTop = widgetRelativePosition.Y >= -BorderThreshold && widgetRelativePosition.Y <= BorderThreshold;
+            bool isOnBottom = widgetRelativePosition.Y >= widgetHeight - BorderThreshold && widgetRelativePosition.Y <= widgetHeight + BorderThreshold;
 
             // Determine the specific border or corner the mouse is on
             if (isOnLeft && isOnTop) return BorderPosition.TopLeft;

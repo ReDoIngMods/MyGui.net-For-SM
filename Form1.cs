@@ -1,7 +1,5 @@
 using MyGui.net.Properties;
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
-using System.Windows.Forms;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 
@@ -804,6 +802,8 @@ namespace MyGui.net
         {
             Panel sender = (Panel)senderAny;
 
+            BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
+
             if (e.Button == MouseButtons.Right)
             {
                 _draggingViewport = true;
@@ -815,11 +815,11 @@ namespace MyGui.net
             {
                 Control? clickedControl = Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel });
 
-                bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location)) != BorderPosition.None;
+                bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && currWidgetBorder != BorderPosition.None;
 
-                if (canDragWidget && (_currentSelectedWidget == clickedControl || clickedControl == null || Util.IsKeyPressed(Keys.ShiftKey)))
+                if (canDragWidget && (_currentSelectedWidget == clickedControl || clickedControl == null || Util.IsKeyPressed(Keys.ShiftKey) || currWidgetBorder != BorderPosition.Center))
                 {
-                    _draggingWidgetAt = Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
+                    _draggingWidgetAt = currWidgetBorder;
                     _draggedWidgetPosition = ((MyGuiWidgetData)_currentSelectedWidget.Tag).position;
                     _draggedWidgetSize = (Size)((MyGuiWidgetData)_currentSelectedWidget.Tag).size;
 
@@ -828,7 +828,7 @@ namespace MyGui.net
                     _mouseLoc = e.Location;
 
                     // Check if dragging should continue or exit
-                    Debug.WriteLine(_draggingWidgetAt);
+                    //Debug.WriteLine(_draggingWidgetAt);
                     if (_draggingWidgetAt != BorderPosition.Center || Util.IsKeyPressed(Keys.ShiftKey))
                     {
                         return;
@@ -892,6 +892,7 @@ namespace MyGui.net
             Panel sender = (Panel)senderAny;
             if (_draggingViewport)
             {
+                Viewport.SuspendLayout();
                 _movedViewport = true;
                 //Debug.WriteLine(_mouseLoc);
                 Point localLocCurr = e.Location - (Size)sender.Location;
@@ -902,6 +903,7 @@ namespace MyGui.net
                 _mouseLoc = e.Location;
                 if (_DoFastRedraw)
                 {
+                    Viewport.ResumeLayout();
                     Viewport.Refresh();
                 }
             }
@@ -909,7 +911,7 @@ namespace MyGui.net
             {
                 BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, Viewport.PointToScreen(e.Location));
 
-                if ((Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
+                if ((border == BorderPosition.Center || border ==  BorderPosition.None) && (Util.GetTopmostControlAtPoint(mainPanel, Cursor.Position, new Control[] { mainPanel }) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
                 {
                     Cursor = Cursors.Hand;
                     if (_currentSelectedWidget == null)
@@ -920,7 +922,7 @@ namespace MyGui.net
                 }
 
                 // Change the cursor based on the detected border
-                switch (border)
+                switch (_draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : border)
                 {
                     case BorderPosition.TopLeft:
                     case BorderPosition.BottomRight:
