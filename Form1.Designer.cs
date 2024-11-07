@@ -168,7 +168,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(304, 613);
+            tabPage2.Size = new Size(302, 611);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Widgets";
             tabPage2.UseVisualStyleBackColor = true;
@@ -177,7 +177,7 @@
             // 
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
-            tabPage3.Size = new Size(304, 613);
+            tabPage3.Size = new Size(302, 611);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
@@ -434,6 +434,7 @@
             DragEnter += Form1_DragEnter;
             KeyDown += Form1_KeyDown;
             KeyUp += Form1_KeyUp;
+            PreviewKeyDown += Form1_PreviewKeyDown;
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();

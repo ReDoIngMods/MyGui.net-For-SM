@@ -221,12 +221,15 @@ namespace MyGui.net
 
         void UpdateProperties()
         {
+            tabPage1Panel.SuspendLayout();
             if (_currentSelectedWidget == null)
             {
                 for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
                 {
                     tabPage1Panel.Controls[i].Dispose();
                 }
+                tabPage1Panel.ResumeLayout();
+                tabPage1Panel.Refresh();
                 return;
             }
             /*foreach (var item in _editorProperties)
@@ -305,16 +308,21 @@ namespace MyGui.net
                     }
                 }
             }
+            tabPage1Panel.ResumeLayout();
+            tabPage1Panel.Refresh();
         }
 
         void AddProperties()
         {
+            tabPage1Panel.SuspendLayout();
             for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
             {
                 tabPage1Panel.Controls[i].Dispose();
             }
             if (_currentSelectedWidget == null || _currentSelectedWidget.Tag == null)
             {
+                tabPage1Panel.ResumeLayout();
+                tabPage1Panel.Refresh();
                 return;
             }
             MyGuiWidgetData currentWidgetData = (MyGuiWidgetData)_currentSelectedWidget.Tag;
@@ -587,11 +595,12 @@ namespace MyGui.net
                 tableLayoutPanel.RowCount++;
             }
             tableLayoutPanel.ResumeLayout();
+            tableLayoutPanel.Refresh();
 
             // Finally, add the TableLayoutPanel to the parent panel
-            tabPage1Panel.SuspendLayout();
             tabPage1Panel.Controls.Add(tableLayoutPanel);
             tabPage1Panel.ResumeLayout();
+            tabPage1Panel.Refresh();
         }
         #region Property Ui functions
         private void comboBox_ValueChanged(object senderAny, EventArgs e)
@@ -1112,7 +1121,7 @@ namespace MyGui.net
             }
         }
 
-        private void OpenLayout( string file )
+        private void OpenLayout(string file)
         {
             ClearStacks();
 
@@ -1452,9 +1461,23 @@ namespace MyGui.net
             }
         }
 
+        private void Form1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (_viewportFocused)
+            {
+                if (_currentSelectedWidget != null)
+                {
+                    if (Util.IsAnyOf<Keys>(e.KeyCode, [Keys.Up, Keys.Down, Keys.Left, Keys.Right]))
+                    {
+                        e.IsInputKey = true;
+                    }
+                }
+            }
+        }
+
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
+            if (_currentSelectedWidget != null && Util.IsAnyOf<Keys>(e.KeyCode, [Keys.Up, Keys.Down, Keys.Left, Keys.Right]))
             {
                 ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.Location, _draggedWidgetPositionStart));
                 _draggedWidgetPositionStart = new Point(0, 0);
