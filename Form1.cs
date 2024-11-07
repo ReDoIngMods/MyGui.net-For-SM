@@ -892,7 +892,10 @@ namespace MyGui.net
             Panel sender = (Panel)senderAny;
             if (_draggingViewport)
             {
-                Viewport.SuspendLayout();
+                if (_DoFastRedraw)
+                {
+                    Viewport.SuspendLayout();
+                }
                 _movedViewport = true;
                 //Debug.WriteLine(_mouseLoc);
                 Point localLocCurr = e.Location - (Size)sender.Location;
