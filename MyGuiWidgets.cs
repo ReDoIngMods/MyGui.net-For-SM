@@ -215,12 +215,29 @@
         public List<string>? comboBoxValues;
     }
 
+    class MyGuiBasisSkinState
+    {
+        public string? name;
+        public string? offset;
+        public string? color;
+        public string? shift;
+    }
+
+    class MyGuiBasisSkin
+    {
+        public string? align;
+        public string? type;
+        public string? offset;
+        public List<MyGuiBasisSkinState>? states;
+}
+
     class MyGuiResource
     {
         public string name;
         public string? path;
         public string? pathSpecial;
-        public Point? size;
+        public string? tileSize;
+        public List<MyGuiBasisSkin>? basisSkins;
         public string correctType = ""; //TODO: This is currently always ""
     }
 }

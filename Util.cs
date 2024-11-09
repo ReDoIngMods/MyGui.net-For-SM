@@ -636,9 +636,33 @@ namespace MyGui.net
                         {
                             name = r.Attribute("name")?.Value ?? "NO NAME",
                             path = r.Attribute("texture")?.Value,
+                            tileSize = r.Attribute("tileSize")?.Value,
                             pathSpecial = path,
+                            basisSkins = new(),
                             correctType = "",
                         };
+                        foreach (var basisSkinElement in r.Elements("BasisSkin"))
+                        {
+                            MyGuiBasisSkin basisSkin = new()
+                            {
+                                align = basisSkinElement.Attribute("align")?.Value,
+                                type = basisSkinElement.Attribute("type")?.Value,
+                                offset = basisSkinElement.Attribute("offset")?.Value,
+                                states = new(),
+                            };
+                            foreach(var stateElement in basisSkinElement.Elements("State"))
+                            {
+                                MyGuiBasisSkinState state = new()
+                                {
+                                    name = stateElement.Attribute("name")?.Value,
+                                    offset = stateElement.Attribute("offset")?.Value,
+                                    color = stateElement.Attribute("colour")?.Value, //colour is not a real word
+                                    shift = stateElement.Attribute("shifts")?.Value,
+                                };
+                                basisSkin.states.Add(state);
+                            }
+                            newRes.basisSkins.Add(basisSkin);
+                        }
                         resources.Add(newRes);
                     }
                 }
@@ -676,7 +700,7 @@ namespace MyGui.net
             var allResources = ReadAllResources(smPath, resolutionIdx);
             foreach (var resource in allResources)
             {
-                Debug.WriteLine($"Name: {resource.name}, Path: {resource.path}, Special: {resource.pathSpecial}, CorrectType: {resource.correctType}");
+                Debug.WriteLine($"Name: {resource.name}, Path: {resource.path}, #basisSkins: {resource.basisSkins.Count}, CorrectType: {resource.correctType}");
             }
         }
         #endregion
