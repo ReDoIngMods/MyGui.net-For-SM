@@ -1022,6 +1022,10 @@ namespace MyGui.net
                 {
                     Cursor = Cursors.Hand;
                 }
+                else
+                {
+                    Cursor = Cursors.Default;
+                }
             }
         }
 

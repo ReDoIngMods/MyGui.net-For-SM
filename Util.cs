@@ -1004,26 +1004,32 @@ namespace MyGui.net
 
         public static BorderPosition DetectBorder(Control widget, Point mousePosition)
         {
-            if (widget == null)
+            if (widget == null || widget.IsDisposed)
             {
                 return BorderPosition.None;
             }
-            // Convert the mouse position to the widget's coordinates, considering the scroll offset
-            if (widget.IsDisposed)
-            {
-                return BorderPosition.None;
-            }
-            Point widgetRelativePosition = widget.PointToClient(new Point(mousePosition.X, mousePosition.Y));
 
+            Point widgetRelativePosition = widget.PointToClient(new Point(mousePosition.X, mousePosition.Y));
             int widgetWidth = widget.Width;
             int widgetHeight = widget.Height;
 
-            int BorderThreshold = 7;
+            int BorderThreshold = 7;  // Distance from edge within which we consider it "on the border"
 
-            bool isOnLeft = widgetRelativePosition.X >= -BorderThreshold && widgetRelativePosition.X <= BorderThreshold;
-            bool isOnRight = widgetRelativePosition.X >= widgetWidth - BorderThreshold && widgetRelativePosition.X <= widgetWidth + BorderThreshold;
-            bool isOnTop = widgetRelativePosition.Y >= -BorderThreshold && widgetRelativePosition.Y <= BorderThreshold;
-            bool isOnBottom = widgetRelativePosition.Y >= widgetHeight - BorderThreshold && widgetRelativePosition.Y <= widgetHeight + BorderThreshold;
+            // Check if the mouse is within an acceptable distance from the widget bounds
+            bool isNearWidget = widgetRelativePosition.X >= -BorderThreshold &&
+                                widgetRelativePosition.X <= widgetWidth + BorderThreshold &&
+                                widgetRelativePosition.Y >= -BorderThreshold &&
+                                widgetRelativePosition.Y <= widgetHeight + BorderThreshold;
+
+            if (!isNearWidget)
+            {
+                return BorderPosition.None; // Mouse is too far from the widget to be considered on the border
+            }
+
+            bool isOnLeft = widgetRelativePosition.X >= -BorderThreshold && widgetRelativePosition.X < 0;
+            bool isOnRight = widgetRelativePosition.X <= widgetWidth + BorderThreshold && widgetRelativePosition.X > widgetWidth;
+            bool isOnTop = widgetRelativePosition.Y >= -BorderThreshold && widgetRelativePosition.Y < 0;
+            bool isOnBottom = widgetRelativePosition.Y <= widgetHeight + BorderThreshold && widgetRelativePosition.Y > widgetHeight;
 
             // Determine the specific border or corner the mouse is on
             if (isOnLeft && isOnTop) return BorderPosition.TopLeft;
