@@ -215,7 +215,7 @@
         public List<string>? comboBoxValues;
     }
 
-    class MyGuiBasisSkinState
+    public class MyGuiBasisSkinState
     {
         public string? name;
         public string? offset;
@@ -223,15 +223,15 @@
         public string? shift;
     }
 
-    class MyGuiBasisSkin
+    public class MyGuiBasisSkin
     {
         public string? align;
         public string? type;
         public string? offset;
         public List<MyGuiBasisSkinState>? states;
-}
+    }
 
-    class MyGuiResource
+    public class MyGuiResource
     {
         public string name;
         public string? path;

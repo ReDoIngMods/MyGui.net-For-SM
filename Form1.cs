@@ -16,6 +16,7 @@ namespace MyGui.net
         static Dictionary<string, Control> _editorProperties = new Dictionary<string, Control>();
         static FormSideBar? _sidebarForm;
         CommandManager _commandManager = new CommandManager();
+        static Dictionary<string, MyGuiResource> _allResources = new();
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
@@ -98,7 +99,7 @@ namespace MyGui.net
                 _currentLayoutSavePath = autoloadPath;
                 //Debug.WriteLine(_currentLayoutPath);
                 _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
-                Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
+                Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
                 //Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
             }
 
@@ -125,7 +126,9 @@ namespace MyGui.net
                     break;
             }
 
-            Util.PrintAllResources(_ScrapMechanicPath);
+            //Util.PrintAllResources(_ScrapMechanicPath);
+            _allResources = Util.ReadAllResources(_ScrapMechanicPath, 1);
+            Util.PrintAllResources(_allResources);
             HandleWidgetSelection();
 
             if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
@@ -1147,7 +1150,7 @@ namespace MyGui.net
             {
                 mainPanel.Controls[i].Dispose();
             }
-            Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel);
+            Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)

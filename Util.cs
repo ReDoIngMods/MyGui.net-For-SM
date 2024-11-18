@@ -7,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -515,15 +516,20 @@ namespace MyGui.net
             }
         }
 
-        public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Control? currParent = null, Control? defaultParent = null)
+        public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Control? currParent = null, Control? defaultParent = null, Dictionary<string,MyGuiResource>? allResources = null)
         {
             if (layout == null) return;
             foreach (MyGuiWidgetData data in layout)
             {
                 // Create the widget
-                Panel newWidget = new();
+                NineSlicePictureBox newWidget = new();
                 newWidget.Name = data.name;
                 newWidget.Tag = data;
+                if (allResources != null && allResources[data.skin] != null)
+                {
+                    newWidget.Image = Image.FromFile(allResources[data.skin].path);
+                    newWidget.Resource = allResources[data.skin];
+                }
                 newWidget.BackColor = Color.FromArgb(rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255));
                 newWidget.Location = data.position;
                 newWidget.Size = (Size)data.size;
@@ -537,7 +543,7 @@ namespace MyGui.net
                     defaultParent.Controls.Add(newWidget);
                 }
 
-                SpawnLayoutWidgets(data.children, newWidget, defaultParent);
+                SpawnLayoutWidgets(data.children, newWidget, defaultParent, allResources);
             }
         }
 
@@ -576,14 +582,20 @@ namespace MyGui.net
 
         #region Resource File Reading/Exporting
 
-        public static List<MyGuiResource> ReadAllResources(string smPath, int resolutionIdx)
+        public static Dictionary<string, MyGuiResource> ReadAllResources(string smPath, int resolutionIdx)
         {
+            Dictionary<string, MyGuiResource> resourceDict = new();
             List<MyGuiResource> resources = ReadResourceFile(Path.Combine(smPath, "Data/Gui/GuiConfig.xml"), smPath) ?? new();
             foreach (var res in ReadResourcesFromJson(Path.Combine(smPath, "Data/Gui/guiResolutions.json"), smPath, resolutionIdx))
             {
                 resources.Add(res);
             }
-            return resources;
+
+            foreach (var currRes in resources)
+            {
+                resourceDict[currRes.name] = currRes;
+            }
+            return resourceDict;
         }
 
         public static List<MyGuiResource> ReadResourcesFromJson(string path, string smPath, int resolutionIdx)
@@ -698,9 +710,17 @@ namespace MyGui.net
         public static void PrintAllResources(string smPath, int resolutionIdx = 1)
         {
             var allResources = ReadAllResources(smPath, resolutionIdx);
-            foreach (var resource in allResources)
+            foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
             {
-                Debug.WriteLine($"Name: {resource.name}, Path: {resource.path}, #basisSkins: {resource.basisSkins.Count}, CorrectType: {resource.correctType}");
+                Debug.WriteLine($"KEY: {resource.Key}Name: {resource.Value.name}, Path: {resource.Value.path}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
+            }
+        }
+
+        public static void PrintAllResources(Dictionary<string, MyGuiResource> allResources)
+        {
+            foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
+            {
+                Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
             }
         }
         #endregion
@@ -708,7 +728,23 @@ namespace MyGui.net
         #region Util Utils
         public static Random rand = new();
 
-        static Tuple<Point, Point> GetWidgetPosAndSize(bool isReal, string input, Point parentSize)
+        public static Point GetWidgetPos(bool isReal, string input, Point parentSize)
+        {
+            string[] numbers = input.Split(' ');
+            double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
+
+            if (isReal)
+            {
+                parsedNumbers[0] *= parentSize.X;
+                parsedNumbers[1] *= parentSize.Y;
+            }
+
+            int x1 = (int)Math.Round(parsedNumbers[0]);
+            int y1 = (int)Math.Round(parsedNumbers[1]);
+            return new(x1, y1);
+        }
+
+        public static Tuple<Point, Point> GetWidgetPosAndSize(bool isReal, string input, Point parentSize)
         {
             string[] numbers = input.Split(' ');
             double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
@@ -1063,6 +1099,13 @@ namespace MyGui.net
                 g.DrawImage(image, 0, 0, 4, 4);
             }
             return newImage;
+        }
+        #endregion
+
+        #region Image Utils
+        public static Rectangle GetTileRectangle(Point tileSize, Point offset)
+        {
+            return new Rectangle(offset.X * tileSize.X, offset.Y * tileSize.Y, tileSize.X, tileSize.Y);
         }
         #endregion
 
