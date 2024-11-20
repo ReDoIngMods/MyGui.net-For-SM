@@ -1,19 +1,11 @@
 ﻿using Microsoft.Win32;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -525,7 +517,7 @@ namespace MyGui.net
                 NineSlicePictureBox newWidget = new();
                 newWidget.Name = data.name;
                 newWidget.Tag = data;
-                if (allResources != null && allResources[data.skin] != null)
+                if (allResources != null && allResources[data.skin] != null && Path.GetFileName(allResources[data.skin].path) != "")
                 {
                     newWidget.Image = Image.FromFile(allResources[data.skin].path);
                     newWidget.Resource = allResources[data.skin];
@@ -647,8 +639,8 @@ namespace MyGui.net
                         MyGuiResource newRes = new()
                         {
                             name = r.Attribute("name")?.Value ?? "NO NAME",
-                            path = r.Attribute("texture")?.Value,
-                            tileSize = r.Attribute("tileSize")?.Value,
+                            path = Path.GetDirectoryName(path) + "\\" + r.Attribute("texture")?.Value,
+                            tileSize = r.Attribute("size")?.Value,
                             pathSpecial = path,
                             basisSkins = new(),
                             correctType = "",
@@ -1105,7 +1097,7 @@ namespace MyGui.net
         #region Image Utils
         public static Rectangle GetTileRectangle(Point tileSize, Point offset)
         {
-            return new Rectangle(offset.X * tileSize.X, offset.Y * tileSize.Y, tileSize.X, tileSize.Y);
+            return new Rectangle(offset.X + tileSize.X, offset.Y + tileSize.Y, tileSize.X, tileSize.Y);
         }
         #endregion
 
