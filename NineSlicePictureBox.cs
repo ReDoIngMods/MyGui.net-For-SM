@@ -1,16 +1,31 @@
 ﻿namespace MyGui.net
 {
     using MyGui.net.Properties;
+    using SkiaSharp;
+    using SkiaSharp.Views.Desktop;
     using System;
     using System.Diagnostics;
+    using System.Drawing;
     using System.Windows.Forms;
 
     public class NineSlicePictureBox : PictureBox
     {
         public MyGuiResource? Resource { get; set; }
 
+        private SKControl _skControl;
+
         public NineSlicePictureBox() : base()
         {
+            // Initialize custom SkiaSharp control for rendering
+            _skControl = new SKControl
+            {
+                Dock = DockStyle.Fill
+            };
+            _skControl.Enabled = false;
+            _skControl.PaintSurface += OnPaintSurface;
+            this.Controls.Add(_skControl);
+
+            // Configure control styles for custom rendering
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.UserPaint, true);
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, false); // Disable default buffering
@@ -27,37 +42,42 @@
         ) : base()
         {
             Resource = newRes;
+            _skControl = new SKControl
+            {
+                Dock = DockStyle.Fill
+            };
+            _skControl.PaintSurface += OnPaintSurface;
+            this.Controls.Add(_skControl);
+
             this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             this.SetStyle(ControlStyles.UserPaint, true);
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, false); // Disable default buffering
             this.SetStyle(ControlStyles.Opaque, true);
         }
 
-
-        protected override void OnPaint(PaintEventArgs e)
+        // Handle SkiaSharp rendering on the surface
+        private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
         {
             if (Image == null || Resource == null || Resource.basisSkins == null || Resource.tileSize == null)
             {
-                base.OnPaint(e);
-                return;
+                return; // If no resource or image, don't do anything
             }
 
             Debug.WriteLine($"Drawing widget with skin {Resource.name} and tilesize {Resource.tileSize}.");
 
-            Graphics g = e.Graphics;
+            var canvas = e.Surface.Canvas;
+            canvas.Clear(SKColors.White);
 
-            // Parse tile size
-            //var tileSize = Util.GetWidgetPos(false, Resource.tileSize, new(1, 1));
-
-            //foreach (var skin in Resource.basisSkins)
+            // Iterate through skins (reverse order to match original logic)
             for (int i = Resource.basisSkins.Count - 1; i > 0; i--)
             {
                 var skin = Resource.basisSkins[i];
                 var tileOffset = Util.GetWidgetPos(false, skin.offset, new(1, 1));
                 if (skin.type == "SimpleText")
                 {
-                    continue;
+                    continue; // Skip if it's a text type skin
                 }
+
                 MyGuiBasisSkinState normalState = new MyGuiBasisSkinState();
                 foreach (var item in skin.states)
                 {
@@ -68,53 +88,51 @@
                         break;
                     }
                 }
-                Debug.WriteLine($"drawing skin with align {skin.align}");
+                Debug.WriteLine($"Drawing skin with align {skin.align}");
                 if (skin.offset == null) continue;
 
                 var posSize = Util.GetWidgetPosAndSize(false, normalState.offset, new(1, 1));
-                //var tileRect = new Rectangle(posSize.Item1 + (Size)tileOffset, (Size)posSize.Item2);
-                var tileRect = new Rectangle(posSize.Item1, (Size)posSize.Item2);
+                var tileRect = new SKRect(posSize.Item1.X, posSize.Item1.Y, posSize.Item2.X, posSize.Item2.Y);
 
-                var clientPos = this.ClientRectangle;
-                //clientPos.Offset(tileOffset);
-                clientPos.X += tileOffset.X;
-                clientPos.Y += tileOffset.Y;
+                var clientPos = new SKRect(this.ClientRectangle.Left, this.ClientRectangle.Top, this.ClientRectangle.Width, this.ClientRectangle.Height);
+                clientPos.Offset(tileOffset.X, tileOffset.Y);
 
                 // Calculate the destination rectangle based on alignment
-                //var destRect = GetAlignedRectangle(skin.align, this.ClientRectangle, tileRect.Size);
                 var destRect = GetAlignedRectangle(skin.align, clientPos, tileRect.Size);
 
-                // Draw the image
-                //g.FillRectangle(new SolidBrush(this.BackColor), destRect);
-                g.DrawImage(Image, destRect, tileRect, GraphicsUnit.Pixel);
+                // Draw the image using SkiaSharp
+                var skImage = SKImage.FromBitmap(SKBitmap.Decode(Resource.path));
+                canvas.DrawImage(skImage, new SKPoint(destRect.Left, destRect.Right));//destRect, tileRect, SKFilterQuality.Medium);
             }
         }
 
+        // Suppress background painting (leave it transparent)
         protected override void OnPaintBackground(PaintEventArgs e)
         {
             // Do nothing here to suppress background rendering
         }
 
-        private Rectangle GetAlignedRectangle(string? align, Rectangle container, Size tileSize)
+        // Get aligned rectangle for drawing
+        private SKRect GetAlignedRectangle(string? align, SKRect container,  SKSize tileSize)
         {
             if (string.IsNullOrEmpty(align) || align == "[DEFAULT]" || align == "Default")
             {
                 // Default: no scaling or positioning adjustment
-                return new Rectangle(container.Location, tileSize);
+                return new SKRect(container.Location.X, container.Location.Y, tileSize.Width, tileSize.Height);
             }
 
-            int x = container.Left, y = container.Top, width = tileSize.Width, height = tileSize.Height;
+            int x = (int)container.Left, y = (int)container.Top, width = (int)tileSize.Width, height = (int)tileSize.Height;
 
             switch (align)
             {
                 case "Stretch":
-                    width = container.Width;
-                    height = container.Height;
+                    width = (int)container.Width;
+                    height = (int)container.Height;
                     break;
 
                 case "Center":
-                    x += (container.Width - tileSize.Width) / 2;
-                    y += (container.Height - tileSize.Height) / 2;
+                    x += ((int)container.Width - (int)tileSize.Width) / 2;
+                    y += ((int)container.Height - (int)tileSize.Height) / 2;
                     break;
 
                 case "Left Top":
@@ -122,72 +140,34 @@
                     break;
 
                 case "Left Bottom":
-                    y = container.Bottom - tileSize.Height;
+                    y = (int)container.Bottom - (int)tileSize.Height;
                     break;
 
                 case "Left VStretch":
-                    height = container.Height;
+                    height = (int)container.Height;
                     break;
 
                 case "Left VCenter":
-                    y += (container.Height - tileSize.Height) / 2;
+                    y += ((int)container.Height - (int)tileSize.Height) / 2;
                     break;
 
                 case "Right Top":
-                    x = container.Right - tileSize.Width;
+                    x = (int)container.Right - (int)tileSize.Width;
                     break;
 
                 case "Right Bottom":
-                    x = container.Right - tileSize.Width;
-                    y = container.Bottom - tileSize.Height;
+                    x = (int)container.Right - (int)tileSize.Width;
+                    y = (int)container.Bottom - (int)tileSize.Height;
                     break;
 
                 case "Right VStretch":
-                    x = container.Right - tileSize.Width;
-                    height = container.Height;
+                    x = (int)container.Right - (int)tileSize.Width;
+                    height = (int)container.Height;
                     break;
 
                 case "Right VCenter":
-                    x = container.Right - tileSize.Width;
-                    y += (container.Height - tileSize.Height) / 2;
-                    break;
-
-                case "HStretch Top":
-                    width = container.Width;
-                    break;
-
-                case "HStretch Bottom":
-                    width = container.Width;
-                    y = container.Bottom - tileSize.Height;
-                    break;
-
-                case "HStretch VStretch":
-                    width = container.Width;
-                    height = container.Height;
-                    break;
-
-                case "HStretch VCenter":
-                    width = container.Width;
-                    y += (container.Height - tileSize.Height) / 2;
-                    break;
-
-                case "HCenter Top":
-                    x += (container.Width - tileSize.Width) / 2;
-                    break;
-
-                case "HCenter Bottom":
-                    x += (container.Width - tileSize.Width) / 2;
-                    y = container.Bottom - tileSize.Height;
-                    break;
-
-                case "HCenter VStretch":
-                    x += (container.Width - tileSize.Width) / 2;
-                    height = container.Height;
-                    break;
-
-                case "HCenter VCenter":
-                    x += (container.Width - tileSize.Width) / 2;
-                    y += (container.Height - tileSize.Height) / 2;
+                    x = (int)container.Right - (int)tileSize.Width;
+                    y += ((int)container.Height - (int)tileSize.Height) / 2;
                     break;
 
                 default:
@@ -195,7 +175,7 @@
                     break;
             }
 
-            return new Rectangle(x, y, width, height);
+            return new SKRect(x, y, width, height);
         }
     }
 }

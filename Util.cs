@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using SkiaSharp;
 using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
@@ -8,6 +9,8 @@ using System.Text;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 
 namespace MyGui.net
 {
@@ -945,7 +948,7 @@ namespace MyGui.net
                     Control child = parent.Controls[i];
                     // Recursively search in child controls
                     Control result = GetTopmostControlAtPoint(child, screenPoint, excludeParent);
-                    if (result != null)
+                    if (result != null && result.Tag != null)
                     {
                         return result;
                     }
