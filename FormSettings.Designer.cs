@@ -53,6 +53,10 @@
             useBackgroundImageColor = new RadioButton();
             backgroundImagePathTextBox = new TextBox();
             backgroundImageSelectButton = new Button();
+            groupBox8 = new GroupBox();
+            useDarkTheme = new RadioButton();
+            useLightTheme = new RadioButton();
+            useAutoTheme = new RadioButton();
             groupBox7 = new GroupBox();
             useCustomLayoutCheckBox = new CheckBox();
             saveCustomLayoutCheckBox = new CheckBox();
@@ -65,8 +69,9 @@
             label2 = new Label();
             showTypesForNamedWidgetsCheckBox = new CheckBox();
             tabPage4 = new TabPage();
-            pictureBox2 = new PictureBox();
+            panel1 = new Panel();
             aboutTextBox = new TextBox();
+            pictureBox2 = new PictureBox();
             pictureBox1 = new PictureBox();
             cancelButton = new Button();
             smPathDialog = new FolderBrowserDialog();
@@ -82,6 +87,7 @@
             groupBox4.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox5.SuspendLayout();
+            groupBox8.SuspendLayout();
             groupBox7.SuspendLayout();
             groupBox3.SuspendLayout();
             tabPage2.SuspendLayout();
@@ -89,6 +95,7 @@
             groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
             tabPage4.SuspendLayout();
+            panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -118,17 +125,19 @@
             // 
             // flowLayoutPanel1
             // 
+            flowLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             flowLayoutPanel1.AutoScroll = true;
             flowLayoutPanel1.Controls.Add(groupBox2);
             flowLayoutPanel1.Controls.Add(groupBox4);
             flowLayoutPanel1.Controls.Add(groupBox1);
             flowLayoutPanel1.Controls.Add(groupBox5);
+            flowLayoutPanel1.Controls.Add(groupBox8);
             flowLayoutPanel1.Controls.Add(groupBox7);
             flowLayoutPanel1.Controls.Add(groupBox3);
-            flowLayoutPanel1.Dock = DockStyle.Fill;
-            flowLayoutPanel1.Location = new Point(3, 3);
+            flowLayoutPanel1.Location = new Point(0, 0);
+            flowLayoutPanel1.Margin = new Padding(0);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(646, 374);
+            flowLayoutPanel1.Size = new Size(652, 380);
             flowLayoutPanel1.TabIndex = 0;
             // 
             // groupBox2
@@ -158,6 +167,7 @@
             // 
             // detectSmPath
             // 
+            detectSmPath.FlatStyle = FlatStyle.System;
             detectSmPath.Location = new Point(73, 37);
             detectSmPath.Name = "detectSmPath";
             detectSmPath.Size = new Size(61, 23);
@@ -168,6 +178,7 @@
             // 
             // smPathLabel
             // 
+            smPathLabel.BackColor = SystemColors.ControlLightLight;
             smPathLabel.Location = new Point(140, 38);
             smPathLabel.Name = "smPathLabel";
             smPathLabel.ReadOnly = true;
@@ -176,6 +187,7 @@
             // 
             // chooseSmPath
             // 
+            chooseSmPath.FlatStyle = FlatStyle.System;
             chooseSmPath.Location = new Point(6, 37);
             chooseSmPath.Name = "chooseSmPath";
             chooseSmPath.Size = new Size(61, 23);
@@ -353,6 +365,7 @@
             // 
             // backgroundImagePathTextBox
             // 
+            backgroundImagePathTextBox.BackColor = SystemColors.ControlLightLight;
             backgroundImagePathTextBox.Location = new Point(73, 46);
             backgroundImagePathTextBox.Name = "backgroundImagePathTextBox";
             backgroundImagePathTextBox.ReadOnly = true;
@@ -361,6 +374,7 @@
             // 
             // backgroundImageSelectButton
             // 
+            backgroundImageSelectButton.FlatStyle = FlatStyle.System;
             backgroundImageSelectButton.Location = new Point(6, 46);
             backgroundImageSelectButton.Name = "backgroundImageSelectButton";
             backgroundImageSelectButton.Size = new Size(61, 23);
@@ -369,11 +383,59 @@
             backgroundImageSelectButton.UseVisualStyleBackColor = true;
             backgroundImageSelectButton.Click += backgroundImageSelectButton_Click;
             // 
+            // groupBox8
+            // 
+            groupBox8.Controls.Add(useDarkTheme);
+            groupBox8.Controls.Add(useLightTheme);
+            groupBox8.Controls.Add(useAutoTheme);
+            groupBox8.Location = new Point(3, 213);
+            groupBox8.Name = "groupBox8";
+            groupBox8.Size = new Size(178, 52);
+            groupBox8.TabIndex = 9;
+            groupBox8.TabStop = false;
+            groupBox8.Text = "Theme";
+            // 
+            // useDarkTheme
+            // 
+            useDarkTheme.AutoSize = true;
+            useDarkTheme.Location = new Point(63, 22);
+            useDarkTheme.Name = "useDarkTheme";
+            useDarkTheme.Size = new Size(49, 19);
+            useDarkTheme.TabIndex = 1;
+            useDarkTheme.TabStop = true;
+            useDarkTheme.Text = "Dark";
+            useDarkTheme.UseVisualStyleBackColor = true;
+            useDarkTheme.CheckedChanged += themeRadioButton_CheckedChanged;
+            // 
+            // useLightTheme
+            // 
+            useLightTheme.AutoSize = true;
+            useLightTheme.Location = new Point(118, 22);
+            useLightTheme.Name = "useLightTheme";
+            useLightTheme.Size = new Size(52, 19);
+            useLightTheme.TabIndex = 2;
+            useLightTheme.TabStop = true;
+            useLightTheme.Text = "Light";
+            useLightTheme.UseVisualStyleBackColor = true;
+            useLightTheme.CheckedChanged += themeRadioButton_CheckedChanged;
+            // 
+            // useAutoTheme
+            // 
+            useAutoTheme.AutoSize = true;
+            useAutoTheme.Location = new Point(6, 22);
+            useAutoTheme.Name = "useAutoTheme";
+            useAutoTheme.Size = new Size(51, 19);
+            useAutoTheme.TabIndex = 0;
+            useAutoTheme.TabStop = true;
+            useAutoTheme.Text = "Auto";
+            useAutoTheme.UseVisualStyleBackColor = true;
+            useAutoTheme.CheckedChanged += themeRadioButton_CheckedChanged;
+            // 
             // groupBox7
             // 
             groupBox7.Controls.Add(useCustomLayoutCheckBox);
             groupBox7.Controls.Add(saveCustomLayoutCheckBox);
-            groupBox7.Location = new Point(3, 213);
+            groupBox7.Location = new Point(187, 213);
             groupBox7.Name = "groupBox7";
             groupBox7.Size = new Size(263, 75);
             groupBox7.TabIndex = 10;
@@ -405,7 +467,7 @@
             // groupBox3
             // 
             groupBox3.Controls.Add(showWarningsCheckBox);
-            groupBox3.Location = new Point(272, 213);
+            groupBox3.Location = new Point(456, 213);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(124, 55);
             groupBox3.TabIndex = 9;
@@ -436,12 +498,12 @@
             // 
             // flowLayoutPanel2
             // 
+            flowLayoutPanel2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             flowLayoutPanel2.AutoScroll = true;
             flowLayoutPanel2.Controls.Add(groupBox6);
-            flowLayoutPanel2.Dock = DockStyle.Fill;
-            flowLayoutPanel2.Location = new Point(3, 3);
+            flowLayoutPanel2.Location = new Point(0, 0);
             flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(646, 374);
+            flowLayoutPanel2.Size = new Size(652, 380);
             flowLayoutPanel2.TabIndex = 1;
             // 
             // groupBox6
@@ -488,9 +550,7 @@
             // 
             // tabPage4
             // 
-            tabPage4.Controls.Add(pictureBox2);
-            tabPage4.Controls.Add(aboutTextBox);
-            tabPage4.Controls.Add(pictureBox1);
+            tabPage4.Controls.Add(panel1);
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
@@ -499,38 +559,49 @@
             tabPage4.Text = "About";
             tabPage4.UseVisualStyleBackColor = true;
             // 
-            // pictureBox2
+            // panel1
             // 
-            pictureBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
-            pictureBox2.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
-            pictureBox2.Location = new Point(556, 288);
-            pictureBox2.Name = "pictureBox2";
-            pictureBox2.Size = new Size(90, 90);
-            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.TabIndex = 2;
-            pictureBox2.TabStop = false;
+            panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            panel1.Controls.Add(aboutTextBox);
+            panel1.Controls.Add(pictureBox2);
+            panel1.Controls.Add(pictureBox1);
+            panel1.Location = new Point(0, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(652, 380);
+            panel1.TabIndex = 3;
             // 
             // aboutTextBox
             // 
             aboutTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             aboutTextBox.BackColor = SystemColors.ControlLightLight;
             aboutTextBox.BorderStyle = BorderStyle.None;
-            aboutTextBox.Location = new Point(6, 6);
+            aboutTextBox.Location = new Point(3, 3);
             aboutTextBox.Multiline = true;
             aboutTextBox.Name = "aboutTextBox";
             aboutTextBox.ReadOnly = true;
             aboutTextBox.ScrollBars = ScrollBars.Vertical;
-            aboutTextBox.Size = new Size(640, 276);
+            aboutTextBox.Size = new Size(646, 281);
             aboutTextBox.TabIndex = 1;
             aboutTextBox.Text = resources.GetString("aboutTextBox.Text");
+            // 
+            // pictureBox2
+            // 
+            pictureBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
+            pictureBox2.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
+            pictureBox2.Location = new Point(562, 290);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(90, 90);
+            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBox2.TabIndex = 2;
+            pictureBox2.TabStop = false;
             // 
             // pictureBox1
             // 
             pictureBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             pictureBox1.Image = Properties.Resources.MyGUI_net_Icon_1;
             pictureBox1.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
-            pictureBox1.Location = new Point(6, 288);
+            pictureBox1.Location = new Point(0, 290);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(90, 90);
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
@@ -540,6 +611,7 @@
             // cancelButton
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            cancelButton.FlatStyle = FlatStyle.System;
             cancelButton.Location = new Point(567, 426);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(105, 23);
@@ -557,6 +629,7 @@
             // 
             applySettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             applySettingsButton.Enabled = false;
+            applySettingsButton.FlatStyle = FlatStyle.System;
             applySettingsButton.Location = new Point(452, 426);
             applySettingsButton.Name = "applySettingsButton";
             applySettingsButton.Size = new Size(105, 23);
@@ -568,6 +641,7 @@
             // resetSettingsButton
             // 
             resetSettingsButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            resetSettingsButton.FlatStyle = FlatStyle.System;
             resetSettingsButton.Location = new Point(12, 425);
             resetSettingsButton.Name = "resetSettingsButton";
             resetSettingsButton.Size = new Size(77, 23);
@@ -629,6 +703,8 @@
             groupBox1.PerformLayout();
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
+            groupBox8.ResumeLayout(false);
+            groupBox8.PerformLayout();
             groupBox7.ResumeLayout(false);
             groupBox7.PerformLayout();
             groupBox3.ResumeLayout(false);
@@ -639,7 +715,8 @@
             groupBox6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
             tabPage4.ResumeLayout(false);
-            tabPage4.PerformLayout();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
@@ -693,5 +770,10 @@
         private GroupBox groupBox7;
         private CheckBox saveCustomLayoutCheckBox;
         private CheckBox useCustomLayoutCheckBox;
+        private Panel panel1;
+        private GroupBox groupBox8;
+        private RadioButton useDarkTheme;
+        private RadioButton useLightTheme;
+        private RadioButton useAutoTheme;
     }
 }

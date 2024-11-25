@@ -21,6 +21,7 @@ namespace MyGui.net
         }
 
         static bool _hasChanged = false;
+        static bool _needsRestartToApply = false;
         static bool _formLoaded = false;
         static bool _autoApply = false;
 
@@ -54,6 +55,11 @@ namespace MyGui.net
             backgroundImageSelectButton.Enabled = Settings.Default.EditorBackgroundMode == 0 || Settings.Default.EditorBackgroundMode == 2;
             backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 0 ? Util.ColorToHexString(Settings.Default.EditorBackgroundColor) : (Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "");
 
+
+            useLightTheme.Checked = Settings.Default.Theme == 0;
+            useAutoTheme.Checked = Settings.Default.Theme == 1;
+            useDarkTheme.Checked = Settings.Default.Theme == 2;
+
             saveCustomLayoutCheckBox.Checked = Settings.Default.SaveWindowLayout;
             useCustomLayoutCheckBox.Checked = Settings.Default.UseCustomWindowLayout;
 
@@ -67,7 +73,7 @@ namespace MyGui.net
             _formLoaded = true;
 
             //Change about text
-            aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET and WinForms by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.\r\nThis project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.";
+            aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9 and WinForms by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.";
         }
 
         private void OnSettingChange()
@@ -108,6 +114,7 @@ namespace MyGui.net
         private void exportRadioButton_CheckedChanged(object senderAny, EventArgs e)
         {
             RadioButton sender = (RadioButton)senderAny;
+            if (!sender.Checked) { return; }
             Settings.Default.ExportMode = (int)Enum.Parse<ExportMode>(sender.Name, true);
             OnSettingChange();
         }
@@ -171,6 +178,26 @@ namespace MyGui.net
             }
         }
 
+        public enum ProgramThemes
+        {
+            useLightTheme,
+            useAutoTheme,
+            useDarkTheme
+        }
+
+        private void themeRadioButton_CheckedChanged(object senderAny, EventArgs e)
+        {
+            RadioButton sender = (RadioButton)senderAny;
+            if (!sender.Checked) { return; }
+            Settings.Default.Theme = (int)Enum.Parse<ProgramThemes>(sender.Name, true);
+            OnSettingChange();
+            if (_autoApply)
+            {
+                MessageBox.Show("Some options require program restart in order to apply.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            _needsRestartToApply = true;
+        }
+
         private void saveCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
         {
             CheckBox sender = (CheckBox)senderAny;
@@ -222,6 +249,10 @@ namespace MyGui.net
 
         private void applySettingsButton_Click(object sender, EventArgs e)
         {
+            if (_needsRestartToApply)
+            {
+                MessageBox.Show("Some options require program restart in order to apply.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             Settings.Default.Save();
             _hasChanged = false;
             applySettingsButton.Enabled = _hasChanged;

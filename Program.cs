@@ -1,3 +1,5 @@
+using MyGui.net.Properties;
+
 namespace MyGui.net
 {
     internal static class Program
@@ -16,6 +18,8 @@ namespace MyGui.net
                 _DefaultOpenedDir = args[0];
             }
             ApplicationConfiguration.Initialize();
+            //Application.SetColorMode(SystemColorMode.Dark);
+            Application.SetColorMode((SystemColorMode)Settings.Default.Theme);
             Application.Run(new Form1(_DefaultOpenedDir));
         }
     }

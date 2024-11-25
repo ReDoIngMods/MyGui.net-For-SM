@@ -37,6 +37,7 @@
             // asBothButton
             // 
             asBothButton.DialogResult = DialogResult.Retry;
+            asBothButton.FlatStyle = FlatStyle.System;
             asBothButton.Location = new Point(12, 50);
             asBothButton.Name = "asBothButton";
             asBothButton.Size = new Size(113, 23);
@@ -56,6 +57,7 @@
             // asPixelsButton
             // 
             asPixelsButton.DialogResult = DialogResult.OK;
+            asPixelsButton.FlatStyle = FlatStyle.System;
             asPixelsButton.Location = new Point(131, 50);
             asPixelsButton.Name = "asPixelsButton";
             asPixelsButton.Size = new Size(113, 23);
@@ -66,6 +68,7 @@
             // asPercentButton
             // 
             asPercentButton.DialogResult = DialogResult.Ignore;
+            asPercentButton.FlatStyle = FlatStyle.System;
             asPercentButton.Location = new Point(250, 50);
             asPercentButton.Name = "asPercentButton";
             asPercentButton.Size = new Size(113, 23);

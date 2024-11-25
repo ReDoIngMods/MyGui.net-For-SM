@@ -1161,6 +1161,10 @@ namespace MyGui.net
                 {
                     _currentLayoutSavePath = saveLayoutDialog.FileName;
                 }
+                else
+                {
+                    return;
+                }
             }
             int actualExport = Settings.Default.ExportMode;
             if (actualExport == 2)

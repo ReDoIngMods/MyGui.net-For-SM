@@ -8,3 +8,6 @@ dotnet_diagnostic.CS8604.severity = suggestion
 
 # CS8602: Dereference of a possibly null reference.
 dotnet_diagnostic.CS8602.severity = suggestion
+
+# WFO5001: Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+dotnet_diagnostic.WFO5001.severity = suggestion

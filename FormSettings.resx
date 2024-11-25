@@ -117,11 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="aboutTextBox.Text" xml:space="preserve">
+    <value>MyGui.net is a rewrite of the original MyGui built using .NET and WinForms by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.
+This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="pictureBox2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAABDgAAAQ4CAYAAADsEGyPAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAO
-        vQAADr0BR/uQrQAA/7JJREFUeF7U/emWLMeNJQrrJbq7SpzOPJOqvm9wb7WkaknFmTycpdJEiYM4U6Kq
+        vAAADrwBlbxySQAA/7JJREFUeF7U/emWLMeNJQrrJbq7SpzOPJOqvm9wb7WkaknFmTycpdJEiYM4U6Kq
         7rPnxQawDRtw88xDtfSt9f3YC8AGLDIywt0MQJi7/+C//d/vXQTevfhv/09K2NRT/neXhWf+7dcXD974
         9OLeax+Hz/Df/5/3l1Td5b8W99/gN5uSvv/+rx+UdBT3PyaX+B//KxD6L4UL/dbLf7x4+OafLq7/+4cX
         /z05SPenXPjxr456k0f/P0Em/unHvz7oS/6kfGpDAvfe+NPFo7c+v3jmZ79P7jc+FvJ/pGTs8kP+G2Tg
@@ -12306,10 +12310,6 @@
         EDbVkJPOMeYQNtWQk84x5hA21ZCTzrFef/wci7LicZ5vOnaivueETTXkpHOMOYRNNeSkc4w5hE015KRz
         jDmETTXkXecXg35HTz2coA9+l/p//+X/AQJNeaPAyop9AAAAAElFTkSuQmCC
 </value>
-  </data>
-  <data name="aboutTextBox.Text" xml:space="preserve">
-    <value>MyGui.net is a rewrite of the original MyGui built using .NET and WinForms by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.
-This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.</value>
   </data>
   <metadata name="smPathDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>

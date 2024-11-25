@@ -31,6 +31,8 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             splitContainer1 = new SplitContainer();
+            hScrollBar1 = new HScrollBar();
+            vScrollBar1 = new VScrollBar();
             Viewport = new Panel();
             mainPanel = new Panel();
             tabControl1 = new TabControl();
@@ -90,6 +92,8 @@
             // 
             // splitContainer1.Panel1
             // 
+            splitContainer1.Panel1.Controls.Add(hScrollBar1);
+            splitContainer1.Panel1.Controls.Add(vScrollBar1);
             splitContainer1.Panel1.Controls.Add(Viewport);
             splitContainer1.Panel1MinSize = 320;
             // 
@@ -102,6 +106,22 @@
             splitContainer1.SplitterDistance = 924;
             splitContainer1.TabIndex = 1;
             // 
+            // hScrollBar1
+            // 
+            hScrollBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            hScrollBar1.Location = new Point(-1, 623);
+            hScrollBar1.Name = "hScrollBar1";
+            hScrollBar1.Size = new Size(907, 15);
+            hScrollBar1.TabIndex = 2;
+            // 
+            // vScrollBar1
+            // 
+            vScrollBar1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            vScrollBar1.Location = new Point(906, 0);
+            vScrollBar1.Name = "vScrollBar1";
+            vScrollBar1.Size = new Size(15, 622);
+            vScrollBar1.TabIndex = 1;
+            // 
             // Viewport
             // 
             Viewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -111,8 +131,9 @@
             Viewport.BackColor = SystemColors.ScrollBar;
             Viewport.Controls.Add(mainPanel);
             Viewport.Location = new Point(0, 0);
+            Viewport.Margin = new Padding(0);
             Viewport.Name = "Viewport";
-            Viewport.Size = new Size(922, 640);
+            Viewport.Size = new Size(906, 623);
             Viewport.TabIndex = 0;
             Viewport.MouseDown += Viewport_MouseDown;
             Viewport.MouseEnter += Viewport_MouseEnter;
@@ -122,13 +143,10 @@
             // 
             // mainPanel
             // 
-            mainPanel.BackColor = SystemColors.ControlText;
-            mainPanel.Enabled = false;
-            mainPanel.Location = new Point(5, 5);
+            mainPanel.Location = new Point(143, 69);
             mainPanel.Name = "mainPanel";
-            mainPanel.Size = new Size(1920, 1080);
+            mainPanel.Size = new Size(587, 272);
             mainPanel.TabIndex = 0;
-            mainPanel.Paint += mainPanel_Paint;
             // 
             // tabControl1
             // 
@@ -147,8 +165,8 @@
             // 
             tabPage1.Controls.Add(tabPage1Panel);
             tabPage1.Location = new Point(4, 24);
+            tabPage1.Margin = new Padding(0);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(302, 611);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Properties";
@@ -158,16 +176,17 @@
             // 
             tabPage1Panel.AutoScroll = true;
             tabPage1Panel.Dock = DockStyle.Fill;
-            tabPage1Panel.Location = new Point(3, 3);
+            tabPage1Panel.Location = new Point(0, 0);
+            tabPage1Panel.Margin = new Padding(0);
             tabPage1Panel.Name = "tabPage1Panel";
-            tabPage1Panel.Size = new Size(296, 605);
+            tabPage1Panel.Size = new Size(302, 611);
             tabPage1Panel.TabIndex = 0;
             // 
             // tabPage2
             // 
             tabPage2.Location = new Point(4, 24);
+            tabPage2.Margin = new Padding(0);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(302, 611);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Widgets";
@@ -176,6 +195,7 @@
             // tabPage3
             // 
             tabPage3.Location = new Point(4, 24);
+            tabPage3.Margin = new Padding(0);
             tabPage3.Name = "tabPage3";
             tabPage3.Size = new Size(302, 611);
             tabPage3.TabIndex = 2;
@@ -349,6 +369,7 @@
             // sidebarToNewWindowButton
             // 
             sidebarToNewWindowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            sidebarToNewWindowButton.FlatStyle = FlatStyle.System;
             sidebarToNewWindowButton.Location = new Point(1251, 28);
             sidebarToNewWindowButton.Margin = new Padding(0);
             sidebarToNewWindowButton.Name = "sidebarToNewWindowButton";
@@ -453,9 +474,7 @@
         #endregion
 
         private SplitContainer splitContainer1;
-        private Panel Viewport;
         private FolderBrowserDialog smPathDialog;
-        private Panel mainPanel;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem editToolStripMenuItem;
@@ -489,5 +508,9 @@
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripMenuItem deleteToolStripMenuItem;
         private ToolStripMenuItem actionHistoryToolStripMenuItem;
+        private HScrollBar hScrollBar1;
+        private VScrollBar vScrollBar1;
+        private Panel Viewport;
+        private Panel mainPanel;
     }
 }
