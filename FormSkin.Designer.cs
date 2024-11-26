@@ -60,8 +60,8 @@
             // 
             tabPage1.Controls.Add(tableLayoutPanel1);
             tabPage1.Location = new Point(4, 24);
+            tabPage1.Margin = new Padding(0);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(852, 380);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Type Compatible Skins";
@@ -69,6 +69,7 @@
             // 
             // tableLayoutPanel1
             // 
+            tableLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             tableLayoutPanel1.ColumnCount = 1;
@@ -76,15 +77,15 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Controls.Add(allApprGroupBox, 0, 1);
             tableLayoutPanel1.Controls.Add(favGroupBox, 0, 0);
-            tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.FixedSize;
-            tableLayoutPanel1.Location = new Point(3, 3);
+            tableLayoutPanel1.Location = new Point(-3, 0);
+            tableLayoutPanel1.Margin = new Padding(0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.Padding = new Padding(0, 0, 10, 0);
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(846, 374);
+            tableLayoutPanel1.Size = new Size(858, 383);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // allApprGroupBox
@@ -98,7 +99,7 @@
             allApprGroupBox.MinimumSize = new Size(0, 20);
             allApprGroupBox.Name = "allApprGroupBox";
             allApprGroupBox.Padding = new Padding(0);
-            allApprGroupBox.Size = new Size(836, 35);
+            allApprGroupBox.Size = new Size(848, 35);
             allApprGroupBox.TabIndex = 1;
             allApprGroupBox.TabStop = false;
             allApprGroupBox.Text = "All Compatible";
@@ -124,7 +125,7 @@
             favGroupBox.MinimumSize = new Size(0, 20);
             favGroupBox.Name = "favGroupBox";
             favGroupBox.Padding = new Padding(0);
-            favGroupBox.Size = new Size(836, 35);
+            favGroupBox.Size = new Size(848, 35);
             favGroupBox.TabIndex = 0;
             favGroupBox.TabStop = false;
             favGroupBox.Text = "Favorites";
@@ -135,14 +136,14 @@
             favoritesLayoutPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             favoritesLayoutPanel.Location = new Point(0, 16);
             favoritesLayoutPanel.Name = "favoritesLayoutPanel";
-            favoritesLayoutPanel.Size = new Size(0, 0);
+            favoritesLayoutPanel.Size = new Size(12, 0);
             favoritesLayoutPanel.TabIndex = 0;
             // 
             // tabPage2
             // 
             tabPage2.Location = new Point(4, 24);
+            tabPage2.Margin = new Padding(0);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(852, 380);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "All Skins";
@@ -152,6 +153,7 @@
             // 
             applySkinButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             applySkinButton.DialogResult = DialogResult.OK;
+            applySkinButton.FlatStyle = FlatStyle.System;
             applySkinButton.Location = new Point(652, 426);
             applySkinButton.Name = "applySkinButton";
             applySkinButton.Size = new Size(105, 23);
@@ -163,6 +165,7 @@
             // 
             cancelButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cancelButton.DialogResult = DialogResult.Cancel;
+            cancelButton.FlatStyle = FlatStyle.System;
             cancelButton.Location = new Point(763, 426);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(105, 23);
