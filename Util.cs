@@ -1,9 +1,11 @@
 ﻿using Microsoft.Win32;
+using SkiaSharp;
 using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
@@ -1087,6 +1089,86 @@ namespace MyGui.net
 
             return BorderPosition.None;
         }
+        #endregion
+
+        #region Image Utils
+        public static Rectangle GetTileRectangle(Point tileSize, Point offset)
+        {
+            return new Rectangle(offset.X + tileSize.X, offset.Y + tileSize.Y, tileSize.X, tileSize.Y);
+        }
+
+        public static SKBitmap BitmapToSKBitmap(Bitmap bitmap)
+        {
+            using var ms = new MemoryStream();
+            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+            ms.Seek(0, SeekOrigin.Begin);
+            return SKBitmap.Decode(ms);
+        }
+
+        public static SKBitmap GenerateGridBitmap(int width, int height, int cellSize, SKColor lineColor)
+        {
+            // Create a new bitmap for the grid
+            var bitmap = new SKBitmap(width, height);
+
+            using (var canvas = new SKCanvas(bitmap))
+            {
+                // Clear the bitmap
+                canvas.Clear(SKColors.Transparent);
+
+                // Set up the paint for grid lines
+                var paint = new SKPaint
+                {
+                    Color = lineColor,
+                    StrokeWidth = 1,
+                    IsAntialias = false // Antialiasing is unnecessary for crisp grid lines
+                };
+
+                // Draw vertical lines
+                for (int x = 0; x <= width; x += cellSize)
+                {
+                    canvas.DrawLine(x, 0, x, height, paint);
+                }
+
+                // Draw horizontal lines
+                for (int y = 0; y <= height; y += cellSize)
+                {
+                    canvas.DrawLine(0, y, width, y, paint);
+                }
+            }
+
+            return bitmap;
+        }
+
+        public static SKBitmap MakeImageGrid(SKBitmap sourceBitmap, int spacingX, int spacingY, int width, int height)
+        {
+            // Create a new bitmap with the desired size
+            var resultBitmap = new SKBitmap(width, height);
+
+            using (var canvas = new SKCanvas(resultBitmap))
+            {
+                // Clear the canvas to make the background transparent
+                canvas.Clear(SKColors.Transparent);
+
+                // Calculate the dimensions of a single tile, including spacing
+                int tileWidth = sourceBitmap.Width + spacingX;
+                int tileHeight = sourceBitmap.Height + spacingY;
+
+                // Draw the grid manually
+                for (int y = 0; y < height; y += tileHeight)
+                {
+                    for (int x = 0; x < width; x += tileWidth)
+                    {
+                        // Destination rectangle for the tile
+                        var destRect = new SKRect(x, y, x + sourceBitmap.Width, y + sourceBitmap.Height);
+
+                        // Draw the source bitmap in the specified rectangle
+                        canvas.DrawBitmap(sourceBitmap, destRect);
+                    }
+                }
+            }
+
+            return resultBitmap;
+        }
 
         public static Image MakeImageGrid(Image image, int width, int height)
         {
@@ -1098,13 +1180,6 @@ namespace MyGui.net
                 g.DrawImage(image, 0, 0, 4, 4);
             }
             return newImage;
-        }
-        #endregion
-
-        #region Image Utils
-        public static Rectangle GetTileRectangle(Point tileSize, Point offset)
-        {
-            return new Rectangle(offset.X + tileSize.X, offset.Y + tileSize.Y, tileSize.X, tileSize.Y);
         }
         #endregion
 

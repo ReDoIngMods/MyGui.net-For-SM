@@ -161,7 +161,6 @@ namespace MyGui.net
                 editorBackgroundColorDialog.Color = Settings.Default.EditorBackgroundColor;
                 if (editorBackgroundColorDialog.ShowDialog(this) == DialogResult.OK)
                 {
-                    //TODO: make work
                     Settings.Default.EditorBackgroundColor = editorBackgroundColorDialog.Color;
                     OnSettingChange();
                 }
@@ -188,7 +187,7 @@ namespace MyGui.net
         private void themeRadioButton_CheckedChanged(object senderAny, EventArgs e)
         {
             RadioButton sender = (RadioButton)senderAny;
-            if (!sender.Checked) { return; }
+            if (!sender.Checked || !_formLoaded) { return; }
             Settings.Default.Theme = (int)Enum.Parse<ProgramThemes>(sender.Name, true);
             OnSettingChange();
             if (_autoApply)

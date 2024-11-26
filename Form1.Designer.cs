@@ -133,17 +133,25 @@ namespace MyGui.net
             // 
             viewportScrollX.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             viewportScrollX.Location = new Point(1, 623);
+            viewportScrollX.Maximum = 4096;
+            viewportScrollX.Minimum = -4096;
             viewportScrollX.Name = "viewportScrollX";
             viewportScrollX.Size = new Size(906, 15);
+            viewportScrollX.SmallChange = 10;
             viewportScrollX.TabIndex = 2;
+            viewportScrollX.ValueChanged += viewportScrollX_ValueChanged;
             // 
             // viewportScrollY
             // 
             viewportScrollY.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             viewportScrollY.Location = new Point(906, 0);
+            viewportScrollY.Maximum = 4096;
+            viewportScrollY.Minimum = -4096;
             viewportScrollY.Name = "viewportScrollY";
             viewportScrollY.Size = new Size(15, 622);
+            viewportScrollY.SmallChange = 10;
             viewportScrollY.TabIndex = 1;
+            viewportScrollY.ValueChanged += viewportScrollY_ValueChanged;
             // 
             // tabControl1
             // 
@@ -458,13 +466,15 @@ namespace MyGui.net
             // zoomLevelNumericUpDown
             // 
             zoomLevelNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            zoomLevelNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 0 });
             zoomLevelNumericUpDown.Location = new Point(1047, 0);
             zoomLevelNumericUpDown.Maximum = new decimal(new int[] { 400, 0, 0, 0 });
-            zoomLevelNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            zoomLevelNumericUpDown.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
             zoomLevelNumericUpDown.Name = "zoomLevelNumericUpDown";
             zoomLevelNumericUpDown.Size = new Size(60, 23);
             zoomLevelNumericUpDown.TabIndex = 7;
             zoomLevelNumericUpDown.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            zoomLevelNumericUpDown.ValueChanged += zoomLevelNumericUpDown_ValueChanged;
             // 
             // label1
             // 

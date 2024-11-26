@@ -16,9 +16,13 @@ namespace MyGui.net
         static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
         static string _currentLayoutSavePath = "";
         static MyGuiWidgetData? _currentSelectedWidget;
+
         static SKMatrix _viewportMatrix = SKMatrix.CreateIdentity();
         static float _viewportScale = 1f;
-        private SKPoint _viewportOffset = new SKPoint(0, 0);
+        static SKPoint _viewportOffset = new SKPoint(0, 0);
+        static Size _projectSize = new(1920, 1080);
+        static SKBitmap _viewportBackgroundBitmap;
+
         static Dictionary<string, Control> _editorProperties = new Dictionary<string, Control>();
         static FormSideBar? _sidebarForm;
         CommandManager _commandManager = new CommandManager();
@@ -105,32 +109,12 @@ namespace MyGui.net
                 _currentLayoutSavePath = autoloadPath;
                 //Debug.WriteLine(_currentLayoutPath);
                 _currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
-                Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
+                viewport.Invalidate();
+                //Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
                 //Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
             }
 
-            switch (Settings.Default.EditorBackgroundMode)
-            {
-                case 0:
-                    mainPanel.BackgroundImage = null;
-                    mainPanel.BackColor = Settings.Default.EditorBackgroundColor;
-                    break;
-                case 1:
-                    mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
-                    mainPanel.BackgroundImageLayout = ImageLayout.Tile;
-                    break;
-                case 2:
-                    if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath) || Settings.Default.EditorBackgroundImagePath == "")
-                    {
-                        mainPanel.BackgroundImage = Settings.Default.EditorBackgroundImagePath == "" ? null : Image.FromFile(Settings.Default.EditorBackgroundImagePath);
-                        mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
-                    }
-                    else
-                    {
-                        MessageBox.Show("Background Image path is invalid!\nSpecify a new path in the Options.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    break;
-            }
+            UpdateViewportBackground();
 
             //Util.PrintAllResources(_ScrapMechanicPath);
             _allResources = Util.ReadAllResources(_ScrapMechanicPath, 1);
@@ -730,7 +714,8 @@ namespace MyGui.net
                 widgetGridSpacingNumericUpDown.Tag = false;
                 if (Settings.Default.EditorBackgroundMode == 1)
                 {
-                    mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
+                    _viewportBackgroundBitmap = Util.GenerateGridBitmap(_projectSize.Width, _projectSize.Height, _gridSpacing, new(20, 20, 20));
+                    //mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
                 }
                 if (_editorProperties.ContainsKey("Position_X"))
                 {
@@ -743,29 +728,7 @@ namespace MyGui.net
 
             if (e.PropertyName == nameof(Settings.Default.EditorBackgroundMode))
             {
-                switch (Settings.Default.EditorBackgroundMode)
-                {
-                    case 0:
-                        mainPanel.BackgroundImage = null;
-                        mainPanel.BackColor = Settings.Default.EditorBackgroundColor;
-                        break;
-                    case 1:
-                        mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
-                        mainPanel.BackgroundImageLayout = ImageLayout.Tile;
-                        mainPanel.BackColor = Color.Black;
-                        break;
-                    case 2:
-                        if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath) || Settings.Default.EditorBackgroundImagePath == "")
-                        {
-                            mainPanel.BackgroundImage = Settings.Default.EditorBackgroundImagePath == "" ? null : Image.FromFile(Settings.Default.EditorBackgroundImagePath);
-                            mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
-                        }
-                        else
-                        {
-                            MessageBox.Show("Background Image path is invalid!\nSpecify a new path in the Options.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        break;
-                }
+                UpdateViewportBackground();
             }
 
             if (e.PropertyName == nameof(Settings.Default.EditorBackgroundColor))
@@ -800,6 +763,31 @@ namespace MyGui.net
             }
         }
 
+        private void UpdateViewportBackground()
+        {
+            switch (Settings.Default.EditorBackgroundMode)
+            {
+                case 0:
+                    _viewportBackgroundBitmap = null;
+                    break;
+                case 1:
+                    _viewportBackgroundBitmap = Util.GenerateGridBitmap(_projectSize.Width, _projectSize.Height, _gridSpacing, new(20, 20, 20));
+                    break;
+                case 2:
+                    if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath) || Settings.Default.EditorBackgroundImagePath == "")
+                    {
+                        //mainPanel.BackgroundImage = Settings.Default.EditorBackgroundImagePath == "" ? null : Image.FromFile(Settings.Default.EditorBackgroundImagePath);
+                        //mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
+                        _viewportBackgroundBitmap = Util.BitmapToSKBitmap((Bitmap)Bitmap.FromFile(Settings.Default.EditorBackgroundImagePath));
+                    }
+                    else
+                    {
+                        MessageBox.Show("Background Image path is invalid!\nSpecify a new path in the Options.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    break;
+            }
+        }
+
         private void selectWidget_Click(object senderAny, EventArgs e)
         {
             ToolStripMenuItem sender = (ToolStripMenuItem)senderAny;
@@ -808,20 +796,53 @@ namespace MyGui.net
             HandleWidgetSelection();
         }
 
+        private void viewportScrollX_ValueChanged(object senderAny, EventArgs e)
+        {
+            ScrollBar scrollBar = (ScrollBar)senderAny;
+            _viewportOffset.X = -scrollBar.Value;
+            viewport.Invalidate();
+        }
+
+        private void viewportScrollY_ValueChanged(object senderAny, EventArgs e)
+        {
+            ScrollBar scrollBar = (ScrollBar)senderAny;
+            _viewportOffset.Y = -scrollBar.Value;
+            viewport.Invalidate();
+        }
+
         //Widget painting
         private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
         {
-            Debug.WriteLine("REDRAW!!");
             SKCanvas canvas = e.Surface.Canvas;
-            canvas.Clear(SKColors.White);
+            canvas.Clear(SKColors.DarkGray);
+
+            // Get the control's size
+            var controlWidth = e.BackendRenderTarget.Width;
+            var controlHeight = e.BackendRenderTarget.Height;
+
+            // Set the clip region to the control's size
+            var clipRect = new SKRect(0, 0, controlWidth, controlHeight);
+            canvas.ClipRect(clipRect);
 
             // Apply viewport transformations
             _viewportMatrix = SKMatrix.CreateScale(_viewportScale, _viewportScale);
             _viewportMatrix = _viewportMatrix.PreConcat(SKMatrix.CreateTranslation(_viewportOffset.X, _viewportOffset.Y));
             canvas.SetMatrix(_viewportMatrix);
+            if (_viewportBackgroundBitmap != null)
+            {
+                canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, _projectSize.Width, _projectSize.Height));
+            }
+            else
+            {
+                canvas.DrawRect(new SKRect(0, 0, _projectSize.Width, _projectSize.Height), new SKPaint
+                {
+                    Color = new SKColor(Settings.Default.EditorBackgroundColor.R, Settings.Default.EditorBackgroundColor.G, Settings.Default.EditorBackgroundColor.B),
+                    IsAntialias = false
+                });
+            }
             foreach (var item in _currentLayout)
             {
-                DrawWidget(canvas, item, new SKPoint(0,0));
+                DrawWidget(canvas, item, new SKPoint(0, 0));
             }
         }
 
@@ -954,6 +975,26 @@ namespace MyGui.net
             }
         }
 
+        private const int WM_MOUSEWHEEL = 0x020A;
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_MOUSEWHEEL && _viewportFocused)
+            {
+                // Extract the delta from the message
+                int delta = (short)((int)m.WParam >> 16); // Delta is stored in the high word of WParam
+                if (delta > 0)
+                {
+                    zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value + zoomLevelNumericUpDown.Increment, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
+                }
+                else if (delta < 0)
+                {
+                    zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value - zoomLevelNumericUpDown.Increment, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
+                }
+            }
+
+            base.WndProc(ref m);
+        }
+
         void Viewport_MouseMove(object senderAny, MouseEventArgs e)
         {
             Control sender = (Control)senderAny;
@@ -968,8 +1009,8 @@ namespace MyGui.net
                 Point localLocCurr = e.Location - (Size)sender.Location;
                 Point localLocPrev = _mouseLoc - (Size)sender.Location;
                 Point deltaLoc = new Point(localLocCurr.X - localLocPrev.X, localLocCurr.Y - localLocPrev.Y);
-                viewportScrollX.Value = Math.Clamp(viewportScrollX.Value - deltaLoc.X, viewportScrollX.Minimum, viewportScrollX.Maximum);
-                viewportScrollY.Value = Math.Clamp(viewportScrollY.Value - deltaLoc.Y, viewportScrollX.Minimum, viewportScrollX.Maximum);
+                viewportScrollX.Value = Math.Clamp(viewportScrollX.Value - (int)Math.Ceiling(deltaLoc.X / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
+                viewportScrollY.Value = Math.Clamp(viewportScrollY.Value - (int)Math.Ceiling(deltaLoc.Y / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
                 _mouseLoc = e.Location;
                 if (_DoFastRedraw)
                 {
@@ -1033,7 +1074,7 @@ namespace MyGui.net
                     if (_draggingWidgetAt == BorderPosition.Center)
                     {
                         // Move the widget
-                        _draggedWidgetPosition = new Point(Math.Clamp(_draggedWidgetPosition.X + deltaLoc.X, 0, 1920), Math.Clamp(_draggedWidgetPosition.Y + deltaLoc.Y, 0, 1080));
+                        _draggedWidgetPosition = new Point(Math.Clamp(_draggedWidgetPosition.X + deltaLoc.X, 0, _projectSize.Width), Math.Clamp(_draggedWidgetPosition.Y + deltaLoc.Y, 0, _projectSize.Height));
 
                         _currentSelectedWidget.position = new Point((int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing, (int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing);
                     }
@@ -1042,7 +1083,7 @@ namespace MyGui.net
                         // Handle horizontal resizing
                         if (_draggingWidgetAt == BorderPosition.Left || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.BottomLeft)
                         {
-                            _draggedWidgetPosition = new Point(Math.Clamp(_draggedWidgetPosition.X + deltaLoc.X, 0, 1920), _draggedWidgetPosition.Y);
+                            _draggedWidgetPosition = new Point(Math.Clamp(_draggedWidgetPosition.X + deltaLoc.X, 0, _projectSize.Width), _draggedWidgetPosition.Y);
 
                             _draggedWidgetSize = new Size(Math.Max(_draggedWidgetSize.Width - deltaLoc.X, 0), _draggedWidgetSize.Height);
 
@@ -1059,7 +1100,7 @@ namespace MyGui.net
                         // Handle vertical resizing
                         if (_draggingWidgetAt == BorderPosition.Top || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.TopRight)
                         {
-                            _draggedWidgetPosition = new Point(_draggedWidgetPosition.X, Math.Clamp(_draggedWidgetPosition.Y + deltaLoc.Y, 0, 1920));
+                            _draggedWidgetPosition = new Point(_draggedWidgetPosition.X, Math.Clamp(_draggedWidgetPosition.Y + deltaLoc.Y, 0, _projectSize.Width));
 
                             _draggedWidgetSize = new Size(_draggedWidgetSize.Width, Math.Max(_draggedWidgetSize.Height - deltaLoc.Y, 0));
 
@@ -1074,10 +1115,10 @@ namespace MyGui.net
                         }
                     }
 
-                    ((NumericUpDown)_editorProperties["Position_X"]).Value = Math.Clamp((int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing, 0, 1920);
-                    ((NumericUpDown)_editorProperties["Position_Y"]).Value = Math.Clamp((int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing, 0, 1080);
-                    ((NumericUpDown)_editorProperties["Size_X"]).Value = Math.Clamp(_currentSelectedWidget.size.X, 0, 1920);
-                    ((NumericUpDown)_editorProperties["Size_Y"]).Value = Math.Clamp(_currentSelectedWidget.size.Y, 0, 1080);
+                    ((NumericUpDown)_editorProperties["Position_X"]).Value = Math.Clamp((int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing, 0, _projectSize.Width);
+                    ((NumericUpDown)_editorProperties["Position_Y"]).Value = Math.Clamp((int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing, 0, _projectSize.Height);
+                    ((NumericUpDown)_editorProperties["Size_X"]).Value = Math.Clamp(_currentSelectedWidget.size.X, 0, _projectSize.Width);
+                    ((NumericUpDown)_editorProperties["Size_Y"]).Value = Math.Clamp(_currentSelectedWidget.size.Y, 0, _projectSize.Height);
 
                     // Update the previous mouse location
                     _mouseLoc = e.Location;
@@ -1444,6 +1485,14 @@ namespace MyGui.net
         }
 
         //TopBar Utils
+
+        private void zoomLevelNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+        {
+            NumericUpDown sender = (NumericUpDown)senderAny;
+            _viewportScale = ((float)sender.Value) / 100;
+            viewport.Invalidate();
+        }
+
         private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
         {
             NumericUpDown sender = (NumericUpDown)senderAny;
