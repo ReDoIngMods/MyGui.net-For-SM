@@ -287,5 +287,17 @@ namespace MyGui.net.Properties {
                 this["Theme"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1920, 1080")]
+        public global::System.Drawing.Size DefaultWorkspaceSize {
+            get {
+                return ((global::System.Drawing.Size)(this["DefaultWorkspaceSize"]));
+            }
+            set {
+                this["DefaultWorkspaceSize"] = value;
+            }
+        }
     }
 }

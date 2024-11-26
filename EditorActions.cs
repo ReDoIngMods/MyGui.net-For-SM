@@ -12,18 +12,18 @@ namespace MyGui.net
 {
     public class MoveCommand : IEditorAction
     {
-        private Control _control;
+        private MyGuiWidgetData _control;
         private Point _oldPosition;
         private Point _newPosition;
 
-        public MoveCommand(Control control, Point newPosition)
+        public MoveCommand(MyGuiWidgetData control, Point newPosition)
         {
             _control = control;
-            _oldPosition = control.Location; // Store the initial position
+            _oldPosition = control.position; // Store the initial position
             _newPosition = newPosition;
         }
 
-        public MoveCommand(Control control, Point newPosition, Point oldPosition)
+        public MoveCommand(MyGuiWidgetData control, Point newPosition, Point oldPosition)
         {
             _control = control;
             _oldPosition = oldPosition; // Store the initial position
@@ -33,38 +33,38 @@ namespace MyGui.net
         public bool Execute()
         {
             if (_oldPosition == _newPosition) { return false; }
-            _control.Location = _newPosition; // Move to the new position
-            ((MyGuiWidgetData)_control.Tag).position = _newPosition;
+            //_control.Location = _newPosition; // Move to the new position
+            _control.position = _newPosition;
             return true;
         }
 
         public bool Undo()
         {
-            _control.Location = _oldPosition; // Revert to the old position
-            ((MyGuiWidgetData)_control.Tag).position = _oldPosition;
+            //_control.Location = _oldPosition; // Revert to the old position
+            _control.position = _oldPosition;
             return true;
         }
 
         public override string ToString()
         {
-            return $"MoveCommand: {_control.Name} from {_oldPosition} to {_newPosition}";
+            return $"MoveCommand: {_control.name} from {_oldPosition} to {_newPosition}";
         }
     }
 
     public class ResizeCommand : IEditorAction
     {
-        private Control _control;
+        private MyGuiWidgetData _control;
         private Size _oldSize;
         private Size _newSize;
 
-        public ResizeCommand(Control control, Size newSize)
+        public ResizeCommand(MyGuiWidgetData control, Size newSize)
         {
             _control = control;
-            _oldSize = control.Size;
+            _oldSize = (Size)control.size;
             _newSize = newSize;
         }
 
-        public ResizeCommand(Control control, Size newSize, Size oldSize)
+        public ResizeCommand(MyGuiWidgetData control, Size newSize, Size oldSize)
         {
             _control = control;
             _oldSize = oldSize;
@@ -74,41 +74,41 @@ namespace MyGui.net
         public bool Execute()
         {
             if (_oldSize == _newSize) { return false; }
-            _control.Size = _newSize;
-            ((MyGuiWidgetData)_control.Tag).size = (Point)_newSize;
+            //_control.Size = _newSize;
+            _control.size = (Point)_newSize;
             return true;
         }
         public bool Undo() 
         { 
-            _control.Size = _oldSize;
-            ((MyGuiWidgetData)_control.Tag).size = (Point)_oldSize;
+            //_control.size = _oldSize;
+            _control.size = (Point)_oldSize;
             return true;
         }
 
         public override string ToString()
         {
-            return $"ResizeCommand: {_control.Name} from {_oldSize} to {_newSize}";
+            return $"ResizeCommand: {_control.name} from {_oldSize} to {_newSize}";
         }
     }
 
     public class MoveResizeCommand : IEditorAction
     {
-        private Control _control;
+        private MyGuiWidgetData _control;
         private Point _oldPosition;
         private Point _newPosition;
         private Size _oldSize;
         private Size _newSize;
 
-        public MoveResizeCommand(Control control, Point newPosition, Size newSize)
+        public MoveResizeCommand(MyGuiWidgetData control, Point newPosition, Size newSize)
         {
             _control = control;
-            _oldPosition = control.Location; // Store the initial position
+            _oldPosition = control.position; // Store the initial position
             _newPosition = newPosition;
-            _oldSize = control.Size;
+            _oldSize = (Size)control.size;
             _newSize = newSize;
         }
 
-        public MoveResizeCommand(Control control, Point newPosition, Size newSize, Point oldPosition, Size oldSize)
+        public MoveResizeCommand(MyGuiWidgetData control, Point newPosition, Size newSize, Point oldPosition, Size oldSize)
         {
             _control = control;
             _oldPosition = oldPosition; // Store the initial position
@@ -120,44 +120,44 @@ namespace MyGui.net
         public bool Execute()
         {
             if (_oldPosition == _newPosition && _oldSize == _newSize) { return false; }
-            _control.Location = _newPosition; // Move to the new position
-            ((MyGuiWidgetData)_control.Tag).position = _newPosition;
-            _control.Size = _newSize;
-            ((MyGuiWidgetData)_control.Tag).size = (Point)_newSize;
+            //_control.Location = _newPosition; // Move to the new position
+            _control.position = _newPosition;
+            //_control.Size = _newSize;
+            _control.size = (Point)_newSize;
             return true;
         }
 
         public bool Undo()
         {
-            _control.Location = _oldPosition; // Revert to the old position
-            ((MyGuiWidgetData)_control.Tag).position = _oldPosition;
-            _control.Size = _oldSize;
-            ((MyGuiWidgetData)_control.Tag).size = (Point)_oldSize;
+            //_control.Location = _oldPosition; // Revert to the old position
+            _control.position = _oldPosition;
+            //_control.Size = _oldSize;
+            _control.size = (Point)_oldSize;
             return true;
         }
 
         public override string ToString()
         {
-            return $"MoveResizeCommand: {_control.Name} from {_oldPosition} to {_newPosition}";
+            return $"MoveResizeCommand: {_control.name} from {_oldPosition} to {_newPosition}";
         }
     }
 
     public class ChangePropertyCommand : IEditorAction
     {
-        private Control _control;
+        private MyGuiWidgetData _control;
         private object _oldValue;
         private object _newValue;
         private string _property;
 
-        public ChangePropertyCommand(Control control, string property, object newValue)
+        public ChangePropertyCommand(MyGuiWidgetData control, string property, object newValue)
         {
             _control = control;
             _property = property;
-            _oldValue = Util.GetPropertyValue(((MyGuiWidgetData)control.Tag), property);
+            _oldValue = Util.GetPropertyValue(control, property);
             _newValue = newValue;
         }
 
-        public ChangePropertyCommand(Control control, string property, object newValue, object oldValue)
+        public ChangePropertyCommand(MyGuiWidgetData control, string property, object newValue, object oldValue)
         {
             _control = control;
             _property = property;
@@ -168,26 +168,27 @@ namespace MyGui.net
         public bool Execute() 
         {
             if (_oldValue == _newValue) { return false; }
-            return Util.SetPropertyValue((MyGuiWidgetData)_control.Tag, _property, _newValue);
+            return Util.SetPropertyValue(_control, _property, _newValue);
         }
         public bool Undo() 
         { 
-            return Util.SetPropertyValue((MyGuiWidgetData)_control.Tag, _property, _oldValue);
+            return Util.SetPropertyValue(_control, _property, _oldValue);
         }
 
         public override string ToString()
         {
-            return $"ChangePropertyCommand: {_control.Name} changed property {_property} from {_oldValue} to {_newValue}";
+            return $"ChangePropertyCommand: {_control.name} changed property {_property} from {_oldValue} to {_newValue}";
         }
     }
 
     public class CreateControlCommand : IEditorAction
     {
-        private Control _control;
-        private Control _parent;
+        private MyGuiWidgetData _control;
+        private MyGuiWidgetData _parent;
+        private int _index;
         private List<MyGuiWidgetData> _defaultList;
 
-        public CreateControlCommand(Control control, Control parent, List<MyGuiWidgetData> defaultList = null)
+        public CreateControlCommand(MyGuiWidgetData control, MyGuiWidgetData parent, List<MyGuiWidgetData> defaultList = null)
         {
             _control = control;
             _parent = parent;
@@ -196,37 +197,37 @@ namespace MyGui.net
 
         public bool Execute()
         {
-            _parent.Controls.Add(_control); // Add the control to the parent container
-            if (_parent.Tag == null)
+            if (_parent == null)
             {
                 if (_defaultList != null)
                 {
-                    _defaultList.Add((MyGuiWidgetData)_control.Tag);
+                    _defaultList.Add(_control);
+                    _index = _defaultList.Count - 1;
                 }
                 return true;
             }
-            if (_control.Tag != null && (MyGuiWidgetData)_control.Tag != null)
+            if (_control != null)
             {
-                ((MyGuiWidgetData)_parent.Tag).children.Add((MyGuiWidgetData)_control.Tag);
+                _parent.children.Add(_control);
+                _index = _parent.children.Count - 1;
             }
             else
             {
-                ((MyGuiWidgetData)_parent.Tag).children.Add(new MyGuiWidgetData());
+                _parent.children.Add(new MyGuiWidgetData());
+                _index = _parent.children.Count - 1;
             }
             return true;
         }
 
         public bool Undo()
         {
-            int childIndex = _parent.Controls.GetChildIndex(_control);
-            _parent.Controls.Remove(_control); // Remove the control from the parent container
-            if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
+            if (_parent != null)
             {
-                ((MyGuiWidgetData)_parent.Tag).children.RemoveAt(childIndex);
+                _parent.children.RemoveAt(_index);
             }
             else if (_defaultList != null)
             {
-                _defaultList.RemoveAt(childIndex);
+                _defaultList.RemoveAt(_index);
             }
             return true;
         }
@@ -239,33 +240,35 @@ namespace MyGui.net
 
     public class DeleteControlCommand : IEditorAction
     {
-        private Control _control;
-        private Control _parent;
+        private MyGuiWidgetData _control;
+        private MyGuiWidgetData _parent;
         private List<MyGuiWidgetData> _defaultList;
         private int _index; // Store the index to restore control in the correct position
 
-        public DeleteControlCommand(Control control, List<MyGuiWidgetData> defaultList = null)
+        //TODO: figure out structure
+        public DeleteControlCommand(MyGuiWidgetData control, List<MyGuiWidgetData> defaultList = null)
         {
             _control = control;
-            _parent = control.Parent;
+            _parent = null;//control.Parent;
             _defaultList = defaultList;
-            _index = _parent == null ? _defaultList.IndexOf((MyGuiWidgetData)control.Tag) : _parent.Controls.IndexOf(control); // Store the original position
+            _index = _parent == null ? _defaultList.IndexOf(control) : _parent.children.IndexOf(control); // Store the original position
         }
 
-        public DeleteControlCommand(Control control, Control parent, List<MyGuiWidgetData> defaultList = null)
+        public DeleteControlCommand(MyGuiWidgetData control, MyGuiWidgetData parent, List<MyGuiWidgetData> defaultList = null)
         {
             _control = control;
             _parent = parent;
             _defaultList = defaultList;
-            _index = _parent == null ? _defaultList.IndexOf((MyGuiWidgetData)control.Tag) : _parent.Controls.IndexOf(control); // Store the original position
+            //TODO: figure out structure
+            _index = _parent == null ? _defaultList.IndexOf(control) : _parent.children.IndexOf(control); // Store the original position
         }
 
         public bool Execute()
         {
-            _parent.Controls.Remove(_control); // Remove the control from its parent
-            if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
+            //TODO: figure out structure
+            if (_parent != null)
             {
-                ((MyGuiWidgetData)_parent.Tag).children.RemoveAt(_index);
+                _parent.children.RemoveAt(_index);
             }
             else if (_defaultList != null)
             {
@@ -276,15 +279,13 @@ namespace MyGui.net
 
         public bool Undo()
         {
-            _parent.Controls.Add(_control);  // Re-add the control to its parent
-            _parent.Controls.SetChildIndex(_control, _index); // Restore to original position
-            if (_parent.Tag != null && (MyGuiWidgetData)_parent.Tag != null)
+            if (_parent != null)
             {
-                ((MyGuiWidgetData)_parent.Tag).children.Insert(_index, (MyGuiWidgetData)_control.Tag);
+                _parent.children.Insert(_index, _control);
             }
             else if (_defaultList != null)
             {
-                _defaultList.Insert(_index, (MyGuiWidgetData)_control.Tag);
+                _defaultList.Insert(_index, _control);
             }
             return true;
         }

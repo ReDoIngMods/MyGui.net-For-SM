@@ -1,4 +1,6 @@
-﻿namespace MyGui.net
+﻿using SkiaSharp.Views.Desktop;
+
+namespace MyGui.net
 {
     partial class Form1
     {
@@ -31,15 +33,16 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             splitContainer1 = new SplitContainer();
-            hScrollBar1 = new HScrollBar();
-            vScrollBar1 = new VScrollBar();
-            Viewport = new Panel();
-            mainPanel = new Panel();
+            viewport = new SKGLControl();
+            viewportScrollX = new HScrollBar();
+            viewportScrollY = new VScrollBar();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
             tabPage1Panel = new Panel();
             tabPage2 = new TabPage();
             tabPage3 = new TabPage();
+            mainPanel = new Panel();
+            aViewport = new Panel();
             smPathDialog = new FolderBrowserDialog();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -69,16 +72,19 @@
             copyToolStripMenuItem = new ToolStripMenuItem();
             pasteToolStripMenuItem = new ToolStripMenuItem();
             deleteToolStripMenuItem = new ToolStripMenuItem();
+            zoomLevelNumericUpDown = new CustomNumericUpDown();
+            label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
-            Viewport.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
+            tabPage3.SuspendLayout();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
             editorMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)zoomLevelNumericUpDown).BeginInit();
             SuspendLayout();
             // 
             // splitContainer1
@@ -92,9 +98,9 @@
             // 
             // splitContainer1.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(hScrollBar1);
-            splitContainer1.Panel1.Controls.Add(vScrollBar1);
-            splitContainer1.Panel1.Controls.Add(Viewport);
+            splitContainer1.Panel1.Controls.Add(viewport);
+            splitContainer1.Panel1.Controls.Add(viewportScrollX);
+            splitContainer1.Panel1.Controls.Add(viewportScrollY);
             splitContainer1.Panel1MinSize = 320;
             // 
             // splitContainer1.Panel2
@@ -106,47 +112,38 @@
             splitContainer1.SplitterDistance = 924;
             splitContainer1.TabIndex = 1;
             // 
-            // hScrollBar1
+            // viewport
             // 
-            hScrollBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            hScrollBar1.Location = new Point(-1, 623);
-            hScrollBar1.Name = "hScrollBar1";
-            hScrollBar1.Size = new Size(907, 15);
-            hScrollBar1.TabIndex = 2;
+            viewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            viewport.BackColor = SystemColors.ControlDark;
+            viewport.Location = new Point(0, 0);
+            viewport.Margin = new Padding(0);
+            viewport.Name = "viewport";
+            viewport.Size = new Size(906, 623);
+            viewport.TabIndex = 3;
+            viewport.VSync = true;
+            viewport.PaintSurface += viewport_PaintSurface;
+            viewport.MouseDown += Viewport_MouseDown;
+            viewport.MouseEnter += Viewport_MouseEnter;
+            viewport.MouseLeave += Viewport_MouseLeave;
+            viewport.MouseMove += Viewport_MouseMove;
+            viewport.MouseUp += Viewport_MouseUp;
             // 
-            // vScrollBar1
+            // viewportScrollX
             // 
-            vScrollBar1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-            vScrollBar1.Location = new Point(906, 0);
-            vScrollBar1.Name = "vScrollBar1";
-            vScrollBar1.Size = new Size(15, 622);
-            vScrollBar1.TabIndex = 1;
+            viewportScrollX.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            viewportScrollX.Location = new Point(1, 623);
+            viewportScrollX.Name = "viewportScrollX";
+            viewportScrollX.Size = new Size(906, 15);
+            viewportScrollX.TabIndex = 2;
             // 
-            // Viewport
+            // viewportScrollY
             // 
-            Viewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            Viewport.AutoScroll = true;
-            Viewport.AutoScrollMargin = new Size(5, 5);
-            Viewport.AutoScrollMinSize = new Size(1, 1);
-            Viewport.BackColor = SystemColors.ScrollBar;
-            Viewport.Controls.Add(mainPanel);
-            Viewport.Location = new Point(0, 0);
-            Viewport.Margin = new Padding(0);
-            Viewport.Name = "Viewport";
-            Viewport.Size = new Size(906, 623);
-            Viewport.TabIndex = 0;
-            Viewport.MouseDown += Viewport_MouseDown;
-            Viewport.MouseEnter += Viewport_MouseEnter;
-            Viewport.MouseLeave += Viewport_MouseLeave;
-            Viewport.MouseMove += Viewport_MouseMove;
-            Viewport.MouseUp += Viewport_MouseUp;
-            // 
-            // mainPanel
-            // 
-            mainPanel.Location = new Point(143, 69);
-            mainPanel.Name = "mainPanel";
-            mainPanel.Size = new Size(587, 272);
-            mainPanel.TabIndex = 0;
+            viewportScrollY.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            viewportScrollY.Location = new Point(906, 0);
+            viewportScrollY.Name = "viewportScrollY";
+            viewportScrollY.Size = new Size(15, 622);
+            viewportScrollY.TabIndex = 1;
             // 
             // tabControl1
             // 
@@ -194,6 +191,8 @@
             // 
             // tabPage3
             // 
+            tabPage3.Controls.Add(mainPanel);
+            tabPage3.Controls.Add(aViewport);
             tabPage3.Location = new Point(4, 24);
             tabPage3.Margin = new Padding(0);
             tabPage3.Name = "tabPage3";
@@ -201,6 +200,31 @@
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // mainPanel
+            // 
+            mainPanel.Location = new Point(82, 196);
+            mainPanel.Name = "mainPanel";
+            mainPanel.Size = new Size(587, 272);
+            mainPanel.TabIndex = 0;
+            // 
+            // aViewport
+            // 
+            aViewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            aViewport.AutoScroll = true;
+            aViewport.AutoScrollMargin = new Size(5, 5);
+            aViewport.AutoScrollMinSize = new Size(1, 1);
+            aViewport.BackColor = SystemColors.ScrollBar;
+            aViewport.Location = new Point(37, 100);
+            aViewport.Margin = new Padding(0);
+            aViewport.Name = "aViewport";
+            aViewport.Size = new Size(906, 623);
+            aViewport.TabIndex = 0;
+            aViewport.MouseDown += Viewport_MouseDown;
+            aViewport.MouseEnter += Viewport_MouseEnter;
+            aViewport.MouseLeave += Viewport_MouseLeave;
+            aViewport.MouseMove += Viewport_MouseMove;
+            aViewport.MouseUp += Viewport_MouseUp;
             // 
             // smPathDialog
             // 
@@ -431,12 +455,34 @@
             deleteToolStripMenuItem.Text = "Delete";
             deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
             // 
+            // zoomLevelNumericUpDown
+            // 
+            zoomLevelNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            zoomLevelNumericUpDown.Location = new Point(1047, 0);
+            zoomLevelNumericUpDown.Maximum = new decimal(new int[] { 400, 0, 0, 0 });
+            zoomLevelNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            zoomLevelNumericUpDown.Name = "zoomLevelNumericUpDown";
+            zoomLevelNumericUpDown.Size = new Size(60, 23);
+            zoomLevelNumericUpDown.TabIndex = 7;
+            zoomLevelNumericUpDown.Value = new decimal(new int[] { 100, 0, 0, 0 });
+            // 
+            // label1
+            // 
+            label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label1.Location = new Point(951, 4);
+            label1.Name = "label1";
+            label1.Size = new Size(93, 15);
+            label1.TabIndex = 6;
+            label1.Text = "Zoom Level (%)";
+            // 
             // Form1
             // 
             AllowDrop = true;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 681);
+            Controls.Add(zoomLevelNumericUpDown);
+            Controls.Add(label1);
             Controls.Add(widgetGridSpacingNumericUpDown);
             Controls.Add(label2);
             Controls.Add(sidebarToNewWindowButton);
@@ -460,13 +506,14 @@
             splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
-            Viewport.ResumeLayout(false);
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
+            tabPage3.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
             editorMenuStrip.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)zoomLevelNumericUpDown).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -508,9 +555,12 @@
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripMenuItem deleteToolStripMenuItem;
         private ToolStripMenuItem actionHistoryToolStripMenuItem;
-        private HScrollBar hScrollBar1;
-        private VScrollBar vScrollBar1;
-        private Panel Viewport;
+        private HScrollBar viewportScrollX;
+        private VScrollBar viewportScrollY;
+        private Panel aViewport;
         private Panel mainPanel;
+        private SKGLControl viewport;
+        private CustomNumericUpDown zoomLevelNumericUpDown;
+        private Label label1;
     }
 }

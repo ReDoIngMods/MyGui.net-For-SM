@@ -1,5 +1,4 @@
 ﻿using Microsoft.Win32;
-using SkiaSharp;
 using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
@@ -9,8 +8,6 @@ using System.Text;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
-using SkiaSharp;
-using SkiaSharp.Views.Desktop;
 
 namespace MyGui.net
 {
@@ -921,10 +918,12 @@ namespace MyGui.net
         }
         #endregion
 
-        #region WinForms Utils
+        #region MyGui.Net-ified WinForms Utils
 
-        public static Control? GetTopmostControlAtMousePosition(Control originControl, Point relativePoint, Control[] excludeParent = null)
+        public static MyGuiWidgetData? GetTopmostControlAtMousePosition(MyGuiWidgetData? originControl, Point relativePoint, MyGuiWidgetData[] excludeParent = null)
         {
+            //TODO: figure out structure
+            /*
             // Convert the relative point (from the MouseDown event) to screen coordinates
             Point screenPoint = originControl.PointToScreen(relativePoint);
 
@@ -932,22 +931,25 @@ namespace MyGui.net
             Control topLevelParent = originControl.TopLevelControl;
 
             // Perform the recursive search from the topmost control downwards
-            return GetTopmostControlAtPoint(topLevelParent, screenPoint, excludeParent);
+            return GetTopmostControlAtPoint(topLevelParent, screenPoint, excludeParent);*/
+            return new MyGuiWidgetData();
         }
 
-        public static Control? GetTopmostControlAtPoint(Control parent, Point screenPoint, Control[] excludeParent = null)
+        public static MyGuiWidgetData? GetTopmostControlAtPoint(MyGuiWidgetData? parent, Point screenPoint, MyGuiWidgetData[] excludeParent = null)
         {
+            //TODO: figure out structure
+
             // Convert screen point to client point relative to the parent control
-            Point clientPoint = parent.PointToClient(screenPoint);
+            /*Point clientPoint = parent.PointToClient(screenPoint);
 
             // Check if the point is within the bounds of the parent control
             if (parent.ClientRectangle.Contains(clientPoint))
             {
                 for (int i = 0; i < parent.Controls.Count; i++)
                 {
-                    Control child = parent.Controls[i];
+                    MyGuiWidgetData child = parent.Controls[i];
                     // Recursively search in child controls
-                    Control result = GetTopmostControlAtPoint(child, screenPoint, excludeParent);
+                    MyGuiWidgetData result = GetTopmostControlAtPoint(child, screenPoint, excludeParent);
                     if (result != null && result.Tag != null)
                     {
                         return result;
@@ -959,7 +961,7 @@ namespace MyGui.net
                 {
                     for (int i = 0; i < excludeParent.Length; i++)
                     {
-                        Control currParent = excludeParent[i];
+                        MyGuiWidgetData currParent = excludeParent[i];
                         if (parent == currParent)
                         {
                             doesntFit = true;
@@ -971,17 +973,18 @@ namespace MyGui.net
                 {
                     return parent;
                 }
-            }
+            }*/
 
             // If the point is outside the parent control's bounds, return null
             return null;
         }
-        public static List<Control> GetAllControlsAtPoint(Control parent, Point screenPoint, Control[] excludeParent = null)
+        public static List<MyGuiWidgetData> GetAllControlsAtPoint(MyGuiWidgetData parent, Point screenPoint, MyGuiWidgetData[] excludeParent = null)
         {
-            List<Control> controls = new List<Control>();
+            //TODO: figure out structure
+            List<MyGuiWidgetData> controls = new List<MyGuiWidgetData>();
 
             // Convert the screen point to client point relative to the parent control
-            Point clientPoint = parent.PointToClient(screenPoint);
+            /*Point clientPoint = parent.PointToClient(screenPoint);
             if (parent is ScrollableControl scrollableParent)
             {
                 clientPoint.Offset(scrollableParent.AutoScrollPosition);
@@ -1016,6 +1019,7 @@ namespace MyGui.net
                 }
             }
 
+            return controls;*/
             return controls;
         }
 
@@ -1033,16 +1037,16 @@ namespace MyGui.net
             Center
         }
 
-        public static BorderPosition DetectBorder(Control widget, Point mousePosition)
+        public static BorderPosition DetectBorder(MyGuiWidgetData widget, Point mousePosition)
         {
-            if (widget == null || widget.IsDisposed)
+            if (widget == null)
             {
                 return BorderPosition.None;
             }
 
-            Point widgetRelativePosition = widget.PointToClient(new Point(mousePosition.X, mousePosition.Y));
-            int widgetWidth = widget.Width;
-            int widgetHeight = widget.Height;
+            Point widgetRelativePosition = new Point(mousePosition.X, mousePosition.Y); //widget.PointToClient(new Point(mousePosition.X, mousePosition.Y)); //TODO: pointToClient implementation
+            int widgetWidth = widget.size.X;
+            int widgetHeight = widget.size.Y;
 
             int BorderThreshold = 7;  // Distance from edge within which we consider it "on the border"
 

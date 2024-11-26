@@ -10,7 +10,7 @@
 
     public class NineSlicePictureBox : PictureBox
     {
-        public MyGuiResource? Resource { get; set; }
+        public MyGuiResource? Resource;
 
         private SKControl _skControl;
 
