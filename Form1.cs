@@ -774,13 +774,14 @@ namespace MyGui.net
                     _viewportBackgroundBitmap = Util.GenerateGridBitmap(_projectSize.Width, _projectSize.Height, _gridSpacing, new(20, 20, 20));
                     break;
                 case 2:
-                    if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath) || Settings.Default.EditorBackgroundImagePath == "")
+                    if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath))
                     {
                         //mainPanel.BackgroundImage = Settings.Default.EditorBackgroundImagePath == "" ? null : Image.FromFile(Settings.Default.EditorBackgroundImagePath);
                         //mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
+                        Debug.WriteLine(Settings.Default.EditorBackgroundImagePath);
                         _viewportBackgroundBitmap = Util.BitmapToSKBitmap((Bitmap)Bitmap.FromFile(Settings.Default.EditorBackgroundImagePath));
                     }
-                    else
+                    else if (Settings.Default.EditorBackgroundImagePath != "")
                     {
                         MessageBox.Show("Background Image path is invalid!\nSpecify a new path in the Options.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
