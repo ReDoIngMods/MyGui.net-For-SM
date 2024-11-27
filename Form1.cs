@@ -200,7 +200,8 @@ namespace MyGui.net
         void ExecuteCommand(IEditorAction command)
         {
             _commandManager.ExecuteCommand(command);
-            viewport.Invalidate();
+            //viewport.Invalidate();
+            viewport.Refresh();
             UpdateUndoRedo(false);
         }
 
@@ -802,14 +803,16 @@ namespace MyGui.net
         {
             ScrollBar scrollBar = (ScrollBar)senderAny;
             _viewportOffset.X = -scrollBar.Value;
-            viewport.Invalidate();
+            //viewport.Invalidate();
+            viewport.Refresh();
         }
 
         private void viewportScrollY_ValueChanged(object senderAny, EventArgs e)
         {
             ScrollBar scrollBar = (ScrollBar)senderAny;
             _viewportOffset.Y = -scrollBar.Value;
-            viewport.Invalidate();
+            //viewport.Invalidate();
+            viewport.Refresh();
         }
 
         //Widget painting
@@ -892,9 +895,13 @@ namespace MyGui.net
         {
             Control sender = (Control)senderAny;
             Point viewportRelPos = e.Location;
+            Debug.WriteLine($"default: X: {e.Location.X} Y: {e.Location.Y}");
             Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+            Debug.WriteLine($"with offset: X: {viewportPixelPos.X} Y: {viewportPixelPos.Y}");
 
-            BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos);
+            //Cursor.Position = sender.PointToScreen(viewportPixelPos);
+
+            BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, _currentLayout);
 
             if (e.Button == MouseButtons.Right)
             {
@@ -936,8 +943,7 @@ namespace MyGui.net
                     }
                     else if (e.Clicks > 1)
                     {
-                        Point screenPoint = Cursor.Position; // Get the screen position of the mouse
-                        List<MyGuiWidgetData> controlsAtPoint = Util.GetAllControlsAtPoint(_currentLayout, screenPoint);
+                        List<MyGuiWidgetData> controlsAtPoint = Util.GetAllControlsAtPoint(_currentLayout, viewportPixelPos);
 
                         if (controlsAtPoint.Count > 0)
                         {
@@ -962,7 +968,7 @@ namespace MyGui.net
                             }
 
                             // Show the context menu at the mouse position
-                            contextMenu.Show(screenPoint);
+                            contextMenu.Show(Cursor.Position);
                         }
                     }
                 }
@@ -1026,8 +1032,8 @@ namespace MyGui.net
             }
             else if (_currentSelectedWidget != null)
             {
-                BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPos);
-                Debug.WriteLine($"BORDER: {border}");
+                BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, _currentLayout);
+                //Debug.WriteLine($"BORDER: {border}");
                 if ((border == BorderPosition.Center || border == BorderPosition.None) && (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
                 {
                     Cursor = Cursors.Hand;
@@ -1128,7 +1134,8 @@ namespace MyGui.net
 
                     // Update the previous mouse location
                     _mouseLoc = e.Location;
-                    viewport.Invalidate();
+                    //viewport.Invalidate();
+                    viewport.Refresh();
                 }
             }
             else
@@ -1497,7 +1504,8 @@ namespace MyGui.net
         {
             NumericUpDown sender = (NumericUpDown)senderAny;
             _viewportScale = ((float)sender.Value) / 100;
-            viewport.Invalidate();
+            //viewport.Invalidate();
+            viewport.Refresh();
         }
 
         private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
