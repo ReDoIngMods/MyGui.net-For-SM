@@ -892,7 +892,7 @@ namespace MyGui.net
         {
             Control sender = (Control)senderAny;
             Point viewportRelPos = e.Location;
-            Point viewportPixelPos = new Point((int)((viewportRelPos.X + _viewportOffset.X) / _viewportScale), (int)((viewportRelPos.Y + _viewportOffset.Y) / _viewportScale));
+            Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
 
             BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos);
 
@@ -1003,7 +1003,7 @@ namespace MyGui.net
         {
             Control sender = (Control)senderAny;
             Point viewportRelPos = e.Location;
-            Point viewportPixelPos = new Point((int)((viewportRelPos.X + _viewportOffset.X) / _viewportScale), (int)((viewportRelPos.Y + _viewportOffset.Y) / _viewportScale));
+            Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
             if (_draggingViewport)
             {
                 /*if (_DoFastRedraw)
@@ -1072,7 +1072,7 @@ namespace MyGui.net
                 {
                     Point localLocCurr = e.Location - (Size)sender.Location;
                     Point localLocPrev = _mouseLoc - (Size)sender.Location;
-                    Point deltaLoc = new Point(localLocCurr.X - localLocPrev.X, localLocCurr.Y - localLocPrev.Y);
+                    Point deltaLoc = new Point((int)((localLocCurr.X - localLocPrev.X) / _viewportScale), (int)((localLocCurr.Y - localLocPrev.Y) / _viewportScale));
 
                     //_draggedWidgetPosition = _currentSelectedWidget.position;
                     //_draggedWidgetSize = (Size)_currentSelectedWidget.size;
@@ -1171,7 +1171,7 @@ namespace MyGui.net
             }
             else if (e.Button == MouseButtons.Left)
             {
-                if (_draggingWidgetAt != BorderPosition.None)
+                if (_draggingWidgetAt != BorderPosition.None && _currentSelectedWidget != null)
                 {
                     _draggingWidgetAt = BorderPosition.None;
 
