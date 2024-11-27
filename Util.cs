@@ -934,95 +934,105 @@ namespace MyGui.net
 
             // Perform the recursive search from the topmost control downwards
             return GetTopmostControlAtPoint(topLevelParent, screenPoint, excludeParent);*/
+            MessageBox.Show("GetTopmostControlAtMousePosition is deprecated!", "Deprecated Function", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return new MyGuiWidgetData();
+        }
+
+        public static MyGuiWidgetData? GetTopmostControlAtPoint(List<MyGuiWidgetData> parents, Point screenPoint, MyGuiWidgetData[]? excludeWidgets = null)
+        {
+            MyGuiWidgetData? topmostWidget = null;
+
+            // Loop over each parent in the list
+            foreach (var parent in parents)
+            {
+                if (parent == null) continue;
+
+                // Check if the point is within the bounds of the parent
+                var parentBounds = new Rectangle(
+                    parent.position.X,
+                    parent.position.Y,
+                    parent.size.X,
+                    parent.size.Y
+                );
+
+                if (parentBounds.Contains(screenPoint))
+                {
+                    // Search through the children in reverse order to prioritize topmost (last drawn) widgets
+                    for (int i = parent.children.Count - 1; i >= 0; i--)
+                    {
+                        var child = parent.children[i];
+                        var result = GetTopmostControlAtPoint(new List<MyGuiWidgetData> { child }, screenPoint, excludeWidgets);
+                        if (result != null) return result;
+                    }
+
+                    // Exclude the parent if specified
+                    if (excludeWidgets != null && excludeWidgets.Contains(parent)) continue;
+
+                    topmostWidget = parent; // Update topmost widget if no child is a better match
+                }
+            }
+
+            return topmostWidget;
         }
 
         public static MyGuiWidgetData? GetTopmostControlAtPoint(MyGuiWidgetData? parent, Point screenPoint, MyGuiWidgetData[] excludeParent = null)
         {
-            //TODO: figure out structure
+            if (parent == null) return null;
 
-            // Convert screen point to client point relative to the parent control
-            /*Point clientPoint = parent.PointToClient(screenPoint);
+            // Check if the point is within the bounds of the parent
+            var parentBounds = new Rectangle(
+                parent.position.X,
+                parent.position.Y,
+                parent.size.X,
+                parent.size.Y
+            );
 
-            // Check if the point is within the bounds of the parent control
-            if (parent.ClientRectangle.Contains(clientPoint))
+            if (parentBounds.Contains(screenPoint))
             {
-                for (int i = 0; i < parent.Controls.Count; i++)
+                // Search through the children in reverse order to prioritize topmost (last drawn) widgets
+                for (int i = parent.children.Count - 1; i >= 0; i--)
                 {
-                    MyGuiWidgetData child = parent.Controls[i];
-                    // Recursively search in child controls
-                    MyGuiWidgetData result = GetTopmostControlAtPoint(child, screenPoint, excludeParent);
-                    if (result != null && result.Tag != null)
-                    {
-                        return result;
-                    }
+                    var child = parent.children[i];
+                    var result = GetTopmostControlAtPoint(child, screenPoint, excludeParent);
+                    if (result != null) return result;
                 }
 
-                bool doesntFit = false;
-                if (excludeParent != null)
-                {
-                    for (int i = 0; i < excludeParent.Length; i++)
-                    {
-                        MyGuiWidgetData currParent = excludeParent[i];
-                        if (parent == currParent)
-                        {
-                            doesntFit = true;
-                            break;
-                        }
-                    }
-                }
-                if (!doesntFit)
-                {
-                    return parent;
-                }
-            }*/
+                // Exclude parent if specified
+                if (excludeParent != null && excludeParent.Contains(parent)) return null;
 
-            // If the point is outside the parent control's bounds, return null
+                return parent; // Return the parent if no child is a better match
+            }
+
             return null;
         }
+
         public static List<MyGuiWidgetData> GetAllControlsAtPoint(MyGuiWidgetData parent, Point screenPoint, MyGuiWidgetData[] excludeParent = null)
         {
-            //TODO: figure out structure
-            List<MyGuiWidgetData> controls = new List<MyGuiWidgetData>();
+            var widgetsAtPoint = new List<MyGuiWidgetData>();
 
-            // Convert the screen point to client point relative to the parent control
-            /*Point clientPoint = parent.PointToClient(screenPoint);
-            if (parent is ScrollableControl scrollableParent)
-            {
-                clientPoint.Offset(scrollableParent.AutoScrollPosition);
-            }
+            var parentBounds = new Rectangle(
+                parent.position.X,
+                parent.position.Y,
+                parent.size.X,
+                parent.size.Y
+            );
 
-            // Check if the point is within the bounds of the parent control
-            if (parent.ClientRectangle.Contains(clientPoint))
+            if (parentBounds.Contains(screenPoint))
             {
-                for (int i = 0; i < parent.Controls.Count; i++)
+                // Check children first
+                foreach (var child in parent.children)
                 {
-                    Control child = parent.Controls[i];
-                    controls.AddRange(GetAllControlsAtPoint(child, screenPoint, excludeParent));
+                    widgetsAtPoint.AddRange(GetAllControlsAtPoint(child, screenPoint, excludeParent));
                 }
 
-                // Add the parent control itself if it's not excluded
-                bool doesntFit = false;
-                if (excludeParent != null)
+                // Add the parent if it's not excluded
+                if (excludeParent == null || !excludeParent.Contains(parent))
                 {
-                    for (int i = 0; i < excludeParent.Length; i++)
-                    {
-                        Control currParent = excludeParent[i];
-                        if (parent == currParent)
-                        {
-                            doesntFit = true;
-                            break;
-                        }
-                    }
-                }
-                if (!doesntFit)
-                {
-                    controls.Add(parent);
+                    widgetsAtPoint.Add(parent);
                 }
             }
 
-            return controls;*/
-            return controls;
+            return widgetsAtPoint;
         }
 
         public enum BorderPosition
@@ -1041,32 +1051,31 @@ namespace MyGui.net
 
         public static BorderPosition DetectBorder(MyGuiWidgetData widget, Point mousePosition)
         {
-            if (widget == null)
-            {
-                return BorderPosition.None;
-            }
+            if (widget == null) return BorderPosition.None;
 
-            Point widgetRelativePosition = new Point(mousePosition.X, mousePosition.Y); //widget.PointToClient(new Point(mousePosition.X, mousePosition.Y)); //TODO: pointToClient implementation
+            // Calculate the widget-relative position
+            Point widgetRelativePosition = new Point(
+                mousePosition.X - widget.position.X,
+                mousePosition.Y - widget.position.Y
+            );
+
             int widgetWidth = widget.size.X;
             int widgetHeight = widget.size.Y;
+            int borderThreshold = 7;  // Distance from edge within which we consider it "on the border"
 
-            int BorderThreshold = 7;  // Distance from edge within which we consider it "on the border"
+            // Check if the mouse is near the widget (including a threshold margin)
+            bool isNearWidget = widgetRelativePosition.X >= -borderThreshold &&
+                                widgetRelativePosition.X <= widgetWidth + borderThreshold &&
+                                widgetRelativePosition.Y >= -borderThreshold &&
+                                widgetRelativePosition.Y <= widgetHeight + borderThreshold;
 
-            // Check if the mouse is within an acceptable distance from the widget bounds
-            bool isNearWidget = widgetRelativePosition.X >= -BorderThreshold &&
-                                widgetRelativePosition.X <= widgetWidth + BorderThreshold &&
-                                widgetRelativePosition.Y >= -BorderThreshold &&
-                                widgetRelativePosition.Y <= widgetHeight + BorderThreshold;
+            if (!isNearWidget) return BorderPosition.None;
 
-            if (!isNearWidget)
-            {
-                return BorderPosition.None; // Mouse is too far from the widget to be considered on the border
-            }
-
-            bool isOnLeft = widgetRelativePosition.X >= -BorderThreshold && widgetRelativePosition.X < 0;
-            bool isOnRight = widgetRelativePosition.X <= widgetWidth + BorderThreshold && widgetRelativePosition.X > widgetWidth;
-            bool isOnTop = widgetRelativePosition.Y >= -BorderThreshold && widgetRelativePosition.Y < 0;
-            bool isOnBottom = widgetRelativePosition.Y <= widgetHeight + BorderThreshold && widgetRelativePosition.Y > widgetHeight;
+            // Check each border
+            bool isOnLeft = widgetRelativePosition.X >= -borderThreshold && widgetRelativePosition.X < 0;
+            bool isOnRight = widgetRelativePosition.X <= widgetWidth + borderThreshold && widgetRelativePosition.X > widgetWidth;
+            bool isOnTop = widgetRelativePosition.Y >= -borderThreshold && widgetRelativePosition.Y < 0;
+            bool isOnBottom = widgetRelativePosition.Y <= widgetHeight + borderThreshold && widgetRelativePosition.Y > widgetHeight;
 
             // Determine the specific border or corner the mouse is on
             if (isOnLeft && isOnTop) return BorderPosition.TopLeft;
@@ -1078,11 +1087,9 @@ namespace MyGui.net
             if (isOnTop) return BorderPosition.Top;
             if (isOnBottom) return BorderPosition.Bottom;
 
-            // Determine if the mouse is inside the widget but not on the border
-            if (widgetRelativePosition.X > 0 &&
-                widgetRelativePosition.X < widgetWidth &&
-                widgetRelativePosition.Y > 0 &&
-                widgetRelativePosition.Y < widgetHeight)
+            // If the mouse is inside the widget but not on the border
+            if (widgetRelativePosition.X > 0 && widgetRelativePosition.X < widgetWidth &&
+                widgetRelativePosition.Y > 0 && widgetRelativePosition.Y < widgetHeight)
             {
                 return BorderPosition.Center;
             }

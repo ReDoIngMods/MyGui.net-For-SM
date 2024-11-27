@@ -902,7 +902,7 @@ namespace MyGui.net
             }
             else if (e.Button == MouseButtons.Left)
             {
-                MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(null, Cursor.Position);
+                MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(_currentLayout, Cursor.Position);
 
                 bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && currWidgetBorder != BorderPosition.None;
 
@@ -999,12 +999,14 @@ namespace MyGui.net
         void Viewport_MouseMove(object senderAny, MouseEventArgs e)
         {
             Control sender = (Control)senderAny;
+            Point viewportRelPos = e.Location;
+            Point viewportPixelPos = new Point((int)((viewportRelPos.X - _viewportOffset.X) * _viewportScale), (int)((viewportRelPos.Y - _viewportOffset.Y) * _viewportScale));
             if (_draggingViewport)
             {
-                if (_DoFastRedraw)
+                /*if (_DoFastRedraw)
                 {
                     aViewport.SuspendLayout();
-                }
+                }*/
                 _movedViewport = true;
                 //Debug.WriteLine(_mouseLoc);
                 Point localLocCurr = e.Location - (Size)sender.Location;
@@ -1013,17 +1015,17 @@ namespace MyGui.net
                 viewportScrollX.Value = Math.Clamp(viewportScrollX.Value - (int)Math.Ceiling(deltaLoc.X / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
                 viewportScrollY.Value = Math.Clamp(viewportScrollY.Value - (int)Math.Ceiling(deltaLoc.Y / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
                 _mouseLoc = e.Location;
-                if (_DoFastRedraw)
+                /*if (_DoFastRedraw)
                 {
                     aViewport.ResumeLayout();
                     aViewport.Refresh();
-                }
+                }*/
             }
             else if (_currentSelectedWidget != null)
             {
-                BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, aViewport.PointToScreen(e.Location));
+                BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPos);
 
-                if ((border == BorderPosition.Center || border == BorderPosition.None) && (Util.GetTopmostControlAtPoint(null, Cursor.Position) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
+                if ((border == BorderPosition.Center || border == BorderPosition.None) && (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
                 {
                     Cursor = Cursors.Hand;
                     if (_currentSelectedWidget == null)
@@ -1127,7 +1129,7 @@ namespace MyGui.net
             }
             else
             {
-                if (Util.GetTopmostControlAtPoint(null, Cursor.Position) != null)
+                if (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos) != null)
                 {
                     Cursor = Cursors.Hand;
                 }
@@ -1145,7 +1147,7 @@ namespace MyGui.net
             {
                 if (!_movedViewport)
                 {
-                    MyGuiWidgetData? thing = Util.GetTopmostControlAtPoint(null, Cursor.Position);
+                    MyGuiWidgetData? thing = Util.GetTopmostControlAtPoint(_currentLayout, Cursor.Position);
                     if (thing != null)
                     {
                         if (_currentSelectedWidget != thing)
