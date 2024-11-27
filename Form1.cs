@@ -200,6 +200,7 @@ namespace MyGui.net
         void ExecuteCommand(IEditorAction command)
         {
             _commandManager.ExecuteCommand(command);
+            viewport.Invalidate();
             UpdateUndoRedo(false);
         }
 
@@ -793,7 +794,7 @@ namespace MyGui.net
         {
             ToolStripMenuItem sender = (ToolStripMenuItem)senderAny;
             //TODO: fix for new widget type
-            //_currentSelectedWidget = (Control?)sender.Tag == _currentSelectedWidget ? null : (Control?)sender.Tag;
+            _currentSelectedWidget = (MyGuiWidgetData?)sender.Tag == _currentSelectedWidget ? null : (MyGuiWidgetData?)sender.Tag;
             HandleWidgetSelection();
         }
 
@@ -890,8 +891,10 @@ namespace MyGui.net
         void Viewport_MouseDown(object senderAny, MouseEventArgs e)
         {
             Control sender = (Control)senderAny;
+            Point viewportRelPos = e.Location;
+            Point viewportPixelPos = new Point((int)((viewportRelPos.X + _viewportOffset.X) / _viewportScale), (int)((viewportRelPos.Y + _viewportOffset.Y) / _viewportScale));
 
-            BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, aViewport.PointToScreen(e.Location));
+            BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos);
 
             if (e.Button == MouseButtons.Right)
             {
@@ -902,7 +905,7 @@ namespace MyGui.net
             }
             else if (e.Button == MouseButtons.Left)
             {
-                MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(_currentLayout, Cursor.Position);
+                MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos);
 
                 bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && currWidgetBorder != BorderPosition.None;
 
@@ -934,7 +937,7 @@ namespace MyGui.net
                     else if (e.Clicks > 1)
                     {
                         Point screenPoint = Cursor.Position; // Get the screen position of the mouse
-                        List<MyGuiWidgetData> controlsAtPoint = Util.GetAllControlsAtPoint(null, screenPoint);
+                        List<MyGuiWidgetData> controlsAtPoint = Util.GetAllControlsAtPoint(_currentLayout, screenPoint);
 
                         if (controlsAtPoint.Count > 0)
                         {
@@ -1000,7 +1003,7 @@ namespace MyGui.net
         {
             Control sender = (Control)senderAny;
             Point viewportRelPos = e.Location;
-            Point viewportPixelPos = new Point((int)((viewportRelPos.X - _viewportOffset.X) * _viewportScale), (int)((viewportRelPos.Y - _viewportOffset.Y) * _viewportScale));
+            Point viewportPixelPos = new Point((int)((viewportRelPos.X + _viewportOffset.X) / _viewportScale), (int)((viewportRelPos.Y + _viewportOffset.Y) / _viewportScale));
             if (_draggingViewport)
             {
                 /*if (_DoFastRedraw)
@@ -1024,7 +1027,7 @@ namespace MyGui.net
             else if (_currentSelectedWidget != null)
             {
                 BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPos);
-
+                Debug.WriteLine($"BORDER: {border}");
                 if ((border == BorderPosition.Center || border == BorderPosition.None) && (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
                 {
                     Cursor = Cursors.Hand;
@@ -1125,6 +1128,7 @@ namespace MyGui.net
 
                     // Update the previous mouse location
                     _mouseLoc = e.Location;
+                    viewport.Invalidate();
                 }
             }
             else

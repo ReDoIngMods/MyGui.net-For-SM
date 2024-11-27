@@ -961,7 +961,7 @@ namespace MyGui.net
                     for (int i = parent.children.Count - 1; i >= 0; i--)
                     {
                         var child = parent.children[i];
-                        var result = GetTopmostControlAtPoint(new List<MyGuiWidgetData> { child }, screenPoint, excludeWidgets);
+                        var result = GetTopmostControlAtPoint(child, screenPoint, excludeWidgets);
                         if (result != null) return result;
                     }
 
@@ -1004,6 +1004,18 @@ namespace MyGui.net
             }
 
             return null;
+        }
+
+        public static List<MyGuiWidgetData> GetAllControlsAtPoint(List<MyGuiWidgetData> parents, Point screenPoint, MyGuiWidgetData[] excludeParent = null)
+        {
+            var widgetsAtPoint = new List<MyGuiWidgetData>();
+
+            foreach (MyGuiWidgetData parent in parents)
+            {
+                widgetsAtPoint.AddRange(GetAllControlsAtPoint(parent, screenPoint, excludeParent));
+            }
+
+            return widgetsAtPoint;
         }
 
         public static List<MyGuiWidgetData> GetAllControlsAtPoint(MyGuiWidgetData parent, Point screenPoint, MyGuiWidgetData[] excludeParent = null)
