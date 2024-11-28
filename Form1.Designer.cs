@@ -41,8 +41,6 @@ namespace MyGui.net
             tabPage1Panel = new Panel();
             tabPage2 = new TabPage();
             tabPage3 = new TabPage();
-            mainPanel = new Panel();
-            aViewport = new Panel();
             smPathDialog = new FolderBrowserDialog();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -80,7 +78,6 @@ namespace MyGui.net
             splitContainer1.SuspendLayout();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
-            tabPage3.SuspendLayout();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
             editorMenuStrip.SuspendLayout();
@@ -199,8 +196,6 @@ namespace MyGui.net
             // 
             // tabPage3
             // 
-            tabPage3.Controls.Add(mainPanel);
-            tabPage3.Controls.Add(aViewport);
             tabPage3.Location = new Point(4, 24);
             tabPage3.Margin = new Padding(0);
             tabPage3.Name = "tabPage3";
@@ -208,31 +203,6 @@ namespace MyGui.net
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Layout";
             tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // mainPanel
-            // 
-            mainPanel.Location = new Point(82, 196);
-            mainPanel.Name = "mainPanel";
-            mainPanel.Size = new Size(587, 272);
-            mainPanel.TabIndex = 0;
-            // 
-            // aViewport
-            // 
-            aViewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            aViewport.AutoScroll = true;
-            aViewport.AutoScrollMargin = new Size(5, 5);
-            aViewport.AutoScrollMinSize = new Size(1, 1);
-            aViewport.BackColor = SystemColors.ScrollBar;
-            aViewport.Location = new Point(37, 100);
-            aViewport.Margin = new Padding(0);
-            aViewport.Name = "aViewport";
-            aViewport.Size = new Size(906, 623);
-            aViewport.TabIndex = 0;
-            aViewport.MouseDown += Viewport_MouseDown;
-            aViewport.MouseEnter += Viewport_MouseEnter;
-            aViewport.MouseLeave += Viewport_MouseLeave;
-            aViewport.MouseMove += Viewport_MouseMove;
-            aViewport.MouseUp += Viewport_MouseUp;
             // 
             // smPathDialog
             // 
@@ -518,7 +488,6 @@ namespace MyGui.net
             splitContainer1.ResumeLayout(false);
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
-            tabPage3.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
@@ -567,8 +536,6 @@ namespace MyGui.net
         private ToolStripMenuItem actionHistoryToolStripMenuItem;
         private HScrollBar viewportScrollX;
         private VScrollBar viewportScrollY;
-        private Panel aViewport;
-        private Panel mainPanel;
         private SKGLControl viewport;
         private CustomNumericUpDown zoomLevelNumericUpDown;
         private Label label1;

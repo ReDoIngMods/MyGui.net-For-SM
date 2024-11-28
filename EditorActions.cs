@@ -246,10 +246,10 @@ namespace MyGui.net
         private int _index; // Store the index to restore control in the correct position
 
         //TODO: figure out structure
-        public DeleteControlCommand(MyGuiWidgetData control, List<MyGuiWidgetData> defaultList = null)
+        public DeleteControlCommand(MyGuiWidgetData control, List<MyGuiWidgetData> defaultList)
         {
             _control = control;
-            _parent = null;//control.Parent;
+            _parent = Util.FindParent(control, defaultList);//control.Parent;
             _defaultList = defaultList;
             _index = _parent == null ? _defaultList.IndexOf(control) : _parent.children.IndexOf(control); // Store the original position
         }
@@ -259,7 +259,6 @@ namespace MyGui.net
             _control = control;
             _parent = parent;
             _defaultList = defaultList;
-            //TODO: figure out structure
             _index = _parent == null ? _defaultList.IndexOf(control) : _parent.children.IndexOf(control); // Store the original position
         }
 

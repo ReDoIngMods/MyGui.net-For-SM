@@ -1172,7 +1172,7 @@ namespace MyGui.net
             return BorderPosition.None;
         }
 
-        private static Point GetAbsolutePosition(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
+        public static Point GetAbsolutePosition(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
         {
             Point absolutePosition = widget.position;
 
@@ -1190,7 +1190,7 @@ namespace MyGui.net
             return absolutePosition;
         }
 
-        private static MyGuiWidgetData? FindParent(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
+        public static MyGuiWidgetData? FindParent(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
         {
             // Find the parent widget in the layout
             foreach (var potentialParent in layout)

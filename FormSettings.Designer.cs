@@ -44,9 +44,6 @@
             exportAskRadioButton = new RadioButton();
             exportAsPxRadioButton = new RadioButton();
             groupBox1 = new GroupBox();
-            useDoubleDrawCheckBox = new CheckBox();
-            useSlowDrawRadioButton = new RadioButton();
-            useFastDrawRadioButton = new RadioButton();
             groupBox5 = new GroupBox();
             useBackgroundImageGrid = new RadioButton();
             useBackgroundImageCustom = new RadioButton();
@@ -85,7 +82,6 @@
             flowLayoutPanel1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox4.SuspendLayout();
-            groupBox1.SuspendLayout();
             groupBox5.SuspendLayout();
             groupBox8.SuspendLayout();
             groupBox7.SuspendLayout();
@@ -268,50 +264,12 @@
             // 
             // groupBox1
             // 
-            groupBox1.Controls.Add(useDoubleDrawCheckBox);
-            groupBox1.Controls.Add(useSlowDrawRadioButton);
-            groupBox1.Controls.Add(useFastDrawRadioButton);
             groupBox1.Location = new Point(3, 104);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(263, 103);
             groupBox1.TabIndex = 7;
             groupBox1.TabStop = false;
             groupBox1.Text = "Redraw";
-            // 
-            // useDoubleDrawCheckBox
-            // 
-            useDoubleDrawCheckBox.AutoSize = true;
-            useDoubleDrawCheckBox.Location = new Point(6, 73);
-            useDoubleDrawCheckBox.Name = "useDoubleDrawCheckBox";
-            useDoubleDrawCheckBox.Size = new Size(245, 19);
-            useDoubleDrawCheckBox.TabIndex = 2;
-            useDoubleDrawCheckBox.Text = "Use Double Buffering (can be less glitchy)";
-            useDoubleDrawCheckBox.UseVisualStyleBackColor = true;
-            useDoubleDrawCheckBox.CheckedChanged += useDoubleDrawCheckBox_CheckedChanged;
-            // 
-            // useSlowDrawRadioButton
-            // 
-            useSlowDrawRadioButton.AutoSize = true;
-            useSlowDrawRadioButton.Location = new Point(6, 48);
-            useSlowDrawRadioButton.Name = "useSlowDrawRadioButton";
-            useSlowDrawRadioButton.Size = new Size(211, 19);
-            useSlowDrawRadioButton.TabIndex = 1;
-            useSlowDrawRadioButton.TabStop = true;
-            useSlowDrawRadioButton.Text = "Slow Redraw (Slower, more glitchy)";
-            useSlowDrawRadioButton.UseVisualStyleBackColor = true;
-            useSlowDrawRadioButton.CheckedChanged += useSlowDrawRadioButton_CheckedChanged;
-            // 
-            // useFastDrawRadioButton
-            // 
-            useFastDrawRadioButton.AutoSize = true;
-            useFastDrawRadioButton.Location = new Point(6, 22);
-            useFastDrawRadioButton.Name = "useFastDrawRadioButton";
-            useFastDrawRadioButton.Size = new Size(172, 19);
-            useFastDrawRadioButton.TabIndex = 0;
-            useFastDrawRadioButton.TabStop = true;
-            useFastDrawRadioButton.Text = "Fast Redraw (GPU intensive)";
-            useFastDrawRadioButton.UseVisualStyleBackColor = true;
-            useFastDrawRadioButton.CheckedChanged += useFastDrawRadioButton_CheckedChanged;
             // 
             // groupBox5
             // 
@@ -699,8 +657,6 @@
             groupBox2.PerformLayout();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
             groupBox8.ResumeLayout(false);
@@ -733,8 +689,6 @@
         private PictureBox pictureBox1;
         private TextBox aboutTextBox;
         private GroupBox groupBox1;
-        private RadioButton useFastDrawRadioButton;
-        private RadioButton useSlowDrawRadioButton;
         private GroupBox groupBox2;
         private Label label1;
         private GroupBox groupBox3;
@@ -764,7 +718,6 @@
         private ColorDialog editorBackgroundColorDialog;
         private RadioButton useBackgroundImageGrid;
         private RadioButton useBackgroundImageCustom;
-        private CheckBox useDoubleDrawCheckBox;
         private CheckBox showFullFilePathCheckBox;
         private PictureBox pictureBox2;
         private GroupBox groupBox7;

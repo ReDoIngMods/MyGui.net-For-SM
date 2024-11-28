@@ -45,10 +45,6 @@ namespace MyGui.net
             exportAskRadioButton.Checked = Settings.Default.ExportMode == 2;
             exportAsBothRadioButton.Checked = Settings.Default.ExportMode == 3;
 
-            useFastDrawRadioButton.Checked = Settings.Default.DoFastRedraw;
-            useSlowDrawRadioButton.Checked = !Settings.Default.DoFastRedraw;
-            useDoubleDrawCheckBox.Checked = Settings.Default.UseDoubleBuffering;
-
             useBackgroundImageColor.Checked = Settings.Default.EditorBackgroundMode == 0;
             useBackgroundImageGrid.Checked = Settings.Default.EditorBackgroundMode == 1;
             useBackgroundImageCustom.Checked = Settings.Default.EditorBackgroundMode == 2;
@@ -116,27 +112,6 @@ namespace MyGui.net
             RadioButton sender = (RadioButton)senderAny;
             if (!sender.Checked) { return; }
             Settings.Default.ExportMode = (int)Enum.Parse<ExportMode>(sender.Name, true);
-            OnSettingChange();
-        }
-
-        private void useFastDrawRadioButton_CheckedChanged(object senderAny, EventArgs e)
-        {
-            RadioButton sender = (RadioButton)senderAny;
-            Settings.Default.DoFastRedraw = sender.Checked;
-            OnSettingChange();
-        }
-
-        private void useSlowDrawRadioButton_CheckedChanged(object senderAny, EventArgs e)
-        {
-            RadioButton sender = (RadioButton)senderAny;
-            Settings.Default.DoFastRedraw = !sender.Checked;
-            OnSettingChange();
-        }
-
-        private void useDoubleDrawCheckBox_CheckedChanged(object senderAny, EventArgs e)
-        {
-            CheckBox sender = (CheckBox)senderAny;
-            Settings.Default.UseDoubleBuffering = sender.Checked;
             OnSettingChange();
         }
 

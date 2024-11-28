@@ -5,9 +5,6 @@
     <Setting Name="ScrapMechanicPath" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="DoFastRedraw" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="ShowWarnings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -31,9 +28,6 @@
     </Setting>
     <Setting Name="EditorBackgroundMode" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
-    </Setting>
-    <Setting Name="UseDoubleBuffering" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="ShowFullFilePathInTitle" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

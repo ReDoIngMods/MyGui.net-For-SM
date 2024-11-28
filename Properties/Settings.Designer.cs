@@ -39,18 +39,6 @@ namespace MyGui.net.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool DoFastRedraw {
-            get {
-                return ((bool)(this["DoFastRedraw"]));
-            }
-            set {
-                this["DoFastRedraw"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ShowWarnings {
             get {
                 return ((bool)(this["ShowWarnings"]));
@@ -141,18 +129,6 @@ namespace MyGui.net.Properties {
             }
             set {
                 this["EditorBackgroundMode"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool UseDoubleBuffering {
-            get {
-                return ((bool)(this["UseDoubleBuffering"]));
-            }
-            set {
-                this["UseDoubleBuffering"] = value;
             }
         }
         
