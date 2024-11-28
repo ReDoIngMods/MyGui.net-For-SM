@@ -780,6 +780,12 @@ namespace MyGui.net
 			_viewportMatrix = SKMatrix.CreateScale(_viewportScale, _viewportScale);
 			_viewportMatrix = _viewportMatrix.PreConcat(SKMatrix.CreateTranslation(_viewportOffset.X, _viewportOffset.Y));
 			canvas.SetMatrix(_viewportMatrix);
+			canvas.DrawText(_projectSize.Width + "x" + _projectSize.Height, 0, -30, new SKPaint
+            {
+                Color = SKColors.White,
+                TextSize = 60,
+                IsAntialias = true
+            });
 			if (_viewportBackgroundBitmap != null)
 			{
                 canvas.DrawRect(new SKRect(0, 0, _projectSize.Width, _projectSize.Height), new SKPaint
@@ -957,7 +963,14 @@ namespace MyGui.net
 			base.WndProc(ref m);
 		}
 
-		void Viewport_MouseMove(object senderAny, MouseEventArgs e)
+        int AdjustRoundedValue(double value)
+        {
+            if (value > 0) return (int)Math.Max(value, 1);
+            if (value < 0) return (int)Math.Min(value, -1);
+            return 0; // Preserve zero if the value is exactly 0
+        }
+
+        void Viewport_MouseMove(object senderAny, MouseEventArgs e)
 		{
 			Control sender = (Control)senderAny;
 			Point viewportRelPos = e.Location;
@@ -966,11 +979,11 @@ namespace MyGui.net
 			{
 				_movedViewport = true;
 				//Debug.WriteLine(_mouseLoc);
-				Point localLocCurr = e.Location - (Size)sender.Location;
-				Point localLocPrev = _mouseLoc - (Size)sender.Location;
-				Point deltaLoc = new Point(localLocCurr.X - localLocPrev.X, localLocCurr.Y - localLocPrev.Y);
-				viewportScrollX.Value = Math.Clamp(viewportScrollX.Value - (int)Math.Ceiling(deltaLoc.X / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
-				viewportScrollY.Value = Math.Clamp(viewportScrollY.Value - (int)Math.Ceiling(deltaLoc.Y / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
+				Point localLocCurr = e.Location;
+				Point deltaLoc = new Point(localLocCurr.X - _mouseLoc.X, localLocCurr.Y - _mouseLoc.Y);
+				Debug.WriteLine($"{deltaLoc.X} + {deltaLoc.Y}");
+				viewportScrollX.Value = Math.Clamp(viewportScrollX.Value - AdjustRoundedValue(deltaLoc.X / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
+				viewportScrollY.Value = Math.Clamp(viewportScrollY.Value - AdjustRoundedValue(deltaLoc.Y / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
 				_mouseLoc = e.Location;
 			}
 			else if (_currentSelectedWidget != null)
@@ -1019,9 +1032,10 @@ namespace MyGui.net
 				//Debug.WriteLine(_draggingWidgetAt);
 				if (_draggingWidgetAt != BorderPosition.None)
 				{
-					Point localLocCurr = e.Location - (Size)sender.Location;
-					Point localLocPrev = _mouseLoc - (Size)sender.Location;
-					Point deltaLoc = new Point((int)((localLocCurr.X - localLocPrev.X) / _viewportScale), (int)((localLocCurr.Y - localLocPrev.Y) / _viewportScale));
+					Point localLocCurr = e.Location;
+					Point localLocPrev = _mouseLoc;
+					//Point deltaLoc = new Point((int)((localLocCurr.X - localLocPrev.X) / _viewportScale), (int)((localLocCurr.Y - localLocPrev.Y) / _viewportScale));
+					Point deltaLoc = new Point(AdjustRoundedValue((localLocCurr.X - localLocPrev.X) / _viewportScale), AdjustRoundedValue((localLocCurr.Y - localLocPrev.Y) / _viewportScale));
 
 					//_draggedWidgetPosition = _currentSelectedWidget.position;
 					//_draggedWidgetSize = (Size)_currentSelectedWidget.size;
