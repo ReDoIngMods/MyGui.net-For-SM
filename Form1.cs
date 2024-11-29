@@ -981,7 +981,7 @@ namespace MyGui.net
 				//Debug.WriteLine(_mouseLoc);
 				Point localLocCurr = e.Location;
 				Point deltaLoc = new Point(localLocCurr.X - _mouseLoc.X, localLocCurr.Y - _mouseLoc.Y);
-				Debug.WriteLine($"{deltaLoc.X} + {deltaLoc.Y}");
+				//Debug.WriteLine($"{deltaLoc.X} + {deltaLoc.Y}");
 				viewportScrollX.Value = Math.Clamp(viewportScrollX.Value - AdjustRoundedValue(deltaLoc.X / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
 				viewportScrollY.Value = Math.Clamp(viewportScrollY.Value - AdjustRoundedValue(deltaLoc.Y / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
 				_mouseLoc = e.Location;
@@ -1033,9 +1033,8 @@ namespace MyGui.net
 				if (_draggingWidgetAt != BorderPosition.None)
 				{
 					Point localLocCurr = e.Location;
-					Point localLocPrev = _mouseLoc;
 					//Point deltaLoc = new Point((int)((localLocCurr.X - localLocPrev.X) / _viewportScale), (int)((localLocCurr.Y - localLocPrev.Y) / _viewportScale));
-					Point deltaLoc = new Point(AdjustRoundedValue((localLocCurr.X - localLocPrev.X) / _viewportScale), AdjustRoundedValue((localLocCurr.Y - localLocPrev.Y) / _viewportScale));
+					Point deltaLoc = new Point(AdjustRoundedValue((localLocCurr.X - _mouseLoc.X) / _viewportScale), AdjustRoundedValue((localLocCurr.Y - _mouseLoc.Y) / _viewportScale));
 
 					//_draggedWidgetPosition = _currentSelectedWidget.position;
 					//_draggedWidgetSize = (Size)_currentSelectedWidget.size;
@@ -1115,20 +1114,19 @@ namespace MyGui.net
 			{
 				if (!_movedViewport)
 				{
-					MyGuiWidgetData? thing = Util.GetTopmostControlAtPoint(_currentLayout, Cursor.Position);
-					if (thing != null)
+                    Point viewportRelPos = e.Location;
+                    //Debug.WriteLine($"default: X: {e.Location.X} Y: {e.Location.Y}");
+                    Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+                    MyGuiWidgetData? thing = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos);
+					if (_currentSelectedWidget != thing)
 					{
-						if (_currentSelectedWidget != thing)
-						{
-							_currentSelectedWidget = thing;
-							HandleWidgetSelection();
-						}
+						_currentSelectedWidget = thing;
+						HandleWidgetSelection();
 					}
-					if (_currentSelectedWidget != null)
-					{
-						editorMenuStrip.Show(e.Location);
-					}
-				}
+					copyToolStripMenuItem.Enabled = _currentSelectedWidget != null;
+                    deleteToolStripMenuItem.Enabled = _currentSelectedWidget != null;
+                    editorMenuStrip.Show(e.Location);
+                }
 				_draggingViewport = false;
 				_movedViewport = false;
 				sender.Cursor = Cursors.Default;
