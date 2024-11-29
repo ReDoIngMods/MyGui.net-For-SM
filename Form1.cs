@@ -811,10 +811,8 @@ namespace MyGui.net
 
 			if (_selectedWidgetOffset != null)
 			{
-                var widgetPosition = new SKPoint(_selectedWidgetOffset.Value.X + _currentSelectedWidget.position.X, _selectedWidgetOffset.Value.Y + _currentSelectedWidget.position.Y);
-
-                var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
-                                  widgetPosition.X + _currentSelectedWidget.size.X, widgetPosition.Y + _currentSelectedWidget.size.Y);
+                var rect = new SKRect(_selectedWidgetOffset.Value.X, _selectedWidgetOffset.Value.Y,
+                                  _selectedWidgetOffset.Value.X + _currentSelectedWidget.size.X, _selectedWidgetOffset.Value.Y + _currentSelectedWidget.size.Y);
                 // Draw selection highlight without any clipping
                 var selectionRect = new SKRect(
                     rect.Left - 3,  // Expand left
