@@ -1,7 +1,6 @@
 using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
-using System;
 using System.Diagnostics;
 using System.Xml.Linq;
 using static MyGui.net.Util;
@@ -171,6 +170,7 @@ namespace MyGui.net
 			_draggedWidgetPosition = _currentSelectedWidget.position;
 			_draggedWidgetSize = (Size)_currentSelectedWidget.size;
 			AddProperties();
+			viewport.Refresh();
 		}
 
 		void ExecuteCommand(IEditorAction command)
@@ -693,9 +693,9 @@ namespace MyGui.net
 				if (Settings.Default.EditorBackgroundMode == 1)
 				{
 					_viewportBackgroundBitmap = Util.GenerateGridBitmap(_projectSize.Width, _projectSize.Height, _gridSpacing, new(20, 20, 20));
-                    //mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
-                    viewport.Invalidate();
-                }
+					//mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
+					viewport.Invalidate();
+				}
 				if (_editorProperties.ContainsKey("Position_X"))
 				{
 					((NumericUpDown)_editorProperties["Position_X"]).Increment = _gridSpacing;
@@ -735,8 +735,8 @@ namespace MyGui.net
 					}
 					break;
 			}
-            viewport.Invalidate();
-        }
+			viewport.Invalidate();
+		}
 
 		private void selectWidget_Click(object senderAny, EventArgs e)
 		{
@@ -781,19 +781,19 @@ namespace MyGui.net
 			_viewportMatrix = _viewportMatrix.PreConcat(SKMatrix.CreateTranslation(_viewportOffset.X, _viewportOffset.Y));
 			canvas.SetMatrix(_viewportMatrix);
 			canvas.DrawText(_projectSize.Width + "x" + _projectSize.Height, 0, -30, new SKPaint
-            {
-                Color = SKColors.White,
-                TextSize = 60,
-                IsAntialias = true
-            });
+			{
+				Color = SKColors.White,
+				TextSize = 60,
+				IsAntialias = true
+			});
 			if (_viewportBackgroundBitmap != null)
 			{
-                canvas.DrawRect(new SKRect(0, 0, _projectSize.Width, _projectSize.Height), new SKPaint
-                {
-                    Color = SKColors.Black,
-                    IsAntialias = false
-                });
-                canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, _projectSize.Width, _projectSize.Height));
+				canvas.DrawRect(new SKRect(0, 0, _projectSize.Width, _projectSize.Height), new SKPaint
+				{
+					Color = SKColors.Black,
+					IsAntialias = false
+				});
+				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, _projectSize.Width, _projectSize.Height));
 			}
 			else
 			{
@@ -803,53 +803,95 @@ namespace MyGui.net
 					IsAntialias = false
 				});
 			}
-			foreach (var item in _currentLayout)
+			_selectedWidgetOffset = null;
+            foreach (var item in _currentLayout)
 			{
 				DrawWidget(canvas, item, new SKPoint(0, 0));
 			}
+
+			if (_selectedWidgetOffset != null)
+			{
+                var widgetPosition = new SKPoint(_selectedWidgetOffset.Value.X + _currentSelectedWidget.position.X, _selectedWidgetOffset.Value.Y + _currentSelectedWidget.position.Y);
+
+                var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
+                                  widgetPosition.X + _currentSelectedWidget.size.X, widgetPosition.Y + _currentSelectedWidget.size.Y);
+                // Draw selection highlight without any clipping
+                var selectionRect = new SKRect(
+                    rect.Left - 3,  // Expand left
+                    rect.Top - 3,   // Expand top
+                    rect.Right + 3, // Expand right
+                    rect.Bottom + 3 // Expand bottom
+                );
+
+                using var highlightPaint = new SKPaint
+                {
+                    Color = SKColors.Green.WithAlpha(128), // Semi-transparent green for highlight
+                    Style = SKPaintStyle.Stroke,
+                    StrokeWidth = 7,
+                    IsAntialias = true
+                };
+                canvas.DrawRect(selectionRect, highlightPaint);
+            }
 		}
 
-		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset)
-		{
-			// Calculate widget position relative to parent
-			var widgetPosition = new SKPoint(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
+		private SKPoint? _selectedWidgetOffset;
 
-			// Create rectangle for this widget
-			var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
-								  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
+        private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset)
+        {
+            // Calculate widget position relative to parent
+            var widgetPosition = new SKPoint(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
 
-			// Generate a random color
-			var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
+            // Create rectangle for this widget
+            var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
+                                  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
 
-			// Draw rectangle
-			using var paint = new SKPaint
-			{
-				Color = color,
-				Style = SKPaintStyle.Fill,
-				IsAntialias = true
-			};
-			canvas.DrawRect(rect, paint);
+            // Save canvas state for clipping
+            int savedCount = canvas.Save();
 
-			// Draw the widget's name (optional)
-			if (!string.IsNullOrEmpty(widget.name))
-			{
-				using var textPaint = new SKPaint
-				{
-					Color = SKColors.Black,
-					TextSize = 16,
-					IsAntialias = true
-				};
-				canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
-			}
+            // Apply clipping for the widget's bounds
+            canvas.ClipRect(rect);
 
-			// Recursively draw child widgets
-			foreach (var child in widget.children)
-			{
-				DrawWidget(canvas, child, widgetPosition);
-			}
-		}
+            // Generate a random color
+            var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
 
-		void Viewport_MouseDown(object senderAny, MouseEventArgs e)
+            // Draw rectangle for the widget
+            using var paint = new SKPaint
+            {
+                Color = color,
+                Style = SKPaintStyle.Fill,
+                IsAntialias = true
+            };
+            canvas.DrawRect(rect, paint);
+
+            // Draw the widget's name (optional)
+            if (!string.IsNullOrEmpty(widget.name))
+            {
+                using var textPaint = new SKPaint
+                {
+                    Color = SKColors.Black,
+                    TextSize = 16,
+                    IsAntialias = true
+                };
+                canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
+            }
+
+            // Temporarily ignore clipping to draw selection box
+            if (widget == _currentSelectedWidget)
+            {
+				_selectedWidgetOffset = widgetPosition;
+            }
+
+            // Recursively draw child widgets
+            foreach (var child in widget.children)
+            {
+                DrawWidget(canvas, child, widgetPosition);
+            }
+
+            // Restore the canvas to its previous state (removes clipping for this widget)
+            canvas.Restore();
+        }
+
+        void Viewport_MouseDown(object senderAny, MouseEventArgs e)
 		{
 			Control sender = (Control)senderAny;
 			Point viewportRelPos = e.Location;
@@ -939,6 +981,7 @@ namespace MyGui.net
 					_draggedWidgetPositionStart = Point.Empty;
 					_draggedWidgetSizeStart = Size.Empty;
 					HandleWidgetSelection();
+					viewport.Refresh();
 				}
 			}
 		}
@@ -963,14 +1006,14 @@ namespace MyGui.net
 			base.WndProc(ref m);
 		}
 
-        int AdjustRoundedValue(double value)
-        {
-            if (value > 0) return (int)Math.Max(value, 1);
-            if (value < 0) return (int)Math.Min(value, -1);
-            return 0; // Preserve zero if the value is exactly 0
-        }
+		int AdjustRoundedValue(double value)
+		{
+			if (value > 0) return (int)Math.Max(value, 1);
+			if (value < 0) return (int)Math.Min(value, -1);
+			return 0; // Preserve zero if the value is exactly 0
+		}
 
-        void Viewport_MouseMove(object senderAny, MouseEventArgs e)
+		void Viewport_MouseMove(object senderAny, MouseEventArgs e)
 		{
 			Control sender = (Control)senderAny;
 			Point viewportRelPos = e.Location;
@@ -1114,19 +1157,19 @@ namespace MyGui.net
 			{
 				if (!_movedViewport)
 				{
-                    Point viewportRelPos = e.Location;
-                    //Debug.WriteLine($"default: X: {e.Location.X} Y: {e.Location.Y}");
-                    Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
-                    MyGuiWidgetData? thing = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos);
+					Point viewportRelPos = e.Location;
+					//Debug.WriteLine($"default: X: {e.Location.X} Y: {e.Location.Y}");
+					Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+					MyGuiWidgetData? thing = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos);
 					if (_currentSelectedWidget != thing)
 					{
 						_currentSelectedWidget = thing;
 						HandleWidgetSelection();
 					}
 					copyToolStripMenuItem.Enabled = _currentSelectedWidget != null;
-                    deleteToolStripMenuItem.Enabled = _currentSelectedWidget != null;
-                    editorMenuStrip.Show(e.Location);
-                }
+					deleteToolStripMenuItem.Enabled = _currentSelectedWidget != null;
+					editorMenuStrip.Show(e.Location);
+				}
 				_draggingViewport = false;
 				_movedViewport = false;
 				sender.Cursor = Cursors.Default;
@@ -1210,19 +1253,19 @@ namespace MyGui.net
 			_currentLayoutPath = file;
 			_currentLayoutSavePath = _currentLayoutPath;
 			_currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
-			viewport.Invalidate();
 
 			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
 
 			_currentSelectedWidget = null;
 			_draggingWidgetAt = BorderPosition.None;
-			//Refresh ui
-			/*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
+            viewport.Invalidate();
+            //Refresh ui
+            /*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
 			{
 				mainPanel.Controls[i].Dispose();
 			}
 			Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);*/
-		}
+        }
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -1443,8 +1486,8 @@ namespace MyGui.net
 
 			undoToolStripMenuItem.Text = $"Undo{(undoToolStripMenuItem.Enabled ? $" ({_commandManager.getUndoStackCount()})" : "")}";
 			redoToolStripMenuItem.Text = $"Redo{(redoToolStripMenuItem.Enabled ? $" ({_commandManager.getRedoStackCount()})" : "")}";
-            viewport.Refresh();
-            if (updateProperties)
+			viewport.Refresh();
+			if (updateProperties)
 			{
 				UpdateProperties();
 			}
@@ -1511,10 +1554,10 @@ namespace MyGui.net
 							}
 
 							List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc);
-                            Point viewportRelPos = viewport.PointToClient(Cursor.Position);
-                            parsedLayout[0].position = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+							Point viewportRelPos = viewport.PointToClient(Cursor.Position);
+							parsedLayout[0].position = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
 
-                            ExecuteCommand(new CreateControlCommand(parsedLayout[0], _currentSelectedWidget, _currentLayout));
+							ExecuteCommand(new CreateControlCommand(parsedLayout[0], _currentSelectedWidget, _currentLayout));
 						}
 						catch (Exception)
 						{
@@ -1542,16 +1585,16 @@ namespace MyGui.net
 						_currentSelectedWidget.position += new Size(0, _gridSpacing * (e.KeyCode == Keys.Up ? -1 : 1));
 						this.ActiveControl = null;
 						e.Handled = true;
-                        viewport.Refresh();
-                    }
+						viewport.Refresh();
+					}
 					if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
 					{
 						if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.position; }
 						_currentSelectedWidget.position += new Size(_gridSpacing * (e.KeyCode == Keys.Left ? -1 : 1), 0);
 						this.ActiveControl = null;
 						e.Handled = true;
-                        viewport.Refresh();
-                    }
+						viewport.Refresh();
+					}
 					if (e.KeyCode == Keys.Delete)
 					{
 						ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, _currentLayout));
@@ -1560,7 +1603,7 @@ namespace MyGui.net
 						this.ActiveControl = null;
 						e.Handled = true;
 					}
-                }
+				}
 			}
 		}
 
