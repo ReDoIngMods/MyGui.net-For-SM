@@ -136,6 +136,7 @@ namespace MyGui.net
             viewportScrollX.Size = new Size(906, 15);
             viewportScrollX.SmallChange = 10;
             viewportScrollX.TabIndex = 2;
+            viewportScrollX.Scroll += viewportScrollX_Scroll;
             viewportScrollX.ValueChanged += viewportScrollX_ValueChanged;
             // 
             // viewportScrollY
@@ -148,6 +149,7 @@ namespace MyGui.net
             viewportScrollY.Size = new Size(15, 622);
             viewportScrollY.SmallChange = 10;
             viewportScrollY.TabIndex = 1;
+            viewportScrollY.Scroll += viewportScrollY_Scroll;
             viewportScrollY.ValueChanged += viewportScrollY_ValueChanged;
             // 
             // tabControl1

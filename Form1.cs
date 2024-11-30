@@ -19,6 +19,7 @@ namespace MyGui.net
 
 		static SKMatrix _viewportMatrix = SKMatrix.CreateIdentity();
 		static float _viewportScale = 1f;
+		static SKPoint _mouseDeltaLoc = new();
 		static SKPoint _viewportOffset = new SKPoint(0, 0);
 		static Size _projectSize = new(1920, 1080);
 		static SKBitmap _viewportBackgroundBitmap;
@@ -747,24 +748,31 @@ namespace MyGui.net
 			HandleWidgetSelection();
 		}
 
+		private void viewportScrollX_Scroll(object sender, ScrollEventArgs e)
+		{
+			viewport.Refresh();
+		}
+
+		private void viewportScrollY_Scroll(object sender, ScrollEventArgs e)
+		{
+			viewport.Refresh();
+		}
+
 		private void viewportScrollX_ValueChanged(object senderAny, EventArgs e)
 		{
 			ScrollBar scrollBar = (ScrollBar)senderAny;
 			_viewportOffset.X = scrollBar.Value;
 			//viewport.Invalidate();
-			if (!_viewportFocused) //only this one has the check so that the viewport updates only once when panning
-			{
-				viewport.Refresh();
-			}
+			//viewport.Refresh();
 		}
 
 		private void viewportScrollY_ValueChanged(object senderAny, EventArgs e)
 		{
 			ScrollBar scrollBar = (ScrollBar)senderAny;
 			_viewportOffset.Y = scrollBar.Value;
-            //viewport.Invalidate();
-            viewport.Refresh();
-        }
+			//viewport.Invalidate();
+			//viewport.Refresh();
+		}
 
 		//Widget painting
 		private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
@@ -777,8 +785,7 @@ namespace MyGui.net
 			var controlHeight = e.BackendRenderTarget.Height;
 
 			// Set the clip region to the control's size
-			var clipRect = new SKRect(0, 0, controlWidth, controlHeight);
-			canvas.ClipRect(clipRect);
+			canvas.ClipRect(new SKRect(0, 0, controlWidth, controlHeight));
 
 			// Apply viewport transformations
 			_viewportMatrix = SKMatrix.CreateScale(_viewportScale, _viewportScale);
@@ -808,92 +815,95 @@ namespace MyGui.net
 				});
 			}
 			_selectedWidgetOffset = null;
-            foreach (var item in _currentLayout)
+			int beforeProjectClip = canvas.Save();
+			canvas.ClipRect(new SKRect(0, 0, _projectSize.Width, _projectSize.Height));
+			foreach (var item in _currentLayout)
 			{
 				DrawWidget(canvas, item, new SKPoint(0, 0));
 			}
+			canvas.RestoreToCount(beforeProjectClip);
 
 			if (_selectedWidgetOffset != null)
 			{
-                var rect = new SKRect(_selectedWidgetOffset.Value.X, _selectedWidgetOffset.Value.Y,
-                                  _selectedWidgetOffset.Value.X + _currentSelectedWidget.size.X, _selectedWidgetOffset.Value.Y + _currentSelectedWidget.size.Y);
-                // Draw selection highlight without any clipping
-                var selectionRect = new SKRect(
-                    rect.Left - 3,  // Expand left
-                    rect.Top - 3,   // Expand top
-                    rect.Right + 3, // Expand right
-                    rect.Bottom + 3 // Expand bottom
-                );
+				var rect = new SKRect(_selectedWidgetOffset.Value.X, _selectedWidgetOffset.Value.Y,
+								  _selectedWidgetOffset.Value.X + _currentSelectedWidget.size.X, _selectedWidgetOffset.Value.Y + _currentSelectedWidget.size.Y);
+				// Draw selection highlight without any clipping
+				var selectionRect = new SKRect(
+					rect.Left - 3,  // Expand left
+					rect.Top - 3,   // Expand top
+					rect.Right + 3, // Expand right
+					rect.Bottom + 3 // Expand bottom
+				);
 
-                using var highlightPaint = new SKPaint
-                {
-                    Color = SKColors.Green.WithAlpha(128), // Semi-transparent green for highlight
-                    Style = SKPaintStyle.Stroke,
-                    StrokeWidth = 7,
-                    IsAntialias = true
-                };
-                canvas.DrawRect(selectionRect, highlightPaint);
-            }
+				using var highlightPaint = new SKPaint
+				{
+					Color = SKColors.Green.WithAlpha(128), // Semi-transparent green for highlight
+					Style = SKPaintStyle.Stroke,
+					StrokeWidth = 7,
+					IsAntialias = true
+				};
+				canvas.DrawRect(selectionRect, highlightPaint);
+			}
 		}
 
 		private SKPoint? _selectedWidgetOffset;
 
-        private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset)
-        {
-            // Calculate widget position relative to parent
-            var widgetPosition = new SKPoint(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
+		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset)
+		{
+			// Calculate widget position relative to parent
+			var widgetPosition = new SKPoint(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
 
-            // Create rectangle for this widget
-            var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
-                                  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
+			// Create rectangle for this widget
+			var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
+								  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
 
-            // Save canvas state for clipping
-            int savedCount = canvas.Save();
+			// Save canvas state for clipping
+			int savedCount = canvas.Save();
 
-            // Apply clipping for the widget's bounds
-            canvas.ClipRect(rect);
+			// Apply clipping for the widget's bounds
+			canvas.ClipRect(rect);
 
-            // Generate a random color
-            var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
+			// Generate a random color
+			var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
 
-            // Draw rectangle for the widget
-            using var paint = new SKPaint
-            {
-                Color = color,
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true
-            };
-            canvas.DrawRect(rect, paint);
+			// Draw rectangle for the widget
+			using var paint = new SKPaint
+			{
+				Color = color,
+				Style = SKPaintStyle.Fill,
+				IsAntialias = true
+			};
+			canvas.DrawRect(rect, paint);
 
-            // Draw the widget's name (optional)
-            if (!string.IsNullOrEmpty(widget.name))
-            {
-                using var textPaint = new SKPaint
-                {
-                    Color = SKColors.Black,
-                    TextSize = 16,
-                    IsAntialias = true
-                };
-                canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
-            }
+			// Draw the widget's name (optional)
+			if (!string.IsNullOrEmpty(widget.name))
+			{
+				using var textPaint = new SKPaint
+				{
+					Color = SKColors.Black,
+					TextSize = 16,
+					IsAntialias = true
+				};
+				canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
+			}
 
-            // Temporarily ignore clipping to draw selection box
-            if (widget == _currentSelectedWidget)
-            {
+			// Temporarily ignore clipping to draw selection box
+			if (widget == _currentSelectedWidget)
+			{
 				_selectedWidgetOffset = widgetPosition;
-            }
+			}
 
-            // Recursively draw child widgets
-            foreach (var child in widget.children)
-            {
-                DrawWidget(canvas, child, widgetPosition);
-            }
+			// Recursively draw child widgets
+			foreach (var child in widget.children)
+			{
+				DrawWidget(canvas, child, widgetPosition);
+			}
 
-            // Restore the canvas to its previous state (removes clipping for this widget)
-            canvas.Restore();
-        }
+			// Restore the canvas to its previous state (removes clipping for this widget)
+			canvas.Restore();
+		}
 
-        void Viewport_MouseDown(object senderAny, MouseEventArgs e)
+		void Viewport_MouseDown(object senderAny, MouseEventArgs e)
 		{
 			Control sender = (Control)senderAny;
 			Point viewportRelPos = e.Location;
@@ -994,70 +1004,54 @@ namespace MyGui.net
 			if (m.Msg == WM_MOUSEWHEEL && _viewportFocused)
 			{
 				// Extract the delta from the message
-				int delta = (short)((int)m.WParam >> 16); // Delta is stored in the high word of WParam
-				if (delta > 0)
-				{
-                    Point relCursorPos = new Point(this.PointToClient(Cursor.Position).X - splitContainer1.Location.X, this.PointToClient(Cursor.Position).Y - splitContainer1.Location.Y);
-                    Point viewportPixelPos = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
+				int delta = ((int)m.WParam >> 16) > 0 ? 1 : -1; // Delta is stored in the high word of WParam
+				Point relCursorPos = new Point(this.PointToClient(Cursor.Position).X - splitContainer1.Location.X, this.PointToClient(Cursor.Position).Y - splitContainer1.Location.Y);
+				Point viewportPixelPos = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
 
-                    zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value + zoomLevelNumericUpDown.Increment, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
+				zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value + zoomLevelNumericUpDown.Increment * 2 * delta, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
 
-                    Point viewportPixelPosNew = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
+				Point viewportPixelPosNew = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
 
-					_viewportOffset.X = Math.Clamp(_viewportOffset.X + viewportPixelPosNew.X - viewportPixelPos.X, viewportScrollX.Minimum, viewportScrollX.Maximum);
-					_viewportOffset.Y = Math.Clamp(_viewportOffset.Y + viewportPixelPosNew.Y - viewportPixelPos.Y, viewportScrollY.Minimum, viewportScrollY.Maximum);
+				_viewportOffset.X = Math.Clamp(_viewportOffset.X + (viewportPixelPosNew.X - viewportPixelPos.X), viewportScrollX.Minimum, viewportScrollX.Maximum);
+				_viewportOffset.Y = Math.Clamp(_viewportOffset.Y + (viewportPixelPosNew.Y - viewportPixelPos.Y), viewportScrollY.Minimum, viewportScrollY.Maximum);
 
-                    viewportScrollX.Value = (int)_viewportOffset.X;
-                    viewportScrollY.Value = (int)_viewportOffset.Y;
-                }
-				else if (delta < 0)
-				{
-                    Point relCursorPos = new Point(this.PointToClient(Cursor.Position).X - splitContainer1.Location.X, this.PointToClient(Cursor.Position).Y - splitContainer1.Location.Y);
-                    Point viewportPixelPos = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
-
-                    zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value - zoomLevelNumericUpDown.Increment, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
-
-                    Point viewportPixelPosNew = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
-
-                    _viewportOffset.X = Math.Clamp(_viewportOffset.X + (viewportPixelPosNew.X - viewportPixelPos.X), viewportScrollX.Minimum, viewportScrollX.Maximum);
-                    _viewportOffset.Y = Math.Clamp(_viewportOffset.Y + (viewportPixelPosNew.Y - viewportPixelPos.Y), viewportScrollY.Minimum, viewportScrollY.Maximum);
-
-                    viewportScrollX.Value = (int)_viewportOffset.X;
-                    viewportScrollY.Value = (int)_viewportOffset.Y;
-                }
+				viewportScrollX.Value = (int)_viewportOffset.X;
+				viewportScrollY.Value = (int)_viewportOffset.Y;
+				viewport.Refresh();
 			}
 
 			base.WndProc(ref m);
-		}
-
-		int AdjustRoundedValue(double value)
-		{
-			if (value > 0) return (int)Math.Max(value, 1);
-			if (value < 0) return (int)Math.Min(value, -1);
-			return 0; // Preserve zero if the value is exactly 0
 		}
 
 		void Viewport_MouseMove(object senderAny, MouseEventArgs e)
 		{
 			Control sender = (Control)senderAny;
 			Point viewportRelPos = e.Location;
-			Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+			SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+			Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
 			if (_draggingViewport)
 			{
 				_movedViewport = true;
 				//Debug.WriteLine(_mouseLoc);
 				Point localLocCurr = e.Location;
-				Point deltaLoc = new Point(localLocCurr.X - _mouseLoc.X, localLocCurr.Y - _mouseLoc.Y);
+				//Point deltaLoc = new Point(localLocCurr.X - _mouseLoc.X, localLocCurr.Y - _mouseLoc.Y);
 				//Debug.WriteLine($"{deltaLoc.X} + {deltaLoc.Y}");
-				viewportScrollX.Value = Math.Clamp(viewportScrollX.Value + AdjustRoundedValue(deltaLoc.X / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
-				viewportScrollY.Value = Math.Clamp(viewportScrollY.Value + AdjustRoundedValue(deltaLoc.Y / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
+				_mouseDeltaLoc += new SKPoint((localLocCurr.X - _mouseLoc.X) / _viewportScale, (localLocCurr.Y - _mouseLoc.Y) / _viewportScale);
+				if (Math.Abs(_mouseDeltaLoc.X) >= 1 || Math.Abs(_mouseDeltaLoc.Y) >= 1)
+				{
+					viewportScrollX.Value = Math.Clamp(viewportScrollX.Value + (int)_mouseDeltaLoc.X, viewportScrollX.Minimum, viewportScrollX.Maximum);
+					viewportScrollY.Value = Math.Clamp(viewportScrollY.Value + (int)_mouseDeltaLoc.Y, viewportScrollX.Minimum, viewportScrollX.Maximum);
+					_mouseDeltaLoc.X %= 1;
+					_mouseDeltaLoc.Y %= 1;
+					viewport.Refresh();
+				}
 				_mouseLoc = e.Location;
 			}
 			else if (_currentSelectedWidget != null)
 			{
-				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, _currentLayout);
+				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPosPoint, _currentLayout);
 				//Debug.WriteLine($"BORDER: {border}");
-				if ((border == BorderPosition.Center || border == BorderPosition.None) && (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
+				if ((border == BorderPosition.Center || border == BorderPosition.None) && (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
 				{
 					Cursor = Cursors.Hand;
 					if (_currentSelectedWidget == null)
@@ -1100,70 +1094,199 @@ namespace MyGui.net
 				if (_draggingWidgetAt != BorderPosition.None)
 				{
 					Point localLocCurr = e.Location;
-					//Point deltaLoc = new Point((int)((localLocCurr.X - localLocPrev.X) / _viewportScale), (int)((localLocCurr.Y - localLocPrev.Y) / _viewportScale));
-					Point deltaLoc = new Point(AdjustRoundedValue((localLocCurr.X - _mouseLoc.X) / _viewportScale), AdjustRoundedValue((localLocCurr.Y - _mouseLoc.Y) / _viewportScale));
 
-					//_draggedWidgetPosition = _currentSelectedWidget.position;
-					//_draggedWidgetSize = (Size)_currentSelectedWidget.size;
+					// Update mouse delta for movement or resizing
+					_mouseDeltaLoc += new SKPoint(
+						(localLocCurr.X - _mouseLoc.X) / _viewportScale,
+						(localLocCurr.Y - _mouseLoc.Y) / _viewportScale
+					);
 
-					if (_draggingWidgetAt == BorderPosition.Center)
+					if (Math.Abs(_mouseDeltaLoc.X) >= 1 || Math.Abs(_mouseDeltaLoc.Y) >= 1)
 					{
-						// Move the widget
-						_draggedWidgetPosition = new Point(Math.Clamp(_draggedWidgetPosition.X + deltaLoc.X, 0, _projectSize.Width), Math.Clamp(_draggedWidgetPosition.Y + deltaLoc.Y, 0, _projectSize.Height));
+						// Handle specific border actions (yes ik, its a loooooooooooong snake of code, but i am too lazy to optimize it)
+						switch (_draggingWidgetAt)
+						{
+							case BorderPosition.Center:
+								// Move the widget
+								_draggedWidgetPosition.X = Math.Clamp(_draggedWidgetPosition.X + (int)_mouseDeltaLoc.X, -65536, 65536);
+								_draggedWidgetPosition.Y = Math.Clamp(_draggedWidgetPosition.Y + (int)_mouseDeltaLoc.Y, -65536, 65536);
 
-						_currentSelectedWidget.position = new Point((int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing, (int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing);
+								_currentSelectedWidget.position = new Point(
+									_draggedWidgetPosition.X,
+									_draggedWidgetPosition.Y
+								);
+								break;
+
+							case BorderPosition.Left:
+								_draggedWidgetPosition.X += (int)_mouseDeltaLoc.X;
+								_draggedWidgetSize.Width -= (int)_mouseDeltaLoc.X;
+
+								if (_draggedWidgetSize.Width < 0)
+								{
+									_draggedWidgetPosition.X += _draggedWidgetSize.Width;
+									_draggedWidgetSize.Width = -_draggedWidgetSize.Width;
+									_draggingWidgetAt = BorderPosition.Right;
+								}
+								break;
+
+							case BorderPosition.Right:
+								_draggedWidgetSize.Width += (int)_mouseDeltaLoc.X;
+
+								if (_draggedWidgetSize.Width < 0)
+								{
+									_draggedWidgetPosition.X += _draggedWidgetSize.Width;
+									_draggedWidgetSize.Width = -_draggedWidgetSize.Width;
+									_draggingWidgetAt = BorderPosition.Left;
+								}
+								break;
+
+							case BorderPosition.Top:
+								_draggedWidgetPosition.Y += (int)_mouseDeltaLoc.Y;
+								_draggedWidgetSize.Height -= (int)_mouseDeltaLoc.Y;
+
+								if (_draggedWidgetSize.Height < 0)
+								{
+									_draggedWidgetPosition.Y += _draggedWidgetSize.Height;
+									_draggedWidgetSize.Height = -_draggedWidgetSize.Height;
+									_draggingWidgetAt = BorderPosition.Bottom;
+								}
+								break;
+
+							case BorderPosition.Bottom:
+								_draggedWidgetSize.Height += (int)_mouseDeltaLoc.Y;
+
+								if (_draggedWidgetSize.Height < 0)
+								{
+									_draggedWidgetPosition.Y += _draggedWidgetSize.Height;
+									_draggedWidgetSize.Height = -_draggedWidgetSize.Height;
+									_draggingWidgetAt = BorderPosition.Top;
+								}
+								break;
+
+							case BorderPosition.TopLeft:
+								_draggedWidgetPosition.X += (int)_mouseDeltaLoc.X;
+								_draggedWidgetSize.Width -= (int)_mouseDeltaLoc.X;
+
+								_draggedWidgetPosition.Y += (int)_mouseDeltaLoc.Y;
+								_draggedWidgetSize.Height -= (int)_mouseDeltaLoc.Y;
+
+								if (_draggedWidgetSize.Width < 0)
+								{
+									_draggedWidgetPosition.X += _draggedWidgetSize.Width;
+									_draggedWidgetSize.Width = -_draggedWidgetSize.Width;
+									_draggingWidgetAt = BorderPosition.TopRight;
+								}
+
+								if (_draggedWidgetSize.Height < 0)
+								{
+									_draggedWidgetPosition.Y += _draggedWidgetSize.Height;
+									_draggedWidgetSize.Height = -_draggedWidgetSize.Height;
+									_draggingWidgetAt = BorderPosition.BottomLeft;
+								}
+								break;
+
+							case BorderPosition.TopRight:
+								_draggedWidgetSize.Width += (int)_mouseDeltaLoc.X;
+								_draggedWidgetPosition.Y += (int)_mouseDeltaLoc.Y;
+								_draggedWidgetSize.Height -= (int)_mouseDeltaLoc.Y;
+
+								if (_draggedWidgetSize.Width < 0)
+								{
+									_draggedWidgetPosition.X += _draggedWidgetSize.Width;
+									_draggedWidgetSize.Width = -_draggedWidgetSize.Width;
+									_draggingWidgetAt = BorderPosition.TopLeft;
+								}
+
+								if (_draggedWidgetSize.Height < 0)
+								{
+									_draggedWidgetPosition.Y += _draggedWidgetSize.Height;
+									_draggedWidgetSize.Height = -_draggedWidgetSize.Height;
+									_draggingWidgetAt = BorderPosition.BottomRight;
+								}
+								break;
+
+							case BorderPosition.BottomLeft:
+								_draggedWidgetPosition.X += (int)_mouseDeltaLoc.X;
+								_draggedWidgetSize.Width -= (int)_mouseDeltaLoc.X;
+
+								_draggedWidgetSize.Height += (int)_mouseDeltaLoc.Y;
+
+								if (_draggedWidgetSize.Width < 0)
+								{
+									_draggedWidgetPosition.X += _draggedWidgetSize.Width;
+									_draggedWidgetSize.Width = -_draggedWidgetSize.Width;
+									_draggingWidgetAt = BorderPosition.BottomRight;
+								}
+
+								if (_draggedWidgetSize.Height < 0)
+								{
+									_draggedWidgetPosition.Y += _draggedWidgetSize.Height;
+									_draggedWidgetSize.Height = -_draggedWidgetSize.Height;
+									_draggingWidgetAt = BorderPosition.TopLeft;
+								}
+								break;
+
+							case BorderPosition.BottomRight:
+								_draggedWidgetSize.Width += (int)_mouseDeltaLoc.X;
+								_draggedWidgetSize.Height += (int)_mouseDeltaLoc.Y;
+
+								if (_draggedWidgetSize.Width < 0)
+								{
+									_draggedWidgetPosition.X += _draggedWidgetSize.Width;
+									_draggedWidgetSize.Width = -_draggedWidgetSize.Width;
+									_draggingWidgetAt = BorderPosition.BottomLeft;
+								}
+
+								if (_draggedWidgetSize.Height < 0)
+								{
+									_draggedWidgetPosition.Y += _draggedWidgetSize.Height;
+									_draggedWidgetSize.Height = -_draggedWidgetSize.Height;
+									_draggingWidgetAt = BorderPosition.TopRight;
+								}
+								break;
+						}
+
+						// Update only the changed property on the widget
+						_currentSelectedWidget.size = new Point(
+							_draggingWidgetAt == BorderPosition.Left || _draggingWidgetAt == BorderPosition.Right || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.TopRight || _draggingWidgetAt == BorderPosition.BottomLeft || _draggingWidgetAt == BorderPosition.BottomRight ?
+								(int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.X,
+							_draggingWidgetAt == BorderPosition.Top || _draggingWidgetAt == BorderPosition.Bottom || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.BottomLeft || _draggingWidgetAt == BorderPosition.TopRight || _draggingWidgetAt == BorderPosition.BottomRight ?
+								(int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.Y
+						);
+
+						_currentSelectedWidget.size = new Point(
+							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Left, BorderPosition.Right, BorderPosition.TopLeft, BorderPosition.TopRight, BorderPosition.BottomLeft, BorderPosition.BottomRight }) ?
+								(int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.X,
+							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Top, BorderPosition.Bottom, BorderPosition.TopLeft, BorderPosition.BottomLeft, BorderPosition.TopRight, BorderPosition.BottomRight }) ?
+								(int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.Y
+						);
+
+						_currentSelectedWidget.position = new Point(
+							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Left, BorderPosition.TopLeft, BorderPosition.BottomLeft }) ?
+								(int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.X,
+							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Top, BorderPosition.TopLeft, BorderPosition.TopRight }) ?
+								(int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.Y
+						);
+
+						// Update editor properties
+						((NumericUpDown)_editorProperties["Position_X"]).Value = _currentSelectedWidget.position.X;
+						((NumericUpDown)_editorProperties["Position_Y"]).Value = _currentSelectedWidget.position.Y;
+						((NumericUpDown)_editorProperties["Size_X"]).Value = _currentSelectedWidget.size.X;
+						((NumericUpDown)_editorProperties["Size_Y"]).Value = _currentSelectedWidget.size.Y;
+
+						// Reset mouse delta for finer control
+						_mouseDeltaLoc.X %= 1;
+						_mouseDeltaLoc.Y %= 1;
+						viewport.Refresh();
 					}
-					else
-					{
-						// Handle horizontal resizing
-						if (_draggingWidgetAt == BorderPosition.Left || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.BottomLeft)
-						{
-							_draggedWidgetPosition = new Point(Math.Clamp(_draggedWidgetPosition.X + deltaLoc.X, 0, _projectSize.Width), _draggedWidgetPosition.Y);
-
-							_draggedWidgetSize = new Size(Math.Max(_draggedWidgetSize.Width - deltaLoc.X, 0), _draggedWidgetSize.Height);
-
-							_currentSelectedWidget.size.X = (int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing;
-							_currentSelectedWidget.position.X = (int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing;
-						}
-						else if (_draggingWidgetAt == BorderPosition.Right || _draggingWidgetAt == BorderPosition.TopRight || _draggingWidgetAt == BorderPosition.BottomRight)
-						{
-							_draggedWidgetSize = new Size(Math.Max(_draggedWidgetSize.Width + deltaLoc.X, 0), _draggedWidgetSize.Height);
-
-							_currentSelectedWidget.size.X = (int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing;
-						}
-
-						// Handle vertical resizing
-						if (_draggingWidgetAt == BorderPosition.Top || _draggingWidgetAt == BorderPosition.TopLeft || _draggingWidgetAt == BorderPosition.TopRight)
-						{
-							_draggedWidgetPosition = new Point(_draggedWidgetPosition.X, Math.Clamp(_draggedWidgetPosition.Y + deltaLoc.Y, 0, _projectSize.Width));
-
-							_draggedWidgetSize = new Size(_draggedWidgetSize.Width, Math.Max(_draggedWidgetSize.Height - deltaLoc.Y, 0));
-
-							_currentSelectedWidget.size.Y = (int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing;
-							_currentSelectedWidget.position.Y = (int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing;
-						}
-						else if (_draggingWidgetAt == BorderPosition.Bottom || _draggingWidgetAt == BorderPosition.BottomLeft || _draggingWidgetAt == BorderPosition.BottomRight)
-						{
-							_draggedWidgetSize = new Size(_draggedWidgetSize.Width, Math.Max(_draggedWidgetSize.Height + deltaLoc.Y, 0));
-
-							_currentSelectedWidget.size.Y = (int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing;
-						}
-					}
-
-					((NumericUpDown)_editorProperties["Position_X"]).Value = Math.Clamp((int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing, 0, _projectSize.Width);
-					((NumericUpDown)_editorProperties["Position_Y"]).Value = Math.Clamp((int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing, 0, _projectSize.Height);
-					((NumericUpDown)_editorProperties["Size_X"]).Value = Math.Clamp(_currentSelectedWidget.size.X, 0, _projectSize.Width);
-					((NumericUpDown)_editorProperties["Size_Y"]).Value = Math.Clamp(_currentSelectedWidget.size.Y, 0, _projectSize.Height);
 
 					// Update the previous mouse location
 					_mouseLoc = e.Location;
-					//viewport.Invalidate();
-					viewport.Refresh();
 				}
 			}
 			else
 			{
-				if (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos) != null)
+				if (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint) != null)
 				{
 					Cursor = Cursors.Hand;
 				}
@@ -1282,14 +1405,14 @@ namespace MyGui.net
 
 			_currentSelectedWidget = null;
 			_draggingWidgetAt = BorderPosition.None;
-            viewport.Invalidate();
-            //Refresh ui
-            /*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
+			viewport.Invalidate();
+			//Refresh ui
+			/*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
 			{
 				mainPanel.Controls[i].Dispose();
 			}
 			Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);*/
-        }
+		}
 
 		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
 		{
@@ -1521,8 +1644,8 @@ namespace MyGui.net
 			//viewport.Invalidate();
 			if (!_viewportFocused)
 			{
-                viewport.Refresh();
-            }
+				viewport.Refresh();
+			}
 		}
 
 		private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
@@ -1588,7 +1711,10 @@ namespace MyGui.net
 							{
 								MessageBox.Show("The clipboard content is not a valid MyGui Widget XML.", "Paste Widget Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 							}
-							System.Media.SystemSounds.Asterisk.Play();
+							else
+							{
+								System.Media.SystemSounds.Beep.Play();
+							}
 							return;
 						}
 					}
@@ -1601,20 +1727,20 @@ namespace MyGui.net
 				}
 				if (_currentSelectedWidget != null)
 				{
-					if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down)
+					bool didStuff = false;
+					if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
 					{
-						if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.position; }
-						_currentSelectedWidget.position += new Size(0, _gridSpacing * (e.KeyCode == Keys.Up ? -1 : 1));
+						if (_draggedWidgetPositionStart == new Point(0, 0))
+						{
+							_draggedWidgetPositionStart = _currentSelectedWidget.position;
+						}
+
+						int deltaX = (Util.IsKeyPressed(Keys.Left) ? -1 : (Util.IsKeyPressed(Keys.Right) ? 1 : 0)) * _gridSpacing;
+						int deltaY = (Util.IsKeyPressed(Keys.Up) ? -1 : (Util.IsKeyPressed(Keys.Down) ? 1 : 0)) * _gridSpacing;
+
+						_currentSelectedWidget.position += new Size(deltaX, deltaY);
 						this.ActiveControl = null;
-						e.Handled = true;
-						viewport.Refresh();
-					}
-					if (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
-					{
-						if (_draggedWidgetPositionStart == new Point(0, 0)) { _draggedWidgetPositionStart = _currentSelectedWidget.position; }
-						_currentSelectedWidget.position += new Size(_gridSpacing * (e.KeyCode == Keys.Left ? -1 : 1), 0);
-						this.ActiveControl = null;
-						e.Handled = true;
+						didStuff = true;
 						viewport.Refresh();
 					}
 					if (e.KeyCode == Keys.Delete)
@@ -1623,8 +1749,9 @@ namespace MyGui.net
 						_currentSelectedWidget = null;
 						HandleWidgetSelection();
 						this.ActiveControl = null;
-						e.Handled = true;
+						didStuff = true;
 					}
+					e.Handled = didStuff;
 				}
 			}
 		}
