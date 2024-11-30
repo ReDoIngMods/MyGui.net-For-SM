@@ -2,6 +2,7 @@ using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.Diagnostics;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 
@@ -749,18 +750,21 @@ namespace MyGui.net
 		private void viewportScrollX_ValueChanged(object senderAny, EventArgs e)
 		{
 			ScrollBar scrollBar = (ScrollBar)senderAny;
-			_viewportOffset.X = -scrollBar.Value;
+			_viewportOffset.X = scrollBar.Value;
 			//viewport.Invalidate();
-			viewport.Refresh();
+			if (!_viewportFocused) //only this one has the check so that the viewport updates only once when panning
+			{
+				viewport.Refresh();
+			}
 		}
 
 		private void viewportScrollY_ValueChanged(object senderAny, EventArgs e)
 		{
 			ScrollBar scrollBar = (ScrollBar)senderAny;
-			_viewportOffset.Y = -scrollBar.Value;
-			//viewport.Invalidate();
-			viewport.Refresh();
-		}
+			_viewportOffset.Y = scrollBar.Value;
+            //viewport.Invalidate();
+            viewport.Refresh();
+        }
 
 		//Widget painting
 		private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
@@ -993,12 +997,34 @@ namespace MyGui.net
 				int delta = (short)((int)m.WParam >> 16); // Delta is stored in the high word of WParam
 				if (delta > 0)
 				{
-					zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value + zoomLevelNumericUpDown.Increment, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
-				}
+                    Point relCursorPos = new Point(this.PointToClient(Cursor.Position).X - splitContainer1.Location.X, this.PointToClient(Cursor.Position).Y - splitContainer1.Location.Y);
+                    Point viewportPixelPos = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
+
+                    zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value + zoomLevelNumericUpDown.Increment, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
+
+                    Point viewportPixelPosNew = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
+
+					_viewportOffset.X = Math.Clamp(_viewportOffset.X + viewportPixelPosNew.X - viewportPixelPos.X, viewportScrollX.Minimum, viewportScrollX.Maximum);
+					_viewportOffset.Y = Math.Clamp(_viewportOffset.Y + viewportPixelPosNew.Y - viewportPixelPos.Y, viewportScrollY.Minimum, viewportScrollY.Maximum);
+
+                    viewportScrollX.Value = (int)_viewportOffset.X;
+                    viewportScrollY.Value = (int)_viewportOffset.Y;
+                }
 				else if (delta < 0)
 				{
-					zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value - zoomLevelNumericUpDown.Increment, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
-				}
+                    Point relCursorPos = new Point(this.PointToClient(Cursor.Position).X - splitContainer1.Location.X, this.PointToClient(Cursor.Position).Y - splitContainer1.Location.Y);
+                    Point viewportPixelPos = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
+
+                    zoomLevelNumericUpDown.Value = Math.Clamp(zoomLevelNumericUpDown.Value - zoomLevelNumericUpDown.Increment, zoomLevelNumericUpDown.Minimum, zoomLevelNumericUpDown.Maximum);
+
+                    Point viewportPixelPosNew = new Point((int)(relCursorPos.X / _viewportScale - _viewportOffset.X), (int)(relCursorPos.Y / _viewportScale - _viewportOffset.Y));
+
+                    _viewportOffset.X = Math.Clamp(_viewportOffset.X + (viewportPixelPosNew.X - viewportPixelPos.X), viewportScrollX.Minimum, viewportScrollX.Maximum);
+                    _viewportOffset.Y = Math.Clamp(_viewportOffset.Y + (viewportPixelPosNew.Y - viewportPixelPos.Y), viewportScrollY.Minimum, viewportScrollY.Maximum);
+
+                    viewportScrollX.Value = (int)_viewportOffset.X;
+                    viewportScrollY.Value = (int)_viewportOffset.Y;
+                }
 			}
 
 			base.WndProc(ref m);
@@ -1023,8 +1049,8 @@ namespace MyGui.net
 				Point localLocCurr = e.Location;
 				Point deltaLoc = new Point(localLocCurr.X - _mouseLoc.X, localLocCurr.Y - _mouseLoc.Y);
 				//Debug.WriteLine($"{deltaLoc.X} + {deltaLoc.Y}");
-				viewportScrollX.Value = Math.Clamp(viewportScrollX.Value - AdjustRoundedValue(deltaLoc.X / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
-				viewportScrollY.Value = Math.Clamp(viewportScrollY.Value - AdjustRoundedValue(deltaLoc.Y / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
+				viewportScrollX.Value = Math.Clamp(viewportScrollX.Value + AdjustRoundedValue(deltaLoc.X / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
+				viewportScrollY.Value = Math.Clamp(viewportScrollY.Value + AdjustRoundedValue(deltaLoc.Y / _viewportScale), viewportScrollX.Minimum, viewportScrollX.Maximum);
 				_mouseLoc = e.Location;
 			}
 			else if (_currentSelectedWidget != null)
@@ -1453,11 +1479,6 @@ namespace MyGui.net
 			Settings.Default.SidePanelMonitor = screenSide.DeviceName;
 		}
 
-		private void mainPanel_Paint(object sender, PaintEventArgs e)
-		{
-			//making it transparent
-		}
-
 		private void undoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (_draggingWidgetAt != BorderPosition.None) { return; }
@@ -1498,7 +1519,10 @@ namespace MyGui.net
 			NumericUpDown sender = (NumericUpDown)senderAny;
 			_viewportScale = ((float)sender.Value) / 100;
 			//viewport.Invalidate();
-			viewport.Refresh();
+			if (!_viewportFocused)
+			{
+                viewport.Refresh();
+            }
 		}
 
 		private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
