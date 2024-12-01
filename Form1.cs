@@ -1255,9 +1255,9 @@ namespace MyGui.net
 						);
 
 						_currentSelectedWidget.position = new Point(
-							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Left, BorderPosition.TopLeft, BorderPosition.BottomLeft }) ?
+							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Center, BorderPosition.Left, BorderPosition.TopLeft, BorderPosition.BottomLeft }) ?
 								(int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.X,
-							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Top, BorderPosition.TopLeft, BorderPosition.TopRight }) ?
+							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Center, BorderPosition.Top, BorderPosition.TopLeft, BorderPosition.TopRight }) ?
 								(int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.Y
 						);
 
@@ -1360,7 +1360,8 @@ namespace MyGui.net
 			_currentLayout = new List<MyGuiWidgetData>();
 			_draggingWidgetAt = BorderPosition.None;
 			HandleWidgetSelection();
-		}
+            viewport.Invalidate();
+        }
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
