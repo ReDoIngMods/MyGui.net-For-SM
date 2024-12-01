@@ -275,5 +275,17 @@ namespace MyGui.net.Properties {
                 this["DefaultWorkspaceSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RenderWidgetNames {
+            get {
+                return ((bool)(this["RenderWidgetNames"]));
+            }
+            set {
+                this["RenderWidgetNames"] = value;
+            }
+        }
     }
 }

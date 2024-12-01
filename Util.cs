@@ -320,7 +320,7 @@ namespace MyGui.net
         #endregion
 
         #region Layout File Reading/Exporting
-        public static List<MyGuiWidgetData>? ReadLayoutFile(string path)
+        public static List<MyGuiWidgetData>? ReadLayoutFile(string path, Point? workspaceSize = null)
         {
             XDocument xmlDocument;
             try
@@ -332,10 +332,10 @@ namespace MyGui.net
                 MessageBox.Show($"Failed to read layout file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-            return ParseLayoutFile(xmlDocument);
+            return ParseLayoutFile(xmlDocument, workspaceSize);
         }
 
-        public static List<MyGuiWidgetData>? ParseLayoutFile(XDocument xmlDocument)
+        public static List<MyGuiWidgetData>? ParseLayoutFile(XDocument xmlDocument, Point? workspaceSize = null)
         {
             XElement? root = xmlDocument.Root;
             if (root == null) //This should already get caught by the try-catch, but vs complains anyway and this calms it down.
@@ -348,7 +348,7 @@ namespace MyGui.net
                 MessageBox.Show("Failed to read layout file! Root element must be 'MyGUI'", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-            return ReadWidgetElements(root.Elements("Widget"), new(1920, 1080));
+            return ReadWidgetElements(root.Elements("Widget"), workspaceSize ?? new(1920, 1080));
         }
 
         public static List<MyGuiWidgetData>? ReadWidgetElements(IEnumerable<XElement> elements, Point parentSize)

@@ -44,6 +44,7 @@
             exportAskRadioButton = new RadioButton();
             exportAsPxRadioButton = new RadioButton();
             groupBox1 = new GroupBox();
+            renderWidgetNamesCheckBox = new CheckBox();
             groupBox5 = new GroupBox();
             useBackgroundImageGrid = new RadioButton();
             useBackgroundImageCustom = new RadioButton();
@@ -61,6 +62,14 @@
             showWarningsCheckBox = new CheckBox();
             tabPage2 = new TabPage();
             flowLayoutPanel2 = new FlowLayoutPanel();
+            groupBox9 = new GroupBox();
+            workspaceSizeYNumericUpDown = new CustomNumericUpDown();
+            label3 = new Label();
+            workspaceSizeXNumericUpDown = new CustomNumericUpDown();
+            groupBox10 = new GroupBox();
+            workspaceSizeDefaultYNumericUpDown = new CustomNumericUpDown();
+            workspaceSizeDefaultXNumericUpDown = new CustomNumericUpDown();
+            label4 = new Label();
             groupBox6 = new GroupBox();
             widgetGridSpacingNumericUpDown = new CustomNumericUpDown();
             label2 = new Label();
@@ -82,12 +91,19 @@
             flowLayoutPanel1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox4.SuspendLayout();
+            groupBox1.SuspendLayout();
             groupBox5.SuspendLayout();
             groupBox8.SuspendLayout();
             groupBox7.SuspendLayout();
             groupBox3.SuspendLayout();
             tabPage2.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
+            groupBox9.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)workspaceSizeYNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)workspaceSizeXNumericUpDown).BeginInit();
+            groupBox10.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultYNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultXNumericUpDown).BeginInit();
             groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
             tabPage4.SuspendLayout();
@@ -264,12 +280,24 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(renderWidgetNamesCheckBox);
             groupBox1.Location = new Point(3, 104);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(263, 103);
+            groupBox1.Size = new Size(203, 51);
             groupBox1.TabIndex = 7;
             groupBox1.TabStop = false;
-            groupBox1.Text = "Redraw";
+            groupBox1.Text = "Rendering";
+            // 
+            // renderWidgetNamesCheckBox
+            // 
+            renderWidgetNamesCheckBox.AutoSize = true;
+            renderWidgetNamesCheckBox.Location = new Point(6, 22);
+            renderWidgetNamesCheckBox.Name = "renderWidgetNamesCheckBox";
+            renderWidgetNamesCheckBox.Size = new Size(191, 19);
+            renderWidgetNamesCheckBox.TabIndex = 0;
+            renderWidgetNamesCheckBox.Text = "Render Widget Names In Editor";
+            renderWidgetNamesCheckBox.UseVisualStyleBackColor = true;
+            renderWidgetNamesCheckBox.CheckedChanged += renderWidgetNamesCheckBox_CheckedChanged;
             // 
             // groupBox5
             // 
@@ -278,7 +306,7 @@
             groupBox5.Controls.Add(useBackgroundImageColor);
             groupBox5.Controls.Add(backgroundImagePathTextBox);
             groupBox5.Controls.Add(backgroundImageSelectButton);
-            groupBox5.Location = new Point(272, 104);
+            groupBox5.Location = new Point(212, 104);
             groupBox5.Name = "groupBox5";
             groupBox5.Size = new Size(348, 73);
             groupBox5.TabIndex = 8;
@@ -346,7 +374,7 @@
             groupBox8.Controls.Add(useDarkTheme);
             groupBox8.Controls.Add(useLightTheme);
             groupBox8.Controls.Add(useAutoTheme);
-            groupBox8.Location = new Point(3, 213);
+            groupBox8.Location = new Point(3, 183);
             groupBox8.Name = "groupBox8";
             groupBox8.Size = new Size(178, 52);
             groupBox8.TabIndex = 9;
@@ -393,7 +421,7 @@
             // 
             groupBox7.Controls.Add(useCustomLayoutCheckBox);
             groupBox7.Controls.Add(saveCustomLayoutCheckBox);
-            groupBox7.Location = new Point(187, 213);
+            groupBox7.Location = new Point(187, 183);
             groupBox7.Name = "groupBox7";
             groupBox7.Size = new Size(263, 75);
             groupBox7.TabIndex = 10;
@@ -425,7 +453,7 @@
             // groupBox3
             // 
             groupBox3.Controls.Add(showWarningsCheckBox);
-            groupBox3.Location = new Point(456, 213);
+            groupBox3.Location = new Point(456, 183);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(124, 55);
             groupBox3.TabIndex = 9;
@@ -458,27 +486,115 @@
             // 
             flowLayoutPanel2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             flowLayoutPanel2.AutoScroll = true;
+            flowLayoutPanel2.Controls.Add(groupBox9);
             flowLayoutPanel2.Controls.Add(groupBox6);
             flowLayoutPanel2.Location = new Point(0, 0);
             flowLayoutPanel2.Name = "flowLayoutPanel2";
             flowLayoutPanel2.Size = new Size(652, 380);
             flowLayoutPanel2.TabIndex = 1;
             // 
+            // groupBox9
+            // 
+            groupBox9.Controls.Add(workspaceSizeYNumericUpDown);
+            groupBox9.Controls.Add(label3);
+            groupBox9.Controls.Add(workspaceSizeXNumericUpDown);
+            groupBox9.Controls.Add(groupBox10);
+            groupBox9.Location = new Point(3, 3);
+            groupBox9.Name = "groupBox9";
+            groupBox9.Size = new Size(295, 111);
+            groupBox9.TabIndex = 7;
+            groupBox9.TabStop = false;
+            groupBox9.Text = "Workspace";
+            // 
+            // workspaceSizeYNumericUpDown
+            // 
+            workspaceSizeYNumericUpDown.Location = new Point(97, 22);
+            workspaceSizeYNumericUpDown.Maximum = new decimal(new int[] { 2160, 0, 0, 0 });
+            workspaceSizeYNumericUpDown.Minimum = new decimal(new int[] { 16, 0, 0, 0 });
+            workspaceSizeYNumericUpDown.Name = "workspaceSizeYNumericUpDown";
+            workspaceSizeYNumericUpDown.Size = new Size(85, 23);
+            workspaceSizeYNumericUpDown.TabIndex = 9;
+            workspaceSizeYNumericUpDown.Value = new decimal(new int[] { 1080, 0, 0, 0 });
+            workspaceSizeYNumericUpDown.ValueChanged += workspaceSizeYNumericUpDown_ValueChanged;
+            // 
+            // label3
+            // 
+            label3.Location = new Point(188, 11);
+            label3.Name = "label3";
+            label3.Size = new Size(101, 40);
+            label3.TabIndex = 4;
+            label3.Text = "Project Size (px)\r\n(Autoapplied)";
+            label3.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // workspaceSizeXNumericUpDown
+            // 
+            workspaceSizeXNumericUpDown.Location = new Point(6, 22);
+            workspaceSizeXNumericUpDown.Maximum = new decimal(new int[] { 3840, 0, 0, 0 });
+            workspaceSizeXNumericUpDown.Minimum = new decimal(new int[] { 16, 0, 0, 0 });
+            workspaceSizeXNumericUpDown.Name = "workspaceSizeXNumericUpDown";
+            workspaceSizeXNumericUpDown.Size = new Size(85, 23);
+            workspaceSizeXNumericUpDown.TabIndex = 4;
+            workspaceSizeXNumericUpDown.Value = new decimal(new int[] { 1920, 0, 0, 0 });
+            workspaceSizeXNumericUpDown.ValueChanged += workspaceSizeXNumericUpDown_ValueChanged;
+            // 
+            // groupBox10
+            // 
+            groupBox10.Controls.Add(workspaceSizeDefaultYNumericUpDown);
+            groupBox10.Controls.Add(workspaceSizeDefaultXNumericUpDown);
+            groupBox10.Controls.Add(label4);
+            groupBox10.Location = new Point(6, 51);
+            groupBox10.Name = "groupBox10";
+            groupBox10.Size = new Size(283, 53);
+            groupBox10.TabIndex = 8;
+            groupBox10.TabStop = false;
+            groupBox10.Text = "Defaults";
+            // 
+            // workspaceSizeDefaultYNumericUpDown
+            // 
+            workspaceSizeDefaultYNumericUpDown.Location = new Point(97, 22);
+            workspaceSizeDefaultYNumericUpDown.Maximum = new decimal(new int[] { 2160, 0, 0, 0 });
+            workspaceSizeDefaultYNumericUpDown.Minimum = new decimal(new int[] { 16, 0, 0, 0 });
+            workspaceSizeDefaultYNumericUpDown.Name = "workspaceSizeDefaultYNumericUpDown";
+            workspaceSizeDefaultYNumericUpDown.Size = new Size(85, 23);
+            workspaceSizeDefaultYNumericUpDown.TabIndex = 12;
+            workspaceSizeDefaultYNumericUpDown.Value = new decimal(new int[] { 1080, 0, 0, 0 });
+            workspaceSizeDefaultYNumericUpDown.ValueChanged += workspaceSizeDefaultYNumericUpDown_ValueChanged;
+            // 
+            // workspaceSizeDefaultXNumericUpDown
+            // 
+            workspaceSizeDefaultXNumericUpDown.Location = new Point(6, 22);
+            workspaceSizeDefaultXNumericUpDown.Maximum = new decimal(new int[] { 3840, 0, 0, 0 });
+            workspaceSizeDefaultXNumericUpDown.Minimum = new decimal(new int[] { 16, 0, 0, 0 });
+            workspaceSizeDefaultXNumericUpDown.Name = "workspaceSizeDefaultXNumericUpDown";
+            workspaceSizeDefaultXNumericUpDown.Size = new Size(85, 23);
+            workspaceSizeDefaultXNumericUpDown.TabIndex = 11;
+            workspaceSizeDefaultXNumericUpDown.Value = new decimal(new int[] { 1920, 0, 0, 0 });
+            workspaceSizeDefaultXNumericUpDown.ValueChanged += workspaceSizeDefaultXNumericUpDown_ValueChanged;
+            // 
+            // label4
+            // 
+            label4.Location = new Point(188, 22);
+            label4.Name = "label4";
+            label4.Size = new Size(94, 23);
+            label4.TabIndex = 10;
+            label4.Text = "Project Size (px)";
+            label4.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // groupBox6
             // 
             groupBox6.Controls.Add(widgetGridSpacingNumericUpDown);
             groupBox6.Controls.Add(label2);
             groupBox6.Controls.Add(showTypesForNamedWidgetsCheckBox);
-            groupBox6.Location = new Point(3, 3);
+            groupBox6.Location = new Point(304, 3);
             groupBox6.Name = "groupBox6";
-            groupBox6.Size = new Size(201, 116);
+            groupBox6.Size = new Size(201, 80);
             groupBox6.TabIndex = 6;
             groupBox6.TabStop = false;
             groupBox6.Text = "Editing";
             // 
             // widgetGridSpacingNumericUpDown
             // 
-            widgetGridSpacingNumericUpDown.Location = new Point(6, 42);
+            widgetGridSpacingNumericUpDown.Location = new Point(6, 47);
             widgetGridSpacingNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             widgetGridSpacingNumericUpDown.Name = "widgetGridSpacingNumericUpDown";
             widgetGridSpacingNumericUpDown.Size = new Size(85, 23);
@@ -488,12 +604,12 @@
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(97, 44);
+            label2.Location = new Point(94, 47);
             label2.Name = "label2";
-            label2.Size = new Size(98, 15);
+            label2.Size = new Size(106, 23);
             label2.TabIndex = 2;
             label2.Text = "Grid Spacing (px)";
+            label2.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // showTypesForNamedWidgetsCheckBox
             // 
@@ -657,6 +773,8 @@
             groupBox2.PerformLayout();
             groupBox4.ResumeLayout(false);
             groupBox4.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             groupBox5.ResumeLayout(false);
             groupBox5.PerformLayout();
             groupBox8.ResumeLayout(false);
@@ -667,6 +785,12 @@
             groupBox3.PerformLayout();
             tabPage2.ResumeLayout(false);
             flowLayoutPanel2.ResumeLayout(false);
+            groupBox9.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)workspaceSizeYNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)workspaceSizeXNumericUpDown).EndInit();
+            groupBox10.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultYNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultXNumericUpDown).EndInit();
             groupBox6.ResumeLayout(false);
             groupBox6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
@@ -728,5 +852,14 @@
         private RadioButton useDarkTheme;
         private RadioButton useLightTheme;
         private RadioButton useAutoTheme;
+        private CheckBox renderWidgetNamesCheckBox;
+        private GroupBox groupBox9;
+        private CustomNumericUpDown workspaceSizeYNumericUpDown;
+        private Label label3;
+        private CustomNumericUpDown workspaceSizeXNumericUpDown;
+        private GroupBox groupBox10;
+        private CustomNumericUpDown workspaceSizeDefaultYNumericUpDown;
+        private CustomNumericUpDown workspaceSizeDefaultXNumericUpDown;
+        private Label label4;
     }
 }

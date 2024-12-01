@@ -65,5 +65,8 @@
     <Setting Name="DefaultWorkspaceSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">1920, 1080</Value>
     </Setting>
+    <Setting Name="RenderWidgetNames" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

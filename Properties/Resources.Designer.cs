@@ -63,16 +63,6 @@ namespace MyGui.net.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap gridPx {
-            get {
-                object obj = ResourceManager.GetObject("gridPx", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap MyGUI_net_Icon_1 {
             get {
                 object obj = ResourceManager.GetObject("MyGUI_net_Icon_1", resourceCulture);

@@ -45,6 +45,8 @@ namespace MyGui.net
             exportAskRadioButton.Checked = Settings.Default.ExportMode == 2;
             exportAsBothRadioButton.Checked = Settings.Default.ExportMode == 3;
 
+            renderWidgetNamesCheckBox.Checked = Settings.Default.RenderWidgetNames;
+
             useBackgroundImageColor.Checked = Settings.Default.EditorBackgroundMode == 0;
             useBackgroundImageGrid.Checked = Settings.Default.EditorBackgroundMode == 1;
             useBackgroundImageCustom.Checked = Settings.Default.EditorBackgroundMode == 2;
@@ -62,8 +64,26 @@ namespace MyGui.net
             showWarningsCheckBox.Checked = Settings.Default.ShowWarnings;
 
             //TAB PROJECT
-            showTypesForNamedWidgetsCheckBox.Checked = Settings.Default.ShowTypesForNamedWidgets;
+            if (this.Owner != null) //Multithreading safety
+            {
+                if (this.Owner.InvokeRequired)
+                {
+                    this.Owner.Invoke(new Action(() =>
+                    {
+                        workspaceSizeXNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Width;
+                        workspaceSizeYNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Height;
+                    }));
+                }
+                else
+                {
+                    workspaceSizeXNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Width;
+                    workspaceSizeYNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Height;
+                }
+            }
+            workspaceSizeDefaultXNumericUpDown.Value = Settings.Default.DefaultWorkspaceSize.Width;
+            workspaceSizeDefaultYNumericUpDown.Value = Settings.Default.DefaultWorkspaceSize.Height;
 
+            showTypesForNamedWidgetsCheckBox.Checked = Settings.Default.ShowTypesForNamedWidgets;
             widgetGridSpacingNumericUpDown.Value = Settings.Default.WidgetGridSpacing;
 
             _formLoaded = true;
@@ -112,6 +132,13 @@ namespace MyGui.net
             RadioButton sender = (RadioButton)senderAny;
             if (!sender.Checked) { return; }
             Settings.Default.ExportMode = (int)Enum.Parse<ExportMode>(sender.Name, true);
+            OnSettingChange();
+        }
+
+        private void renderWidgetNamesCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.RenderWidgetNames = sender.Checked;
             OnSettingChange();
         }
 
@@ -194,6 +221,58 @@ namespace MyGui.net
         }
 
         //TAB PROJECT
+        private void workspaceSizeXNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+        {
+            NumericUpDown sender = (NumericUpDown)senderAny;
+            if (this.Owner != null) //Multithreading safety
+            {
+                if (this.Owner.InvokeRequired)
+                {
+                    this.Owner.Invoke(new Action(() =>
+                    {
+                        ((Form1)this.Owner).ProjectSize = new Size((int)sender.Value, ((Form1)this.Owner).ProjectSize.Height);
+                    }));
+                }
+                else
+                {
+                    ((Form1)this.Owner).ProjectSize = new Size((int)sender.Value, ((Form1)this.Owner).ProjectSize.Height);
+                }
+            }
+        }
+
+        private void workspaceSizeYNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+        {
+            NumericUpDown sender = (NumericUpDown)senderAny;
+            if (this.Owner != null) //Multithreading safety
+            {
+                if (this.Owner.InvokeRequired)
+                {
+                    this.Owner.Invoke(new Action(() =>
+                    {
+                        ((Form1)this.Owner).ProjectSize = new Size(((Form1)this.Owner).ProjectSize.Width, (int)sender.Value);
+                    }));
+                }
+                else
+                {
+                    ((Form1)this.Owner).ProjectSize = new Size(((Form1)this.Owner).ProjectSize.Width, (int)sender.Value);
+                }
+            }
+        }
+
+        private void workspaceSizeDefaultXNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+        {
+            NumericUpDown sender = (NumericUpDown)senderAny;
+            Settings.Default.DefaultWorkspaceSize = new Size((int)sender.Value, Settings.Default.DefaultWorkspaceSize.Height);
+            OnSettingChange();
+        }
+
+        private void workspaceSizeDefaultYNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+        {
+            NumericUpDown sender = (NumericUpDown)senderAny;
+            Settings.Default.DefaultWorkspaceSize = new Size(Settings.Default.DefaultWorkspaceSize.Width, (int)sender.Value);
+            OnSettingChange();
+        }
+
         private void showTypesForNamedWidgetsCheckBox_CheckedChanged(object senderAny, EventArgs e)
         {
             CheckBox sender = (CheckBox)senderAny;

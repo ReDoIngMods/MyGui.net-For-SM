@@ -21,8 +21,8 @@ namespace MyGui.net
 		static float _viewportScale = 1f;
 		static SKPoint _mouseDeltaLoc = new();
 		static SKPoint _viewportOffset = new SKPoint(0, 0);
-		static Size _projectSize = new(1920, 1080);
-		static SKBitmap _viewportBackgroundBitmap;
+		public Size ProjectSize = Settings.Default.DefaultWorkspaceSize;//new(1920, 1080);
+        static SKBitmap _viewportBackgroundBitmap;
 
 		static Dictionary<string, Control> _editorProperties = new Dictionary<string, Control>();
 		static FormSideBar? _sidebarForm;
@@ -85,8 +85,8 @@ namespace MyGui.net
 				_currentLayoutPath = autoloadPath;
 				_currentLayoutSavePath = autoloadPath;
 				//Debug.WriteLine(_currentLayoutPath);
-				_currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
-				viewport.Invalidate();
+				_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize);
+				viewport.Refresh();
 				//Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
 				//Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
 			}
@@ -178,7 +178,6 @@ namespace MyGui.net
 		void ExecuteCommand(IEditorAction command)
 		{
 			_commandManager.ExecuteCommand(command);
-			//viewport.Invalidate();
 			viewport.Refresh();
 			UpdateUndoRedo(false);
 		}
@@ -470,7 +469,8 @@ namespace MyGui.net
 							{
 								Width = 1,
 								Dock = DockStyle.Fill,
-								Text = "Pick"
+								Text = "Pick",
+								FlatStyle = FlatStyle.System,
 							};
 							colorBoxPickerButton.Click += selectCustomWidgetColor_Click;
 
@@ -535,8 +535,9 @@ namespace MyGui.net
 							{
 								Width = 1,
 								Dock = DockStyle.Fill,
-								Text = "Select"
-							};
+								Text = "Select",
+                                FlatStyle = FlatStyle.System,
+                            };
 							skinBoxButton.Click += selectCustomWidgetSkin_Click;
 
 							//valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
@@ -694,9 +695,8 @@ namespace MyGui.net
 				widgetGridSpacingNumericUpDown.Tag = false;
 				if (Settings.Default.EditorBackgroundMode == 1)
 				{
-					_viewportBackgroundBitmap = Util.GenerateGridBitmap(_projectSize.Width, _projectSize.Height, _gridSpacing, new(20, 20, 20));
+					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(20, 20, 20));
 					//mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
-					viewport.Invalidate();
 				}
 				if (_editorProperties.ContainsKey("Position_X"))
 				{
@@ -711,7 +711,8 @@ namespace MyGui.net
 			{
 				UpdateViewportBackground();
 			}
-		}
+            viewport.Invalidate();
+        }
 
 		private void UpdateViewportBackground()
 		{
@@ -721,7 +722,7 @@ namespace MyGui.net
 					_viewportBackgroundBitmap = null;
 					break;
 				case 1:
-					_viewportBackgroundBitmap = Util.GenerateGridBitmap(_projectSize.Width, _projectSize.Height, _gridSpacing, new(35, 35, 35));
+					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
 					break;
 				case 2:
 					if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath))
@@ -737,13 +738,12 @@ namespace MyGui.net
 					}
 					break;
 			}
-			viewport.Invalidate();
+			//viewport.Refresh();
 		}
 
 		private void selectWidget_Click(object senderAny, EventArgs e)
 		{
 			ToolStripMenuItem sender = (ToolStripMenuItem)senderAny;
-			//TODO: fix for new widget type
 			_currentSelectedWidget = (MyGuiWidgetData?)sender.Tag == _currentSelectedWidget ? null : (MyGuiWidgetData?)sender.Tag;
 			HandleWidgetSelection();
 		}
@@ -762,16 +762,12 @@ namespace MyGui.net
 		{
 			ScrollBar scrollBar = (ScrollBar)senderAny;
 			_viewportOffset.X = scrollBar.Value;
-			//viewport.Invalidate();
-			//viewport.Refresh();
 		}
 
 		private void viewportScrollY_ValueChanged(object senderAny, EventArgs e)
 		{
 			ScrollBar scrollBar = (ScrollBar)senderAny;
 			_viewportOffset.Y = scrollBar.Value;
-			//viewport.Invalidate();
-			//viewport.Refresh();
 		}
 
 		//Widget painting
@@ -791,7 +787,7 @@ namespace MyGui.net
 			_viewportMatrix = SKMatrix.CreateScale(_viewportScale, _viewportScale);
 			_viewportMatrix = _viewportMatrix.PreConcat(SKMatrix.CreateTranslation(_viewportOffset.X, _viewportOffset.Y));
 			canvas.SetMatrix(_viewportMatrix);
-			canvas.DrawText(_projectSize.Width + "x" + _projectSize.Height, 0, -30, new SKPaint
+			canvas.DrawText(ProjectSize.Width + "x" + ProjectSize.Height, 0, -30, new SKPaint
 			{
 				Color = SKColors.White,
 				TextSize = 60,
@@ -799,16 +795,16 @@ namespace MyGui.net
 			});
 			if (_viewportBackgroundBitmap != null)
 			{
-				canvas.DrawRect(new SKRect(0, 0, _projectSize.Width, _projectSize.Height), new SKPaint
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint
 				{
 					Color = SKColors.Black,
 					IsAntialias = false
 				});
-				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, _projectSize.Width, _projectSize.Height));
+				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height));
 			}
 			else
 			{
-				canvas.DrawRect(new SKRect(0, 0, _projectSize.Width, _projectSize.Height), new SKPaint
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint
 				{
 					Color = new SKColor(Settings.Default.EditorBackgroundColor.R, Settings.Default.EditorBackgroundColor.G, Settings.Default.EditorBackgroundColor.B),
 					IsAntialias = false
@@ -816,7 +812,7 @@ namespace MyGui.net
 			}
 			_selectedWidgetOffset = null;
 			int beforeProjectClip = canvas.Save();
-			canvas.ClipRect(new SKRect(0, 0, _projectSize.Width, _projectSize.Height));
+			canvas.ClipRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height));
 			foreach (var item in _currentLayout)
 			{
 				DrawWidget(canvas, item, new SKPoint(0, 0));
@@ -829,11 +825,11 @@ namespace MyGui.net
 								  _selectedWidgetOffset.Value.X + _currentSelectedWidget.size.X, _selectedWidgetOffset.Value.Y + _currentSelectedWidget.size.Y);
 				// Draw selection highlight without any clipping
 				var selectionRect = new SKRect(
-					rect.Left - 3,  // Expand left
-					rect.Top - 3,   // Expand top
-					rect.Right + 3, // Expand right
-					rect.Bottom + 3 // Expand bottom
-				);
+					rect.Left - 3.5f,  // Expand left
+					rect.Top - 3.5f,   // Expand top
+					rect.Right + 3.5f, // Expand right
+					rect.Bottom + 3.5f // Expand bottom
+                );
 
 				using var highlightPaint = new SKPaint
 				{
@@ -876,16 +872,25 @@ namespace MyGui.net
 			canvas.DrawRect(rect, paint);
 
 			// Draw the widget's name (optional)
-			if (!string.IsNullOrEmpty(widget.name))
+			if (Settings.Default.RenderWidgetNames && !string.IsNullOrEmpty(widget.name))
 			{
-				using var textPaint = new SKPaint
+				var textPaint = new SKPaint
 				{
-					Color = SKColors.Black,
+					Color = SKColors.White,
 					TextSize = 16,
-					IsAntialias = true
+					IsAntialias = true,
+					Style = SKPaintStyle.StrokeAndFill,
+					StrokeWidth = 1,
 				};
 				canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
-			}
+                var textPaintStroke = new SKPaint
+                {
+                    Color = SKColors.Black,
+                    TextSize = 16,
+                    IsAntialias = true
+                };
+                canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaintStroke);
+            }
 
 			// Temporarily ignore clipping to draw selection box
 			if (widget == _currentSelectedWidget)
@@ -1359,8 +1364,13 @@ namespace MyGui.net
 			_currentLayoutSavePath = "";
 			_currentLayout = new List<MyGuiWidgetData>();
 			_draggingWidgetAt = BorderPosition.None;
-			HandleWidgetSelection();
-            viewport.Invalidate();
+			ProjectSize = Settings.Default.DefaultWorkspaceSize;
+            if (Settings.Default.EditorBackgroundMode == 1)
+            {
+                _viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(20, 20, 20));
+            }
+            HandleWidgetSelection();
+            viewport.Refresh();
         }
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1393,13 +1403,13 @@ namespace MyGui.net
 
 			_currentLayoutPath = file;
 			_currentLayoutSavePath = _currentLayoutPath;
-			_currentLayout = Util.ReadLayoutFile(_currentLayoutPath);
+			_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize);
 
 			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
 
 			_currentSelectedWidget = null;
 			_draggingWidgetAt = BorderPosition.None;
-			viewport.Invalidate();
+			viewport.Refresh();
 			//Refresh ui
 			/*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
 			{
@@ -1635,7 +1645,6 @@ namespace MyGui.net
 		{
 			NumericUpDown sender = (NumericUpDown)senderAny;
 			_viewportScale = ((float)sender.Value) / 100;
-			//viewport.Invalidate();
 			if (!_viewportFocused)
 			{
 				viewport.Refresh();
