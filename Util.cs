@@ -922,6 +922,13 @@ namespace MyGui.net
 
         #region MyGui.Net-ified WinForms Utils
 
+        public static bool RectsOverlap(SKRect parent, SKRect child)
+        {
+            // Check if the rectangles overlap
+            return !(child.Right < parent.Left || child.Left > parent.Right ||
+                     child.Bottom < parent.Top || child.Top > parent.Bottom);
+        }
+
         private class WidgetWithDepth
         {
             public MyGuiWidgetData Widget { get; }
