@@ -33,6 +33,7 @@ namespace MyGui.net
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             splitContainer1 = new SplitContainer();
+            centerButton = new Button();
             viewport = new SKGLControl();
             viewportScrollX = new HScrollBar();
             viewportScrollY = new VScrollBar();
@@ -96,6 +97,7 @@ namespace MyGui.net
             // 
             // splitContainer1.Panel1
             // 
+            splitContainer1.Panel1.Controls.Add(centerButton);
             splitContainer1.Panel1.Controls.Add(viewport);
             splitContainer1.Panel1.Controls.Add(viewportScrollX);
             splitContainer1.Panel1.Controls.Add(viewportScrollY);
@@ -109,6 +111,22 @@ namespace MyGui.net
             splitContainer1.Size = new Size(1240, 641);
             splitContainer1.SplitterDistance = 924;
             splitContainer1.TabIndex = 1;
+            splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
+            splitContainer1.Resize += splitContainer1_Resize;
+            // 
+            // centerButton
+            // 
+            centerButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            centerButton.FlatStyle = FlatStyle.System;
+            centerButton.Location = new Point(906, 623);
+            centerButton.Margin = new Padding(0);
+            centerButton.Name = "centerButton";
+            centerButton.Size = new Size(16, 16);
+            centerButton.TabIndex = 4;
+            centerButton.Text = "+";
+            centerButton.UseCompatibleTextRendering = true;
+            centerButton.UseVisualStyleBackColor = true;
+            centerButton.Click += centerButton_Click;
             // 
             // viewport
             // 
@@ -130,11 +148,11 @@ namespace MyGui.net
             // viewportScrollX
             // 
             viewportScrollX.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            viewportScrollX.Location = new Point(1, 623);
-            viewportScrollX.Maximum = 4096;
-            viewportScrollX.Minimum = -4096;
+            viewportScrollX.Location = new Point(0, 623);
+            viewportScrollX.Maximum = 1920;
+            viewportScrollX.Minimum = -1920;
             viewportScrollX.Name = "viewportScrollX";
-            viewportScrollX.Size = new Size(906, 15);
+            viewportScrollX.Size = new Size(906, 16);
             viewportScrollX.SmallChange = 10;
             viewportScrollX.TabIndex = 2;
             viewportScrollX.Scroll += viewportScrollX_Scroll;
@@ -144,10 +162,10 @@ namespace MyGui.net
             // 
             viewportScrollY.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             viewportScrollY.Location = new Point(906, 0);
-            viewportScrollY.Maximum = 4096;
-            viewportScrollY.Minimum = -4096;
+            viewportScrollY.Maximum = 1080;
+            viewportScrollY.Minimum = -1080;
             viewportScrollY.Name = "viewportScrollY";
-            viewportScrollY.Size = new Size(15, 622);
+            viewportScrollY.Size = new Size(16, 623);
             viewportScrollY.SmallChange = 10;
             viewportScrollY.TabIndex = 1;
             viewportScrollY.Scroll += viewportScrollY_Scroll;
@@ -554,5 +572,6 @@ namespace MyGui.net
         private CustomNumericUpDown zoomLevelNumericUpDown;
         private Label label1;
         private ToolStripMenuItem refreshToolStripMenuItem;
+        private Button centerButton;
     }
 }

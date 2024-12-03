@@ -231,11 +231,13 @@ namespace MyGui.net
                     this.Owner.Invoke(new Action(() =>
                     {
                         ((Form1)this.Owner).ProjectSize = new Size((int)sender.Value, ((Form1)this.Owner).ProjectSize.Height);
+                        ((Form1)this.Owner).AdjustViewportScrollers();
                     }));
                 }
                 else
                 {
                     ((Form1)this.Owner).ProjectSize = new Size((int)sender.Value, ((Form1)this.Owner).ProjectSize.Height);
+                    ((Form1)this.Owner).AdjustViewportScrollers();
                 }
             }
         }
@@ -250,11 +252,13 @@ namespace MyGui.net
                     this.Owner.Invoke(new Action(() =>
                     {
                         ((Form1)this.Owner).ProjectSize = new Size(((Form1)this.Owner).ProjectSize.Width, (int)sender.Value);
+                        ((Form1)this.Owner).AdjustViewportScrollers();
                     }));
                 }
                 else
                 {
                     ((Form1)this.Owner).ProjectSize = new Size(((Form1)this.Owner).ProjectSize.Width, (int)sender.Value);
+                    ((Form1)this.Owner).AdjustViewportScrollers();
                 }
             }
         }
