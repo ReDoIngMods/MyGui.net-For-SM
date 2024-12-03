@@ -82,11 +82,17 @@ namespace MyGui.net
 			widgetGridSpacingNumericUpDown.Value = _gridSpacing;
 			if (autoloadPath != "")
 			{
+                if (!Util.IsValidFile(autoloadPath))
+                {
+                    MessageBox.Show("Invalid layout file!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 				_currentLayoutPath = autoloadPath;
 				_currentLayoutSavePath = autoloadPath;
 				//Debug.WriteLine(_currentLayoutPath);
 				_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize);
-				viewport.Refresh();
+                refreshToolStripMenuItem.Enabled = true;
+                viewport.Refresh();
 				//Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
 				//Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
 			}
