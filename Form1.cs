@@ -370,7 +370,7 @@ namespace MyGui.net
 							break;
 
 						case MyGuiWidgetPropertyType.TextBox:
-							control = new TextBox
+							TextBox textBox = new TextBox
 							{
 								Width = 1,
 								Dock = DockStyle.Fill,
@@ -380,10 +380,12 @@ namespace MyGui.net
 							//Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
 							if (valueInWidgetData != null)
 							{
-								control.Text = Convert.ToString(valueInWidgetData);
+								textBox.Text = Convert.ToString(valueInWidgetData);
 							}
-							_editorProperties[property.name] = control;
-
+							_editorProperties[property.name] = textBox;
+							textBox.Tag = property.boundTo;
+							textBox.Leave += textBox_ValueChanged;
+							control = textBox;
 							break;
 
 						case MyGuiWidgetPropertyType.PointBox:
@@ -575,6 +577,15 @@ namespace MyGui.net
 			tabPage1Panel.Refresh();
 		}
 		#region Property Ui functions
+		private void textBox_ValueChanged(object senderAny, EventArgs e)
+		{
+			TextBox sender = (TextBox)senderAny;
+			string senderBoundTo = (string)sender.Tag;
+			if (_currentSelectedWidget != null)
+			{
+				ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "" ? null : sender.Text, Util.GetPropertyValue(_currentSelectedWidget, senderBoundTo)));
+			}
+		}
 		private void comboBox_ValueChanged(object senderAny, EventArgs e)
 		{
 			ComboBox sender = (ComboBox)senderAny;
@@ -842,7 +853,8 @@ namespace MyGui.net
 			}
 		}
 
-		struct WidgetHighlightType {
+		struct WidgetHighlightType
+		{
 			public SKPoint position;
 			public SKColor highlightColor;
 
@@ -864,8 +876,8 @@ namespace MyGui.net
 			var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
 								  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
 
-            // Save canvas state for clipping
-            canvas.Save();
+			// Save canvas state for clipping
+			canvas.Save();
 
 			// Apply clipping for the widget's bounds
 			canvas.ClipRect(rect);
@@ -903,20 +915,21 @@ namespace MyGui.net
 				canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaintStroke);
 			}
 
-            // Temporarily ignore clipping to draw selection box
-            if (widget == _currentSelectedWidget)
-            {
-                _renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128)));
-            }
-            else
-            {
-                //WIP!!!
-                SKRect localRect = new SKRect(widget.position.X, widget.position.Y, widget.position.X + widget.size.X, widget.position.Y + widget.size.Y);
-                SKRect parentRect = parent != null ? new(0,0, parent.size.X, parent.size.Y) : new(0,0, ProjectSize.Width, ProjectSize.Height);
-                if (!Util.RectsOverlap(localRect, parentRect)) {
-                    _renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Red.WithAlpha(192)));
-                }
-            }
+			// Temporarily ignore clipping to draw selection box
+			if (widget == _currentSelectedWidget)
+			{
+				_renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128)));
+			}
+			else
+			{
+				//WIP!!!
+				SKRect localRect = new SKRect(widget.position.X, widget.position.Y, widget.position.X + widget.size.X, widget.position.Y + widget.size.Y);
+				SKRect parentRect = parent != null ? new(0, 0, parent.size.X, parent.size.Y) : new(0, 0, ProjectSize.Width, ProjectSize.Height);
+				if (!Util.RectsOverlap(localRect, parentRect))
+				{
+					_renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Red.WithAlpha(192)));
+				}
+			}
 
 			// Recursively draw child widgets
 			foreach (var child in widget.children)
@@ -945,7 +958,7 @@ namespace MyGui.net
 				_draggingViewport = true;
 				_movedViewport = false;
 				_mouseLoc = e.Location;
-                _mouseDeltaLoc = new SKPoint(0,0);
+				_mouseDeltaLoc = new SKPoint(0, 0);
 				sender.Cursor = Cursors.NoMove2D;
 			}
 			else if (e.Button == MouseButtons.Left)
@@ -963,11 +976,11 @@ namespace MyGui.net
 					_draggedWidgetPositionStart = _currentSelectedWidget.position;
 					_draggedWidgetSizeStart = (Size)_currentSelectedWidget.size;
 					_mouseLoc = e.Location;
-                    _mouseDeltaLoc = new SKPoint(0, 0);
+					_mouseDeltaLoc = new SKPoint(0, 0);
 
-                    // Check if dragging should continue or exit
-                    //Debug.WriteLine(_draggingWidgetAt);
-                    if (_draggingWidgetAt != BorderPosition.Center || Util.IsKeyPressed(Keys.ShiftKey))
+					// Check if dragging should continue or exit
+					//Debug.WriteLine(_draggingWidgetAt);
+					if (_draggingWidgetAt != BorderPosition.Center || Util.IsKeyPressed(Keys.ShiftKey))
 					{
 						return;
 					}
@@ -1273,15 +1286,15 @@ namespace MyGui.net
 								break;
 						}
 
-                        // Update only the changed property on the widget
-                        _currentSelectedWidget.size = new Point(
-                            IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Left, BorderPosition.Right, BorderPosition.TopLeft, BorderPosition.TopRight, BorderPosition.BottomLeft, BorderPosition.BottomRight }) ?
-                                (int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.X,
-                            IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Top, BorderPosition.Bottom, BorderPosition.TopLeft, BorderPosition.BottomLeft, BorderPosition.TopRight, BorderPosition.BottomRight }) ?
-                                (int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.Y
-                        );
+						// Update only the changed property on the widget
+						_currentSelectedWidget.size = new Point(
+							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Left, BorderPosition.Right, BorderPosition.TopLeft, BorderPosition.TopRight, BorderPosition.BottomLeft, BorderPosition.BottomRight }) ?
+								(int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.X,
+							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Top, BorderPosition.Bottom, BorderPosition.TopLeft, BorderPosition.BottomLeft, BorderPosition.TopRight, BorderPosition.BottomRight }) ?
+								(int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.Y
+						);
 
-                        _currentSelectedWidget.position = new Point(
+						_currentSelectedWidget.position = new Point(
 							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Center, BorderPosition.Left, BorderPosition.TopLeft, BorderPosition.BottomLeft }) ?
 								(int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.X,
 							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Center, BorderPosition.Top, BorderPosition.TopLeft, BorderPosition.TopRight }) ?
@@ -1380,6 +1393,7 @@ namespace MyGui.net
 			}
 			ClearStacks();
 			this.Text = $"{Util.programName} - unnamed";
+			refreshToolStripMenuItem.Enabled = false;
 
 			_currentSelectedWidget = null;
 			_currentLayoutPath = "";
@@ -1419,6 +1433,24 @@ namespace MyGui.net
 			}
 		}
 
+		private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (Util.IsValidFile(_currentLayoutPath))
+			{
+				if (_commandManager.getUndoStackCount() != 0)
+				{
+					DialogResult result = MessageBox.Show("Are you sure you want to reload this Layout? All your unsaved changes will be lost!", "Reload Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+					// Check which button was clicked
+					if (result != DialogResult.Yes)
+					{
+						return;
+					}
+				}
+				OpenLayout(_currentLayoutPath);
+			}
+		}
+
 		private void OpenLayout(string file)
 		{
 			ClearStacks();
@@ -1431,6 +1463,7 @@ namespace MyGui.net
 
 			_currentSelectedWidget = null;
 			_draggingWidgetAt = BorderPosition.None;
+			refreshToolStripMenuItem.Enabled = true;
 			viewport.Refresh();
 			//Refresh ui
 			/*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
@@ -1726,11 +1759,11 @@ namespace MyGui.net
 							List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc);
 							Point viewportRelPos = viewport.PointToClient(Cursor.Position);
 
-                            //TODO: DO PROPER OFFSET!
+							//TODO: DO PROPER OFFSET!
 							parsedLayout[0].position = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
 
 
-                            ExecuteCommand(new CreateControlCommand(parsedLayout[0], _currentSelectedWidget, _currentLayout));
+							ExecuteCommand(new CreateControlCommand(parsedLayout[0], _currentSelectedWidget, _currentLayout));
 						}
 						catch (Exception)
 						{

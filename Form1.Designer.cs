@@ -46,6 +46,7 @@ namespace MyGui.net
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
             openToolStripMenuItem = new ToolStripMenuItem();
+            refreshToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
@@ -225,7 +226,7 @@ namespace MyGui.net
             // fileToolStripMenuItem
             // 
             fileToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, toolStripSeparator1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator3, optionsToolStripMenuItem, testToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, refreshToolStripMenuItem, toolStripSeparator1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator3, optionsToolStripMenuItem, testToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 20);
             fileToolStripMenuItem.Text = "File";
@@ -247,6 +248,15 @@ namespace MyGui.net
             openToolStripMenuItem.Size = new Size(186, 22);
             openToolStripMenuItem.Text = "Open";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
+            // 
+            // refreshToolStripMenuItem
+            // 
+            refreshToolStripMenuItem.Enabled = false;
+            refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
+            refreshToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.F5;
+            refreshToolStripMenuItem.Size = new Size(186, 22);
+            refreshToolStripMenuItem.Text = "Reload";
+            refreshToolStripMenuItem.Click += refreshToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
@@ -398,6 +408,7 @@ namespace MyGui.net
             // 
             label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label2.AutoSize = true;
+            label2.BackColor = Color.Transparent;
             label2.Location = new Point(1110, 4);
             label2.Name = "label2";
             label2.Size = new Size(98, 15);
@@ -451,6 +462,7 @@ namespace MyGui.net
             // label1
             // 
             label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label1.BackColor = Color.Transparent;
             label1.Location = new Point(951, 4);
             label1.Name = "label1";
             label1.Size = new Size(93, 15);
@@ -541,5 +553,6 @@ namespace MyGui.net
         private SKGLControl viewport;
         private CustomNumericUpDown zoomLevelNumericUpDown;
         private Label label1;
+        private ToolStripMenuItem refreshToolStripMenuItem;
     }
 }
