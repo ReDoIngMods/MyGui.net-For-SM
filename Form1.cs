@@ -2,7 +2,6 @@ using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.Diagnostics;
-using System.Windows.Forms;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 
@@ -23,8 +22,9 @@ namespace MyGui.net
         static SKPoint _viewportOffset = new SKPoint(0, 0);
         public Size ProjectSize = Settings.Default.DefaultWorkspaceSize;//new(1920, 1080);
         static SKBitmap _viewportBackgroundBitmap;
+        static Dictionary<string, SKImage> _skinAtlasCache = new();
 
-        static Dictionary<string, Control> _editorProperties = new Dictionary<string, Control>();
+        static Dictionary<string, Control> _editorProperties = new();
         static FormSideBar? _sidebarForm;
         CommandManager _commandManager = new CommandManager();
         static Dictionary<string, MyGuiResource> _allResources = new();
@@ -899,16 +899,34 @@ namespace MyGui.net
             canvas.ClipRect(rect);
 
             // Generate a random color
-            var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
+            //var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
+
+            //TODO: BITMAP IS STILL SOMEHOW NIL
+            string skinPath = _allResources[widget.skin]?.path;
+
+
+            Debug.WriteLine(skinPath);
+            if (widget.skin != null && skinPath != null && skinPath != "" && !_skinAtlasCache.ContainsKey(skinPath))
+            {
+                _skinAtlasCache[skinPath] = SKImage.FromBitmap(SKBitmap.Decode(skinPath));
+            }
 
             // Draw rectangle for the widget
-            using var paint = new SKPaint
+            var paint = new SKPaint
             {
-                Color = color,
+                //Color = color,
                 Style = SKPaintStyle.Fill,
-                IsAntialias = true
+                IsAntialias = false
             };
-            canvas.DrawRect(rect, paint);
+            //canvas.DrawRect(rect, paint);
+            if (_skinAtlasCache[skinPath] != null)
+            {
+                DrawNineSlicedBitmapWithAtlas(canvas, _skinAtlasCache[skinPath], new(10,10,20,20), rect, new(2,2,4,4));
+            }
+            else
+            {
+                canvas.DrawRect(rect, paint);
+            }
 
             // Draw the widget's name (optional)
             if (Settings.Default.RenderWidgetNames && !string.IsNullOrEmpty(widget.name))
@@ -926,7 +944,7 @@ namespace MyGui.net
                 {
                     Color = SKColors.Black,
                     TextSize = 16,
-                    IsAntialias = true
+                    IsAntialias = false
                 };
                 canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaintStroke);
             }
@@ -956,6 +974,95 @@ namespace MyGui.net
             // Restore the canvas to its previous state (removes clipping for this widget)
             canvas.Restore();
         }
+
+        void DrawNineSlicedBitmapWithAtlas(SKCanvas canvas, SKImage atlasImage, SKRect sourceRect, SKRect targetRect, SKRect margins)
+        {
+            // Ensure margins don't exceed the size of the sourceRect
+            margins = new SKRect(
+                Math.Clamp(margins.Left, 0, sourceRect.Width / 2f),
+                Math.Clamp(margins.Top, 0, sourceRect.Height / 2f),
+                Math.Clamp(margins.Right, 0, sourceRect.Width / 2f),
+                Math.Clamp(margins.Bottom, 0, sourceRect.Height / 2f)
+            );
+
+            // Source slices
+            float left = sourceRect.Left + margins.Left;
+            float top = sourceRect.Top + margins.Top;
+            float right = sourceRect.Right - margins.Right;
+            float bottom = sourceRect.Bottom - margins.Bottom;
+
+            // Target positions
+            float targetLeft = targetRect.Left;
+            float targetTop = targetRect.Top;
+            float targetRight = targetRect.Right;
+            float targetBottom = targetRect.Bottom;
+
+            // Compute the center width and height
+            float centerWidth = targetRect.Width - margins.Left - margins.Right;
+            float centerHeight = targetRect.Height - margins.Top - margins.Bottom;
+
+            // Define source and destination rectangles for the 9-slice grid
+            var srcRects = new[]
+            {
+                new SKRect(sourceRect.Left, sourceRect.Top, left, top),       // Top-left
+                new SKRect(left, sourceRect.Top, right, top),                // Top-center
+                new SKRect(right, sourceRect.Top, sourceRect.Right, top),    // Top-right
+                new SKRect(sourceRect.Left, top, left, bottom),              // Middle-left
+                new SKRect(left, top, right, bottom),                        // Middle-center
+                new SKRect(right, top, sourceRect.Right, bottom),            // Middle-right
+                new SKRect(sourceRect.Left, bottom, left, sourceRect.Bottom), // Bottom-left
+                new SKRect(left, bottom, right, sourceRect.Bottom),          // Bottom-center
+                new SKRect(right, bottom, sourceRect.Right, sourceRect.Bottom) // Bottom-right
+            };
+
+            var dstRects = new[]
+            {
+                new SKRect(targetLeft, targetTop, targetLeft + margins.Left, targetTop + margins.Top), // Top-left
+                new SKRect(targetLeft + margins.Left, targetTop, targetRight - margins.Right, targetTop + margins.Top), // Top-center
+                new SKRect(targetRight - margins.Right, targetTop, targetRight, targetTop + margins.Top), // Top-right
+                new SKRect(targetLeft, targetTop + margins.Top, targetLeft + margins.Left, targetBottom - margins.Bottom), // Middle-left
+                new SKRect(targetLeft + margins.Left, targetTop + margins.Top, targetRight - margins.Right, targetBottom - margins.Bottom), // Middle-center
+                new SKRect(targetRight - margins.Right, targetTop + margins.Top, targetRight, targetBottom - margins.Bottom), // Middle-right
+                new SKRect(targetLeft, targetBottom - margins.Bottom, targetLeft + margins.Left, targetBottom), // Bottom-left
+                new SKRect(targetLeft + margins.Left, targetBottom - margins.Bottom, targetRight - margins.Right, targetBottom), // Bottom-center
+                new SKRect(targetRight - margins.Right, targetBottom - margins.Bottom, targetRight, targetBottom) // Bottom-right
+            };
+
+            // Compute transforms for each slice
+            var transforms = srcRects.Zip(dstRects, (src, dst) =>
+            {
+                float scaleX = dst.Width / src.Width;
+                float scaleY = dst.Height / src.Height;
+                float scale = Math.Min(scaleX, scaleY); // Uniform scaling
+                float tx = dst.Left - src.Left * scaleX;
+                float ty = dst.Top - src.Top * scaleY;
+
+                // Use `Create` to define the matrix
+                return SKRotationScaleMatrix.Create(
+                    scale,
+                    0, // No rotation
+                    tx,
+                    ty,
+                    0, // Anchor at (0,0) for slicing
+                    0
+                );
+            }).ToArray();
+
+            // Use `DrawAtlas` to render all slices
+            Debug.WriteLine(atlasImage);
+            Debug.WriteLine(srcRects);
+            Debug.WriteLine(transforms);
+            Debug.WriteLine(SKBlendMode.SrcOver);
+            canvas.DrawAtlas(
+                atlasImage,
+                srcRects,
+                transforms,
+                [SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White], // Colors (optional)
+                SKBlendMode.SrcOver,
+                new SKPaint() // Paint (optional)
+            );
+        }
+
 
         void Viewport_MouseDown(object senderAny, MouseEventArgs e)
         {
