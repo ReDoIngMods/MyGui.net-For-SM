@@ -997,6 +997,7 @@ namespace MyGui.net
                     continue; // Skip rendering for text skins
                 }
 
+
                 var tileOffset = Util.GetWidgetPos(false, skin.offset, new(1, 1));
 
                 // Find the normal state of the skin
@@ -1021,7 +1022,7 @@ namespace MyGui.net
                 adjustedClientRect.Offset(tileOffset.X, tileOffset.Y);
 
                 // Calculate destination rectangle based on alignment
-                var destRect = GetAlignedRectangle(skin.align, adjustedClientRect, tileRect.Size);
+                var destRect = GetAlignedRectangle(skin.align, adjustedClientRect, new(posSize.Item1.X, posSize.Item1.Y));
 
                 var debugPaint = new SKPaint
                 {
