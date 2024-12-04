@@ -908,6 +908,10 @@ namespace MyGui.net
             Debug.WriteLine(skinPath);
             if (widget.skin != null && skinPath != null && skinPath != "" && !_skinAtlasCache.ContainsKey(skinPath))
             {
+                if (SKBitmap.Decode(skinPath) == null)
+                {
+                    return;
+                }
                 _skinAtlasCache[skinPath] = SKImage.FromBitmap(SKBitmap.Decode(skinPath));
             }
 
@@ -919,9 +923,9 @@ namespace MyGui.net
                 IsAntialias = false
             };
             //canvas.DrawRect(rect, paint);
-            if (_skinAtlasCache[skinPath] != null)
+            if (true)
             {
-                DrawNineSlicedBitmapWithAtlas(canvas, _skinAtlasCache[skinPath], new(10,10,20,20), rect, new(2,2,4,4));
+                RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect);
             }
             else
             {
@@ -975,92 +979,145 @@ namespace MyGui.net
             canvas.Restore();
         }
 
-        void DrawNineSlicedBitmapWithAtlas(SKCanvas canvas, SKImage atlasImage, SKRect sourceRect, SKRect targetRect, SKRect margins)
+        private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect)
         {
-            // Ensure margins don't exceed the size of the sourceRect
-            margins = new SKRect(
-                Math.Clamp(margins.Left, 0, sourceRect.Width / 2f),
-                Math.Clamp(margins.Top, 0, sourceRect.Height / 2f),
-                Math.Clamp(margins.Right, 0, sourceRect.Width / 2f),
-                Math.Clamp(margins.Bottom, 0, sourceRect.Height / 2f)
-            );
-
-            // Source slices
-            float left = sourceRect.Left + margins.Left;
-            float top = sourceRect.Top + margins.Top;
-            float right = sourceRect.Right - margins.Right;
-            float bottom = sourceRect.Bottom - margins.Bottom;
-
-            // Target positions
-            float targetLeft = targetRect.Left;
-            float targetTop = targetRect.Top;
-            float targetRight = targetRect.Right;
-            float targetBottom = targetRect.Bottom;
-
-            // Compute the center width and height
-            float centerWidth = targetRect.Width - margins.Left - margins.Right;
-            float centerHeight = targetRect.Height - margins.Top - margins.Bottom;
-
-            // Define source and destination rectangles for the 9-slice grid
-            var srcRects = new[]
+            if (atlasImage == null || resource == null || resource.basisSkins == null || resource.tileSize == null)
             {
-                new SKRect(sourceRect.Left, sourceRect.Top, left, top),       // Top-left
-                new SKRect(left, sourceRect.Top, right, top),                // Top-center
-                new SKRect(right, sourceRect.Top, sourceRect.Right, top),    // Top-right
-                new SKRect(sourceRect.Left, top, left, bottom),              // Middle-left
-                new SKRect(left, top, right, bottom),                        // Middle-center
-                new SKRect(right, top, sourceRect.Right, bottom),            // Middle-right
-                new SKRect(sourceRect.Left, bottom, left, sourceRect.Bottom), // Bottom-left
-                new SKRect(left, bottom, right, sourceRect.Bottom),          // Bottom-center
-                new SKRect(right, bottom, sourceRect.Right, sourceRect.Bottom) // Bottom-right
-            };
+                return; // Nothing to render if essential data is missing
+            }
 
-            var dstRects = new[]
+            Debug.WriteLine($"Rendering widget with skin {resource.name} and tile size {resource.tileSize}.");
+
+            // Iterate through skins in reverse order
+            for (int i = resource.basisSkins.Count - 1; i >= 0; i--)
             {
-                new SKRect(targetLeft, targetTop, targetLeft + margins.Left, targetTop + margins.Top), // Top-left
-                new SKRect(targetLeft + margins.Left, targetTop, targetRight - margins.Right, targetTop + margins.Top), // Top-center
-                new SKRect(targetRight - margins.Right, targetTop, targetRight, targetTop + margins.Top), // Top-right
-                new SKRect(targetLeft, targetTop + margins.Top, targetLeft + margins.Left, targetBottom - margins.Bottom), // Middle-left
-                new SKRect(targetLeft + margins.Left, targetTop + margins.Top, targetRight - margins.Right, targetBottom - margins.Bottom), // Middle-center
-                new SKRect(targetRight - margins.Right, targetTop + margins.Top, targetRight, targetBottom - margins.Bottom), // Middle-right
-                new SKRect(targetLeft, targetBottom - margins.Bottom, targetLeft + margins.Left, targetBottom), // Bottom-left
-                new SKRect(targetLeft + margins.Left, targetBottom - margins.Bottom, targetRight - margins.Right, targetBottom), // Bottom-center
-                new SKRect(targetRight - margins.Right, targetBottom - margins.Bottom, targetRight, targetBottom) // Bottom-right
-            };
+                var skin = resource.basisSkins[i];
+                if (skin.type == "SimpleText")
+                {
+                    continue; // Skip rendering for text skins
+                }
 
-            // Compute transforms for each slice
-            var transforms = srcRects.Zip(dstRects, (src, dst) =>
-            {
-                float scaleX = dst.Width / src.Width;
-                float scaleY = dst.Height / src.Height;
-                float scale = Math.Min(scaleX, scaleY); // Uniform scaling
-                float tx = dst.Left - src.Left * scaleX;
-                float ty = dst.Top - src.Top * scaleY;
+                var tileOffset = Util.GetWidgetPos(false, skin.offset, new(1, 1));
 
-                // Use `Create` to define the matrix
-                return SKRotationScaleMatrix.Create(
-                    scale,
-                    0, // No rotation
-                    tx,
-                    ty,
-                    0, // Anchor at (0,0) for slicing
-                    0
+                // Find the normal state of the skin
+                var normalState = skin.states.FirstOrDefault(state => state.name == "normal");
+                if (normalState == null || normalState.offset == null)
+                {
+                    continue; // Skip if no normal state is found
+                }
+
+                Debug.WriteLine($"Rendering skin with alignment: {skin.align}");
+
+                var posSize = Util.GetWidgetPosAndSize(false, normalState.offset, new(1, 1));
+                var tileRect = new SKRect(
+                    posSize.Item1.X,
+                    posSize.Item1.Y,
+                    posSize.Item1.X + posSize.Item2.X,
+                    posSize.Item1.Y + posSize.Item2.Y
                 );
-            }).ToArray();
 
-            // Use `DrawAtlas` to render all slices
-            Debug.WriteLine(atlasImage);
-            Debug.WriteLine(srcRects);
-            Debug.WriteLine(transforms);
-            Debug.WriteLine(SKBlendMode.SrcOver);
-            canvas.DrawAtlas(
-                atlasImage,
-                srcRects,
-                transforms,
-                [SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White, SKColors.White], // Colors (optional)
-                SKBlendMode.SrcOver,
-                new SKPaint() // Paint (optional)
-            );
+                // Adjust client rectangle based on the tile offset
+                var adjustedClientRect = clientRect;
+                adjustedClientRect.Offset(tileOffset.X, tileOffset.Y);
+
+                // Calculate destination rectangle based on alignment
+                var destRect = GetAlignedRectangle(skin.align, adjustedClientRect, tileRect.Size);
+
+                var debugPaint = new SKPaint
+                {
+                    Color = SKColors.Red.WithAlpha(128),
+                    Style = SKPaintStyle.Stroke,
+                    StrokeWidth = 2
+                };
+                canvas.DrawRect(destRect, debugPaint);
+                Debug.WriteLine(tileRect);
+                // Draw the atlas texture
+                canvas.DrawImage(atlasImage, tileRect, destRect, new SKPaint { FilterQuality = SKFilterQuality.High });
+            }
+        }
+
+
+        private static SKRect GetAlignedRectangle(string? align, SKRect container, SKSize tileSize)
+        {
+            float x = container.Left, y = container.Top, width = tileSize.Width, height = tileSize.Height;
+
+            switch (align)
+            {
+                case "[DEFAULT]":
+                case "Default":
+                case null:
+                    // Default: no scaling or positioning adjustment
+                    return new SKRect(container.Left, container.Top, container.Left + tileSize.Width, container.Top + tileSize.Height);
+
+                case "Stretch":
+                    width = container.Width;
+                    height = container.Height;
+                    break;
+
+                case "Center":
+                    x += (container.Width - tileSize.Width) / 2;
+                    y += (container.Height - tileSize.Height) / 2;
+                    break;
+
+                case "Left Top":
+                    // No changes needed; already at top-left
+                    break;
+
+                case "Left Bottom":
+                    y = container.Bottom - tileSize.Height;
+                    break;
+
+                case "Left VStretch":
+                    height = container.Height;
+                    break;
+
+                case "Left VCenter":
+                    y += (container.Height - tileSize.Height) / 2;
+                    break;
+
+                case "Right Top":
+                    x = container.Right - tileSize.Width;
+                    break;
+
+                case "Right Bottom":
+                    x = container.Right - tileSize.Width;
+                    y = container.Bottom - tileSize.Height;
+                    break;
+
+                case "Right VStretch":
+                    x = container.Right - tileSize.Width;
+                    height = container.Height;
+                    break;
+
+                case "Right VCenter":
+                    x = container.Right - tileSize.Width;
+                    y += (container.Height - tileSize.Height) / 2;
+                    break;
+
+                case "Top HStretch":
+                    width = container.Width;
+                    break;
+
+                case "Top HCenter":
+                    x += (container.Width - tileSize.Width) / 2;
+                    break;
+
+                case "Bottom HStretch":
+                    y = container.Bottom - tileSize.Height;
+                    width = container.Width;
+                    break;
+
+                case "Bottom HCenter":
+                    x += (container.Width - tileSize.Width) / 2;
+                    y = container.Bottom - tileSize.Height;
+                    break;
+
+                default:
+                    Debug.WriteLine($"Unknown align type: {align}");
+                    break;
+            }
+
+            return new SKRect(x, y, x + width, y + height);
         }
 
 
