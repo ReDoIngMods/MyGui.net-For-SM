@@ -897,7 +897,7 @@ namespace MyGui.net
             canvas.Save();
 
             // Apply clipping for the widget's bounds
-            //canvas.ClipRect(rect);
+            canvas.ClipRect(rect);
 
             // Generate a random color
             //var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
@@ -1031,7 +1031,7 @@ namespace MyGui.net
 
 
                 //DEBUG
-                var textPaintStroke = new SKPaint
+                /*var textPaintStroke = new SKPaint
                 {
                     Color = SKColors.White,
                     TextSize = 7,
@@ -1046,7 +1046,7 @@ namespace MyGui.net
                     StrokeWidth = 2
                 };
                 canvas.DrawRect(destRect, debugPaint);
-                Debug.WriteLine(tileRect);
+                Debug.WriteLine(tileRect);*/
                 // Draw the atlas texture
                 canvas.DrawImage(atlasImage, tileRect, destRect, new SKPaint { FilterQuality = SKFilterQuality.High });
             }
