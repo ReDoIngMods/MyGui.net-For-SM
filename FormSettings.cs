@@ -112,6 +112,55 @@ namespace MyGui.net
 
         //TAB PROGRAM
 
+        private void chooseSmPath_Click(object sender, EventArgs e)
+        {
+            smPathDialog.InitialDirectory = Util.IsValidPath(Settings.Default.ScrapMechanicPath) ? Settings.Default.ScrapMechanicPath : "C:\\";
+
+            while (true)
+            {
+                if (smPathDialog.ShowDialog() == DialogResult.OK)
+                {
+                    if (Util.IsValidFile(Path.Combine(smPathDialog.SelectedPath, "Data/Gui/GuiConfig.xml")))
+                    {
+                        Settings.Default.ScrapMechanicPath = smPathDialog.SelectedPath;
+                        smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+                        OnSettingChange();
+                        break;
+                    }
+                    else
+                    {
+                        DialogResult resolution = MessageBox.Show("Not a valid game path!", "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                        Debug.WriteLine(resolution);
+                        if (resolution == DialogResult.Cancel)
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Application.Exit();
+                    this.Close();
+                    return;
+                }
+            }
+        }
+
+        private void detectSmPath_Click(object sender, EventArgs e)
+        {
+            string? gamePathFromSteam = Util.GetGameInstallPath("387990");
+            if (gamePathFromSteam != null)
+            {
+                Settings.Default.ScrapMechanicPath = gamePathFromSteam;
+                smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+                OnSettingChange();
+            }
+            else
+            {
+                MessageBox.Show("Couldn't detect game path!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void showFullFilePathCheckBox_CheckedChanged(object senderAny, EventArgs e)
         {
             CheckBox sender = (CheckBox)senderAny;
@@ -313,32 +362,6 @@ namespace MyGui.net
             Settings.Default.Save();
             _hasChanged = false;
             applySettingsButton.Enabled = _hasChanged;
-        }
-
-        private void chooseSmPath_Click(object sender, EventArgs e)
-        {
-            smPathDialog.InitialDirectory = Util.IsValidPath(Settings.Default.ScrapMechanicPath) ? Settings.Default.ScrapMechanicPath : "C:\\";
-            if (smPathDialog.ShowDialog(this) == DialogResult.OK)
-            {
-                Settings.Default.ScrapMechanicPath = smPathDialog.SelectedPath;
-                smPathLabel.Text = Settings.Default.ScrapMechanicPath;
-                OnSettingChange();
-            }
-        }
-
-        private void detectSmPath_Click(object sender, EventArgs e)
-        {
-            string? gamePathFromSteam = Util.GetGameInstallPath("387990");
-            if (gamePathFromSteam != null)
-            {
-                Settings.Default.ScrapMechanicPath = gamePathFromSteam;
-                smPathLabel.Text = Settings.Default.ScrapMechanicPath;
-                OnSettingChange();
-            }
-            else
-            {
-                MessageBox.Show("Couldn't detect game path!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
         }
 
         private void resetSettingsButton_Click(object sender, EventArgs e)

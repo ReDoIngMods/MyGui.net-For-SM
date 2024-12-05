@@ -101,8 +101,50 @@ namespace MyGui.net
             UpdateViewportBackground();
 
             //Util.PrintAllResources(_ScrapMechanicPath);
+            if (!Util.IsValidFile(Path.Combine(_ScrapMechanicPath, "Data/Gui/GuiConfig.xml")))
+            {
+                string? gamePathFromSteam = Util.GetGameInstallPath("387990");
+                if (gamePathFromSteam == null)
+                {
+                    Settings.Default.ScrapMechanicPath = gamePathFromSteam;
+                    Settings.Default.Save();
+                    MessageBox.Show("Game path has been reset, fetched from Steam!", "Game Path Reset", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Game path is invalid!\nPlease select one now.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    while (true)
+                    {
+                        if (smPathDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            if (Util.IsValidFile(Path.Combine(smPathDialog.SelectedPath, "Data/Gui/GuiConfig.xml")))
+                            {
+                                _ScrapMechanicPath = smPathDialog.SelectedPath;
+                                break;
+                            }
+                            else
+                            {
+                                DialogResult resolution = MessageBox.Show("Not a valid game path!", "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                                Debug.WriteLine(resolution);
+                                if (resolution == DialogResult.Cancel)
+                                {
+                                    Application.Exit();
+                                    this.Close();
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Application.Exit();
+                            this.Close();
+                            return;
+                        }
+                    }
+                }
+            }
             _allResources = Util.ReadAllResources(_ScrapMechanicPath, 1);
-            //Util.PrintAllResources(_allResources);
+            Util.PrintAllResources(_allResources);
             HandleWidgetSelection();
 
             if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
@@ -911,8 +953,12 @@ namespace MyGui.net
             {
                 if (SKBitmap.Decode(skinPath) == null)
                 {
-                    return;
+                    Debug.WriteLine("decode failed!");
+                    skinPath = Path.GetDirectoryName(skinPath) + "\\BackgroundImages\\" + Path.GetFileName(skinPath);
+
+                    Debug.WriteLine(skinPath);
                 }
+                Debug.WriteLine("decoded!");
                 _skinAtlasCache[skinPath] = SKImage.FromBitmap(SKBitmap.Decode(skinPath));
             }
 
@@ -995,7 +1041,7 @@ namespace MyGui.net
                 var skin = resource.basisSkins[i];
                 if (skin.type == "SimpleText" || skin.type == "EffectSkin")
                 {
-                    continue; // Skip rendering for invalid skins
+                    continue; // Skip rendering for invalidx skins
                 }
 
 
