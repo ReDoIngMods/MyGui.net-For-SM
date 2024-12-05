@@ -1,6 +1,7 @@
 using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using SkiaSharp.Views.Gtk;
 using System.Diagnostics;
 using System.Xml.Linq;
 using static MyGui.net.Util;
@@ -896,7 +897,7 @@ namespace MyGui.net
             canvas.Save();
 
             // Apply clipping for the widget's bounds
-            canvas.ClipRect(rect);
+            //canvas.ClipRect(rect);
 
             // Generate a random color
             //var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
@@ -981,12 +982,12 @@ namespace MyGui.net
 
         private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect)
         {
-            if (atlasImage == null || resource == null || resource.basisSkins == null || resource.tileSize == null)
+            if (atlasImage == null || resource == null || resource.basisSkins == null)
             {
                 return; // Nothing to render if essential data is missing
             }
 
-            Debug.WriteLine($"Rendering widget with skin {resource.name} and tile size {resource.tileSize}.");
+            Debug.WriteLine($"Rendering widget with skin {resource.name}.");
 
             // Iterate through skins in reverse order
             for (int i = resource.basisSkins.Count - 1; i >= 0; i--)
@@ -998,7 +999,7 @@ namespace MyGui.net
                 }
 
 
-                var tileOffset = Util.GetWidgetPos(false, skin.offset, new(1, 1));
+                var tileOffset = Util.GetWidgetPosAndSize(false, skin.offset, new(1, 1));
 
                 // Find the normal state of the skin
                 var normalState = skin.states.FirstOrDefault(state => state.name == "normal");
@@ -1017,12 +1018,26 @@ namespace MyGui.net
                     posSize.Item1.Y + posSize.Item2.Y
                 );
 
-                // Adjust client rectangle based on the tile offset
-                var adjustedClientRect = clientRect;
-                adjustedClientRect.Offset(tileOffset.X, tileOffset.Y);
+                var maxSizePoint = Util.GetWidgetPos(false, resource.tileSize, new(1, 1));
 
                 // Calculate destination rectangle based on alignment
-                var destRect = GetAlignedRectangle(skin.align, adjustedClientRect, new(posSize.Item1.X, posSize.Item1.Y));
+                var destRect = GetAlignedRectangle(skin.align, clientRect, new(posSize.Item2.X, posSize.Item2.Y),
+                    new SKRect(
+                    tileOffset.Item1.X,
+                    tileOffset.Item1.Y,
+                    tileOffset.Item2.X,
+                    tileOffset.Item2.Y
+                ), new(maxSizePoint.X, maxSizePoint.Y));
+
+
+                //DEBUG
+                var textPaintStroke = new SKPaint
+                {
+                    Color = SKColors.White,
+                    TextSize = 7,
+                    IsAntialias = false
+                };
+                canvas.DrawText(skin.align, destRect.Left + 2, destRect.Top + 5, textPaintStroke);
 
                 var debugPaint = new SKPaint
                 {
@@ -1038,9 +1053,10 @@ namespace MyGui.net
         }
 
 
-        private static SKRect GetAlignedRectangle(string? align, SKRect container, SKSize tileSize)
+        private static SKRect GetAlignedRectangle(string? align, SKRect container, SKSize tileSize, SKRect subskinOffset, SKSize maxSize)
         {
-            float x = container.Left, y = container.Top, width = tileSize.Width, height = tileSize.Height;
+            //TODO: FIGURE OUT MAX SIZE
+            float x = container.Left + subskinOffset.Left, y = container.Top + subskinOffset.Top, width = tileSize.Width, height = tileSize.Height;
 
             switch (align)
             {
@@ -1051,7 +1067,7 @@ namespace MyGui.net
                     return new SKRect(container.Left, container.Top, container.Left + tileSize.Width, container.Top + tileSize.Height);
 
                 case "Stretch":
-                    width = container.Width;
+                    width = container.Width; // do size="34 86" - the current tile size and add that
                     height = container.Height;
                     break;
 
@@ -1095,20 +1111,20 @@ namespace MyGui.net
                     y += (container.Height - tileSize.Height) / 2;
                     break;
 
-                case "Top HStretch":
+                case "HStretch Top":
                     width = container.Width;
                     break;
 
-                case "Top HCenter":
+                case "HCenter Top":
                     x += (container.Width - tileSize.Width) / 2;
                     break;
 
-                case "Bottom HStretch":
+                case "HStretch Bottom":
                     y = container.Bottom - tileSize.Height;
                     width = container.Width;
                     break;
 
-                case "Bottom HCenter":
+                case "HCenter Bottom":
                     x += (container.Width - tileSize.Width) / 2;
                     y = container.Bottom - tileSize.Height;
                     break;
