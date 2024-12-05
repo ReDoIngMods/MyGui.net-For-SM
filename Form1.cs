@@ -993,9 +993,9 @@ namespace MyGui.net
             for (int i = resource.basisSkins.Count - 1; i >= 0; i--)
             {
                 var skin = resource.basisSkins[i];
-                if (skin.type == "SimpleText")
+                if (skin.type == "SimpleText" || skin.type == "EffectSkin")
                 {
-                    continue; // Skip rendering for text skins
+                    continue; // Skip rendering for invalid skins
                 }
 
 
