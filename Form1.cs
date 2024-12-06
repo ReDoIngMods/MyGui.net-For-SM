@@ -841,6 +841,19 @@ namespace MyGui.net
         }
 
         //Widget painting
+
+        private readonly SKPaint _projectSizeTextPaint = new SKPaint
+        {
+            FilterQuality = SKFilterQuality.Low,
+            Color = SKColors.White,
+            TextSize = 60,
+            IsAntialias = true
+        };
+
+        private readonly SKPaint _baseViewportPaint = new SKPaint { FilterQuality = SKFilterQuality.Low, IsAntialias = false, IsDither = false, };
+
+
+        //do NOT tell me performance sucks if you enable ANY Debug.Writeline's in the rendering code - The Red Builder
         private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
         {
             SKCanvas canvas = e.Surface.Canvas;
@@ -854,15 +867,10 @@ namespace MyGui.net
             canvas.ClipRect(new SKRect(0, 0, controlWidth, controlHeight));
 
             // Apply viewport transformations
-            _viewportMatrix = SKMatrix.CreateScale(_viewportScale, _viewportScale);
-            _viewportMatrix = _viewportMatrix.PreConcat(SKMatrix.CreateTranslation(_viewportOffset.X, _viewportOffset.Y));
+            _viewportMatrix = SKMatrix.CreateScale(_viewportScale, _viewportScale)
+    .PreConcat(SKMatrix.CreateTranslation(_viewportOffset.X, _viewportOffset.Y));
             canvas.SetMatrix(_viewportMatrix);
-            canvas.DrawText(ProjectSize.Width + "x" + ProjectSize.Height, 0, -30, new SKPaint
-            {
-                Color = SKColors.White,
-                TextSize = 60,
-                IsAntialias = true
-            });
+            canvas.DrawText(ProjectSize.Width + "x" + ProjectSize.Height, 0, -30, _projectSizeTextPaint);
             if (_viewportBackgroundBitmap != null)
             {
                 canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint
@@ -870,7 +878,7 @@ namespace MyGui.net
                     Color = SKColors.Black,
                     IsAntialias = false
                 });
-                canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height));
+                canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), _baseViewportPaint);
             }
             else
             {
@@ -900,7 +908,6 @@ namespace MyGui.net
                     rect.Right + 3.5f, // Expand right
                     rect.Bottom + 3.5f // Expand bottom
                 );
-
                 var highlightPaint = new SKPaint
                 {
                     Color = highlight.Value.highlightColor, // Semi-transparent green for highlight
@@ -944,22 +951,22 @@ namespace MyGui.net
             // Generate a random color
             //var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
 
-            //TODO: BITMAP IS STILL SOMEHOW NIL
-            string skinPath = _allResources[widget.skin]?.path;
+            string skinPath = _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : null;
 
 
-            Debug.WriteLine(skinPath);
+            //Debug.WriteLine(skinPath);
             if (widget.skin != null && skinPath != null && skinPath != "" && !_skinAtlasCache.ContainsKey(skinPath))
             {
-                if (SKBitmap.Decode(skinPath) == null)
+                //Debug.WriteLine($"caching skin from dir {skinPath}");
+                SKBitmap? cachedBitmap = SKBitmap.Decode(skinPath);
+                if (cachedBitmap != null)
                 {
-                    Debug.WriteLine("decode failed!");
-                    skinPath = Path.GetDirectoryName(skinPath) + "\\BackgroundImages\\" + Path.GetFileName(skinPath);
-
-                    Debug.WriteLine(skinPath);
+                    _skinAtlasCache[skinPath] = SKImage.FromBitmap(cachedBitmap);
                 }
-                Debug.WriteLine("decoded!");
-                _skinAtlasCache[skinPath] = SKImage.FromBitmap(SKBitmap.Decode(skinPath));
+                else
+                {
+                    _skinAtlasCache[skinPath] = null;
+                }
             }
 
             // Draw rectangle for the widget
@@ -970,7 +977,7 @@ namespace MyGui.net
                 IsAntialias = false
             };
             //canvas.DrawRect(rect, paint);
-            if (true)
+            if (skinPath != null &&_skinAtlasCache.ContainsKey(skinPath))
             {
                 RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect);
             }
@@ -1019,7 +1026,9 @@ namespace MyGui.net
             // Recursively draw child widgets
             foreach (var child in widget.children)
             {
-                DrawWidget(canvas, child, widgetPosition, widget);
+                var widgetBounds = new SKRect(widgetPosition.X, widgetPosition.Y,
+                              widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
+                if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget);
             }
 
             // Restore the canvas to its previous state (removes clipping for this widget)
@@ -1033,7 +1042,7 @@ namespace MyGui.net
                 return; // Nothing to render if essential data is missing
             }
 
-            Debug.WriteLine($"Rendering widget with skin {resource.name}.");
+            //Debug.WriteLine($"Rendering widget with skin {resource.name}.");
 
             // Iterate through skins in reverse order
             for (int i = resource.basisSkins.Count - 1; i >= 0; i--)
@@ -1054,7 +1063,7 @@ namespace MyGui.net
                     continue; // Skip if no normal state is found
                 }
 
-                Debug.WriteLine($"Rendering skin with alignment: {skin.align}");
+                //Debug.WriteLine($"Rendering skin with alignment: {skin.align}");
 
                 var posSize = Util.GetWidgetPosAndSize(false, normalState.offset, new(1, 1));
                 var tileRect = new SKRect(
@@ -1094,7 +1103,7 @@ namespace MyGui.net
                 canvas.DrawRect(destRect, debugPaint);
                 Debug.WriteLine(tileRect);*/
                 // Draw the atlas texture
-                canvas.DrawImage(atlasImage, tileRect, destRect, new SKPaint { FilterQuality = SKFilterQuality.High });
+                canvas.DrawImage(atlasImage, tileRect, destRect, _baseViewportPaint);
             }
         }
 

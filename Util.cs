@@ -4,6 +4,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Policy;
 using System.Text;
@@ -638,10 +639,15 @@ namespace MyGui.net
                     foreach (var r in res)
                     {
                         if (r.Attribute("type")?.Value == "ResourceImageSet") { continue; } //Special cases, "ResourceImageSet" is just set of images (different resources)
+                        string texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
+                        if (texPath == null)
+                        {
+                            continue;
+                        }
                         MyGuiResource newRes = new()
                         {
                             name = r.Attribute("name")?.Value ?? "NO NAME",
-                            path = Path.GetDirectoryName(path) + "\\" + r.Attribute("texture")?.Value,
+                            path = texPath,
                             tileSize = r.Attribute("size")?.Value,
                             pathSpecial = path,
                             basisSkins = new(),
@@ -706,7 +712,7 @@ namespace MyGui.net
             var allResources = ReadAllResources(smPath, resolutionIdx);
             foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
             {
-                Debug.WriteLine($"KEY: {resource.Key}Name: {resource.Value.name}, Path: {resource.Value.path}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
+                Debug.WriteLine($"KEY: {resource.Key}Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
             }
         }
 
@@ -714,12 +720,16 @@ namespace MyGui.net
         {
             foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
             {
-                Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
+                Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
             }
         }
 
         public static string? FindFileInSubDirs(string directory, string fileName)
         {
+            if (fileName == null || fileName == "")
+            {
+                return null;
+            }
             try
             {
                 foreach (string file in Directory.EnumerateFiles(directory, fileName, SearchOption.AllDirectories))
