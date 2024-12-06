@@ -717,6 +717,23 @@ namespace MyGui.net
                 Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
             }
         }
+
+        public static string? FindFileInSubDirs(string directory, string fileName)
+        {
+            try
+            {
+                foreach (string file in Directory.EnumerateFiles(directory, fileName, SearchOption.AllDirectories))
+                {
+                    return file;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while searching for file '{fileName}'!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"An error occurred while searching for file '{fileName}'!\n{ex.Message}");
+            }
+            return null;
+        }
         #endregion
 
         #region Util Utils
