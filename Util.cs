@@ -3,10 +3,10 @@ using SkiaSharp;
 using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security.Policy;
 using System.Text;
 using System.Text.Json;
 using System.Xml;
@@ -575,7 +575,7 @@ namespace MyGui.net
         }
         #endregion
 
-        #region Resource File Reading/Exporting
+        #region Resource File Reading
 
         public static Dictionary<string, MyGuiResource> ReadAllResources(string smPath, int resolutionIdx)
         {
@@ -718,6 +718,7 @@ namespace MyGui.net
 
         public static void PrintAllResources(Dictionary<string, MyGuiResource> allResources)
         {
+            Debug.WriteLine("RESOURCES:");
             foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
             {
                 Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
@@ -743,6 +744,198 @@ namespace MyGui.net
                 Console.WriteLine($"An error occurred while searching for file '{fileName}'!\n{ex.Message}");
             }
             return null;
+        }
+        #endregion
+
+        #region Font Loading
+        public static Dictionary<string, string>? ReadFontAllowedChars(string language, string smPath)
+        {
+            Dictionary<string, string> fontToAllowedChars = new();
+
+            XDocument xmlDocument;
+            try
+            {
+                string xmlContent = File.ReadAllText(Path.Combine(smPath, "Data/Gui/Fonts/ManualFontDataInput.xml"));
+                string wrappedXmlContent = $"<FakeRoot>{xmlContent}</FakeRoot>";
+                xmlDocument = XDocument.Parse(wrappedXmlContent);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to read allowed font characters file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+
+            XElement root = xmlDocument.Root;
+            foreach (var fontElement in root.Elements("Font"))
+            {
+                string fontName = fontElement.Attribute("name").Value;
+
+                // Use a TreeSet to collect unique characters and automatically keep them sorted
+                HashSet<char> characterSet = new();
+                bool allowAll = false;
+
+
+                foreach (var dataElement in fontElement.Elements("Data"))
+                {
+                    string type = dataElement.Attribute("type").Value;
+                    string value = dataElement.Attribute("value").Value;
+
+                    switch (type)
+                    {
+                        case "Override":
+                            if (value.Equals("Allow all"))
+                            {
+                                allowAll = true;
+                                break;
+                            }
+                            break;
+                        case "String":
+                            foreach (char c in value.ToCharArray())
+                            {
+                                characterSet.Add(c);
+                            }
+                            break;
+                        case "Tag":
+                            string tagValue = GetLanguageTagString(value, language, smPath);
+                            if (tagValue != null)
+                            {
+                                foreach (char c in tagValue.ToCharArray())
+                                {
+                                    characterSet.Add(c);
+                                }
+                            }
+                            break;
+                    }
+                    if (allowAll) break;
+                }
+
+                string characters;
+                if (allowAll)
+                {
+                    characters = "ALL CHARACTERS";
+                }
+                else
+                {
+                    StringBuilder charBuilder = new();
+                    foreach (char c in characterSet)
+                    {
+                        charBuilder.Append(c);
+                    }
+                    characters = charBuilder.ToString();
+                }
+
+                fontToAllowedChars.Add(fontName, characters);
+            }
+            return fontToAllowedChars;
+        }
+
+        public static Dictionary<string, MyGuiFontData>? ReadFontData(string language, string smPath)
+        {
+            Dictionary<string, MyGuiFontData> fontData = new();
+
+            Dictionary<string, string> fontAllowedChars = ReadFontAllowedChars(language, smPath);
+
+            XDocument xmlDocument;
+            try
+            {
+                xmlDocument = XDocument.Load(Path.Combine(Path.Combine(smPath, "Data/Gui/Language", language), "Fonts.xml"));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to read font data file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+
+            XElement root = xmlDocument.Root;
+
+            foreach (var element in root.Elements("Resource"))
+            {
+                string fontName = element.Attribute("name").Value;
+                MyGuiFontData data = new()
+                {
+                    name = fontName,
+                };
+
+                if(fontAllowedChars.TryGetValue(fontName, out string allowedChars)) data.allowedChars = allowedChars;
+
+                foreach (var property in element.Elements("Property"))
+                {
+                    string key = property.Attribute("key").Value;
+                    string value = property.Attribute("value").Value;
+
+                    switch(key)
+                    {
+                        case "Source":
+                            data.source = value;
+                            break;
+                        case "Size":
+                            data.size = ProperlyParseDouble(value);
+                            break;
+                        case "LetterSpacing":
+                            data.letterSpacing = ProperlyParseDouble(value);
+                            break;
+                    }
+                }
+
+                fontData.Add(fontName, data);
+            }
+
+            return fontData;
+        }
+
+        static Dictionary<string, string> languageTags = [];
+        static string lastLang = "";
+        public static string? GetLanguageTagString(string tagName, string language, string smPath)
+        {
+            if (languageTags.Count == 0 || language != lastLang)
+            {
+                try
+                {
+                    lastLang = language;
+                    List<string> tagFiles = ["InterfaceTags.txt", "QuestInterfaceTags.txt"];
+                    foreach (string tagFile in tagFiles) {
+                        string filePath = Path.Combine(smPath, "Data/Gui/Language", language, tagFile);
+
+                        using (StreamReader reader = new(filePath))
+                        {
+                            string line;
+                            while ((line = reader.ReadLine()) != null)
+                            {
+                                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                                string[] parts = line.Split(' ', 2, StringSplitOptions.None);
+                                if (parts.Length < 2) continue;
+
+                                string key = parts[0];
+                                string value = parts[1];
+                                languageTags.Add(key, value);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Failed to read language tag contents!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            if(!languageTags.ContainsKey(tagName))
+            {
+                Debug.WriteLine($"TAG NOT FOUND: {tagName}"); //This is a vanilla issue, it has some tag name that doesn't actually exist
+                return null;
+            }
+            return languageTags[tagName];
+        }
+
+        public static void PrintFontData(string language, string smPath)
+        {
+            Debug.WriteLine("FONT DATA:");
+            var fontData = ReadFontData(language, smPath);
+            foreach (var item in fontData)
+            {
+                var font = item.Value;
+                Debug.WriteLine($"Name: '{font.name}', Source: '{font.source}', Size: '{font.size}', LetterSpacing: '{font.letterSpacing}', AllowedChars: '{font.allowedChars}'");
+            }
         }
         #endregion
 

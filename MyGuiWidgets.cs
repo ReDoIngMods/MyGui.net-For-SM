@@ -240,4 +240,13 @@
         public List<MyGuiBasisSkin>? basisSkins;
         public string correctType = ""; //TODO: This is currently always ""
     }
+
+    public class MyGuiFontData
+    {
+        public string name;
+        public string source;
+        public double size;
+        public double? letterSpacing;
+        public string allowedChars = "";
+    }
 }
