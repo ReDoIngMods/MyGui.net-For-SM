@@ -577,6 +577,33 @@ namespace MyGui.net
 
         #region Resource File Reading
 
+        public static SKBitmap LoadBitmap(string path)
+        {
+            if (path.StartsWith("res:")) // Check for the resource prefix
+            {
+                string resourceName = "MyGui.net." + path.Substring(4);
+                return LoadBitmapFromResource(resourceName);
+            }
+            else
+            {
+                // Load directly from the file system
+                return SKBitmap.Decode(path);
+            }
+        }
+
+        private static SKBitmap LoadBitmapFromResource(string resourceName)
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using (Stream resourceStream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (resourceStream == null)
+                {
+                    throw new FileNotFoundException($"Embedded resource '{resourceName}' not found.");
+                }
+                return SKBitmap.Decode(resourceStream);
+            }
+        }
+
         public static Dictionary<string, MyGuiResource> ReadAllResources(string smPath, int resolutionIdx)
         {
             Dictionary<string, MyGuiResource> resourceDict = new();
@@ -723,27 +750,6 @@ namespace MyGui.net
             {
                 Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
             }
-        }
-
-        public static string? FindFileInSubDirs(string directory, string fileName)
-        {
-            if (fileName == null || fileName == "")
-            {
-                return null;
-            }
-            try
-            {
-                foreach (string file in Directory.EnumerateFiles(directory, fileName, SearchOption.AllDirectories))
-                {
-                    return file;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"An error occurred while searching for file '{fileName}'!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Console.WriteLine($"An error occurred while searching for file '{fileName}'!\n{ex.Message}");
-            }
-            return null;
         }
         #endregion
 
@@ -1092,6 +1098,27 @@ namespace MyGui.net
             string directory = Path.GetDirectoryName(filePath);
             string newFileName = fileNameWithoutExtension + appendant + extension;
             return Path.Combine(directory, newFileName);
+        }
+
+        public static string? FindFileInSubDirs(string directory, string fileName)
+        {
+            if (fileName == null || fileName == "")
+            {
+                return null;
+            }
+            try
+            {
+                foreach (string file in Directory.EnumerateFiles(directory, fileName, SearchOption.AllDirectories))
+                {
+                    return file;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"An error occurred while searching for file '{fileName}'!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"An error occurred while searching for file '{fileName}'!\n{ex.Message}");
+            }
+            return null;
         }
 
         public static Color? ParseColorFromString(string colorString)

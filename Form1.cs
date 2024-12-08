@@ -3,6 +3,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.Gtk;
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 
@@ -24,6 +25,7 @@ namespace MyGui.net
         public Size ProjectSize = Settings.Default.DefaultWorkspaceSize;//new(1920, 1080);
         static SKBitmap _viewportBackgroundBitmap;
         static Dictionary<string, SKImage> _skinAtlasCache = new();
+        private MyGuiResource _nullSkinResource = new MyGuiResource();
 
         static Dictionary<string, Control> _editorProperties = new();
         static FormSideBar? _sidebarForm;
@@ -144,7 +146,131 @@ namespace MyGui.net
                 }
             }
             _allResources = Util.ReadAllResources(_ScrapMechanicPath, 1);
-            Util.PrintAllResources(_allResources);
+            //Util.PrintAllResources(_allResources);
+            PrintFontData("English", _ScrapMechanicPath);
+            #region Create _nullSkinResource
+            _nullSkinResource.tileSize = "16 16";
+            _nullSkinResource.path = "res:SelectionRectsSkin.png";
+            _nullSkinResource.basisSkins = [
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "0 0 4 4",
+                    align = "Left Top",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "32 16 4 4"
+                        }
+                    ]
+                },
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "4 0 8 4",
+                    align = "HStretch Top",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "36 16 8 4"
+                        }
+                    ]
+                },
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "12 0 4 4",
+                    align = "Right Top",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "44 16 4 4"
+                        }
+                    ]
+                },
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "12 4 4 8",
+                    align = "Right VStretch",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "44 20 4 8"
+                        }
+                    ]
+                },
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "12 12 4 4",
+                    align = "Right Bottom",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "44 28 4 4"
+                        }
+                    ]
+                },
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "4 12 8 4",
+                    align = "HStretch Bottom",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "36 28 8 4"
+                        }
+                    ]
+                },
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "0 12 4 4",
+                    align = "Left Bottom",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "32 28 4 4"
+                        }
+                    ]
+                },
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "0 4 4 8",
+                    align = "Left VStretch",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "32 20 4 8"
+                        }
+                    ]
+                },
+                new()
+                {
+                    type = "SubSkin",
+                    offset = "4 4 8 8",
+                    align = "Stretch",
+                    states = [
+                        new()
+                        {
+                            name = "normal",
+                            offset = "36 20 8 8"
+                        }
+                    ]
+                }
+            ];
+            #endregion
             HandleWidgetSelection();
 
             if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
@@ -850,8 +976,6 @@ namespace MyGui.net
             IsAntialias = true
         };
 
-        private readonly SKPaint _baseViewportPaint = new SKPaint { FilterQuality = SKFilterQuality.Low, IsAntialias = false, IsDither = false, };
-
 
         //do NOT tell me performance sucks if you enable ANY Debug.Writeline's in the rendering code - The Red Builder
         private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
@@ -878,7 +1002,7 @@ namespace MyGui.net
                     Color = SKColors.Black,
                     IsAntialias = false
                 });
-                canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), _baseViewportPaint);
+                canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : SKFilterQuality.High, IsAntialias = true, IsDither = false, });
             }
             else
             {
@@ -933,6 +1057,13 @@ namespace MyGui.net
 
         private Dictionary<MyGuiWidgetData, WidgetHighlightType> _renderWidgetHighligths = new();
 
+        private Dictionary<string, SKColor> _widgetTypeColors = new(){
+            { "Button", new SKColor(0xDF7F00) },
+            { "EditBox", new SKColor(0xEFEF00) },
+            { "ItemBox", new SKColor(0x00F7F7) },
+            { "ImageBox", new SKColor(0x0CF400) }
+        };
+
         private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null)
         {
             // Calculate widget position relative to parent
@@ -951,39 +1082,47 @@ namespace MyGui.net
             // Generate a random color
             //var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
 
-            string skinPath = _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : null;
+            string skinPath = _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : "";
 
 
             //Debug.WriteLine(skinPath);
-            if (widget.skin != null && skinPath != null && skinPath != "" && !_skinAtlasCache.ContainsKey(skinPath))
+            if (!_skinAtlasCache.ContainsKey(skinPath))
             {
-                //Debug.WriteLine($"caching skin from dir {skinPath}");
-                SKBitmap? cachedBitmap = SKBitmap.Decode(skinPath);
-                if (cachedBitmap != null)
+                if (widget.skin != null && skinPath != null && skinPath != "")
                 {
-                    _skinAtlasCache[skinPath] = SKImage.FromBitmap(cachedBitmap);
+                    //Debug.WriteLine($"caching skin from dir {skinPath}");
+                    SKBitmap? cachedBitmap = SKBitmap.Decode(skinPath);
+                    if (cachedBitmap != null)
+                    {
+                        _skinAtlasCache[skinPath] = SKImage.FromBitmap(cachedBitmap);
+                    }
+                    else
+                    {
+                        _skinAtlasCache[skinPath] = null;
+                    }
                 }
                 else
                 {
-                    _skinAtlasCache[skinPath] = null;
+                    _skinAtlasCache[""] = SKImage.FromBitmap(LoadBitmap(_nullSkinResource.path));
                 }
             }
 
             // Draw rectangle for the widget
-            var paint = new SKPaint
+            /*var paint = new SKPaint
             {
                 //Color = color,
                 Style = SKPaintStyle.Fill,
                 IsAntialias = false
             };
-            //canvas.DrawRect(rect, paint);
-            if (skinPath != null &&_skinAtlasCache.ContainsKey(skinPath))
+            canvas.DrawRect(rect, paint);*/
+            if (skinPath != null && skinPath != "" && _skinAtlasCache.ContainsKey(skinPath))
             {
                 RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect);
             }
             else
             {
-                canvas.DrawRect(rect, paint);
+                RenderWidget(canvas, _skinAtlasCache[skinPath], _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null);
+                //canvas.DrawRect(rect, paint);
             }
 
             // Draw the widget's name (optional)
@@ -1035,7 +1174,7 @@ namespace MyGui.net
             canvas.Restore();
         }
 
-        private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect)
+        private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null)
         {
             if (atlasImage == null || resource == null || resource.basisSkins == null)
             {
@@ -1069,19 +1208,19 @@ namespace MyGui.net
                 var tileRect = new SKRect(
                     posSize.Item1.X,
                     posSize.Item1.Y,
-                    posSize.Item1.X + posSize.Item2.X,
-                    posSize.Item1.Y + posSize.Item2.Y
+                    posSize.Item1.X + Math.Max(posSize.Item2.X, 1), //Size must be atleast 1 px (As SkiaSharp doesnt render anything if the size is 0)
+                    posSize.Item1.Y + Math.Max(posSize.Item2.Y, 1)
                 );
 
                 var maxSizePoint = Util.GetWidgetPos(false, resource.tileSize, new(1, 1));
 
                 // Calculate destination rectangle based on alignment
-                var destRect = GetAlignedRectangle(skin.align, clientRect, new(posSize.Item2.X, posSize.Item2.Y),
+                var destRect = GetAlignedRectangle(skin.align, clientRect, new(tileOffset.Item2.X, tileOffset.Item2.Y),
                     new SKRect(
                     tileOffset.Item1.X,
                     tileOffset.Item1.Y,
-                    tileOffset.Item2.X,
-                    tileOffset.Item2.Y
+                    tileOffset.Item1.X + tileOffset.Item2.X,
+                    tileOffset.Item1.Y + tileOffset.Item2.Y
                 ), new(maxSizePoint.X, maxSizePoint.Y));
 
 
@@ -1092,7 +1231,7 @@ namespace MyGui.net
                     TextSize = 7,
                     IsAntialias = false
                 };
-                canvas.DrawText(skin.align, destRect.Left + 2, destRect.Top + 5, textPaintStroke);
+                canvas.DrawText(skin.align, destRect.Left + 2, destRect.Top + rand.Next(5,40), textPaintStroke);
 
                 var debugPaint = new SKPaint
                 {
@@ -1100,10 +1239,42 @@ namespace MyGui.net
                     Style = SKPaintStyle.Stroke,
                     StrokeWidth = 2
                 };
-                canvas.DrawRect(destRect, debugPaint);
-                Debug.WriteLine(tileRect);*/
+                canvas.DrawRect(destRect, debugPaint);*/
+                //Debug.WriteLine(tileRect);
                 // Draw the atlas texture
-                canvas.DrawImage(atlasImage, tileRect, destRect, _baseViewportPaint);
+                if (drawColor != null)
+                {
+                    float[] colorMatrix = new float[]
+                    {
+                        drawColor.Value.Red / 255f, 0, 0, 0, 0,
+                        0, drawColor.Value.Green / 255f, 0, 0, 0,
+                        0, 0, drawColor.Value.Blue / 255f, 0, 0,
+                        0, 0, 0, 1, 0
+                    };
+
+                    // Create a color filter using the color matrix
+                    SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
+
+                    // Clone the paint object and set the color filter
+                    using (var paint = new SKPaint())
+                    {
+                        paint.ColorFilter = colorFilter;
+
+                        //int beforeClipSave = canvas.Save();
+                        //canvas.ClipRect(destRect);
+                        //canvas.Clear();
+                        canvas.DrawImage(atlasImage, tileRect, destRect, paint);
+                        //canvas.RestoreToCount(beforeClipSave);
+                    }
+                }
+                else
+                {
+                    //int beforeClipSave = canvas.Save();
+                    //canvas.ClipRect(destRect);
+                    //canvas.Clear();
+                    canvas.DrawImage(atlasImage, tileRect, destRect, new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true, IsDither = false, });
+                    //canvas.RestoreToCount(beforeClipSave);
+                }
             }
         }
 
@@ -1111,7 +1282,7 @@ namespace MyGui.net
         private static SKRect GetAlignedRectangle(string? align, SKRect container, SKSize tileSize, SKRect subskinOffset, SKSize maxSize)
         {
             //TODO: FIGURE OUT MAX SIZE
-            float x = container.Left + subskinOffset.Left, y = container.Top + subskinOffset.Top, width = tileSize.Width, height = tileSize.Height;
+            float x = container.Left, y = container.Top, width = tileSize.Width, height = tileSize.Height;
 
             switch (align)
             {
@@ -1175,7 +1346,7 @@ namespace MyGui.net
                     break;
 
                 case "HStretch Bottom":
-                    y = container.Bottom - tileSize.Height;
+                    y = container.Bottom - subskinOffset.Height;
                     width = container.Width;
                     break;
 
@@ -1611,7 +1782,7 @@ namespace MyGui.net
                     }
                     copyToolStripMenuItem.Enabled = _currentSelectedWidget != null;
                     deleteToolStripMenuItem.Enabled = _currentSelectedWidget != null;
-                    editorMenuStrip.Show(e.Location);
+                    editorMenuStrip.Show(Cursor.Position);
                 }
                 _draggingViewport = false;
                 _movedViewport = false;
