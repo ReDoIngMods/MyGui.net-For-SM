@@ -346,6 +346,7 @@ namespace MyGui.net
                     tabPage1Panel.Controls[i].Dispose();
                 }
                 tabPage1Panel.ResumeLayout();
+                viewport.Refresh();
                 return;
             }
             _draggedWidgetPosition = _currentSelectedWidget.position;
