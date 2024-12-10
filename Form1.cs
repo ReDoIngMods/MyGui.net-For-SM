@@ -379,6 +379,7 @@ namespace MyGui.net
                 }
                 tabPage1Panel.ResumeLayout();
                 tabPage1Panel.Refresh();
+                viewport.Refresh();
                 return;
             }
             /*foreach (var item in _editorProperties)
