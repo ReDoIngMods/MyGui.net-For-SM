@@ -338,12 +338,14 @@ namespace MyGui.net
 
         void HandleWidgetSelection()
         {
-            for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
-            {
-                tabPage1Panel.Controls[i].Dispose();
-            }
             if (_currentSelectedWidget == null)
             {
+                tabPage1Panel.SuspendLayout();
+                for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
+                {
+                    tabPage1Panel.Controls[i].Dispose();
+                }
+                tabPage1Panel.ResumeLayout();
                 return;
             }
             _draggedWidgetPosition = _currentSelectedWidget.position;
@@ -899,6 +901,11 @@ namespace MyGui.net
             {
                 UpdateViewportBackground();
             }
+
+            if (e.PropertyName == nameof(Settings.Default.UseViewportVSync) && Settings.Default.UseViewportVSync != viewport.VSync)
+            {
+                viewport.VSync = viewport.VSync;
+            }
             viewport.Invalidate();
         }
 
@@ -1181,6 +1188,11 @@ namespace MyGui.net
                 return; // Nothing to render if essential data is missing
             }
 
+            if (resource == _nullSkinResource && !Settings.Default.RenderInvisibleWidgets)
+            {
+                return;
+            }
+
             //Debug.WriteLine($"Rendering widget with skin {resource.name}.");
 
             // Iterate through skins in reverse order
@@ -1272,7 +1284,7 @@ namespace MyGui.net
                     //int beforeClipSave = canvas.Save();
                     //canvas.ClipRect(destRect);
                     //canvas.Clear();
-                    canvas.DrawImage(atlasImage, tileRect, destRect, new SKPaint { FilterQuality = SKFilterQuality.High, IsAntialias = true, IsDither = false, });
+                    canvas.DrawImage(atlasImage, tileRect, destRect, new SKPaint { FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (Settings.Default.UseViewportAntiAliasing ? SKFilterQuality.High : SKFilterQuality.None), IsAntialias = true, IsDither = true});
                     //canvas.RestoreToCount(beforeClipSave);
                 }
             }
@@ -1293,8 +1305,10 @@ namespace MyGui.net
                     return new SKRect(container.Left, container.Top, container.Left + tileSize.Width, container.Top + tileSize.Height);
 
                 case "Stretch":
-                    width = container.Width; // do size="34 86" - the current tile size and add that
-                    height = container.Height;
+                    x += subskinOffset.Left;
+                    y += subskinOffset.Top;
+                    width = container.Width - (maxSize.Width - tileSize.Width);
+                    height = container.Height - (maxSize.Height - tileSize.Height);
                     break;
 
                 case "Center":
@@ -1311,7 +1325,8 @@ namespace MyGui.net
                     break;
 
                 case "Left VStretch":
-                    height = container.Height;
+                    y += subskinOffset.Top;
+                    height = container.Height - (maxSize.Height - tileSize.Height);
                     break;
 
                 case "Left VCenter":
@@ -1329,7 +1344,8 @@ namespace MyGui.net
 
                 case "Right VStretch":
                     x = container.Right - tileSize.Width;
-                    height = container.Height;
+                    y += subskinOffset.Top;
+                    height = container.Height - (maxSize.Height - tileSize.Height);
                     break;
 
                 case "Right VCenter":
@@ -1338,7 +1354,8 @@ namespace MyGui.net
                     break;
 
                 case "HStretch Top":
-                    width = container.Width;
+                    x += subskinOffset.Left;
+                    width = container.Width - (maxSize.Width - tileSize.Width);
                     break;
 
                 case "HCenter Top":
@@ -1347,7 +1364,8 @@ namespace MyGui.net
 
                 case "HStretch Bottom":
                     y = container.Bottom - subskinOffset.Height;
-                    width = container.Width;
+                    x += subskinOffset.Left;
+                    width = container.Width - (maxSize.Width - tileSize.Width);
                     break;
 
                 case "HCenter Bottom":

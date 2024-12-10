@@ -287,5 +287,41 @@ namespace MyGui.net.Properties {
                 this["RenderWidgetNames"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseViewportVSync {
+            get {
+                return ((bool)(this["UseViewportVSync"]));
+            }
+            set {
+                this["UseViewportVSync"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseViewportAntiAliasing {
+            get {
+                return ((bool)(this["UseViewportAntiAliasing"]));
+            }
+            set {
+                this["UseViewportAntiAliasing"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RenderInvisibleWidgets {
+            get {
+                return ((bool)(this["RenderInvisibleWidgets"]));
+            }
+            set {
+                this["RenderInvisibleWidgets"] = value;
+            }
+        }
     }
 }

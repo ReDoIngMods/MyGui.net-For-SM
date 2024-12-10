@@ -44,6 +44,9 @@
             exportAskRadioButton = new RadioButton();
             exportAsPxRadioButton = new RadioButton();
             groupBox1 = new GroupBox();
+            renderInvisibleWidgetCheckBox = new CheckBox();
+            useViewportAACheckBox = new CheckBox();
+            useViewportVSyncCheckBox = new CheckBox();
             renderWidgetNamesCheckBox = new CheckBox();
             groupBox5 = new GroupBox();
             useBackgroundImageGrid = new RadioButton();
@@ -280,18 +283,57 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(renderInvisibleWidgetCheckBox);
+            groupBox1.Controls.Add(useViewportAACheckBox);
+            groupBox1.Controls.Add(useViewportVSyncCheckBox);
             groupBox1.Controls.Add(renderWidgetNamesCheckBox);
             groupBox1.Location = new Point(3, 104);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(203, 51);
+            groupBox1.Size = new Size(203, 131);
             groupBox1.TabIndex = 7;
             groupBox1.TabStop = false;
             groupBox1.Text = "Rendering";
             // 
+            // renderInvisibleWidgetCheckBox
+            // 
+            renderInvisibleWidgetCheckBox.AccessibleDescription = "";
+            renderInvisibleWidgetCheckBox.AutoSize = true;
+            renderInvisibleWidgetCheckBox.Location = new Point(6, 72);
+            renderInvisibleWidgetCheckBox.Name = "renderInvisibleWidgetCheckBox";
+            renderInvisibleWidgetCheckBox.Size = new Size(155, 19);
+            renderInvisibleWidgetCheckBox.TabIndex = 3;
+            renderInvisibleWidgetCheckBox.Text = "Render Invisible Widgets";
+            renderInvisibleWidgetCheckBox.UseVisualStyleBackColor = true;
+            renderInvisibleWidgetCheckBox.CheckedChanged += renderInvisibleWidgetCheckBox_CheckedChanged;
+            // 
+            // useViewportAACheckBox
+            // 
+            useViewportAACheckBox.AccessibleDescription = "";
+            useViewportAACheckBox.AutoSize = true;
+            useViewportAACheckBox.Location = new Point(6, 47);
+            useViewportAACheckBox.Name = "useViewportAACheckBox";
+            useViewportAACheckBox.Size = new Size(95, 19);
+            useViewportAACheckBox.TabIndex = 2;
+            useViewportAACheckBox.Text = "Anti-Aliasing";
+            useViewportAACheckBox.UseVisualStyleBackColor = true;
+            useViewportAACheckBox.CheckedChanged += useViewportAACheckBox_CheckedChanged;
+            // 
+            // useViewportVSyncCheckBox
+            // 
+            useViewportVSyncCheckBox.AccessibleDescription = "";
+            useViewportVSyncCheckBox.AutoSize = true;
+            useViewportVSyncCheckBox.Location = new Point(6, 22);
+            useViewportVSyncCheckBox.Name = "useViewportVSyncCheckBox";
+            useViewportVSyncCheckBox.Size = new Size(150, 19);
+            useViewportVSyncCheckBox.TabIndex = 1;
+            useViewportVSyncCheckBox.Text = "VSync (Recommended)";
+            useViewportVSyncCheckBox.UseVisualStyleBackColor = true;
+            useViewportVSyncCheckBox.CheckedChanged += useViewportVSyncCheckBox_CheckedChanged;
+            // 
             // renderWidgetNamesCheckBox
             // 
             renderWidgetNamesCheckBox.AutoSize = true;
-            renderWidgetNamesCheckBox.Location = new Point(6, 22);
+            renderWidgetNamesCheckBox.Location = new Point(6, 97);
             renderWidgetNamesCheckBox.Name = "renderWidgetNamesCheckBox";
             renderWidgetNamesCheckBox.Size = new Size(191, 19);
             renderWidgetNamesCheckBox.TabIndex = 0;
@@ -374,7 +416,7 @@
             groupBox8.Controls.Add(useDarkTheme);
             groupBox8.Controls.Add(useLightTheme);
             groupBox8.Controls.Add(useAutoTheme);
-            groupBox8.Location = new Point(3, 183);
+            groupBox8.Location = new Point(3, 241);
             groupBox8.Name = "groupBox8";
             groupBox8.Size = new Size(178, 52);
             groupBox8.TabIndex = 9;
@@ -421,7 +463,7 @@
             // 
             groupBox7.Controls.Add(useCustomLayoutCheckBox);
             groupBox7.Controls.Add(saveCustomLayoutCheckBox);
-            groupBox7.Location = new Point(187, 183);
+            groupBox7.Location = new Point(187, 241);
             groupBox7.Name = "groupBox7";
             groupBox7.Size = new Size(263, 75);
             groupBox7.TabIndex = 10;
@@ -453,7 +495,7 @@
             // groupBox3
             // 
             groupBox3.Controls.Add(showWarningsCheckBox);
-            groupBox3.Location = new Point(456, 183);
+            groupBox3.Location = new Point(456, 241);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(124, 55);
             groupBox3.TabIndex = 9;
@@ -861,5 +903,8 @@
         private CustomNumericUpDown workspaceSizeDefaultYNumericUpDown;
         private CustomNumericUpDown workspaceSizeDefaultXNumericUpDown;
         private Label label4;
+        private CheckBox useViewportVSyncCheckBox;
+        private CheckBox renderInvisibleWidgetCheckBox;
+        private CheckBox useViewportAACheckBox;
     }
 }

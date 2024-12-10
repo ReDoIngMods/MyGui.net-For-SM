@@ -45,6 +45,9 @@ namespace MyGui.net
             exportAskRadioButton.Checked = Settings.Default.ExportMode == 2;
             exportAsBothRadioButton.Checked = Settings.Default.ExportMode == 3;
 
+            useViewportVSyncCheckBox.Checked = Settings.Default.UseViewportVSync;
+            useViewportAACheckBox.Checked = Settings.Default.UseViewportAntiAliasing;
+            renderInvisibleWidgetCheckBox.Checked = Settings.Default.RenderInvisibleWidgets;
             renderWidgetNamesCheckBox.Checked = Settings.Default.RenderWidgetNames;
 
             useBackgroundImageColor.Checked = Settings.Default.EditorBackgroundMode == 0;
@@ -89,7 +92,7 @@ namespace MyGui.net
             _formLoaded = true;
 
             //Change about text
-            aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp (github.com/mono/SkiaSharp) by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• Ben Bingo";
+            aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp (github.com/mono/SkiaSharp) by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• Ben Bingo{Environment.NewLine}{Environment.NewLine}Feel free to take a look at the source code at (github.com/ReDoIngMods/MyGui.net-For-SM)!";
         }
 
         private void OnSettingChange()
@@ -181,6 +184,27 @@ namespace MyGui.net
             RadioButton sender = (RadioButton)senderAny;
             if (!sender.Checked) { return; }
             Settings.Default.ExportMode = (int)Enum.Parse<ExportMode>(sender.Name, true);
+            OnSettingChange();
+        }
+
+        private void useViewportVSyncCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.UseViewportVSync = sender.Checked;
+            OnSettingChange();
+        }
+
+        private void useViewportAACheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.UseViewportAntiAliasing = sender.Checked;
+            OnSettingChange();
+        }
+
+        private void renderInvisibleWidgetCheckBox_CheckedChanged(object senderAny, EventArgs e)
+        {
+            CheckBox sender = (CheckBox)senderAny;
+            Settings.Default.RenderInvisibleWidgets = sender.Checked;
             OnSettingChange();
         }
 
