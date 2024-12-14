@@ -3,6 +3,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.Gtk;
 using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Xml.Linq;
 using static MyGui.net.Util;
@@ -363,6 +364,10 @@ namespace MyGui.net
                     Settings.Default.SidePanelMonitor = Settings.Default.MainWindowMonitor;
                 }
             }
+            this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
+              ControlStyles.UserPaint |
+              ControlStyles.AllPaintingInWmPaint | ControlStyles.CacheText, true);
+            this.UpdateStyles();
             AdjustViewportScrollers();
             centerButton_Click(null, new EventArgs());
         }
@@ -731,11 +736,14 @@ namespace MyGui.net
                             {
                                 MinimumSize = new Size(1, 1),
                                 Dock = DockStyle.Fill,  // Ensure it resizes within the TableLayoutPanel
-                                DropDownStyle = ComboBoxStyle.DropDownList
+                                DropDownStyle = ComboBoxStyle.DropDownList,
                             };
-                            //skinBoxComboBox.Items.AddRange(property.comboBoxValues.ToArray());
+                            foreach (var item in _allResources)
+                            {
+                                skinBoxComboBox.Items.Add(item.Key);
+                            }
                             //Set the value from widget data
-                            valueInWidgetData = null;
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, "skin");
                             if (valueInWidgetData != null)
                             {
                                 skinBoxComboBox.SelectedIndex = skinBoxComboBox.Items.IndexOf(valueInWidgetData);
@@ -744,6 +752,9 @@ namespace MyGui.net
                             {
                                 skinBoxComboBox.SelectedIndex = -1;
                             }
+
+                            skinBoxComboBox.Tag = "skin";
+                            skinBoxComboBox.SelectionChangeCommitted += comboBox_ValueChanged;
 
                             Button skinBoxButton = new Button
                             {
@@ -807,7 +818,8 @@ namespace MyGui.net
             {
                 //Debug.WriteLine(_currentSelectedWidget.Name);
                 //Debug.WriteLine($"senderBoundTo: {senderBoundTo}");
-                switch (senderBoundTo)
+                ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "[DEFAULT]" ? null : sender.Text, Util.GetPropertyValue(currWidgetData, senderBoundTo)));
+                /*switch (senderBoundTo)
                 {
                     case "type":
                         ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "type", sender.Text, currWidgetData.type));
@@ -825,7 +837,7 @@ namespace MyGui.net
                     default:
                         ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "[DEFAULT]" ? null : sender.Text, Util.GetPropertyValue(currWidgetData, senderBoundTo)));
                         break;
-                }
+                }*/
                 /*foreach (var property in currWidgetData.properties)
 				{
 					Debug.WriteLine(property);

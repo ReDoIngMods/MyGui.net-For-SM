@@ -101,7 +101,7 @@ namespace MyGui.net
             splitContainer1.Panel1.Controls.Add(viewport);
             splitContainer1.Panel1.Controls.Add(viewportScrollX);
             splitContainer1.Panel1.Controls.Add(viewportScrollY);
-            splitContainer1.Panel1MinSize = 320;
+            splitContainer1.Panel1MinSize = 200;
             // 
             // splitContainer1.Panel2
             // 
