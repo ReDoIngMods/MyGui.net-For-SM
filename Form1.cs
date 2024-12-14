@@ -1287,9 +1287,10 @@ namespace MyGui.net
                             var fontData = widget.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widget.properties["FontName"]) ? _allFonts[widget.properties["FontName"]] : _allFonts["SM_TextLabel"];
                             SKTypeface typeFace = SKTypeface.FromFile(Path.Combine(_ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source));
                             Debug.WriteLine(fontData.allowedChars);
+                            Color? textColor = widget.properties.ContainsKey("TextColour") ? ParseColorFromString(widget.properties["TextColour"]) : Color.White;
                             var textPaint = new SKPaint
                             {
-                                Color = SKColors.White,
+                                Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B),
                                 TextSize = widget.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widget.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widget.properties["FontHeight"]) : (float)fontData.size,
                                 IsAntialias = true,
                                 Typeface = typeFace
