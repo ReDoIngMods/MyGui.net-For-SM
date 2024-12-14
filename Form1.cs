@@ -63,6 +63,7 @@ namespace MyGui.net
         static FormSideBar? _sidebarForm;
         CommandManager _commandManager = new CommandManager();
         static Dictionary<string, MyGuiResource> _allResources = new();
+        static Dictionary<string, MyGuiFontData> _allFonts = new();
 
         //static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
         static string _ScrapMechanicPath
@@ -179,7 +180,7 @@ namespace MyGui.net
             }
             _allResources = Util.ReadAllResources(_ScrapMechanicPath, 1);
             //Util.PrintAllResources(_allResources);
-            PrintFontData("English", _ScrapMechanicPath);
+            _allFonts = Util.ReadFontData("English", _ScrapMechanicPath);
             #region Create _nullSkinResource
             _nullSkinResource.tileSize = "16 16";
             _nullSkinResource.path = "res:SelectionRectsSkin.png";
@@ -1161,11 +1162,11 @@ namespace MyGui.net
             canvas.DrawRect(rect, paint);*/
             if (skinPath != null && skinPath != "" && _skinAtlasCache.ContainsKey(skinPath))
             {
-                RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect);
+                RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect, null, widget);
             }
             else
             {
-                RenderWidget(canvas, _skinAtlasCache[skinPath], _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null);
+                RenderWidget(canvas, _skinAtlasCache[skinPath], _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget);
                 //canvas.DrawRect(rect, paint);
             }
 
@@ -1218,7 +1219,7 @@ namespace MyGui.net
             canvas.Restore();
         }
 
-        private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null)
+        private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null)
         {
             if (atlasImage == null || resource == null || resource.basisSkins == null)
             {
@@ -1233,10 +1234,10 @@ namespace MyGui.net
             //Debug.WriteLine($"Rendering widget with skin {resource.name}.");
 
             // Iterate through skins in reverse order
-            for (int i = resource.basisSkins.Count - 1; i >= 0; i--)
+            for (int i = 0; i < resource.basisSkins.Count; i++)
             {
                 var skin = resource.basisSkins[i];
-                if (skin.type == "SimpleText" || skin.type == "EffectSkin")
+                if (skin.type == "EffectSkin")
                 {
                     continue; // Skip rendering for invalidx skins
                 }
@@ -1246,14 +1247,19 @@ namespace MyGui.net
 
                 // Find the normal state of the skin
                 var normalState = skin.states.FirstOrDefault(state => state.name == "normal");
-                if (normalState == null || normalState.offset == null)
+                if (normalState == null)
                 {
                     continue; // Skip if no normal state is found
+                }
+                var correctOffset = normalState.offset;
+                if (normalState.offset == null)
+                {
+                    correctOffset = skin.offset;
                 }
 
                 //Debug.WriteLine($"Rendering skin with alignment: {skin.align}");
 
-                var posSize = Util.GetWidgetPosAndSize(false, normalState.offset, new(1, 1));
+                var posSize = Util.GetWidgetPosAndSize(false, correctOffset, new(1, 1));
                 var tileRect = new SKRect(
                     posSize.Item1.X,
                     posSize.Item1.Y,
@@ -1271,6 +1277,30 @@ namespace MyGui.net
                     tileOffset.Item1.X + tileOffset.Item2.X,
                     tileOffset.Item1.Y + tileOffset.Item2.Y
                 ), new(maxSizePoint.X, maxSizePoint.Y));
+
+                if (widget != null)
+                {
+                    if (skin.type == "SimpleText")
+                    {
+                        if (widget.properties.ContainsKey("Caption"))
+                        {
+                            var fontData = widget.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widget.properties["FontName"]) ? _allFonts[widget.properties["FontName"]] : _allFonts["SM_TextLabel"];
+                            SKTypeface typeFace = SKTypeface.FromFile(Path.Combine(_ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source));
+                            Debug.WriteLine(fontData.allowedChars);
+                            var textPaint = new SKPaint
+                            {
+                                Color = SKColors.White,
+                                TextSize = widget.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widget.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widget.properties["FontHeight"]) : (float)fontData.size,
+                                IsAntialias = true,
+                                Typeface = typeFace
+                            };
+                            canvas.DrawText(fontData.allowedChars == "ALL CHARACTERS" ? widget.properties["Caption"] : ReplaceInvalidChars(widget.properties["Caption"], fontData.allowedChars), destRect.Left, destRect.Top + textPaint.TextSize, textPaint);
+                            textPaint.Dispose();
+                            typeFace.Dispose();
+                        }
+                        continue;
+                    }
+                }
 
 
                 //DEBUG
@@ -1291,6 +1321,7 @@ namespace MyGui.net
                 canvas.DrawRect(destRect, debugPaint);*/
                 //Debug.WriteLine(tileRect);
                 // Draw the atlas texture
+                var drawPaint = new SKPaint();
                 if (drawColor != null)
                 {
                     float[] colorMatrix = new float[]
@@ -1305,25 +1336,27 @@ namespace MyGui.net
                     SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
 
                     // Clone the paint object and set the color filter
-                    using (var paint = new SKPaint())
-                    {
-                        paint.ColorFilter = colorFilter;
+                    drawPaint.ColorFilter = colorFilter;
 
-                        //int beforeClipSave = canvas.Save();
-                        //canvas.ClipRect(destRect);
-                        //canvas.Clear();
-                        canvas.DrawImage(atlasImage, tileRect, destRect, paint);
-                        //canvas.RestoreToCount(beforeClipSave);
-                    }
+                    //int beforeClipSave = canvas.Save();
+                    //canvas.ClipRect(destRect);
+                    //canvas.Clear();
+                    canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
+                    colorFilter.Dispose();
+                    //canvas.RestoreToCount(beforeClipSave);
                 }
                 else
                 {
                     //int beforeClipSave = canvas.Save();
                     //canvas.ClipRect(destRect);
                     //canvas.Clear();
-                    canvas.DrawImage(atlasImage, tileRect, destRect, new SKPaint { FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (Settings.Default.UseViewportAntiAliasing ? SKFilterQuality.High : SKFilterQuality.None), IsAntialias = true, IsDither = true});
+                    drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (Settings.Default.UseViewportAntiAliasing ? SKFilterQuality.High : SKFilterQuality.None);
+                    drawPaint.IsAntialias = true;
+                    drawPaint.IsDither = true;
+                    canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
                     //canvas.RestoreToCount(beforeClipSave);
                 }
+                drawPaint.Dispose();
             }
         }
 

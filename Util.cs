@@ -987,7 +987,7 @@ namespace MyGui.net
             return Tuple.Create(point1, point2);
         }
 
-        static double ProperlyParseDouble(string input)
+        public static double ProperlyParseDouble(string input)
         {
             if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double result))
             {
@@ -1164,6 +1164,18 @@ namespace MyGui.net
 
             // Otherwise, it's already in hex format, so just remove the #
             return htmlColor.Substring(1);
+        }
+
+        public static string ReplaceInvalidChars(string input, string allowedChars)
+        {
+            char[] result = new char[input.Length];
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                result[i] = allowedChars.Contains(input[i]) ? input[i] : '\u25AF';
+            }
+
+            return new string(result);
         }
         #endregion
 
