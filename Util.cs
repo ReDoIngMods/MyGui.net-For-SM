@@ -1130,6 +1130,11 @@ namespace MyGui.net
             }
             string[] parts = colorString.Split(' ');
 
+            Debug.WriteLine(colorString);
+            if (parts.Length == 1 && parts[0].StartsWith('#'))
+            {
+                return HexStringToColor(parts[0]);
+            }
             if (parts.Length != 3)
                 throw new FormatException("Color string must be in the format 'r g b'");
 
@@ -1149,6 +1154,15 @@ namespace MyGui.net
             double b = color.B / 255.0;
 
             return string.Format(CultureInfo.InvariantCulture, "{0} {1} {2}", r, g, b);
+        }
+
+        public static Color? HexStringToColor(string color)
+        {
+            // Get the HTML color string from ColorTranslator
+            Color htmlColor = ColorTranslator.FromHtml(color);
+
+            // If the result is a named color (e.g., "White"), convert it to hex manually
+            return htmlColor != Color.Empty ? htmlColor : null;
         }
 
         public static string ColorToHexString(Color color)
