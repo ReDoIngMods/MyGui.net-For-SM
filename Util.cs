@@ -1176,66 +1176,11 @@ namespace MyGui.net
                      child.Bottom < parent.Top || child.Top > parent.Bottom);
         }
 
-        private class WidgetWithDepth
-        {
-            public MyGuiWidgetData Widget { get; }
-            public int Depth { get; }
-
-            public WidgetWithDepth(MyGuiWidgetData widget, int depth)
-            {
-                Widget = widget;
-                Depth = depth;
-            }
-        }
-
         // Helper to check if a widget contains a point (with absolute positioning)
         private static bool ContainsPoint(MyGuiWidgetData widget, Point absolutePosition, Point screenPoint)
         {
             var rect = new Rectangle(absolutePosition, (Size)widget.size);
             return rect.Contains(screenPoint);
-        }
-
-        // Recursive function to find the topmost widget for a single root, with accumulated position
-        private static WidgetWithDepth? GetTopmostWidgetWithDepth(
-            MyGuiWidgetData root,
-            Point parentAbsolutePosition,
-            Point screenPoint,
-            int currentDepth,
-            MyGuiWidgetData[]? excludeWidgets)
-        {
-            // Calculate the widget's absolute position by adding the parent's position
-            Point absolutePosition = new(
-                parentAbsolutePosition.X + root.position.X,
-                parentAbsolutePosition.Y + root.position.Y
-            );
-
-            // Check if the point is within the widget's bounds
-            if (excludeWidgets?.Contains(root) == true || !ContainsPoint(root, absolutePosition, screenPoint))
-            {
-                return null;
-            }
-
-            WidgetWithDepth? topmost = new WidgetWithDepth(root, currentDepth);
-
-            // Traverse children in reverse order (render order), accumulating their positions
-            for (int i = root.children.Count - 1; i >= 0; i--)
-            {
-                var childTopmost = GetTopmostWidgetWithDepth(
-                    root.children[i],
-                    absolutePosition,
-                    screenPoint,
-                    currentDepth + 1,
-                    excludeWidgets
-                );
-
-                // Prefer deeper widgets
-                if (childTopmost != null && (topmost == null || childTopmost.Depth > topmost.Depth))
-                {
-                    topmost = childTopmost;
-                }
-            }
-
-            return topmost;
         }
 
         // Public function to get the topmost widget for a single root widget
@@ -1244,7 +1189,12 @@ namespace MyGui.net
             Point screenPoint,
             MyGuiWidgetData[]? excludeWidgets = null)
         {
-            return GetTopmostWidgetWithDepth(root, Point.Empty, screenPoint, 0, excludeWidgets)?.Widget;
+            var found = GetAllControlsAtPoint([root], screenPoint, excludeWidgets);
+            if (found.Count > 0)
+            {
+                return found[0];
+            }
+            return null;
         }
 
         // Public function to get the topmost widget for a list of widgets
@@ -1253,19 +1203,12 @@ namespace MyGui.net
             Point screenPoint,
             MyGuiWidgetData[]? excludeWidgets = null)
         {
-            WidgetWithDepth? topmost = null;
-
-            // Traverse the list in reverse order (render order)
-            for (int i = parents.Count - 1; i >= 0; i--)
+            var found = GetAllControlsAtPoint(parents, screenPoint, excludeWidgets);
+            if (found.Count > 0)
             {
-                var currentTopmost = GetTopmostWidgetWithDepth(parents[i], Point.Empty, screenPoint, 0, excludeWidgets);
-                if (currentTopmost != null && (topmost == null || currentTopmost.Depth > topmost.Depth))
-                {
-                    topmost = currentTopmost; // Prefer deeper widgets
-                }
+                return found[0];
             }
-
-            return topmost?.Widget;
+            return null;
         }
 
         public static MyGuiWidgetData? GetTopmostControlAtMousePosition(MyGuiWidgetData? originControl, Point relativePoint, MyGuiWidgetData[] excludeParent = null)
