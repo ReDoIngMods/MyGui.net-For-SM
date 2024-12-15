@@ -18,6 +18,7 @@ namespace MyGui.net
         static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
         static string _currentLayoutSavePath = "";
         static MyGuiWidgetData? _currentSelectedWidget;
+        static string _lastSelectedWidgetType;
 
         static SKMatrix _viewportMatrix = SKMatrix.CreateIdentity();
         static float _viewportScale = 1f;
@@ -384,11 +385,20 @@ namespace MyGui.net
                 }
                 tabPage1Panel.ResumeLayout();
                 viewport.Refresh();
+                _lastSelectedWidgetType = "";
                 return;
             }
             _draggedWidgetPosition = _currentSelectedWidget.position;
             _draggedWidgetSize = (Size)_currentSelectedWidget.size;
-            AddProperties();
+            if (_lastSelectedWidgetType == (_currentSelectedWidget?.type ?? ""))
+            {
+                UpdateProperties();
+            }
+            else
+            {
+                AddProperties();
+            }
+            _lastSelectedWidgetType = _currentSelectedWidget.type;
             viewport.Refresh();
         }
 
@@ -406,7 +416,7 @@ namespace MyGui.net
             UpdateUndoRedo(false);
         }
 
-        /*void UpdateProperties()
+        void UpdateProperties()
         {
             tabPage1Panel.SuspendLayout();
             if (_currentSelectedWidget == null)
@@ -483,7 +493,7 @@ namespace MyGui.net
 
                         case MyGuiWidgetPropertyType.SkinBox:
                             ComboBox skinBoxComboBox = (ComboBox)_editorProperties[property.boundTo];
-                            valueInWidgetData = null;
+                            valueInWidgetData = Util.GetPropertyValue(currentWidgetData, "skin");
                             if (valueInWidgetData != null)
                             {
                                 skinBoxComboBox.SelectedIndex = skinBoxComboBox.Items.IndexOf(valueInWidgetData);
@@ -498,7 +508,7 @@ namespace MyGui.net
             }
             tabPage1Panel.ResumeLayout();
             tabPage1Panel.Refresh();
-        }*/
+        }
 
         void AddProperties()
         {
@@ -820,6 +830,11 @@ namespace MyGui.net
                 //Debug.WriteLine(_currentSelectedWidget.Name);
                 //Debug.WriteLine($"senderBoundTo: {senderBoundTo}");
                 ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "[DEFAULT]" ? null : sender.Text, Util.GetPropertyValue(currWidgetData, senderBoundTo)));
+                if (_lastSelectedWidgetType != (_currentSelectedWidget?.type ?? ""))
+                {
+                    AddProperties();
+                    _lastSelectedWidgetType = _currentSelectedWidget?.type ?? "";
+                }
                 /*switch (senderBoundTo)
                 {
                     case "type":
@@ -2188,6 +2203,11 @@ namespace MyGui.net
         {
             if (_draggingWidgetAt != BorderPosition.None) { return; }
             _commandManager.Undo();
+            if (!_currentLayout.Contains(_currentSelectedWidget))
+            {
+                _currentSelectedWidget = null;
+                _lastSelectedWidgetType = "";
+            }
 
             UpdateUndoRedo(true);
         }
@@ -2213,8 +2233,14 @@ namespace MyGui.net
             viewport.Refresh();
             if (updateProperties)
             {
-                //UpdateProperties(); used to be here, if i ever reimplement it ;)
-                AddProperties();
+                if (_lastSelectedWidgetType == (_currentSelectedWidget?.type ?? ""))
+                {
+                    UpdateProperties();
+                }
+                else
+                {
+                    AddProperties();
+                }
             }
         }
 
@@ -2374,8 +2400,8 @@ namespace MyGui.net
             {
                 ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.position, _draggedWidgetPositionStart));
                 _draggedWidgetPositionStart = new Point(0, 0);
-                //UpdateProperties(); used to be here, if i ever reimplement it ;)
-                AddProperties();
+                UpdateProperties(); //used to be here, if i ever reimplement it ;)
+                //AddProperties();
                 e.Handled = true;
             }
         }
