@@ -665,12 +665,12 @@ namespace MyGui.net
 				{
 					foreach (var r in res)
 					{
-						if (r.Attribute("type")?.Value == "ResourceImageSet") { continue; } //Special cases, "ResourceImageSet" is just set of images (different resources)
+						string resourceType = r.Attribute("type")?.Value;
+						if (resourceType == "ResourceImageSet") { continue; } //Special cases, "ResourceImageSet" is just set of images (different resources)
+						
 						string texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
-						if (texPath == null)
-						{
-							continue;
-						}
+						if (texPath == null && resourceType != "ResourceLayout") { continue; }
+
 						MyGuiResource newRes = new()
 						{
 							name = r.Attribute("name")?.Value ?? "NO NAME",
@@ -680,6 +680,7 @@ namespace MyGui.net
 							basisSkins = new(),
 							correctType = "",
 						};
+
 						foreach (var basisSkinElement in r.Elements("BasisSkin"))
 						{
 							MyGuiBasisSkin basisSkin = new()
@@ -702,6 +703,12 @@ namespace MyGui.net
 							}
 							newRes.basisSkins.Add(basisSkin);
 						}
+
+						if (resourceType == "ResourceLayout")
+						{
+							newRes.resourceLayout = ReadWidgetElements(r.Elements("Widget"), new(1920, 1080));
+						}
+
 						resources.Add(newRes);
 					}
 				}
@@ -739,7 +746,7 @@ namespace MyGui.net
 			var allResources = ReadAllResources(smPath, resolutionIdx);
 			foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
 			{
-				Debug.WriteLine($"KEY: {resource.Key}Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
+				Debug.WriteLine($"KEY: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
 			}
 		}
 
