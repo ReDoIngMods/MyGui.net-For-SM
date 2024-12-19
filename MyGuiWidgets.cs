@@ -878,7 +878,7 @@
         public string? tileSize;
         public List<MyGuiBasisSkin>? basisSkins;
         public List<MyGuiWidgetData>? resourceLayout; //good luck, trb
-        public string correctType = ""; //TODO: This is currently always ""
+        public string correctType = ""; //TODO: This is currently always "" for ResourceSkin resources
     }
 
     public class MyGuiFontData

@@ -708,6 +708,16 @@ namespace MyGui.net
 						}
 						else if (resourceType == "ResourceLayout")
 						{
+							foreach(var userString in r.Element("Widget").Elements("UserString"))
+							{
+								string key = userString.Attribute("key")?.Value;
+								string value = userString.Attribute("value")?.Value;
+
+								if (key == "LE_TargetWidgetType" && value != null)
+								{
+									newRes.correctType = value;
+								}
+							}
 							newRes.resourceLayout = ReadWidgetElements(r.Elements("Widget"), new(1920, 1080));
 						}
 
@@ -748,7 +758,7 @@ namespace MyGui.net
 			var allResources = ReadAllResources(smPath, resolutionIdx);
 			foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
 			{
-				Debug.WriteLine($"KEY: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
+				Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins?.Count}, ResourceLayout: {resource.Value.resourceLayout != null}, CorrectType: {resource.Value.correctType}");
 			}
 		}
 
@@ -757,7 +767,7 @@ namespace MyGui.net
 			Debug.WriteLine("RESOURCES:");
 			foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
 			{
-				Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins.Count}, CorrectType: {resource.Value.correctType}");
+				Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins?.Count}, ResourceLayout: {resource.Value.resourceLayout != null}, CorrectType: {resource.Value.correctType}");
 			}
 		}
 		#endregion
