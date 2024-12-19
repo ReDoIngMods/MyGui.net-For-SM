@@ -677,34 +677,36 @@ namespace MyGui.net
 							path = texPath,
 							tileSize = r.Attribute("size")?.Value,
 							pathSpecial = path,
-							basisSkins = new(),
 							correctType = "",
 						};
 
-						foreach (var basisSkinElement in r.Elements("BasisSkin"))
+						if (resourceType == "ResourceSkin")
 						{
-							MyGuiBasisSkin basisSkin = new()
+							newRes.basisSkins = new();
+							foreach (var basisSkinElement in r.Elements("BasisSkin"))
 							{
-								align = basisSkinElement.Attribute("align")?.Value,
-								type = basisSkinElement.Attribute("type")?.Value,
-								offset = basisSkinElement.Attribute("offset")?.Value,
-								states = new(),
-							};
-							foreach(var stateElement in basisSkinElement.Elements("State"))
-							{
-								MyGuiBasisSkinState state = new()
+								MyGuiBasisSkin basisSkin = new()
 								{
-									name = stateElement.Attribute("name")?.Value,
-									offset = stateElement.Attribute("offset")?.Value,
-									color = stateElement.Attribute("colour")?.Value, //colour is not a real word
-									shift = stateElement.Attribute("shifts")?.Value,
+									align = basisSkinElement.Attribute("align")?.Value,
+									type = basisSkinElement.Attribute("type")?.Value,
+									offset = basisSkinElement.Attribute("offset")?.Value,
+									states = new(),
 								};
-								basisSkin.states.Add(state);
+								foreach (var stateElement in basisSkinElement.Elements("State"))
+								{
+									MyGuiBasisSkinState state = new()
+									{
+										name = stateElement.Attribute("name")?.Value,
+										offset = stateElement.Attribute("offset")?.Value,
+										color = stateElement.Attribute("colour")?.Value, //colour is not a real word
+										shift = stateElement.Attribute("shifts")?.Value,
+									};
+									basisSkin.states.Add(state);
+								}
+								newRes.basisSkins.Add(basisSkin);
 							}
-							newRes.basisSkins.Add(basisSkin);
 						}
-
-						if (resourceType == "ResourceLayout")
+						else if (resourceType == "ResourceLayout")
 						{
 							newRes.resourceLayout = ReadWidgetElements(r.Elements("Widget"), new(1920, 1080));
 						}
