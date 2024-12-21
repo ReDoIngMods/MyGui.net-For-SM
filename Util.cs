@@ -947,7 +947,7 @@ namespace MyGui.net
 			if(!languageTags.ContainsKey(tagName))
 			{
 				Debug.WriteLine($"TAG NOT FOUND: {tagName}"); //This is a vanilla issue, it has some tag name that doesn't actually exist
-				return null;
+				return "";
 			}
 			return languageTags[tagName];
 		}

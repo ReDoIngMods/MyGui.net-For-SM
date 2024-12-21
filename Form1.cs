@@ -379,10 +379,7 @@ namespace MyGui.net
 			if (_currentSelectedWidget == null)
 			{
 				tabPage1Panel.SuspendLayout();
-				for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
-				{
-					tabPage1Panel.Controls[i].Dispose();
-				}
+				tabPage1Panel.Controls.Clear();
 				tabPage1Panel.ResumeLayout();
 				viewport.Refresh();
 				_lastSelectedWidgetType = "";
@@ -421,10 +418,7 @@ namespace MyGui.net
 			tabPage1Panel.SuspendLayout();
 			if (_currentSelectedWidget == null)
 			{
-				for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
-				{
-					tabPage1Panel.Controls[i].Dispose();
-				}
+				tabPage1Panel.Controls.Clear();
 				tabPage1Panel.ResumeLayout();
 				tabPage1Panel.Refresh();
 				viewport.Refresh();
@@ -513,10 +507,7 @@ namespace MyGui.net
 		void AddProperties()
 		{
 			tabPage1Panel.SuspendLayout();
-			for (int i = tabPage1Panel.Controls.Count - 1; i >= 0; i--)
-			{
-				tabPage1Panel.Controls[i].Dispose();
-			}
+			tabPage1Panel.Controls.Clear();
 			if (_currentSelectedWidget == null)
 			{
 				tabPage1Panel.ResumeLayout();
@@ -618,6 +609,7 @@ namespace MyGui.net
 
 						case MyGuiWidgetPropertyType.PointBox:
 							TableLayoutPanel pointBoxLayout = new TableLayoutPanel();
+							pointBoxLayout.SuspendLayout();
 							pointBoxLayout.ColumnCount = 2;
 							pointBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // First column
 							pointBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // Second column
@@ -664,6 +656,7 @@ namespace MyGui.net
 							pointBoxLayout.Controls.Add(pointBoxLayoutXCoord, 0, 0);
 							pointBoxLayout.Controls.Add(pointBoxLayoutYCoord, 1, 0);
 							control = pointBoxLayout;
+							pointBoxLayout.ResumeLayout();
 							break;
 
 						case MyGuiWidgetPropertyType.CheckBox:
@@ -677,6 +670,7 @@ namespace MyGui.net
 
 						case MyGuiWidgetPropertyType.ColorBox:
 							TableLayoutPanel colorBoxLayout = new TableLayoutPanel();
+							colorBoxLayout.SuspendLayout();
 							colorBoxLayout.ColumnCount = 3;
 							colorBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 23)); // First column
 							colorBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F)); // Second column
@@ -730,10 +724,12 @@ namespace MyGui.net
 							colorBoxLayout.Tag = property.boundTo;
 							control = colorBoxLayout;
 							_editorProperties[property.boundTo] = control;
+							colorBoxLayout.ResumeLayout();
 							break;
 
 						case MyGuiWidgetPropertyType.SkinBox:
 							TableLayoutPanel skinBoxLayout = new TableLayoutPanel();
+							skinBoxLayout.SuspendLayout();
 							skinBoxLayout.ColumnCount = 2;
 							skinBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F)); // Second column
 							skinBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F)); // Third column
@@ -784,6 +780,7 @@ namespace MyGui.net
 							_editorProperties[property.boundTo] = skinBoxComboBox;
 
 							control = skinBoxLayout;
+							skinBoxLayout.ResumeLayout();
 							break;
 
 							// Add more cases for other control types like ColorBox, etc.
@@ -803,12 +800,12 @@ namespace MyGui.net
 				tableLayoutPanel.RowCount++;
 			}
 			tableLayoutPanel.ResumeLayout();
-			tableLayoutPanel.Refresh();
+			//tableLayoutPanel.Refresh();
 
 			// Finally, add the TableLayoutPanel to the parent panel
 			tabPage1Panel.Controls.Add(tableLayoutPanel);
 			tabPage1Panel.ResumeLayout();
-			tabPage1Panel.Refresh();
+			//tabPage1Panel.Refresh();
 		}
 		#region Property Ui functions
 		private void textBox_ValueChanged(object senderAny, EventArgs e)
@@ -1084,9 +1081,9 @@ namespace MyGui.net
 			_renderWidgetHighligths.Clear();
 			int beforeProjectClip = canvas.Save();
 			canvas.ClipRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height));
-			foreach (var item in _currentLayout)
+			foreach (var widget in _currentLayout)
 			{
-				DrawWidget(canvas, item, new SKPoint(0, 0));
+				DrawWidget(canvas, widget, new SKPoint(0, 0));
 			}
 			canvas.RestoreToCount(beforeProjectClip);
 
@@ -1142,7 +1139,8 @@ namespace MyGui.net
 			// Generate a random color
 			//var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
 
-			string skinPath = _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : "";
+			string skinPath = widget.skin != null && _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : "";
+			skinPath = skinPath ?? "";
 
 
 			//Debug.WriteLine(skinPath);
@@ -1181,7 +1179,7 @@ namespace MyGui.net
 			}
 			else
 			{
-				RenderWidget(canvas, _skinAtlasCache[skinPath], _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget);
+				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget);
 				//canvas.DrawRect(rect, paint);
 			}
 
@@ -2189,7 +2187,8 @@ namespace MyGui.net
 				_sidebarForm = new FormSideBar();
 
 
-				_sidebarForm.Size = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10); ;
+				_sidebarForm.Size = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
+				Settings.Default.SidePanelSize = _sidebarForm.Size;
 				_sidebarForm.Location = new Point(this.Location.X + this.Width - Settings.Default.SidePanelSize.Width, this.Location.Y + 5);
 				_sidebarForm.Owner = this;
 
@@ -2217,11 +2216,13 @@ namespace MyGui.net
 		{
 			if (_draggingWidgetAt != BorderPosition.None) { return; }
 			_commandManager.Undo();
-			if (!_currentLayout.Contains(_currentSelectedWidget))
+			//try to fix having selected ghosts
+			/*Debug.WriteLine(_currentSelectedWidget);
+			if (_currentSelectedWidget == null)
 			{
 				_currentSelectedWidget = null;
 				_lastSelectedWidgetType = "";
-			}
+			}*/
 
 			UpdateUndoRedo(true);
 		}
