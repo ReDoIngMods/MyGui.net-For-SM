@@ -2,6 +2,7 @@ using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp.Views.Gtk;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -10,7 +11,6 @@ using static MyGui.net.Util;
 
 namespace MyGui.net
 {
-	//TODO: Migrate to PropertyGrid for the widget property window thing, it is like 10x better
 	//TODO: Add an undo/redo history window
 	public partial class Form1 : Form
 	{
@@ -28,10 +28,10 @@ namespace MyGui.net
 		static SKBitmap _viewportBackgroundBitmap;
 		static Dictionary<string, SKImage> _skinAtlasCache = new();
 		private MyGuiResource _nullSkinResource = new MyGuiResource();
-		static Dictionary<string, List<MyGuiWidgetPropertyCategory>> _widgetTypeToCategoryList = new Dictionary<string, List<MyGuiWidgetPropertyCategory>>()
+		static Dictionary<string, Type> _widgetTypeToObjectType = new()
 		{
-			{ "TextBox", TextBoxMyGuiWidgetProperties.categories },
-			{ "Button", ButtonMyGuiWidgetProperties.categories },
+			{ "TextBox", typeof(MyGuiWidgetDataTextBox) },
+			/*{ "Button", ButtonMyGuiWidgetProperties.categories },
 			{ "DDContainer", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
 			{ "ComboBox", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
 			{ "EditBox", EditBoxMyGuiWidgetProperties.categories },
@@ -45,7 +45,7 @@ namespace MyGui.net
 			{ "ScrollView", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
 			{ "ImageBox", ImageBoxMyGuiWidgetProperties.categories },
 			{ "TabControl", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "Window", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
+			{ "Window", UnsupportedMyGuiWidgetProperties.categories },*/ //unsupported
 			//the rest uses default "Widget" handling
 		};
 
@@ -60,11 +60,13 @@ namespace MyGui.net
 			{ "ScrollView", new SKColor(0xFF2F00) }
 		};
 
-		static Dictionary<string, Control> _editorProperties = new();
 		static FormSideBar? _sidebarForm;
 		CommandManager _commandManager = new CommandManager();
 		static Dictionary<string, MyGuiResource> _allResources = new();
 		static Dictionary<string, MyGuiFontData> _allFonts = new();
+
+		public static Dictionary<string, MyGuiResource> AllResources => _allResources;
+		public static Dictionary<string, MyGuiFontData> AllFonts => _allFonts;
 
 		//static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
 		static string _ScrapMechanicPath
@@ -127,7 +129,7 @@ namespace MyGui.net
 				_currentLayoutPath = autoloadPath;
 				_currentLayoutSavePath = autoloadPath;
 				//Debug.WriteLine(_currentLayoutPath);
-				_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize);
+				_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize) ?? new();
 				refreshToolStripMenuItem.Enabled = true;
 				viewport.Refresh();
 				//Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
@@ -378,23 +380,13 @@ namespace MyGui.net
 		{
 			if (_currentSelectedWidget == null)
 			{
-				tabPage1Panel.SuspendLayout();
-				tabPage1Panel.Controls.Clear();
-				tabPage1Panel.ResumeLayout();
 				viewport.Refresh();
 				_lastSelectedWidgetType = "";
 				return;
 			}
 			_draggedWidgetPosition = _currentSelectedWidget.position;
 			_draggedWidgetSize = (Size)_currentSelectedWidget.size;
-			if (_lastSelectedWidgetType == (_currentSelectedWidget?.type ?? ""))
-			{
-				UpdateProperties();
-			}
-			else
-			{
-				AddProperties();
-			}
+			UpdateProperties();
 			_lastSelectedWidgetType = _currentSelectedWidget.type;
 			viewport.Refresh();
 		}
@@ -403,410 +395,23 @@ namespace MyGui.net
 		{
 			_commandManager.ExecuteCommand(command);
 			viewport.Refresh();
-			UpdateUndoRedo(false);
+			UpdateUndoRedo();
 		}
 
 		void ClearStacks()
 		{
 			_commandManager.clearUndoStack();
 			_commandManager.clearRedoStack();
-			UpdateUndoRedo(false);
+			UpdateUndoRedo();
 		}
 
 		void UpdateProperties()
 		{
-			tabPage1Panel.SuspendLayout();
-			if (_currentSelectedWidget == null)
-			{
-				tabPage1Panel.Controls.Clear();
-				tabPage1Panel.ResumeLayout();
-				tabPage1Panel.Refresh();
-				viewport.Refresh();
-				return;
-			}
-			//foreach (var item in _editorProperties)
-			//{
-				//Debug.WriteLine(item.Key);
-			//}
-
-			MyGuiWidgetData currentWidgetData = _currentSelectedWidget;
-			//Debug.WriteLine(currentWidgetData.name);
-
-			foreach (var category in _widgetTypeToCategoryList.ContainsKey(_currentSelectedWidget.type) ? _widgetTypeToCategoryList[_currentSelectedWidget.type] : MyGuiWidgetProperties.categories)
-			{
-				foreach (var property in category.properties)
-				{
-					object valueInWidgetData;
-					switch (property.type)
-					{
-						case MyGuiWidgetPropertyType.ComboBox:
-							ComboBox comboBox = (ComboBox)_editorProperties[property.boundTo];
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
-							//Debug.WriteLine($"Value of \"{property.boundTo}\" in widget {currentWidgetData.name} is {valueInWidgetData}");
-							if (valueInWidgetData != null)
-							{
-								comboBox.SelectedIndex = comboBox.Items.IndexOf(valueInWidgetData);
-							}
-							else
-							{
-								comboBox.SelectedIndex = 0;
-							}
-							break;
-
-						case MyGuiWidgetPropertyType.TextBox:
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo) ?? "";
-							_editorProperties[property.boundTo].Text = Convert.ToString(valueInWidgetData);
-							break;
-
-						case MyGuiWidgetPropertyType.PointBox:
-							CustomNumericUpDown pointBoxLayoutXCoord = (CustomNumericUpDown)_editorProperties[property.boundTo + "_X"];
-							CustomNumericUpDown pointBoxLayoutYCoord = (CustomNumericUpDown)_editorProperties[property.boundTo + "_Y"];
-
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
-							if (valueInWidgetData != null && valueInWidgetData.GetType() == typeof(Point))
-							{
-								Point valueInWidgetDataPoint = (Point)valueInWidgetData;
-								pointBoxLayoutXCoord.Value = valueInWidgetDataPoint.X;
-								pointBoxLayoutYCoord.Value = valueInWidgetDataPoint.Y;
-							}
-							break;
-
-						case MyGuiWidgetPropertyType.CheckBox:
-							((CheckBox)_editorProperties[property.boundTo]).Checked = (bool)(Util.GetPropertyValue(currentWidgetData, property.boundTo) ?? false);
-							break;
-
-						case MyGuiWidgetPropertyType.ColorBox:
-							TextBox colorBoxHexInput = (TextBox)_editorProperties[property.boundTo].Controls[1];
-							Panel colorBoxPickerPreview = (Panel)_editorProperties[property.boundTo].Controls[0];
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
-							//Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
-							colorBoxHexInput.Text = valueInWidgetData != null ? Util.ColorToHexString((Color)Util.ParseColorFromString((string)valueInWidgetData)) : "";
-
-							colorBoxPickerPreview.BackColor = Util.ParseColorFromString((string)valueInWidgetData) ?? Color.FromArgb(255, 255, 255);
-							break;
-
-						case MyGuiWidgetPropertyType.SkinBox:
-							ComboBox skinBoxComboBox = (ComboBox)_editorProperties[property.boundTo];
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, "skin");
-							if (valueInWidgetData != null)
-							{
-								skinBoxComboBox.SelectedIndex = skinBoxComboBox.Items.IndexOf(valueInWidgetData);
-							}
-							else
-							{
-								skinBoxComboBox.SelectedIndex = -1;
-							}
-							break;
-					}
-				}
-			}
-			tabPage1Panel.ResumeLayout();
-			tabPage1Panel.Refresh();
+			propertyGrid1.SelectedObject = _currentSelectedWidget == null ? null : new MyGuiWidgetDataWidget(_currentSelectedWidget).ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget) );
+			propertyGrid1.Refresh();
 		}
 
-		void AddProperties()
-		{
-			tabPage1Panel.SuspendLayout();
-			tabPage1Panel.Controls.Clear();
-			if (_currentSelectedWidget == null)
-			{
-				tabPage1Panel.ResumeLayout();
-				tabPage1Panel.Refresh();
-				return;
-			}
-			MyGuiWidgetData currentWidgetData = _currentSelectedWidget;
-			//Debug.WriteLine(currentWidgetData.name);
-
-			TableLayoutPanel tableLayoutPanel = new TableLayoutPanel
-			{
-				ColumnCount = 2, // Two columns: one for the label, one for the control
-				AutoSize = true,
-				AutoSizeMode = AutoSizeMode.GrowAndShrink,
-				Dock = DockStyle.Top,
-				Width = 1
-			};
-			tableLayoutPanel.SuspendLayout();
-			foreach (var category in _widgetTypeToCategoryList.ContainsKey(_currentSelectedWidget.type) ? _widgetTypeToCategoryList[_currentSelectedWidget.type] : MyGuiWidgetProperties.categories)
-			{
-				Label categoryLabel = new Label
-				{
-					Text = category.title,
-					AutoSize = false,
-					TextAlign = ContentAlignment.MiddleCenter,
-					Height = 23,
-					Width = 1,
-					Dock = DockStyle.Fill,
-					BackColor = Color.FromKnownColor(KnownColor.ControlLight),
-				};
-				tableLayoutPanel.Controls.Add(categoryLabel, 0, tableLayoutPanel.RowCount);
-				tableLayoutPanel.SetColumnSpan(categoryLabel, 2); // Span across both columns
-				tableLayoutPanel.RowCount++;
-
-				foreach (var property in category.properties)
-				{
-					// Create and configure label for the property
-					Label propertyLabel = new Label
-					{
-						Text = property.name,
-						AutoSize = false,
-						TextAlign = ContentAlignment.MiddleRight,
-						Height = 23,
-						Width = 90,
-						Dock = DockStyle.Fill
-					};
-
-					// Add the label to the first column
-					tableLayoutPanel.Controls.Add(propertyLabel, 0, tableLayoutPanel.RowCount);
-
-					// Create and configure the control based on the property type
-					Control control = null;
-					object valueInWidgetData;
-					switch (property.type)
-					{
-						case MyGuiWidgetPropertyType.ComboBox:
-							ComboBox comboBox = new ComboBox
-							{
-								MinimumSize = new Size(1, 1),
-								Dock = DockStyle.Fill,  // Ensure it resizes within the TableLayoutPanel
-								DropDownStyle = ComboBoxStyle.DropDownList
-							};
-							comboBox.Items.AddRange(property.comboBoxValues.ToArray());
-							//Set the value from widget data
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
-							//Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
-							if (valueInWidgetData != null)
-							{
-								comboBox.SelectedIndex = comboBox.Items.IndexOf(valueInWidgetData);
-							}
-							else
-							{
-								comboBox.SelectedIndex = 0;
-							}
-							_editorProperties[property.boundTo] = comboBox;
-							comboBox.Tag = property.boundTo;
-							comboBox.SelectionChangeCommitted += comboBox_ValueChanged;
-							control = comboBox;
-							break;
-
-						case MyGuiWidgetPropertyType.TextBox:
-							TextBox textBox = new TextBox
-							{
-								Width = 1,
-								Dock = DockStyle.Fill,
-								PlaceholderText = "[DEFAULT]",
-							};
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
-							//Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
-							if (valueInWidgetData != null)
-							{
-								textBox.Text = Convert.ToString(valueInWidgetData);
-							}
-							_editorProperties[property.boundTo] = textBox;
-							textBox.Tag = property.boundTo;
-							textBox.Leave += textBox_ValueChanged;
-							control = textBox;
-							break;
-
-						case MyGuiWidgetPropertyType.PointBox:
-							TableLayoutPanel pointBoxLayout = new TableLayoutPanel();
-							pointBoxLayout.SuspendLayout();
-							pointBoxLayout.ColumnCount = 2;
-							pointBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // First column
-							pointBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F)); // Second column
-							pointBoxLayout.RowCount = 1;
-							pointBoxLayout.AutoSize = true;
-							pointBoxLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-							pointBoxLayout.Dock = DockStyle.Top;
-							pointBoxLayout.Margin = Padding.Empty;
-
-							CustomNumericUpDown pointBoxLayoutXCoord = new CustomNumericUpDown
-							{
-								Anchor = AnchorStyles.Left | AnchorStyles.Right,
-								Width = 1,
-								Minimum = -65536,
-								Maximum = 65536,
-								Name = property.name + "_X",
-								Increment = _gridSpacing,
-							};
-							_editorProperties[property.boundTo + "_X"] = pointBoxLayoutXCoord;
-							CustomNumericUpDown pointBoxLayoutYCoord = new CustomNumericUpDown
-							{
-								Anchor = AnchorStyles.Left | AnchorStyles.Right,
-								Width = 1,
-								Minimum = -65536,
-								Maximum = 65536,
-								Name = property.name + "_Y",
-								Increment = _gridSpacing,
-							};
-							_editorProperties[property.boundTo + "_Y"] = pointBoxLayoutYCoord;
-
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
-							//Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
-							if (valueInWidgetData != null && valueInWidgetData.GetType() == typeof(Point))
-							{
-								Point valueInWidgetDataPoint = (Point)valueInWidgetData;
-								pointBoxLayoutXCoord.Value = valueInWidgetDataPoint.X;
-								pointBoxLayoutYCoord.Value = valueInWidgetDataPoint.Y;
-							}
-
-							pointBoxLayoutXCoord.ValueChanged += pointBox_ValueChanged;
-							pointBoxLayoutYCoord.ValueChanged += pointBox_ValueChanged;
-
-							// Add controls to TableLayoutPanel
-							pointBoxLayout.Controls.Add(pointBoxLayoutXCoord, 0, 0);
-							pointBoxLayout.Controls.Add(pointBoxLayoutYCoord, 1, 0);
-							control = pointBoxLayout;
-							pointBoxLayout.ResumeLayout();
-							break;
-
-						case MyGuiWidgetPropertyType.CheckBox:
-							control = new CheckBox
-							{
-								AutoSize = true,
-								Dock = DockStyle.Left // Align checkbox to the left
-							};
-							_editorProperties[property.boundTo] = control;
-							break;
-
-						case MyGuiWidgetPropertyType.ColorBox:
-							TableLayoutPanel colorBoxLayout = new TableLayoutPanel();
-							colorBoxLayout.SuspendLayout();
-							colorBoxLayout.ColumnCount = 3;
-							colorBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 23)); // First column
-							colorBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F)); // Second column
-							colorBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F)); // Third column
-							colorBoxLayout.RowCount = 1;
-							colorBoxLayout.AutoSize = true;
-							colorBoxLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-							colorBoxLayout.Dock = DockStyle.Top;
-							colorBoxLayout.Margin = Padding.Empty;
-
-							TextBox colorBoxHexInput = new TextBox
-							{
-								Width = 1,
-								Dock = DockStyle.Fill,
-								PlaceholderText = "ffffff",
-								MaxLength = 6
-							};
-
-							Button colorBoxPickerButton = new Button
-							{
-								Width = 1,
-								Dock = DockStyle.Fill,
-								Text = "Pick",
-								FlatStyle = FlatStyle.System,
-							};
-							colorBoxPickerButton.Click += selectCustomWidgetColor_Click;
-
-							Panel colorBoxPickerPreview = new Panel
-							{
-								BorderStyle = BorderStyle.FixedSingle,
-								BackColor = Color.FromArgb(255, 255, 255),
-								Height = 23,
-							};
-
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
-							colorBoxHexInput.Text = valueInWidgetData != null ? Util.ColorToHexString((Color)Util.ParseColorFromString((string)valueInWidgetData)) : "";
-
-							colorBoxPickerPreview.BackColor = Util.ParseColorFromString((string)valueInWidgetData) ?? Color.FromArgb(255, 255, 255);
-							//Debug.WriteLine(valueInWidgetData == null ? "IS NULL" : valueInWidgetData);
-							/*if (valueInWidgetData != null && valueInWidgetData.GetType() == typeof(Point))
-							{
-								Point valueInWidgetDataPoint = (Point)valueInWidgetData;
-								pointBoxLayoutXCoord.Value = valueInWidgetDataPoint.X;
-								pointBoxLayoutYCoord.Value = valueInWidgetDataPoint.Y;
-							}*/
-
-							// Add controls to TableLayoutPanel
-							colorBoxLayout.Controls.Add(colorBoxPickerPreview, 0, 0);
-							colorBoxLayout.Controls.Add(colorBoxHexInput, 1, 0);
-							colorBoxLayout.Controls.Add(colorBoxPickerButton, 2, 0);
-							colorBoxLayout.Tag = property.boundTo;
-							control = colorBoxLayout;
-							_editorProperties[property.boundTo] = control;
-							colorBoxLayout.ResumeLayout();
-							break;
-
-						case MyGuiWidgetPropertyType.SkinBox:
-							TableLayoutPanel skinBoxLayout = new TableLayoutPanel();
-							skinBoxLayout.SuspendLayout();
-							skinBoxLayout.ColumnCount = 2;
-							skinBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F)); // Second column
-							skinBoxLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F)); // Third column
-							skinBoxLayout.RowCount = 1;
-							skinBoxLayout.AutoSize = true;
-							skinBoxLayout.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-							skinBoxLayout.Dock = DockStyle.Top;
-							skinBoxLayout.Margin = Padding.Empty;
-
-							ComboBox skinBoxComboBox = new ComboBox
-							{
-								MinimumSize = new Size(1, 1),
-								Dock = DockStyle.Fill,  // Ensure it resizes within the TableLayoutPanel
-								DropDownStyle = ComboBoxStyle.DropDownList,
-							};
-							foreach (var item in _allResources)
-							{
-								skinBoxComboBox.Items.Add(item.Key);
-							}
-							//Set the value from widget data
-							valueInWidgetData = Util.GetPropertyValue(currentWidgetData, "skin");
-							if (valueInWidgetData != null)
-							{
-								skinBoxComboBox.SelectedIndex = skinBoxComboBox.Items.IndexOf(valueInWidgetData);
-							}
-							else
-							{
-								skinBoxComboBox.SelectedIndex = -1;
-							}
-
-							skinBoxComboBox.Tag = "skin";
-							skinBoxComboBox.SelectionChangeCommitted += comboBox_ValueChanged;
-
-							Button skinBoxButton = new Button
-							{
-								Width = 1,
-								Dock = DockStyle.Fill,
-								Text = "Select",
-								FlatStyle = FlatStyle.System,
-							};
-							skinBoxButton.Click += selectCustomWidgetSkin_Click;
-
-							//valueInWidgetData = Util.GetPropertyValue(currentWidgetData, property.boundTo);
-							// Add controls to TableLayoutPanel
-							skinBoxLayout.Controls.Add(skinBoxComboBox, 0, 0);
-							skinBoxLayout.Controls.Add(skinBoxButton, 1, 0);
-
-							_editorProperties[property.boundTo] = skinBoxComboBox;
-
-							control = skinBoxLayout;
-							skinBoxLayout.ResumeLayout();
-							break;
-
-							// Add more cases for other control types like ColorBox, etc.
-					}
-
-					// Add the generated control to the second column
-					if (control != null)
-					{
-						tableLayoutPanel.Controls.Add(control, 1, tableLayoutPanel.RowCount);
-					}
-
-					// Move to the next row
-					tableLayoutPanel.RowCount++;
-				}
-
-				// Add some spacing between categories
-				tableLayoutPanel.RowCount++;
-			}
-			tableLayoutPanel.ResumeLayout();
-			//tableLayoutPanel.Refresh();
-
-			// Finally, add the TableLayoutPanel to the parent panel
-			tabPage1Panel.Controls.Add(tableLayoutPanel);
-			tabPage1Panel.ResumeLayout();
-			//tabPage1Panel.Refresh();
-		}
+		//TODO: delete this
 		#region Property Ui functions
 		private void textBox_ValueChanged(object senderAny, EventArgs e)
 		{
@@ -829,14 +434,14 @@ namespace MyGui.net
 				ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "[DEFAULT]" ? null : sender.Text, Util.GetPropertyValue(currWidgetData, senderBoundTo)));
 				if (_lastSelectedWidgetType != (_currentSelectedWidget?.type ?? ""))
 				{
-					AddProperties();
+					UpdateProperties();
 					_lastSelectedWidgetType = _currentSelectedWidget?.type ?? "";
 				}
 				/*switch (senderBoundTo)
 				{
 					case "type":
 						ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "type", sender.Text, currWidgetData.type));
-						AddProperties();
+						UpdateProperties();
 						break;
 					case "layer":
 						ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "layer", sender.Text, currWidgetData.layer));
@@ -947,13 +552,13 @@ namespace MyGui.net
 					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(20, 20, 20));
 					//mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
 				}
-				if (_editorProperties.ContainsKey("Position_X"))
+				/*if (_editorProperties.ContainsKey("Position_X"))
 				{
 					((NumericUpDown)_editorProperties["Position_X"]).Increment = _gridSpacing;
 					((NumericUpDown)_editorProperties["Position_Y"]).Increment = _gridSpacing;
 					((NumericUpDown)_editorProperties["Size_X"]).Increment = _gridSpacing;
 					((NumericUpDown)_editorProperties["Size_Y"]).Increment = _gridSpacing;
-				}
+				}*/
 			}
 
 			if (e.PropertyName == nameof(Settings.Default.EditorBackgroundMode))
@@ -1131,7 +736,7 @@ namespace MyGui.net
 								  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
 
 			// Save canvas state for clipping
-			canvas.Save();
+			var saveBeforeAll = canvas.Save();
 
 			// Apply clipping for the widget's bounds
 			canvas.ClipRect(rect);
@@ -1229,7 +834,7 @@ namespace MyGui.net
 			}
 
 			// Restore the canvas to its previous state (removes clipping for this widget)
-			canvas.Restore();
+			canvas.RestoreToCount(saveBeforeAll);
 		}
 
 		private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null)
@@ -1570,6 +1175,7 @@ namespace MyGui.net
 					_draggedWidgetSize = Size.Empty;
 					_draggedWidgetPositionStart = Point.Empty;
 					_draggedWidgetSizeStart = Size.Empty;
+					UpdateProperties();
 					HandleWidgetSelection();
 					viewport.Refresh();
 				}
@@ -1850,11 +1456,13 @@ namespace MyGui.net
 								(int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.Y
 						);
 
+						UpdateProperties();
+
 						// Update editor properties
-						((NumericUpDown)_editorProperties["position_X"]).Value = _currentSelectedWidget.position.X;
+						/*((NumericUpDown)_editorProperties["position_X"]).Value = _currentSelectedWidget.position.X;
 						((NumericUpDown)_editorProperties["position_Y"]).Value = _currentSelectedWidget.position.Y;
 						((NumericUpDown)_editorProperties["size_X"]).Value = _currentSelectedWidget.size.X;
-						((NumericUpDown)_editorProperties["size_Y"]).Value = _currentSelectedWidget.size.Y;
+						((NumericUpDown)_editorProperties["size_Y"]).Value = _currentSelectedWidget.size.Y;*/
 
 						// Reset mouse delta for finer control
 						_mouseDeltaLoc.X %= 1;
@@ -2007,7 +1615,7 @@ namespace MyGui.net
 
 			_currentLayoutPath = file;
 			_currentLayoutSavePath = _currentLayoutPath;
-			_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize);
+			_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize) ?? new();
 
 			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
 
@@ -2224,7 +1832,7 @@ namespace MyGui.net
 				_lastSelectedWidgetType = "";
 			}*/
 
-			UpdateUndoRedo(true);
+			UpdateUndoRedo();
 		}
 
 		private void redoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2232,10 +1840,10 @@ namespace MyGui.net
 			if (_draggingWidgetAt != BorderPosition.None) { return; }
 			_commandManager.Redo();
 
-			UpdateUndoRedo(true);
+			UpdateUndoRedo();
 		}
 
-		private void UpdateUndoRedo(bool updateProperties = true)
+		private void UpdateUndoRedo()
 		{
 			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
 
@@ -2246,17 +1854,7 @@ namespace MyGui.net
 			undoToolStripMenuItem.Text = $"Undo{(undoToolStripMenuItem.Enabled ? $" ({_commandManager.getUndoStackCount()})" : "")}";
 			redoToolStripMenuItem.Text = $"Redo{(redoToolStripMenuItem.Enabled ? $" ({_commandManager.getRedoStackCount()})" : "")}";
 			viewport.Refresh();
-			if (updateProperties)
-			{
-				if (_lastSelectedWidgetType == (_currentSelectedWidget?.type ?? ""))
-				{
-					UpdateProperties();
-				}
-				else
-				{
-					AddProperties();
-				}
-			}
+			UpdateProperties();
 		}
 
 		//TopBar Utils
@@ -2415,8 +2013,7 @@ namespace MyGui.net
 			{
 				ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.position, _draggedWidgetPositionStart));
 				_draggedWidgetPositionStart = new Point(0, 0);
-				UpdateProperties(); //used to be here, if i ever reimplement it ;)
-				//AddProperties();
+				UpdateProperties();
 				e.Handled = true;
 			}
 		}
@@ -2482,6 +2079,12 @@ namespace MyGui.net
 		private void splitContainer1_Resize(object sender, EventArgs e)
 		{
 			AdjustViewportScrollers();
+		}
+
+		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+		{
+			Debug.WriteLine($"{e.ChangedItem.Label} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.Label + "BoundTo")}");
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.Label + "BoundTo"), e.ChangedItem.Value, e.OldValue));
 		}
 	}
 }

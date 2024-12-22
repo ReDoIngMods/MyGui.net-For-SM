@@ -780,9 +780,12 @@ namespace MyGui.net
 			XDocument xmlDocument;
 			try
 			{
-				string xmlContent = File.ReadAllText(Path.Combine(smPath, "Data/Gui/Fonts/ManualFontDataInput.xml"));
-				string wrappedXmlContent = $"<FakeRoot>{xmlContent}</FakeRoot>";
-				xmlDocument = XDocument.Parse(wrappedXmlContent);
+				if (!Util.IsValidFile(Path.Combine(smPath, "Cache/Fonts/" + language + "/LimitedFontData.xml")))
+				{
+					MessageBox.Show($"Failed to read allowed font characters file!\nLaunch Scrap Mechanic so that the cache gets created.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return null;
+				}
+				xmlDocument = XDocument.Load(Path.Combine(smPath, "Cache/Fonts/" + language + "/LimitedFontData.xml"));
 
 			}
 			catch (Exception ex)
@@ -792,47 +795,57 @@ namespace MyGui.net
 			}
 
 			XElement root = xmlDocument.Root;
-			foreach (var fontElement in root.Elements("Font"))
+			foreach (var wrapper in root.Elements("ResourceWrapper"))
 			{
+				var fontElement = wrapper.Element("Resource");
 				string fontName = fontElement.Attribute("name").Value;
 
 				// Use a TreeSet to collect unique characters and automatically keep them sorted
 				HashSet<char> characterSet = new();
-				bool allowAll = false;
-
-
-				foreach (var dataElement in fontElement.Elements("Data"))
+				bool allowAll = fontElement.Element("Codes") == null || !fontElement.Element("Codes").Elements("Code").Any();
+				if (!allowAll)
 				{
-					string type = dataElement.Attribute("type").Value;
-					string value = dataElement.Attribute("value").Value;
-
-					switch (type)
+					foreach (var dataElement in fontElement.Element("Codes").Elements("Code"))
 					{
-						case "Override":
-							if (value.Equals("Allow all"))
-							{
-								allowAll = true;
+						string value = dataElement.Attribute("range").Value;
+						Point fromToPoint = Util.GetWidgetPos(true, value, new(1, 1));
+
+						for (int currChar = fromToPoint.X; currChar <= fromToPoint.Y; currChar++)
+						{
+							characterSet.Add((char)currChar);
+						}
+
+						/*string type = dataElement.Attribute("type").Value;
+						string value = dataElement.Attribute("value").Value;
+
+						switch (type)
+						{
+							case "Override":
+								if (value.Equals("Allow all"))
+								{
+									allowAll = true;
+									break;
+								}
 								break;
-							}
-							break;
-						case "String":
-							foreach (char c in value.ToCharArray())
-							{
-								characterSet.Add(c);
-							}
-							break;
-						case "Tag":
-							string tagValue = GetLanguageTagString(value, language, smPath);
-							if (tagValue != null)
-							{
-								foreach (char c in tagValue.ToCharArray())
+							case "String":
+								foreach (char c in value.ToCharArray())
 								{
 									characterSet.Add(c);
 								}
-							}
-							break;
+								break;
+							case "Tag":
+								string tagValue = GetLanguageTagString(value, language, smPath);
+								if (tagValue != null)
+								{
+									foreach (char c in tagValue.ToCharArray())
+									{
+										characterSet.Add(c);
+									}
+								}
+								break;
+						}
+						if (allowAll) break;*/
 					}
-					if (allowAll) break;
 				}
 
 				string characters;
@@ -851,6 +864,7 @@ namespace MyGui.net
 				}
 
 				fontToAllowedChars.Add(fontName, characters);
+				Debug.WriteLine($"{fontName}: {characters}");
 			}
 			return fontToAllowedChars;
 		}
@@ -1140,7 +1154,7 @@ namespace MyGui.net
 			return null;
 		}
 
-		public static Color? ParseColorFromString(string colorString)
+		public static Color? ParseColorFromString(string colorString, bool throwOnError = true)
 		{
 			// Split the string by spaces
 			if (string.IsNullOrWhiteSpace(colorString))
@@ -1148,14 +1162,36 @@ namespace MyGui.net
 				return null;
 			}
 			string[] parts = colorString.Split(' ');
-
-			Debug.WriteLine(colorString);
-			if (parts.Length == 1 && parts[0].StartsWith('#'))
+			if (parts.Length == 1)
 			{
+				if (!parts[0].StartsWith('#'))
+				{
+					parts[0] = "#" + parts[0];
+				}
+				if (parts[0].Length != 7)
+				{
+					if (throwOnError)
+					{
+						throw new FormatException("Color string must be in the format 'r g b' or '#rrggbb'");
+					}
+					else
+					{
+						return null;
+					}
+				}
 				return HexStringToColor(parts[0]);
 			}
 			if (parts.Length != 3)
-				throw new FormatException("Color string must be in the format 'r g b'");
+			{
+				if (throwOnError)
+				{
+					throw new FormatException("Color string must be in the format 'r g b' or '#rrggbb'");
+				}
+				else
+				{
+					return null;
+				}
+			}
 
 			// Parse each component with InvariantCulture and scale from [0, 1] to [0, 255]
 			int r = (int)(double.Parse(parts[0], CultureInfo.InvariantCulture) * 255);
@@ -1178,7 +1214,15 @@ namespace MyGui.net
 		public static Color? HexStringToColor(string color)
 		{
 			// Get the HTML color string from ColorTranslator
-			Color htmlColor = ColorTranslator.FromHtml(color);
+			Color htmlColor = Color.Empty;
+			try
+			{
+				htmlColor = ColorTranslator.FromHtml(color);
+			}
+			catch (Exception)
+			{
+				//Do nothing, as it doesnt matter
+			}
 
 			// If the result is a named color (e.g., "White"), convert it to hex manually
 			return htmlColor != Color.Empty ? htmlColor : null;

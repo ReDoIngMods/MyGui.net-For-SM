@@ -1,0 +1,201 @@
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing.Design;
+using System.Windows.Forms;
+using System.Windows.Forms.Design;
+
+namespace MyGui.net
+{
+	#region Templates
+	public class CustomSelectorControl : UserControl
+	{
+		private ComboBox _comboBox;
+		private Button _button;
+
+		public object SelectedValue => _comboBox.SelectedItem;
+
+		public CustomSelectorControl(object currentValue, IWindowsFormsEditorService editorService)
+		{
+			// Set dimensions for inline rendering
+			this.Width = 250;
+			this.Height = 25;
+
+			// ComboBox for dropdown options
+			_comboBox = new ComboBox
+			{
+				Left = 0,
+				Top = 0,
+				Width = 200,
+				DropDownStyle = ComboBoxStyle.DropDownList
+			};
+
+			// Populate dropdown with sample options
+			_comboBox.Items.AddRange(new[] { "Option 1", "Option 2", "Option 3" });
+
+			// Set the current value in the dropdown
+			if (currentValue != null && _comboBox.Items.Contains(currentValue.ToString()))
+			{
+				_comboBox.SelectedItem = currentValue.ToString();
+			}
+
+			// Button to open additional selection options
+			_button = new Button
+			{
+				Text = "...",
+				Left = 205,
+				Top = 0,
+				Width = 30,
+				Height = _comboBox.Height
+			};
+
+			_button.Click += (s, e) =>
+			{
+				using (var form = new FormSkin())
+				{
+					if (form.ShowDialog() == DialogResult.OK)
+					{
+						_comboBox.SelectedItem = null;
+					}
+				}
+			};
+
+			// Add controls to UserControl
+			Controls.Add(_comboBox);
+			Controls.Add(_button);
+		}
+	}
+
+	public class CustomSelectorEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Specify that we will provide a custom control directly
+			return UITypeEditorEditStyle.Modal;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			if (provider.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService editorService)
+			{
+				// Create an inline control with a dropdown and button
+				var selectorControl = new CustomSelectorControl(value, editorService);
+
+				// Open inline control for editing
+				editorService.DropDownControl(selectorControl);
+
+				// Return the selected value
+				return selectorControl.SelectedValue;
+			}
+
+			return value;
+		}
+	}
+	#endregion
+
+	#region TypeConverters
+	public class StringDropdownConverter : TypeConverter
+	{
+		private static readonly Dictionary<string, List<string>> PropertyOptions = new Dictionary<string, List<string>>
+		{
+			{ "Layer", ["[DEFAULT]", "ToolTip", "Info", "FadeMiddle", "Popup", "Main", "Modal", "Middle", "Overlapped", "Back"] },
+			{ "Type", ["Widget", "Button", "Canvas", "ComboBox", "DDContainer", "EditBox", "ItemBox", "ListBox", "MenuBar", "MultiListBox", "PopupMenu", "ProgressBar", "ScrollBar", "ScrollView", "ImageBox", "TextBox", "TabControl", "Window"] },
+		};
+
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			// Indicates that this object supports a standard set of values
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
+			return true;
+		}
+
+		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+		{
+			// Provides the standard values for the dropdown
+			return new StandardValuesCollection(PropertyOptions[context.PropertyDescriptor.Name]);
+		}
+	}
+
+	public class EmptyConverter : TypeConverter
+	{
+		
+	}
+
+	public class SkinSelectorConverter : TypeConverter
+	{
+		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+		{
+			// Provides the standard values for the dropdown
+			return new StandardValuesCollection(Form1.AllResources.Keys.ToList());
+		}
+
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			// Indicates that this object supports a standard set of values
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
+			return false;
+		}
+
+		public override bool IsValid(ITypeDescriptorContext? context, object? value)
+		{
+			// Validates if the provided value exists as a key in the dictionary
+			if (value is string stringValue)
+			{
+				return Form1.AllResources.ContainsKey(stringValue);
+			}
+			return false;
+		}
+
+		public override object? ConvertFrom(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object value)
+		{
+			// Converts input to a valid key if it's in the dictionary, or throws an exception
+			if (value is string stringValue && Form1.AllResources.ContainsKey(stringValue))
+			{
+				return stringValue;
+			}
+			return "";
+		}
+	}
+	#endregion
+	public class SkinSelectorEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Indicate that the editor supports a dropdown with a button
+			return UITypeEditorEditStyle.DropDown;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			if (provider == null)
+				return value;
+
+				// Get the editor service for showing UI
+				var editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
+			if (editorService == null)
+				return value;
+
+			// Select skin here
+			using (var form = new FormSkin())
+			{
+				if (form.ShowDialog() == DialogResult.OK)
+				{
+					value = "Button";
+					Debug.WriteLine("accepted!");
+				}
+			}
+
+			return value;
+		}
+	}
+}

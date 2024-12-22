@@ -1,6 +1,15 @@
-﻿namespace MyGui.net
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing.Design;
+using System.Globalization;
+using System.Windows.Forms;
+using System.Windows.Forms.Design;
+
+namespace MyGui.net
 {
-    public class MyGuiWidgetData
+	//to add properties, go to CustomPropertyGrid.cs
+	public class MyGuiWidgetData
     {
         public string? layer;
         public string? align;
@@ -11,12 +20,223 @@
         public Point size = new(0, 0);
         public Dictionary<string, string> properties = new();
         public List<MyGuiWidgetData> children = new();
-    }
+	}
 
-    #region MyGui Property Classes
-    //ComboBox, DDContainer, ListBox, MenuBar, MultiListBox, PopupMenu, ScrollView Unsupported - MyGui Skins only or no skins or basically useless.
+	public class MyGuiWidgetDataWidget
+	{
+        public MyGuiWidgetData widget;
 
-    static class MyGuiWidgetProperties
+        /// <summary>
+        /// Creates a widget-less PropertyGrid wrapper, only use if you know what you are doing!
+        /// </summary>
+		public MyGuiWidgetDataWidget(){}
+
+		/// <summary>
+		/// Creates a widget PropertyGrid wrapper.
+		/// </summary>
+		public MyGuiWidgetDataWidget(MyGuiWidgetData widget)
+        {
+            this.widget = widget;
+        }
+
+		#region Properties
+		[Category("1 - Main Properties")]
+		[Description("Behavior of the widget when resizing its parent (both in-editor and in-game).")]
+		public string Align
+		{
+			get => widget.align ?? "";
+
+			set
+			{
+				widget.align = value == "" ? null : value;
+			}
+		}
+		public string AlignBoundTo = "align";
+
+		[Category("1 - Main Properties")]
+		[Description("Unknown behaviour.")]
+		[TypeConverter(typeof(StringDropdownConverter))]
+		public string Layer
+		{
+			get => widget.layer ?? "[DEFAULT]";
+
+			set
+			{
+				widget.layer = value == "[DEFAULT]" || value == "" ? null : value;
+			}
+		}
+		public string LayerBoundTo = "layer";
+
+		[Category("1 - Main Properties")]
+		[Description("String which refers to this exact widget in Lua code. Using non-unique names will target all widgets of the same name.")]
+		public string Name
+		{
+			get => widget.name ?? "";
+
+			set
+			{
+				widget.name = value == "" ? null : value;
+			}
+		}
+		public string NameBoundTo = "name";
+
+		[Category("1 - Main Properties")]
+		[Description("Position of the widget in pixels relative to its parent.")]
+		public Point Position
+		{
+			get => widget.position;
+
+			set
+			{
+				widget.position = value;
+			}
+		}
+		public string PositionBoundTo = "position";
+
+		[Category("1 - Main Properties")]
+		[Description("Size of the widget in pixels.")]
+		public Size Size
+		{
+			get => (Size)widget.size;
+
+			set
+			{
+				widget.size = (Point)value;
+			}
+		}
+		public string SizeBoundTo = "size";
+
+		[Category("1 - Main Properties")]
+		[Description("Visual look of the widget. Only certain skins support certain features, such as text rendering. (Try to keep the looks of your guis as close to original Scrap Mechanic looks. Refrain from using stock MyGui widget skins if possible.)")]
+		[Editor(typeof(SkinSelectorEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(SkinSelectorConverter))]
+		public string Skin { get => widget.skin; set { widget.skin = value; } }
+		public string SkinBoundTo = "skin";
+
+		[Category("1 - Main Properties")]
+		[Description("Type of the widget, each type has a specific use and set of properties you may change.")]
+		[TypeConverter(typeof(StringDropdownConverter))]
+		public string Type { get => widget.type; set { widget.type = value; } }
+		public string TypeBoundTo = "type";
+
+		//Widget Properties
+
+		[Category("2 - Widget Properties")]
+		[Description("Transparency of the widget.")]
+		public string Alpha
+		{
+			get => widget.properties.TryGetValue("Alpha", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("Alpha");
+				}
+				else
+				{
+                    var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["Alpha"] = !double.IsNaN(parsedAsDouble) ? Math.Clamp(parsedAsDouble, 0, 1).ToString(CultureInfo.InvariantCulture) : "0";
+				}
+			}
+		}
+
+		[Category("2 - Widget Properties")]
+		[Description("Color of the widget. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive). Recolors already exisiting pixels instead of coloring transparent ones.")]
+		public string Color
+		{
+			get => widget.properties.TryGetValue("Colour", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("Colour");
+				}
+				else
+				{
+                    var editedValue = value;
+					string[] parts = value.Split(' ');
+					if (parts.Length == 1)
+					{
+						if (!parts[0].StartsWith('#'))
+						{
+							editedValue = "#" + parts[0];
+						}
+						if (editedValue.Length != 7)
+						{
+                            editedValue = null;
+						}
+					}
+					else if (parts.Length != 3)
+					{
+						editedValue = null;
+					}
+
+					if (parts.Length == 3)
+					{
+                        editedValue = "";
+
+						for (int i = 0; i < 3; i++)
+                        {
+							var parsedAsDouble = Util.ProperlyParseDouble(parts[i]);
+							editedValue += !double.IsNaN(parsedAsDouble) ? Math.Clamp(parsedAsDouble, 0, 1).ToString(CultureInfo.InvariantCulture) + (i != 2 ? " " : "") : (i != 2 ? "0 " : "0");
+						}
+					}
+					var parsedAsColor = Util.ParseColorFromString(editedValue, false);
+					widget.properties["Colour"] = parsedAsColor != null ? editedValue : "";
+				}
+			}
+		}
+
+		public string ColorBoundTo = "properties.Colour";
+		#endregion
+
+		#region Backend Functions
+		public MyGuiWidgetDataWidget ConvertTo(string targetType)
+		{
+			return ConvertTo(System.Type.GetType("MyGui.net." + targetType, true));
+		}
+
+		public MyGuiWidgetDataWidget ConvertTo(Type targetType)
+		{
+			if (targetType == null || !typeof(MyGuiWidgetDataWidget).IsAssignableFrom(targetType))
+				throw new ArgumentException($"Type '{targetType.FullName}' is not a valid subclass of MyGuiWidgetDataWidget.", nameof(targetType));
+
+			// Create an instance of the target type
+			var convertedInstance = (MyGuiWidgetDataWidget)Activator.CreateInstance(targetType, [widget])!;
+			return convertedInstance;
+		}
+		#endregion
+	}
+
+	public class MyGuiWidgetDataTextBox : MyGuiWidgetDataWidget
+	{
+		public MyGuiWidgetDataTextBox() : base(){}
+		public MyGuiWidgetDataTextBox(MyGuiWidgetData widget) : base(widget){}
+
+		public string CustomThingTheSecond
+		{
+			get => widget.properties.TryGetValue("Caption", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("Caption");
+				}
+				else
+				{
+					widget.properties["Caption"] = value;
+				}
+			}
+		}
+	}
+
+	#region MyGui Property Classes
+	//ComboBox, DDContainer, ListBox, MenuBar, MultiListBox, PopupMenu, ScrollView Unsupported - MyGui Skins only or no skins or basically useless.
+
+	static class MyGuiWidgetProperties
     {
         public static readonly List<MyGuiWidgetPropertyCategory> categories = new()
         {

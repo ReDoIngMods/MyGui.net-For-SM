@@ -40,6 +40,7 @@ namespace MyGui.net
 			tabControl1 = new TabControl();
 			tabPage1 = new TabPage();
 			tabPage1Panel = new Panel();
+			propertyGrid1 = new PropertyGrid();
 			tabPage2 = new TabPage();
 			tabPage3 = new TabPage();
 			smPathDialog = new FolderBrowserDialog();
@@ -80,6 +81,7 @@ namespace MyGui.net
 			splitContainer1.SuspendLayout();
 			tabControl1.SuspendLayout();
 			tabPage1.SuspendLayout();
+			tabPage1Panel.SuspendLayout();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
 			editorMenuStrip.SuspendLayout();
@@ -198,12 +200,24 @@ namespace MyGui.net
 			// tabPage1Panel
 			// 
 			tabPage1Panel.AutoScroll = true;
+			tabPage1Panel.Controls.Add(propertyGrid1);
 			tabPage1Panel.Dock = DockStyle.Fill;
 			tabPage1Panel.Location = new Point(0, 0);
 			tabPage1Panel.Margin = new Padding(0);
 			tabPage1Panel.Name = "tabPage1Panel";
 			tabPage1Panel.Size = new Size(302, 611);
 			tabPage1Panel.TabIndex = 0;
+			// 
+			// propertyGrid1
+			// 
+			propertyGrid1.BackColor = SystemColors.Control;
+			propertyGrid1.Dock = DockStyle.Fill;
+			propertyGrid1.Location = new Point(0, 0);
+			propertyGrid1.Name = "propertyGrid1";
+			propertyGrid1.PropertySort = PropertySort.Categorized;
+			propertyGrid1.Size = new Size(302, 611);
+			propertyGrid1.TabIndex = 0;
+			propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
 			// 
 			// tabPage2
 			// 
@@ -520,6 +534,7 @@ namespace MyGui.net
 			splitContainer1.ResumeLayout(false);
 			tabControl1.ResumeLayout(false);
 			tabPage1.ResumeLayout(false);
+			tabPage1Panel.ResumeLayout(false);
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
@@ -573,5 +588,6 @@ namespace MyGui.net
         private Label label1;
         private ToolStripMenuItem refreshToolStripMenuItem;
         private Button centerButton;
+		private PropertyGrid propertyGrid1;
 	}
 }
