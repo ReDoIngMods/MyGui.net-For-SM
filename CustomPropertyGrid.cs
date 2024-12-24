@@ -94,12 +94,13 @@ namespace MyGui.net
 	#endregion
 
 	#region TypeConverters
+
 	public class StringDropdownConverter : TypeConverter
 	{
 		private static readonly Dictionary<string, List<string>> PropertyOptions = new Dictionary<string, List<string>>
 		{
 			{ "Layer", ["[DEFAULT]", "ToolTip", "Info", "FadeMiddle", "Popup", "Main", "Modal", "Middle", "Overlapped", "Back"] },
-			{ "Type", ["Widget", "Button", "Canvas", "ComboBox", "DDContainer", "EditBox", "ItemBox", "ListBox", "MenuBar", "MultiListBox", "PopupMenu", "ProgressBar", "ScrollBar", "ScrollView", "ImageBox", "TextBox", "TabControl", "Window"] },
+			{ "Type", ["Widget", "Button", "Canvas", "ComboBox", "DDContainer", "EditBox", "ItemBox", "ListBox", "MenuBar", "MultiListBox", "PopupMenu", "ProgressBar", "ScrollBar", "ScrollView", "ImageBox", "TextBox", "TabControl", "Window"] }
 		};
 
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
@@ -118,6 +119,28 @@ namespace MyGui.net
 		{
 			// Provides the standard values for the dropdown
 			return new StandardValuesCollection(PropertyOptions[context.PropertyDescriptor.Name]);
+		}
+	}
+
+	public class TriStateConverter : TypeConverter
+	{
+		string[] options = { "Default", "true", "false"};
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			// Indicates that this object supports a standard set of values
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
+			return true;
+		}
+
+		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+		{
+			// Provides the standard values for the dropdown
+			return new StandardValuesCollection(options);
 		}
 	}
 
@@ -167,6 +190,7 @@ namespace MyGui.net
 		}
 	}
 	#endregion
+
 	public class SkinSelectorEditor : UITypeEditor
 	{
 		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
@@ -196,6 +220,88 @@ namespace MyGui.net
 			}
 
 			return value;
+		}
+	}
+
+	public class TriStateEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Indicate that this editor will use a modal dialog
+			return UITypeEditorEditStyle.DropDown;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			if (provider?.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService editorService)
+			{
+				// Create a panel to hold the checkbox and label
+				var panel = new Panel { Height = 20, Width = 50 };
+
+				// Create the tri-state checkbox control
+				var checkBox = new CheckBox
+				{
+					ThreeState = true,
+					CheckState = GetCheckState(value?.ToString()),
+					AutoSize = false,
+					Dock = DockStyle.Fill,
+					Text = GetDisplayText(value?.ToString())
+				};
+
+				checkBox.Click += (s, e) =>
+				{
+					checkBox.CheckState = GetNextCheckState(checkBox.CheckState);
+					value = GetValueFromCheckState(checkBox.CheckState);
+					checkBox.Text = GetDisplayText(value?.ToString());
+				};
+
+				panel.Controls.Add(checkBox);
+
+				// Show the dropdown with the panel
+				editorService.DropDownControl(panel);
+			}
+
+			return value;
+		}
+
+		private static string GetDisplayText(string value)
+		{
+			return value switch
+			{
+				"True" => "True",
+				"False" => "False",
+				_ => "[DEFAULT]"
+			};
+		}
+
+		private static CheckState GetCheckState(string value)
+		{
+			return value switch
+			{
+				"True" => CheckState.Checked,
+				"False" => CheckState.Unchecked,
+				_ => CheckState.Indeterminate
+			};
+		}
+
+		private static string GetValueFromCheckState(CheckState checkState)
+		{
+			return checkState switch
+			{
+				CheckState.Checked => "True",
+				CheckState.Unchecked => "False",
+				_ => ""
+			};
+		}
+
+		private static CheckState GetNextCheckState(CheckState current)
+		{
+			return current switch
+			{
+				CheckState.Unchecked => CheckState.Checked,
+				CheckState.Checked => CheckState.Indeterminate,
+				_ => CheckState.Unchecked
+			};
 		}
 	}
 }

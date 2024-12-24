@@ -71,7 +71,9 @@ namespace MyGui.net
 			label2 = new Label();
 			editorMenuStrip = new ContextMenuStrip(components);
 			copyToolStripMenuItem = new ToolStripMenuItem();
+			copyExclusiveToolStripMenuItem = new ToolStripMenuItem();
 			pasteToolStripMenuItem = new ToolStripMenuItem();
+			pasteAsSiblingToolStripMenuItem = new ToolStripMenuItem();
 			deleteToolStripMenuItem = new ToolStripMenuItem();
 			zoomLevelNumericUpDown = new CustomNumericUpDown();
 			label1 = new Label();
@@ -449,32 +451,49 @@ namespace MyGui.net
 			// 
 			// editorMenuStrip
 			// 
-			editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, pasteToolStripMenuItem, deleteToolStripMenuItem });
+			editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, copyExclusiveToolStripMenuItem, pasteToolStripMenuItem, pasteAsSiblingToolStripMenuItem, deleteToolStripMenuItem });
 			editorMenuStrip.Name = "editorMenuStrip";
 			editorMenuStrip.RenderMode = ToolStripRenderMode.System;
-			editorMenuStrip.Size = new Size(151, 70);
+			editorMenuStrip.Size = new Size(241, 114);
 			// 
 			// copyToolStripMenuItem
 			// 
 			copyToolStripMenuItem.Name = "copyToolStripMenuItem";
 			copyToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + C";
-			copyToolStripMenuItem.Size = new Size(150, 22);
+			copyToolStripMenuItem.Size = new Size(240, 22);
 			copyToolStripMenuItem.Text = "Copy";
 			copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
+			// 
+			// copyExclusiveToolStripMenuItem
+			// 
+			copyExclusiveToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
+			copyExclusiveToolStripMenuItem.Name = "copyExclusiveToolStripMenuItem";
+			copyExclusiveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + Shift + C";
+			copyExclusiveToolStripMenuItem.Size = new Size(240, 22);
+			copyExclusiveToolStripMenuItem.Text = "Copy Exclusive";
+			copyExclusiveToolStripMenuItem.Click += copyExclusiveToolStripMenuItem_Click;
 			// 
 			// pasteToolStripMenuItem
 			// 
 			pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
 			pasteToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + V";
-			pasteToolStripMenuItem.Size = new Size(150, 22);
+			pasteToolStripMenuItem.Size = new Size(240, 22);
 			pasteToolStripMenuItem.Text = "Paste";
 			pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
+			// 
+			// pasteAsSiblingToolStripMenuItem
+			// 
+			pasteAsSiblingToolStripMenuItem.Name = "pasteAsSiblingToolStripMenuItem";
+			pasteAsSiblingToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + Shift + V";
+			pasteAsSiblingToolStripMenuItem.Size = new Size(240, 22);
+			pasteAsSiblingToolStripMenuItem.Text = "Paste as Sibling";
+			pasteAsSiblingToolStripMenuItem.Click += pasteAsSiblingToolStripMenuItem_Click;
 			// 
 			// deleteToolStripMenuItem
 			// 
 			deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
 			deleteToolStripMenuItem.ShortcutKeyDisplayString = "Delete";
-			deleteToolStripMenuItem.Size = new Size(150, 22);
+			deleteToolStripMenuItem.Size = new Size(240, 22);
 			deleteToolStripMenuItem.Text = "Delete";
 			deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
 			// 
@@ -589,5 +608,7 @@ namespace MyGui.net
         private ToolStripMenuItem refreshToolStripMenuItem;
         private Button centerButton;
 		private PropertyGrid propertyGrid1;
+		private ToolStripMenuItem pasteAsSiblingToolStripMenuItem;
+		private ToolStripMenuItem copyExclusiveToolStripMenuItem;
 	}
 }

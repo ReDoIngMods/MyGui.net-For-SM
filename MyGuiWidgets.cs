@@ -95,13 +95,13 @@ namespace MyGui.net
 
 		[Category("1 - Main Properties")]
 		[Description("Size of the widget in pixels.")]
-		public Size Size
+		public Point Size
 		{
-			get => (Size)widget.size;
+			get => widget.size;
 
 			set
 			{
-				widget.size = (Point)value;
+				widget.size = value;
 			}
 		}
 		public string SizeBoundTo = "size";
@@ -188,8 +188,208 @@ namespace MyGui.net
 				}
 			}
 		}
-
 		public string ColorBoundTo = "properties.Colour";
+
+		[Category("2 - Widget Properties")]
+		[Description("Whether or not the widget is enabled. Applies mainly to Buttons, where it makes them uninteractable.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string Enabled
+		{
+			get => widget.properties.TryGetValue("Enabled", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default")
+				{
+					widget.properties.Remove("Enabled");
+				}
+				else
+				{
+                    widget.properties["Enabled"] = value;
+				}
+			}
+		}
+		public string EnabledBoundTo = "properties.Enabled";
+
+		[Category("2 - Widget Properties")]
+		[DisplayName("Inherits Alpha")]
+		[Description("Whether or not the widget inherits the alpha of its parent.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string InheritsAlpha
+		{
+			get => widget.properties.TryGetValue("InheritsAlpha", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default")
+				{
+					widget.properties.Remove("InheritsAlpha");
+				}
+				else
+				{
+					widget.properties["InheritsAlpha"] = value;
+				}
+			}
+		}
+		public string InheritsAlphaBoundTo = "properties.InheritsAlpha";
+
+		[Category("2 - Widget Properties")]
+		[DisplayName("Inherits Pick")]
+		[Description("Unknown behaviour.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string InheritsPick
+		{
+			get => widget.properties.TryGetValue("InheritsPick", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default")
+				{
+					widget.properties.Remove("InheritsPick");
+				}
+				else
+				{
+					widget.properties["InheritsPick"] = value;
+				}
+			}
+		}
+		public string InheritsPickBoundTo = "properties.InheritsPick";
+
+		[Category("2 - Widget Properties")]
+		[DisplayName("Mask Pick")]
+		[Description("Path to the image file to be used as the button's hitbox (Absolute paths don't work, only Scrap Mechanic specific path references do). Has major performance impact on the game.")]
+		public string MaskPick
+		{
+			get => widget.properties.TryGetValue("MaskPick", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("MaskPick");
+				}
+				else
+				{
+					widget.properties["MaskPick"] = value;
+				}
+			}
+		}
+		public string MaskPickBoundTo = "properties.MaskPick";
+
+		[Category("2 - Widget Properties")]
+		[DisplayName("Capture Keyboard")]
+		[Description("Whether or not the widget captures keyboard input. If set to false it is impossible to get any input.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string NeedKey
+		{
+			get => widget.properties.TryGetValue("NeedKey", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default")
+				{
+					widget.properties.Remove("NeedKey");
+				}
+				else
+				{
+					widget.properties["NeedKey"] = value;
+				}
+			}
+		}
+		public string NeedKeyBoundTo = "properties.NeedKey";
+
+		[Category("2 - Widget Properties")]
+		[DisplayName("Capture Mouse")]
+		[Description("Whether or not the widget captures mouse input. If set to false it is impossible to get any input.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string NeedMouse
+		{
+			get => widget.properties.TryGetValue("NeedMouse", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default")
+				{
+					widget.properties.Remove("NeedMouse");
+				}
+				else
+				{
+					widget.properties["NeedMouse"] = value;
+				}
+			}
+		}
+		public string NeedMouseBoundTo = "properties.NeedMouse";
+
+		[Category("2 - Widget Properties")]
+		[DisplayName("Show Tool Tip")]
+		[Description("Whether or not the widget displays a tool tip. Only ceertain widget skin and type combinations support this.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string NeedToolTip
+		{
+			get => widget.properties.TryGetValue("NeedToolTip", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default")
+				{
+					widget.properties.Remove("NeedToolTip");
+				}
+				else
+				{
+					widget.properties["NeedToolTip"] = value;
+				}
+			}
+		}
+		public string NeedToolTipBoundTo = "properties.NeedToolTip";
+
+		[Category("2 - Widget Properties")]
+		[DisplayName("Cursor")]
+		[Description("Doesn't work in Scrap Mechanic, however works in the layout editor.")]
+		public string Pointer
+		{
+			get => widget.properties.TryGetValue("Pointer", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("Pointer");
+				}
+				else
+				{
+					widget.properties["Pointer"] = value;
+				}
+			}
+		}
+		public string PointerBoundTo = "properties.Pointer";
+
+		[Category("2 - Widget Properties")]
+		[Description("Whether or not is the widget and its children rendered.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string Visible
+		{
+			get => widget.properties.TryGetValue("Visible", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default")
+				{
+					widget.properties.Remove("Visible");
+				}
+				else
+				{
+					widget.properties["Visible"] = value;
+				}
+			}
+		}
+		public string VisibleBoundTo = "properties.Visible";
 		#endregion
 
 		#region Backend Functions

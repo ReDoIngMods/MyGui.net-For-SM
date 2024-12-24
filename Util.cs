@@ -981,6 +981,15 @@ namespace MyGui.net
 		#region Util Utils
 		public static Random rand = new();
 
+		public static T ShallowCopy<T>(T source)
+		{
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+
+			MethodInfo memberwiseClone = typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic);
+			return (T)memberwiseClone.Invoke(source, null);
+		}
+
 		public static Point GetWidgetPos(bool isReal, string input, Point parentSize)
 		{
 			string[] numbers = input.Split(' ');
@@ -1302,58 +1311,9 @@ namespace MyGui.net
 
 		public static MyGuiWidgetData? GetTopmostControlAtMousePosition(MyGuiWidgetData? originControl, Point relativePoint, MyGuiWidgetData[] excludeParent = null)
 		{
-			//TODO: figure out structure
-			/*
-			// Convert the relative point (from the MouseDown event) to screen coordinates
-			Point screenPoint = originControl.PointToScreen(relativePoint);
-
-			// Start the search from the top-level parent or container
-			Control topLevelParent = originControl.TopLevelControl;
-
-			// Perform the recursive search from the topmost control downwards
-			return GetTopmostControlAtPoint(topLevelParent, screenPoint, excludeParent);*/
 			MessageBox.Show("GetTopmostControlAtMousePosition is deprecated!", "Deprecated Function", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			return new MyGuiWidgetData();
 		}
-
-		/*public static MyGuiWidgetData? GetTopmostControlAtPoint(List<MyGuiWidgetData> parents, Point screenPoint, MyGuiWidgetData[]? excludeParent = null)
-		{
-			MyGuiWidgetData sus = new MyGuiWidgetData();
-			sus.children = parents;
-			sus.size = new Point(8096, 8096);
-			return GetTopmostControlAtPoint(sus, screenPoint, excludeParent);
-		}
-
-		public static MyGuiWidgetData? GetTopmostControlAtPoint(MyGuiWidgetData? parent, Point screenPoint, MyGuiWidgetData[] excludeParent = null)
-		{
-			if (parent == null) return null;
-
-			// Check if the point is within the bounds of the parent
-			var parentBounds = new Rectangle(
-				parent.position.X,
-				parent.position.Y,
-				parent.size.X,
-				parent.size.Y
-			);
-
-			if (parentBounds.Contains(screenPoint))
-			{
-				// Search through the children in reverse order to prioritize topmost (last drawn) widgets
-				for (int i = parent.children.Count - 1; i >= 0; i--)
-				{
-					var child = parent.children[i];
-					var result = GetTopmostControlAtPoint(child, screenPoint, excludeParent);
-					if (result != null) return result;
-				}
-
-				// Exclude parent if specified
-				if (excludeParent != null && excludeParent.Contains(parent)) return null;
-
-				return parent; // Return the parent if no child is a better match
-			}
-
-			return null;
-		}*/
 
 		private static void GetAllControlsAtPointRecursive(MyGuiWidgetData root, Point parentAbsolutePosition, Point screenPoint, List<MyGuiWidgetData> result, MyGuiWidgetData[]? excludeWidgets)
 		{
@@ -1391,6 +1351,25 @@ namespace MyGui.net
 			}
 
 			return widgetsAtPoint;
+		}
+
+		public static Point TransformPointToLocal(List<MyGuiWidgetData> parents, MyGuiWidgetData widget, Point screenPoint)
+		{
+			var widgets = Util.FindParentTree(widget, parents) ?? new();
+			if (widget != null)
+			{
+				widgets.Add(widget);
+			}
+			if (widgets.Any())
+			{
+				foreach (MyGuiWidgetData parent in widgets)
+				{
+					screenPoint.X -= parent.position.X;
+					screenPoint.Y -= parent.position.Y;
+				}
+			}
+
+			return screenPoint;
 		}
 
 		public enum BorderPosition
@@ -1466,10 +1445,8 @@ namespace MyGui.net
 			MyGuiWidgetData? current = FindParent(widget, layout);
 			while (current != null)
 			{
-				absolutePosition = new Point(
-					absolutePosition.X + current.position.X,
-					absolutePosition.Y + current.position.Y
-				);
+				absolutePosition.X += current.position.X;
+				absolutePosition.Y += current.position.Y;
 				current = FindParent(current, layout);
 			}
 
@@ -1489,6 +1466,31 @@ namespace MyGui.net
 			}
 
 			return null;
+		}
+
+		public static List<MyGuiWidgetData>? FindParentTree(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
+		{
+			// List to store the entire parent tree
+			List<MyGuiWidgetData> parentTree = new List<MyGuiWidgetData>();
+
+			// Helper function for recursion
+			void CollectParents(MyGuiWidgetData currentWidget, List<MyGuiWidgetData> currentLayout)
+			{
+				foreach (var potentialParent in currentLayout)
+				{
+					if (potentialParent.children.Contains(currentWidget))
+					{
+						parentTree.Add(potentialParent);
+						CollectParents(potentialParent, layout); // Continue searching upwards
+						break;
+					}
+				}
+			}
+
+			// Start collecting parents from the initial widget
+			CollectParents(widget, layout);
+
+			return parentTree.Any() ? parentTree : null; // Return null if no parents are found
 		}
 		#endregion
 

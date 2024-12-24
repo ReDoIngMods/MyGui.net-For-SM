@@ -5,13 +5,16 @@ using SkiaSharp.Views.Gtk;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Drawing.Imaging;
+using System.Windows.Forms;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 
 namespace MyGui.net
 {
 	//TODO: Add an undo/redo history window
+	//TODO: holding shift while using arrows ignores grid and control scales
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -407,7 +410,7 @@ namespace MyGui.net
 
 		void UpdateProperties()
 		{
-			propertyGrid1.SelectedObject = _currentSelectedWidget == null ? null : new MyGuiWidgetDataWidget(_currentSelectedWidget).ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget) );
+			propertyGrid1.SelectedObject = _currentSelectedWidget == null ? null : new MyGuiWidgetDataWidget(_currentSelectedWidget).ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget));
 			propertyGrid1.Refresh();
 		}
 
@@ -1504,6 +1507,7 @@ namespace MyGui.net
 						HandleWidgetSelection();
 					}
 					copyToolStripMenuItem.Enabled = _currentSelectedWidget != null;
+					copyExclusiveToolStripMenuItem.Enabled = _currentSelectedWidget != null;
 					deleteToolStripMenuItem.Enabled = _currentSelectedWidget != null;
 					editorMenuStrip.Show(Cursor.Position);
 				}
@@ -1899,7 +1903,12 @@ namespace MyGui.net
 			{
 				if (e.Control && e.KeyCode == Keys.C && _currentSelectedWidget != null)
 				{
-					List<MyGuiWidgetData> myGuiWidgetDatas = [_currentSelectedWidget];
+					MyGuiWidgetData widgetToCopy = e.Shift ? ShallowCopy(_currentSelectedWidget) : _currentSelectedWidget;
+					if (e.Shift)
+					{
+						widgetToCopy.children = new();
+					}
+					List<MyGuiWidgetData> myGuiWidgetDatas = [widgetToCopy];
 					if (Clipboard.ContainsText())
 					{
 						Clipboard.Clear(); // Optional: clear the clipboard before setting text.
@@ -1918,10 +1927,23 @@ namespace MyGui.net
 						try
 						{
 							// Try to parse the clipboard text as XML
-							XDocument doc = XDocument.Parse(clipboardText);
+							XDocument doc;
+							try
+							{
+								doc = XDocument.Parse(clipboardText);
+							}
+							catch (Exception)
+							{
+								// If parsing fails, assume it's due to missing root and try wrapping it
+								clipboardText = $"<MyGUI type='Layout' version='3.2.0'>{clipboardText}</MyGUI>";
+								Debug.WriteLine(clipboardText);
+								doc = XDocument.Parse(clipboardText);
+								if (doc.Root.Element("Widget") == null)
+								{
+									throw new FormatException("Not an XML!");
+								}
+							}
 
-							// Check if it matches expected XML structure (either with or without root)
-							// For example, ensure it has elements of type "Widget"
 							if (doc.Root == null || doc.Root.Name != "MyGUI")
 							{
 								var elementsWithoutRoot = doc.Elements("Widget").ToList();
@@ -1932,14 +1954,38 @@ namespace MyGui.net
 								));
 							}
 
-							List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc);
+							List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc, null);
+							MyGuiWidgetData widgetToPasteInto = e.Shift ? Util.FindParent(_currentSelectedWidget, _currentLayout) : _currentSelectedWidget;
+
+
+							// Determine the bounding box top-left corner (minimum x and y positions)
+							int minX = int.MaxValue, minY = int.MaxValue;
+							foreach (var widget in parsedLayout)
+							{
+								if (widget.position.X < minX) minX = widget.position.X;
+								if (widget.position.Y < minY) minY = widget.position.Y;
+							}
+
+							// Convert cursor position to local coordinates
 							Point viewportRelPos = viewport.PointToClient(Cursor.Position);
+							var newPos = Util.TransformPointToLocal(
+								_currentLayout,
+								widgetToPasteInto,
+								new Point(
+									(int)(viewportRelPos.X / _viewportScale - _viewportOffset.X),
+									(int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y)
+								)
+							);
 
-							//TODO: DO PROPER OFFSET!
-							parsedLayout[0].position = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+							// Calculate the position adjustment based on the bounding box's top-left corner
+							var diffPos = newPos - new Size(minX, minY);
 
-
-							ExecuteCommand(new CreateControlCommand(parsedLayout[0], _currentSelectedWidget, _currentLayout));
+							// Adjust all widget positions relative to the new position
+							foreach (var widget in parsedLayout)
+							{
+								widget.position.Offset(diffPos);
+								ExecuteCommand(new CreateControlCommand(widget, widgetToPasteInto, _currentLayout));
+							}
 						}
 						catch (Exception)
 						{
@@ -2024,10 +2070,22 @@ namespace MyGui.net
 			Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.C));
 		}
 
+		private void copyExclusiveToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			_viewportFocused = true;
+			Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.Shift | Keys.C));
+		}
+
 		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			_viewportFocused = true;
 			Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.V));
+		}
+
+		private void pasteAsSiblingToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			_viewportFocused = true;
+			Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.Shift | Keys.V));
 		}
 
 		private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2083,8 +2141,8 @@ namespace MyGui.net
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			Debug.WriteLine($"{e.ChangedItem.Label} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.Label + "BoundTo")}");
-			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.Label + "BoundTo"), e.ChangedItem.Value, e.OldValue));
+			//Debug.WriteLine($"{e.ChangedItem.PropertyDescriptor.Name} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo")}");
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), e.ChangedItem.Value, e.OldValue));
 		}
 	}
 }
