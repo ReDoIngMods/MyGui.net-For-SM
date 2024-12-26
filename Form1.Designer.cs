@@ -77,6 +77,9 @@ namespace MyGui.net
 			deleteToolStripMenuItem = new ToolStripMenuItem();
 			zoomLevelNumericUpDown = new CustomNumericUpDown();
 			label1 = new Label();
+			cutToolStripMenuItem = new ToolStripMenuItem();
+			toolStripSeparator4 = new ToolStripSeparator();
+			toolStripSeparator5 = new ToolStripSeparator();
 			((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
 			splitContainer1.Panel1.SuspendLayout();
 			splitContainer1.Panel2.SuspendLayout();
@@ -451,10 +454,10 @@ namespace MyGui.net
 			// 
 			// editorMenuStrip
 			// 
-			editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, copyExclusiveToolStripMenuItem, pasteToolStripMenuItem, pasteAsSiblingToolStripMenuItem, deleteToolStripMenuItem });
+			editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, copyExclusiveToolStripMenuItem, cutToolStripMenuItem, toolStripSeparator4, pasteToolStripMenuItem, pasteAsSiblingToolStripMenuItem, toolStripSeparator5, deleteToolStripMenuItem });
 			editorMenuStrip.Name = "editorMenuStrip";
 			editorMenuStrip.RenderMode = ToolStripRenderMode.System;
-			editorMenuStrip.Size = new Size(241, 114);
+			editorMenuStrip.Size = new Size(241, 170);
 			// 
 			// copyToolStripMenuItem
 			// 
@@ -519,6 +522,24 @@ namespace MyGui.net
 			label1.Size = new Size(93, 15);
 			label1.TabIndex = 6;
 			label1.Text = "Zoom Level (%)";
+			// 
+			// cutToolStripMenuItem
+			// 
+			cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+			cutToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + X";
+			cutToolStripMenuItem.Size = new Size(240, 22);
+			cutToolStripMenuItem.Text = "Cut";
+			cutToolStripMenuItem.Click += cutToolStripMenuItem_Click;
+			// 
+			// toolStripSeparator4
+			// 
+			toolStripSeparator4.Name = "toolStripSeparator4";
+			toolStripSeparator4.Size = new Size(237, 6);
+			// 
+			// toolStripSeparator5
+			// 
+			toolStripSeparator5.Name = "toolStripSeparator5";
+			toolStripSeparator5.Size = new Size(237, 6);
 			// 
 			// Form1
 			// 
@@ -610,5 +631,8 @@ namespace MyGui.net
 		private PropertyGrid propertyGrid1;
 		private ToolStripMenuItem pasteAsSiblingToolStripMenuItem;
 		private ToolStripMenuItem copyExclusiveToolStripMenuItem;
+		private ToolStripMenuItem cutToolStripMenuItem;
+		private ToolStripSeparator toolStripSeparator4;
+		private ToolStripSeparator toolStripSeparator5;
 	}
 }

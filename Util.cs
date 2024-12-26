@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using MyGui.net.Properties;
 using SkiaSharp;
 using System.Collections;
 using System.Diagnostics;
@@ -321,6 +322,35 @@ namespace MyGui.net
 		#endregion
 
 		#region Layout File Reading/Exporting
+		public static bool IsStringValidLayout(string str)
+		{
+			try
+			{
+				// Try to parse the clipboard text as XML
+				XDocument doc;
+				try
+				{
+					doc = XDocument.Parse(str);
+				}
+				catch (Exception)
+				{
+					// If parsing fails, assume it's due to missing root and try wrapping it
+					str = $"<MyGUI type='Layout' version='3.2.0'>{str}</MyGUI>";
+					doc = XDocument.Parse(str);
+					if (doc.Root.Element("Widget") == null)
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+		}
+
 		public static List<MyGuiWidgetData>? ReadLayoutFile(string path, Point? workspaceSize = null)
 		{
 			XDocument xmlDocument;

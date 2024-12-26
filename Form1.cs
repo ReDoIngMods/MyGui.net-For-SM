@@ -21,7 +21,6 @@ namespace MyGui.net
 		static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
 		static string _currentLayoutSavePath = "";
 		static MyGuiWidgetData? _currentSelectedWidget;
-		static string _lastSelectedWidgetType;
 
 		static SKMatrix _viewportMatrix = SKMatrix.CreateIdentity();
 		static float _viewportScale = 1f;
@@ -29,7 +28,10 @@ namespace MyGui.net
 		static SKPoint _viewportOffset = new SKPoint(0, 0);
 		public Size ProjectSize = Settings.Default.DefaultWorkspaceSize;//new(1920, 1080);
 		static SKBitmap _viewportBackgroundBitmap;
+
 		static Dictionary<string, SKImage> _skinAtlasCache = new();
+		static Dictionary<string, SKTypeface> _fontCache = new();
+
 		private MyGuiResource _nullSkinResource = new MyGuiResource();
 		static Dictionary<string, Type> _widgetTypeToObjectType = new()
 		{
@@ -72,6 +74,9 @@ namespace MyGui.net
 		public static Dictionary<string, MyGuiFontData> AllFonts => _allFonts;
 
 		//static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
+		/// <summary>
+		/// DO NOT, UNDER ANY CIRCUMSTANCES USE THIS VARIABLE IN CODE THAT ISNT THE INITIALIZATION, LIKE IN THE RENDERING CODE...
+		/// </summary>
 		static string _ScrapMechanicPath
 		{
 			get
@@ -381,16 +386,14 @@ namespace MyGui.net
 
 		void HandleWidgetSelection()
 		{
+			UpdateProperties();
 			if (_currentSelectedWidget == null)
 			{
 				viewport.Refresh();
-				_lastSelectedWidgetType = "";
 				return;
 			}
 			_draggedWidgetPosition = _currentSelectedWidget.position;
 			_draggedWidgetSize = (Size)_currentSelectedWidget.size;
-			UpdateProperties();
-			_lastSelectedWidgetType = _currentSelectedWidget.type;
 			viewport.Refresh();
 		}
 
@@ -413,114 +416,6 @@ namespace MyGui.net
 			propertyGrid1.SelectedObject = _currentSelectedWidget == null ? null : new MyGuiWidgetDataWidget(_currentSelectedWidget).ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget));
 			propertyGrid1.Refresh();
 		}
-
-		//TODO: delete this
-		#region Property Ui functions
-		private void textBox_ValueChanged(object senderAny, EventArgs e)
-		{
-			TextBox sender = (TextBox)senderAny;
-			string senderBoundTo = (string)sender.Tag;
-			if (_currentSelectedWidget != null)
-			{
-				ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "" ? null : sender.Text, Util.GetPropertyValue(_currentSelectedWidget, senderBoundTo)));
-			}
-		}
-		private void comboBox_ValueChanged(object senderAny, EventArgs e)
-		{
-			ComboBox sender = (ComboBox)senderAny;
-			string senderBoundTo = (string)sender.Tag;
-			MyGuiWidgetData currWidgetData = _currentSelectedWidget;
-			if (_currentSelectedWidget != null)
-			{
-				//Debug.WriteLine(_currentSelectedWidget.Name);
-				//Debug.WriteLine($"senderBoundTo: {senderBoundTo}");
-				ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "[DEFAULT]" ? null : sender.Text, Util.GetPropertyValue(currWidgetData, senderBoundTo)));
-				if (_lastSelectedWidgetType != (_currentSelectedWidget?.type ?? ""))
-				{
-					UpdateProperties();
-					_lastSelectedWidgetType = _currentSelectedWidget?.type ?? "";
-				}
-				/*switch (senderBoundTo)
-				{
-					case "type":
-						ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "type", sender.Text, currWidgetData.type));
-						UpdateProperties();
-						break;
-					case "layer":
-						ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "layer", sender.Text, currWidgetData.layer));
-						break;
-					case "align":
-						ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "align", sender.Text, currWidgetData.align));
-						break;
-					case "skin":
-						ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "skin", sender.Text, currWidgetData.skin));
-						break;
-					default:
-						ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, sender.Text == "[DEFAULT]" ? null : sender.Text, Util.GetPropertyValue(currWidgetData, senderBoundTo)));
-						break;
-				}*/
-				/*foreach (var property in currWidgetData.properties)
-				{
-					Debug.WriteLine(property);
-				}*/
-			}
-		}
-		private void selectCustomWidgetSkin_Click(object senderAny, EventArgs e)
-		{
-			FormSkin formSkin = new FormSkin();
-			formSkin.Owner = this;
-			formSkin.ShowDialog();
-		}
-		private void selectCustomWidgetColor_Click(object senderAny, EventArgs e)
-		{
-			Button sender = (Button)senderAny;
-			string senderBoundTo = (string)sender.Parent.Tag;
-			//Debug.WriteLine(senderBoundTo);
-			MyGuiWidgetData currWidgetData = _currentSelectedWidget;
-
-			customWidgetColorDialog.Color = Util.ParseColorFromString(((string)Util.GetPropertyValue(currWidgetData, senderBoundTo))) ?? Color.FromArgb(255, 255, 255, 255);
-			if (customWidgetColorDialog.ShowDialog() == DialogResult.OK)
-			{
-				bool isDefault = ColorTranslator.ToHtml(customWidgetColorDialog.Color) == "White";
-				ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, senderBoundTo, isDefault ? null : Util.ColorToString(customWidgetColorDialog.Color), Util.GetPropertyValue(currWidgetData, senderBoundTo)));
-				sender.Parent.Controls[0].BackColor = customWidgetColorDialog.Color;
-				sender.Parent.Controls[1].Text = isDefault ? "" : Util.ColorToHexString(customWidgetColorDialog.Color);
-			}
-		}
-		private void pointBox_ValueChanged(object senderAny, EventArgs e)
-		{
-			NumericUpDown sender = (NumericUpDown)senderAny;
-			if (_currentSelectedWidget != null && _draggingWidgetAt == BorderPosition.None)
-			{
-				//Debug.WriteLine(sender.Name);
-				switch (sender.Name)
-				{
-					case "Position_X":
-						ExecuteCommand(new MoveCommand(_currentSelectedWidget, new Point((int)sender.Value, _currentSelectedWidget.position.Y)));
-						//_currentSelectedWidget.Left = (int)sender.Value;
-						//_currentSelectedWidget.position = _currentSelectedWidget.Location;
-						break;
-					case "Position_Y":
-						ExecuteCommand(new MoveCommand(_currentSelectedWidget, new Point(_currentSelectedWidget.position.X, (int)sender.Value)));
-						//_currentSelectedWidget.Top = (int)sender.Value;
-						//_currentSelectedWidget.position = _currentSelectedWidget.Location;
-						break;
-					case "Size_X":
-						ExecuteCommand(new ResizeCommand(_currentSelectedWidget, new Size((int)sender.Value, _currentSelectedWidget.size.Y)));
-						//_currentSelectedWidget.Width = (int)sender.Value;
-						//_currentSelectedWidget.size = (Point)_currentSelectedWidget.Size;
-						break;
-					case "Size_Y":
-						ExecuteCommand(new ResizeCommand(_currentSelectedWidget, new Size(_currentSelectedWidget.size.X, (int)sender.Value)));
-						//_currentSelectedWidget.Height = (int)sender.Value;
-						//_currentSelectedWidget.size = (Point)_currentSelectedWidget.Size;
-						break;
-					default:
-						break;
-				}
-			}
-		}
-		#endregion
 
 		void Form1_Load(object sender, EventArgs e)
 		{
@@ -552,7 +447,7 @@ namespace MyGui.net
 				widgetGridSpacingNumericUpDown.Tag = false;
 				if (Settings.Default.EditorBackgroundMode == 1)
 				{
-					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(20, 20, 20));
+					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
 					//mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
 				}
 				/*if (_editorProperties.ContainsKey("Position_X"))
@@ -748,7 +643,7 @@ namespace MyGui.net
 			//var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
 
 			string skinPath = widget.skin != null && _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : "";
-			skinPath = skinPath ?? "";
+			skinPath ??= "";
 
 
 			//Debug.WriteLine(skinPath);
@@ -800,7 +695,7 @@ namespace MyGui.net
 					TextSize = 16,
 					IsAntialias = true,
 					Style = SKPaintStyle.StrokeAndFill,
-					StrokeWidth = 1,
+					StrokeWidth = 1
 				};
 				canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
 				var textPaintStroke = new SKPaint
@@ -840,6 +735,8 @@ namespace MyGui.net
 			canvas.RestoreToCount(saveBeforeAll);
 		}
 
+		SKPaint _baseFontPaint = new SKPaint { };
+
 		private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null)
 		{
 			if (atlasImage == null || resource == null || resource.basisSkins == null)
@@ -860,7 +757,7 @@ namespace MyGui.net
 				var skin = resource.basisSkins[i];
 				if (skin.type == "EffectSkin")
 				{
-					continue; // Skip rendering for invalidx skins
+					continue; // Skip rendering for invalid skins
 				}
 
 
@@ -905,33 +802,36 @@ namespace MyGui.net
 					{
 						if (widget.properties.ContainsKey("Caption"))
 						{
+							int beforeTextClip = canvas.Save();
 							canvas.ClipRect(destRect);
+
 							var fontData = widget.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widget.properties["FontName"]) ? _allFonts[widget.properties["FontName"]] : _allFonts["SM_TextLabel"];
-							SKTypeface typeFace = SKTypeface.FromFile(Path.Combine(_ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source));
-							Color? textColor = widget.properties.ContainsKey("TextColour") ? ParseColorFromString(widget.properties["TextColour"]) : Color.White;
-							var textPaint = new SKPaint
+							string fontPath = Path.Combine(Settings.Default.ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
+							if (!_fontCache.ContainsKey(fontPath))
 							{
-								Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B),
-								TextSize = widget.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widget.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widget.properties["FontHeight"]) : (float)fontData.size,
-								IsAntialias = true,
-								Typeface = typeFace
-							};
+								_fontCache[fontPath] = SKTypeface.FromFile(fontPath);
+							}
+
+							Color? textColor = widget.properties.ContainsKey("TextColour") ? ParseColorFromString(widget.properties["TextColour"]) : Color.White;
+							_baseFontPaint.Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B);
+							_baseFontPaint.TextSize = widget.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widget.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widget.properties["FontHeight"]) : (float)fontData.size;
+							_baseFontPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
+							_baseFontPaint.Typeface = _fontCache[fontPath];
+							_baseFontPaint.FilterQuality = Settings.Default.UseViewportAntiAliasing ? SKFilterQuality.High : SKFilterQuality.None;
 
 							var spacingX = destRect.Left;
-							var spacingY = destRect.Top + textPaint.TextSize;
+							var spacingY = destRect.Top + _baseFontPaint.TextSize;
 							foreach (var character in fontData.allowedChars == "ALL CHARACTERS" ? widget.properties["Caption"] : ReplaceInvalidChars(widget.properties["Caption"], fontData.allowedChars))
 							{
-								/*if (!destRect.Contains(new SKPoint(spacingX + textPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0), spacingY)))
+								/*if (!destRect.Contains(new SKPoint(spacingX + _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0), spacingY)))
 								{
 									spacingX = destRect.Left;
-									spacingY += textPaint.TextSize;
+									spacingY += _baseFontPaint.TextSize;
 								}*/
-								canvas.DrawText(character.ToString(), spacingX, spacingY, textPaint);
-								spacingX += textPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0);
+								canvas.DrawText(character.ToString(), spacingX, spacingY, _baseFontPaint);
+								spacingX += _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0);
 							}
-							textPaint.Dispose();
-							typeFace.Dispose();
-							canvas.Restore();
+							canvas.RestoreToCount(beforeTextClip);
 						}
 						continue;
 					}
@@ -986,7 +886,7 @@ namespace MyGui.net
 					//canvas.ClipRect(destRect);
 					//canvas.Clear();
 					drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (Settings.Default.UseViewportAntiAliasing ? SKFilterQuality.High : SKFilterQuality.None);
-					drawPaint.IsAntialias = true;
+					drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
 					drawPaint.IsDither = true;
 					canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
 					//canvas.RestoreToCount(beforeClipSave);
@@ -998,7 +898,6 @@ namespace MyGui.net
 
 		private static SKRect GetAlignedRectangle(string? align, SKRect container, SKSize tileSize, SKRect subskinOffset, SKSize maxSize)
 		{
-			//TODO: FIGURE OUT MAX SIZE
 			float x = container.Left, y = container.Top, width = tileSize.Width, height = tileSize.Height;
 
 			switch (align)
@@ -1506,10 +1405,7 @@ namespace MyGui.net
 						_currentSelectedWidget = thing;
 						HandleWidgetSelection();
 					}
-					copyToolStripMenuItem.Enabled = _currentSelectedWidget != null;
-					copyExclusiveToolStripMenuItem.Enabled = _currentSelectedWidget != null;
-					deleteToolStripMenuItem.Enabled = _currentSelectedWidget != null;
-					editorMenuStrip.Show(Cursor.Position);
+					ShowEditorMenuStrip(Cursor.Position);
 				}
 				_draggingViewport = false;
 				_movedViewport = false;
@@ -1564,7 +1460,7 @@ namespace MyGui.net
 			ProjectSize = Settings.Default.DefaultWorkspaceSize;
 			if (Settings.Default.EditorBackgroundMode == 1)
 			{
-				_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(20, 20, 20));
+				_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
 			}
 			HandleWidgetSelection();
 			AdjustViewportScrollers();
@@ -1810,6 +1706,7 @@ namespace MyGui.net
 				splitContainer1.Panel2Collapsed = true;
 				_sidebarForm.Show();
 			}
+			AdjustViewportScrollers();
 		}
 
 		private void ReattachSidebar(object sender, FormClosingEventArgs e)
@@ -1822,19 +1719,13 @@ namespace MyGui.net
 			Settings.Default.SidePanelPos = _sidebarForm.Location;
 			Settings.Default.SidePanelSize = _sidebarForm.Size;
 			Settings.Default.SidePanelMonitor = screenSide.DeviceName;
+			AdjustViewportScrollers();
 		}
 
 		private void undoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (_draggingWidgetAt != BorderPosition.None) { return; }
 			_commandManager.Undo();
-			//try to fix having selected ghosts
-			/*Debug.WriteLine(_currentSelectedWidget);
-			if (_currentSelectedWidget == null)
-			{
-				_currentSelectedWidget = null;
-				_lastSelectedWidgetType = "";
-			}*/
 
 			UpdateUndoRedo();
 		}
@@ -1911,9 +1802,30 @@ namespace MyGui.net
 					List<MyGuiWidgetData> myGuiWidgetDatas = [widgetToCopy];
 					if (Clipboard.ContainsText())
 					{
-						Clipboard.Clear(); // Optional: clear the clipboard before setting text.
+						Clipboard.Clear();
 					}
 					Clipboard.SetText(Util.ExportLayoutToXmlString(myGuiWidgetDatas, new Point(1, 1), true, false), TextDataFormat.Text);
+
+					this.ActiveControl = null;
+					e.Handled = true;
+				}
+				else if (e.Control && e.KeyCode == Keys.X && _currentSelectedWidget != null)
+				{
+					MyGuiWidgetData widgetToCopy = e.Shift ? ShallowCopy(_currentSelectedWidget) : _currentSelectedWidget;
+					if (e.Shift)
+					{
+						widgetToCopy.children = new();
+					}
+					List<MyGuiWidgetData> myGuiWidgetDatas = [widgetToCopy];
+					if (Clipboard.ContainsText())
+					{
+						Clipboard.Clear();
+					}
+					Clipboard.SetText(Util.ExportLayoutToXmlString(myGuiWidgetDatas, new Point(1, 1), true, false), TextDataFormat.Text);
+
+					ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, _currentLayout));
+					_currentSelectedWidget = null;
+					HandleWidgetSelection();
 
 					this.ActiveControl = null;
 					e.Handled = true;
@@ -1936,7 +1848,6 @@ namespace MyGui.net
 							{
 								// If parsing fails, assume it's due to missing root and try wrapping it
 								clipboardText = $"<MyGUI type='Layout' version='3.2.0'>{clipboardText}</MyGUI>";
-								Debug.WriteLine(clipboardText);
 								doc = XDocument.Parse(clipboardText);
 								if (doc.Root.Element("Widget") == null)
 								{
@@ -2011,6 +1922,12 @@ namespace MyGui.net
 				if (_currentSelectedWidget != null)
 				{
 					bool didStuff = false;
+					if (e.KeyCode == Keys.Apps)
+					{
+						this.ActiveControl = null;
+						ShowEditorMenuStrip(Cursor.Position);
+						didStuff = true;
+					}
 					if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
 					{
 						if (_draggedWidgetPositionStart == new Point(0, 0))
@@ -2037,6 +1954,28 @@ namespace MyGui.net
 					e.Handled = didStuff;
 				}
 			}
+		}
+
+		private void ShowEditorMenuStrip(Point position)
+		{
+			bool isWidgetSelected = _currentSelectedWidget != null;
+
+			copyToolStripMenuItem.Enabled = isWidgetSelected;
+			copyToolStripMenuItem.ToolTipText = isWidgetSelected ? "Copies the currently selected widget to clipboard as a Layout XML." : "No widget selected.";
+			copyExclusiveToolStripMenuItem.Enabled = isWidgetSelected;
+			copyExclusiveToolStripMenuItem.ToolTipText = isWidgetSelected ? "Copies the currently selected widget without its children to clipboard as Layout XML." : "No widget selected.";
+			cutToolStripMenuItem.Enabled = isWidgetSelected;
+			cutToolStripMenuItem.ToolTipText = isWidgetSelected ? "Copies the currently selected widget to clipboard as a Layout XML and deletes the widget afterwards." : "No widget selected.";
+
+			bool isValidPaste = Clipboard.ContainsText() && IsStringValidLayout(Clipboard.GetText());
+			pasteToolStripMenuItem.Enabled = isValidPaste;
+			pasteToolStripMenuItem.ToolTipText = isValidPaste ? "Pastes all the widgets from the Layout XML in your clipboard into the currently selected widget and moves them to your cursor." : "Invalid layout in clipboard.";
+			pasteAsSiblingToolStripMenuItem.Enabled = isValidPaste;
+			pasteAsSiblingToolStripMenuItem.ToolTipText = isValidPaste ? "Pastes all the widgets from the Layout XML in your clipboard into the currently selected widget's parent and moves them to your cursor." : "Invalid layout in clipboard.";
+
+			deleteToolStripMenuItem.Enabled = isWidgetSelected;
+			deleteToolStripMenuItem.ToolTipText = isWidgetSelected ? "Deletes the currently selected widget." : "No widget selected.";
+			editorMenuStrip.Show(position);
 		}
 
 		private void Form1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
@@ -2074,6 +2013,12 @@ namespace MyGui.net
 		{
 			_viewportFocused = true;
 			Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.Shift | Keys.C));
+		}
+
+		private void cutToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			_viewportFocused = true;
+			Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.X));
 		}
 
 		private void pasteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2142,7 +2087,8 @@ namespace MyGui.net
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
 			//Debug.WriteLine($"{e.ChangedItem.PropertyDescriptor.Name} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo")}");
-			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), e.ChangedItem.Value, e.OldValue));
+			var value = Util.IsAnyOf<string>((string)e.ChangedItem.Value, ["[DEFAULT]", "Default", ""]) ? null : e.ChangedItem.Value;
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp.Views.Gtk;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
@@ -140,6 +141,7 @@ namespace MyGui.net
 				}
 			}
 		}
+		public string AlphaBoundTo = "properties.Alpha";
 
 		[Category("2 - Widget Properties")]
 		[Description("Color of the widget. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive). Recolors already exisiting pixels instead of coloring transparent ones.")]
@@ -184,7 +186,7 @@ namespace MyGui.net
 						}
 					}
 					var parsedAsColor = Util.ParseColorFromString(editedValue, false);
-					widget.properties["Colour"] = parsedAsColor != null ? editedValue : "";
+				    widget.properties["Colour"] = editedValue;
 				}
 			}
 		}
@@ -200,7 +202,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default")
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("Enabled");
 				}
@@ -223,7 +225,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default")
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("InheritsAlpha");
 				}
@@ -246,7 +248,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default")
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("InheritsPick");
 				}
@@ -290,7 +292,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default")
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("NeedKey");
 				}
@@ -313,7 +315,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default")
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("NeedMouse");
 				}
@@ -327,7 +329,7 @@ namespace MyGui.net
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Show Tool Tip")]
-		[Description("Whether or not the widget displays a tool tip. Only ceertain widget skin and type combinations support this.")]
+		[Description("Whether or not the widget displays a tool tip. Only certain widget skin and type combinations support this.")]
 		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(TriStateConverter))]
 		public string NeedToolTip
@@ -336,7 +338,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default")
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("NeedToolTip");
 				}
@@ -379,7 +381,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default")
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("Visible");
 				}
@@ -415,7 +417,11 @@ namespace MyGui.net
 		public MyGuiWidgetDataTextBox() : base(){}
 		public MyGuiWidgetDataTextBox(MyGuiWidgetData widget) : base(widget){}
 
-		public string CustomThingTheSecond
+		#region Properties
+		[Category("3 - TextBox Properties")]
+		[Description("Text shown on the widget. Certain fonts only support certain characters, that fact is reflected in the viewport.\r\n- In order to color your text, type the color in this format \"#rrggbb\"in front of any text.\r\n- To type a single hashtag, type in double hashtag \"##\".\r\n- To show a translated Interface Tag (from the file located in \"ScrapMechanic/Data/Gui/Language/*language*/InterfaceTags.txt\"), write it in this format: \"#{*tag name*}\".")]
+		[Editor(typeof(PopupTextBoxEditor), typeof(UITypeEditor))]
+		public string Caption
 		{
 			get => widget.properties.TryGetValue("Caption", out var value) ? value : "";
 
@@ -431,6 +437,210 @@ namespace MyGui.net
 				}
 			}
 		}
+		public string CaptionBoundTo = "properties.Caption";
+
+		[Category("3 - TextBox Properties")]
+		[DisplayName("Font Size")]
+		[Description("The static font size, leave empty for default dynamic sizing. Not recommended as this value applies for all resolutions, as such the font might be too small or too large in certain scenarios.")]
+		public string FontHeight
+		{
+			get => widget.properties.TryGetValue("FontHeight", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("FontHeight");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["FontHeight"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string FontHeightBoundTo = "properties.FontHeight";
+
+		[Category("3 - TextBox Properties")]
+		[DisplayName("Font")]
+		[Description("The used font. Each font has a default dynamic size and a set of characters that it is allowed to use, which is reflected in the editor.")]
+		public string FontName
+		{
+			get => widget.properties.TryGetValue("FontName", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("FontName");
+				}
+				else
+				{
+					widget.properties["FontName"] = value;
+				}
+			}
+		}
+		public string FontNameBoundTo = "properties.FontName";
+
+		[Category("3 - TextBox Properties")]
+		[DisplayName("Text Align")]
+		[Description("Text alignment within the widget.")]
+		public string TextAlign
+		{
+			get => widget.properties.TryGetValue("TextAlign", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("TextAlign");
+				}
+				else
+				{
+					widget.properties["TextAlign"] = value;
+				}
+			}
+		}
+		public string TextAlignBoundTo = "properties.TextAlign";
+
+		[Category("3 - TextBox Properties")]
+		[DisplayName("Text Color")]
+		[Description("Color of the text. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive).")]
+		public string TextColor
+		{
+			get => widget.properties.TryGetValue("TextColour", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("TextColour");
+				}
+				else
+				{
+					var editedValue = value;
+					string[] parts = value.Split(' ');
+					if (parts.Length == 1)
+					{
+						if (!parts[0].StartsWith('#'))
+						{
+							editedValue = "#" + parts[0];
+						}
+						if (editedValue.Length != 7)
+						{
+							editedValue = null;
+						}
+					}
+					else if (parts.Length != 3)
+					{
+						editedValue = null;
+					}
+
+					if (parts.Length == 3)
+					{
+						editedValue = "";
+
+						for (int i = 0; i < 3; i++)
+						{
+							var parsedAsDouble = Util.ProperlyParseDouble(parts[i]);
+							editedValue += !double.IsNaN(parsedAsDouble) ? Math.Clamp(parsedAsDouble, 0, 1).ToString(CultureInfo.InvariantCulture) + (i != 2 ? " " : "") : (i != 2 ? "0 " : "0");
+						}
+					}
+					var parsedAsColor = Util.ParseColorFromString(editedValue, false);
+					if (parsedAsColor == null)
+					{
+						widget.properties.Remove("TextColour");
+					}
+					else
+					{
+						widget.properties["TextColour"] = editedValue;
+					}
+				}
+			}
+		}
+		public string TextColorBoundTo = "properties.TextColour";
+
+		[Category("3 - TextBox Properties")]
+		[DisplayName("Text Shadow")]
+		[Description("Whether or not the text renders a shadow.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string TextShadow
+		{
+			get => widget.properties.TryGetValue("TextShadow", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("TextShadow");
+				}
+				else
+				{
+					widget.properties["TextShadow"] = value;
+				}
+			}
+		}
+		public string TextShadowBoundTo = "properties.TextShadow";
+
+		[Category("3 - TextBox Properties")]
+		[DisplayName("Text Shadow Color")]
+		[Description("Color of the text shadow. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive).")]
+		public string TextShadowColor
+		{
+			get => widget.properties.TryGetValue("TextShadowColour", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("TextShadowColour");
+				}
+				else
+				{
+					var editedValue = value;
+					string[] parts = value.Split(' ');
+					if (parts.Length == 1)
+					{
+						if (!parts[0].StartsWith('#'))
+						{
+							editedValue = "#" + parts[0];
+						}
+						if (editedValue.Length != 7)
+						{
+							editedValue = null;
+						}
+					}
+					else if (parts.Length != 3)
+					{
+						editedValue = null;
+					}
+
+					if (parts.Length == 3)
+					{
+						editedValue = "";
+
+						for (int i = 0; i < 3; i++)
+						{
+							var parsedAsDouble = Util.ProperlyParseDouble(parts[i]);
+							editedValue += !double.IsNaN(parsedAsDouble) ? Math.Clamp(parsedAsDouble, 0, 1).ToString(CultureInfo.InvariantCulture) + (i != 2 ? " " : "") : (i != 2 ? "0 " : "0");
+						}
+					}
+					var parsedAsColor = Util.ParseColorFromString(editedValue, false);
+                    if (parsedAsColor == null)
+                    {
+						widget.properties.Remove("TextShadowColour");
+					}
+                    else
+                    {
+						widget.properties["TextShadowColour"] = editedValue;
+					}
+				}
+			}
+		}
+		public string TextShadowColorBoundTo = "properties.TextShadowColour";
+
+		#endregion
 	}
 
 	#region MyGui Property Classes
