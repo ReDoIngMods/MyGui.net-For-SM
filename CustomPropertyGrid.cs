@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Cyotek.Windows.Forms;
+using MyGui.net.Properties;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
@@ -190,6 +193,27 @@ namespace MyGui.net
 		}
 	}
 	#endregion
+
+	public class ColorPickerEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Indicate that the editor supports a dropdown with a button
+			return UITypeEditorEditStyle.DropDown;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			ColorPickerDialog editorBackgroundColorDialog = Util.NewFixedColorPickerDialog();
+			editorBackgroundColorDialog.Color = Util.ParseColorFromString((string)value) ?? Color.FromArgb(128,128,128);
+			if (editorBackgroundColorDialog.ShowDialog() == DialogResult.OK)
+			{
+				return ColorTranslator.ToHtml(editorBackgroundColorDialog.Color);
+			}
+
+			return value;
+		}
+	}
 
 	public class PopupTextBoxEditor : UITypeEditor
 	{

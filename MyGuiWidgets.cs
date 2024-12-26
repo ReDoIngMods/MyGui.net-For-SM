@@ -145,6 +145,7 @@ namespace MyGui.net
 
 		[Category("2 - Widget Properties")]
 		[Description("Color of the widget. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive). Recolors already exisiting pixels instead of coloring transparent ones.")]
+		[Editor(typeof(ColorPickerEditor), typeof(UITypeEditor))]
 		public string Color
 		{
 			get => widget.properties.TryGetValue("Colour", out var value) ? value : "";
@@ -506,6 +507,7 @@ namespace MyGui.net
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Color")]
 		[Description("Color of the text. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive).")]
+		[Editor(typeof(ColorPickerEditor), typeof(UITypeEditor))]
 		public string TextColor
 		{
 			get => widget.properties.TryGetValue("TextColour", out var value) ? value : "";
@@ -586,6 +588,7 @@ namespace MyGui.net
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Shadow Color")]
 		[Description("Color of the text shadow. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive).")]
+		[Editor(typeof(ColorPickerEditor), typeof(UITypeEditor))]
 		public string TextShadowColor
 		{
 			get => widget.properties.TryGetValue("TextShadowColour", out var value) ? value : "";

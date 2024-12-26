@@ -65,21 +65,20 @@ namespace MyGui.net
 			formatToolStripMenuItem = new ToolStripMenuItem();
 			openLayoutDialog = new OpenFileDialog();
 			saveLayoutDialog = new SaveFileDialog();
-			customWidgetColorDialog = new ColorDialog();
 			sidebarToNewWindowButton = new Button();
 			widgetGridSpacingNumericUpDown = new CustomNumericUpDown();
 			label2 = new Label();
 			editorMenuStrip = new ContextMenuStrip(components);
 			copyToolStripMenuItem = new ToolStripMenuItem();
 			copyExclusiveToolStripMenuItem = new ToolStripMenuItem();
+			cutToolStripMenuItem = new ToolStripMenuItem();
+			toolStripSeparator4 = new ToolStripSeparator();
 			pasteToolStripMenuItem = new ToolStripMenuItem();
 			pasteAsSiblingToolStripMenuItem = new ToolStripMenuItem();
+			toolStripSeparator5 = new ToolStripSeparator();
 			deleteToolStripMenuItem = new ToolStripMenuItem();
 			zoomLevelNumericUpDown = new CustomNumericUpDown();
 			label1 = new Label();
-			cutToolStripMenuItem = new ToolStripMenuItem();
-			toolStripSeparator4 = new ToolStripSeparator();
-			toolStripSeparator5 = new ToolStripSeparator();
 			((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
 			splitContainer1.Panel1.SuspendLayout();
 			splitContainer1.Panel2.SuspendLayout();
@@ -413,10 +412,6 @@ namespace MyGui.net
 			saveLayoutDialog.Filter = "MyGui Layout|*.layout|XML|*.xml";
 			saveLayoutDialog.ShowHiddenFiles = true;
 			// 
-			// customWidgetColorDialog
-			// 
-			customWidgetColorDialog.FullOpen = true;
-			// 
 			// sidebarToNewWindowButton
 			// 
 			sidebarToNewWindowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -457,7 +452,7 @@ namespace MyGui.net
 			editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, copyExclusiveToolStripMenuItem, cutToolStripMenuItem, toolStripSeparator4, pasteToolStripMenuItem, pasteAsSiblingToolStripMenuItem, toolStripSeparator5, deleteToolStripMenuItem });
 			editorMenuStrip.Name = "editorMenuStrip";
 			editorMenuStrip.RenderMode = ToolStripRenderMode.System;
-			editorMenuStrip.Size = new Size(241, 170);
+			editorMenuStrip.Size = new Size(241, 148);
 			// 
 			// copyToolStripMenuItem
 			// 
@@ -476,6 +471,19 @@ namespace MyGui.net
 			copyExclusiveToolStripMenuItem.Text = "Copy Exclusive";
 			copyExclusiveToolStripMenuItem.Click += copyExclusiveToolStripMenuItem_Click;
 			// 
+			// cutToolStripMenuItem
+			// 
+			cutToolStripMenuItem.Name = "cutToolStripMenuItem";
+			cutToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + X";
+			cutToolStripMenuItem.Size = new Size(240, 22);
+			cutToolStripMenuItem.Text = "Cut";
+			cutToolStripMenuItem.Click += cutToolStripMenuItem_Click;
+			// 
+			// toolStripSeparator4
+			// 
+			toolStripSeparator4.Name = "toolStripSeparator4";
+			toolStripSeparator4.Size = new Size(237, 6);
+			// 
 			// pasteToolStripMenuItem
 			// 
 			pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
@@ -491,6 +499,11 @@ namespace MyGui.net
 			pasteAsSiblingToolStripMenuItem.Size = new Size(240, 22);
 			pasteAsSiblingToolStripMenuItem.Text = "Paste as Sibling";
 			pasteAsSiblingToolStripMenuItem.Click += pasteAsSiblingToolStripMenuItem_Click;
+			// 
+			// toolStripSeparator5
+			// 
+			toolStripSeparator5.Name = "toolStripSeparator5";
+			toolStripSeparator5.Size = new Size(237, 6);
 			// 
 			// deleteToolStripMenuItem
 			// 
@@ -522,24 +535,6 @@ namespace MyGui.net
 			label1.Size = new Size(93, 15);
 			label1.TabIndex = 6;
 			label1.Text = "Zoom Level (%)";
-			// 
-			// cutToolStripMenuItem
-			// 
-			cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-			cutToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + X";
-			cutToolStripMenuItem.Size = new Size(240, 22);
-			cutToolStripMenuItem.Text = "Cut";
-			cutToolStripMenuItem.Click += cutToolStripMenuItem_Click;
-			// 
-			// toolStripSeparator4
-			// 
-			toolStripSeparator4.Name = "toolStripSeparator4";
-			toolStripSeparator4.Size = new Size(237, 6);
-			// 
-			// toolStripSeparator5
-			// 
-			toolStripSeparator5.Name = "toolStripSeparator5";
-			toolStripSeparator5.Size = new Size(237, 6);
 			// 
 			// Form1
 			// 
@@ -608,7 +603,6 @@ namespace MyGui.net
         private Panel tabPage1Panel;
         private OpenFileDialog openLayoutDialog;
         private SaveFileDialog saveLayoutDialog;
-        private ColorDialog customWidgetColorDialog;
         private Button sidebarToNewWindowButton;
         private ToolStripMenuItem undoToolStripMenuItem;
         private ToolStripMenuItem redoToolStripMenuItem;

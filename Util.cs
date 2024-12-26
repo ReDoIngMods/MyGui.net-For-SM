@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using Cyotek.Windows.Forms;
 using MyGui.net.Properties;
 using SkiaSharp;
 using System.Collections;
@@ -1296,6 +1297,30 @@ namespace MyGui.net
 		#endregion
 
 		#region MyGui.Net-ified WinForms Utils
+
+		public static ColorPickerDialog NewFixedColorPickerDialog()
+		{
+			ColorPickerDialog colorPicker = new ColorPickerDialog();
+			var okButtonField = typeof(ColorPickerDialog).GetField("okButton", BindingFlags.NonPublic | BindingFlags.Instance);
+			if (okButtonField != null)
+			{
+				Button okButton = (Button)okButtonField.GetValue(colorPicker);
+				okButton.FlatStyle = FlatStyle.System;
+				okButton.BackColor = SystemColors.ControlDark;
+				okButton.ForeColor = SystemColors.ControlLightLight;
+			}
+
+			// Access Cancel button via reflection
+			var cancelButtonField = typeof(ColorPickerDialog).GetField("cancelButton", BindingFlags.NonPublic | BindingFlags.Instance);
+			if (cancelButtonField != null)
+			{
+				Button cancelButton = (Button)cancelButtonField.GetValue(colorPicker);
+				cancelButton.FlatStyle = FlatStyle.System;
+				cancelButton.BackColor = SystemColors.ControlDark;
+				cancelButton.ForeColor = SystemColors.ControlLightLight;
+			}
+			return colorPicker;
+		}
 
 		public static bool RectsOverlap(SKRect parent, SKRect child)
 		{

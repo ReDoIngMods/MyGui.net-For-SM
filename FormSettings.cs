@@ -1,4 +1,5 @@
-﻿using MyGui.net.Properties;
+﻿using Cyotek.Windows.Forms;
+using MyGui.net.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
@@ -233,6 +235,7 @@ namespace MyGui.net
 		{
 			if (Settings.Default.EditorBackgroundMode == 0)
 			{
+				ColorPickerDialog editorBackgroundColorDialog = Util.NewFixedColorPickerDialog();
 				editorBackgroundColorDialog.Color = Settings.Default.EditorBackgroundColor;
 				if (editorBackgroundColorDialog.ShowDialog(this) == DialogResult.OK)
 				{
