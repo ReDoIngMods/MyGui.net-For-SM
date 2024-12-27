@@ -1298,7 +1298,7 @@ namespace MyGui.net
 
 		#region MyGui.Net-ified WinForms Utils
 
-		public static ColorPickerDialog NewFixedColorPickerDialog()
+		public static ColorPickerDialog NewFixedColorPickerDialog(bool doAlpha = false)
 		{
 			ColorPickerDialog colorPicker = new ColorPickerDialog();
 			var okButtonField = typeof(ColorPickerDialog).GetField("okButton", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -1319,6 +1319,13 @@ namespace MyGui.net
 				cancelButton.BackColor = SystemColors.ControlDark;
 				cancelButton.ForeColor = SystemColors.ControlLightLight;
 			}
+
+			var colorEditoAlpharField = typeof(ColorPickerDialog).GetField("_showAlphaChannel", BindingFlags.NonPublic | BindingFlags.Instance);
+			if (colorEditoAlpharField != null)
+			{
+				colorEditoAlpharField.SetValue(colorPicker, doAlpha);
+			}
+
 			return colorPicker;
 		}
 

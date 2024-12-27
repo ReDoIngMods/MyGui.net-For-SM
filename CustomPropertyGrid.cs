@@ -368,8 +368,8 @@ namespace MyGui.net
 		{
 			return value switch
 			{
-				"True" => "True",
-				"False" => "False",
+				"true" => "True",
+				"false" => "False",
 				_ => "[DEFAULT]"
 			};
 		}
@@ -378,8 +378,8 @@ namespace MyGui.net
 		{
 			return value switch
 			{
-				"True" => CheckState.Checked,
-				"False" => CheckState.Unchecked,
+				"true" => CheckState.Checked,
+				"false" => CheckState.Unchecked,
 				_ => CheckState.Indeterminate
 			};
 		}
@@ -388,8 +388,8 @@ namespace MyGui.net
 		{
 			return checkState switch
 			{
-				CheckState.Checked => "True",
-				CheckState.Unchecked => "False",
+				CheckState.Checked => "true",
+				CheckState.Unchecked => "false",
 				_ => ""
 			};
 		}

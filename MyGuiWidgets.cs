@@ -646,6 +646,321 @@ namespace MyGui.net
 		#endregion
 	}
 
+	public class MyGuiWidgetDataButton : MyGuiWidgetDataTextBox
+	{
+		public MyGuiWidgetDataButton() : base() { }
+		public MyGuiWidgetDataButton(MyGuiWidgetData widget) : base(widget) { }
+
+		#region Properties
+		[Category("4 - Button Properties")]
+		[DisplayName("Image Group")]
+		[Description("Unknown behaviour.")]
+		public string ImageGroup
+		{
+			get => widget.properties.TryGetValue("ImageGroup", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageGroup");
+				}
+				else
+				{
+					widget.properties["ImageGroup"] = value;
+				}
+			}
+		}
+        public string ImageGroupBoundTo = "properties.ImageGroup";
+
+		[Category("4 - Button Properties")]
+		[DisplayName("Image Name")]
+		[Description("Unknown behaviour.")]
+		public string ImageName
+		{
+			get => widget.properties.TryGetValue("ImageName", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageName");
+				}
+				else
+				{
+					widget.properties["ImageName"] = value;
+				}
+			}
+		}
+		public string ImageNameBoundTo = "properties.ImageName";
+
+		[Category("4 - Button Properties")]
+		[DisplayName("Image Resource")]
+		[Description("Unknown behaviour.")]
+		public string ImageResource
+		{
+			get => widget.properties.TryGetValue("ImageResource", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageResource");
+				}
+				else
+				{
+					widget.properties["ImageResource"] = value;
+				}
+			}
+		}
+		public string ImageResourceBoundTo = "properties.ImageResource";
+
+		[Category("4 - Button Properties")]
+		[Description("Unknown behaviour.")]
+		[DisplayName("Mode Image")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string ModeImage
+		{
+			get => widget.properties.TryGetValue("ModeImage", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("ModeImage");
+				}
+				else
+				{
+					widget.properties["ModeImage"] = value;
+				}
+			}
+		}
+		public string ModeImageBoundTo = "properties.ModeImage";
+
+		[Category("4 - Button Properties")]
+		[DisplayName("Force Selected")]
+		[Description("Whether or not to force the selected state of this button.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string StateSelected
+		{
+			get => widget.properties.TryGetValue("StateSelected", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("StateSelected");
+				}
+				else
+				{
+					widget.properties["StateSelected"] = value;
+				}
+			}
+		}
+		public string StateSelectedBoundTo = "properties.StateSelected";
+		#endregion
+	}
+
+	public class MyGuiWidgetDataEditBox : MyGuiWidgetDataTextBox
+	{
+		public MyGuiWidgetDataEditBox() : base() { }
+		public MyGuiWidgetDataEditBox(MyGuiWidgetData widget) : base(widget) { }
+
+		#region Properties
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Cursor Position")]
+		[Description("Current text selection cursor position. (This property is not visualized in this editor, as it is non-interactive.)")]
+		public string CursorPosition
+		{
+			get => widget.properties.TryGetValue("CursorPosition", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("CursorPosition");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["CursorPosition"] = !double.IsNaN(parsedAsDouble) ? Math.Clamp(parsedAsDouble, 0, 1).ToString(CultureInfo.InvariantCulture) : "0";
+				}
+			}
+		}
+		public string CursorPositionBoundTo = "properties.CursorPosition";
+
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Text Shadow")]
+		[Description("Whether or not the colors under the selection box are inverted. (This property is not visualized in this editor, as it is non-interactive.)")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string InvertSelected
+		{
+			get => widget.properties.TryGetValue("InvertSelected", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("InvertSelected");
+				}
+				else
+				{
+					widget.properties["InvertSelected"] = value;
+				}
+			}
+		}
+		public string InvertSelectedBoundTo = "properties.InvertSelected";
+
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Text Length Limit")]
+		[Description("The maximum number of characters. [DEFAULT] is not infinite!")]
+		public string MaxTextLength
+		{
+			get => widget.properties.TryGetValue("MaxTextLength", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("MaxTextLength");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["MaxTextLength"] = !double.IsNaN(parsedAsDouble) ? Math.Clamp(parsedAsDouble, 0, 1).ToString(CultureInfo.InvariantCulture) : "0";
+				}
+			}
+		}
+		public string MaxTextLengthBoundTo = "properties.MaxTextLength";
+
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Multi-Line")]
+		[Description("Whether or not the text accepts newline escape sequences \"\\n\".")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string MultiLine
+		{
+			get => widget.properties.TryGetValue("MultiLine", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("MultiLine");
+				}
+				else
+				{
+					widget.properties["MultiLine"] = value;
+				}
+			}
+		}
+		public string MultiLineBoundTo = "properties.MultiLine";
+
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Overflow To The Left")]
+		[Description("Unknown behavior.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string OverflowToTheLeft
+		{
+			get => widget.properties.TryGetValue("OverflowToTheLeft", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("OverflowToTheLeft");
+				}
+				else
+				{
+					widget.properties["OverflowToTheLeft"] = value;
+				}
+			}
+		}
+		public string OverflowToTheLeftBoundTo = "properties.OverflowToTheLeft";
+
+		[Category("4 - EditBox Properties")]
+		[Description("Forces each character of the string to be rendered as Password Character (by default a \"*\").")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string Password
+		{
+			get => widget.properties.TryGetValue("Password", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("Password");
+				}
+				else
+				{
+					widget.properties["Password"] = value;
+				}
+			}
+		}
+		public string PasswordBoundTo = "properties.Password";
+
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Password Character")]
+		[Description("Character to be rendered as each text character if Password is enabled (by default a \"*\").")]
+		public string PasswordChar
+		{
+			get => widget.properties.TryGetValue("PasswordChar", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("PasswordChar");
+				}
+				else
+				{
+					widget.properties["PasswordChar"] = value[0].ToString();
+				}
+			}
+		}
+		public string PasswordCharBoundTo = "properties.PasswordChar";
+
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Selection Range")]
+		[Description("Selects the range of characters from the first to the second number, format as \"*starting index* *ending index*\". (This property is not visualized in this editor, as it is non-interactive.)")]
+		public string TextSelect
+		{
+			get => widget.properties.TryGetValue("TextSelect", out var value) ? value : "";
+
+			set
+			{
+				if (value == "" || value.Split(' ').Length != 2)
+				{
+					widget.properties.Remove("TextSelect");
+				}
+				else
+				{
+					var values = value.Split(' ');
+					string endValue = "";
+					for (int i = 0; i < 2; i++)
+					{
+						var parsedAsDouble = Util.ProperlyParseDouble(values[i]);
+						endValue += !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+						if (i != 1)
+						{
+							endValue += " ";
+						}
+					}
+
+					widget.properties["TextSelect"] = endValue;
+				}
+			}
+		}
+		public string TextSelectBoundTo = "properties.TextSelect";
+
+		#endregion
+	}
+
 	#region MyGui Property Classes
 	//ComboBox, DDContainer, ListBox, MenuBar, MultiListBox, PopupMenu, ScrollView Unsupported - MyGui Skins only or no skins or basically useless.
 

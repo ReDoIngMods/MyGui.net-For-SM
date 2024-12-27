@@ -37,6 +37,8 @@ namespace MyGui.net
 		static Dictionary<string, Type> _widgetTypeToObjectType = new()
 		{
 			{ "TextBox", typeof(MyGuiWidgetDataTextBox) },
+			{ "Button", typeof(MyGuiWidgetDataButton) },
+			{ "EditBox", typeof(MyGuiWidgetDataEditBox) }
 			/*{ "Button", ButtonMyGuiWidgetProperties.categories },
 			{ "DDContainer", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
 			{ "ComboBox", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
@@ -765,7 +767,7 @@ namespace MyGui.net
 				var tileOffset = Util.GetWidgetPosAndSize(false, skin.offset, new(1, 1));
 
 				// Find the normal state of the skin
-				var normalState = skin.states.FirstOrDefault(state => state.name == "normal");
+				var normalState = widget.properties.TryGetValue("StateSelected", out var val) && val == "true" && skin.states.FirstOrDefault(state => state.name == "pushed") != null ? skin.states.FirstOrDefault(state => state.name == "pushed") : skin.states.FirstOrDefault(state => state.name == "normal");
 				if (normalState == null)
 				{
 					continue; // Skip if no normal state is found
