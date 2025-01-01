@@ -102,8 +102,9 @@ namespace MyGui.net
 	{
 		private static readonly Dictionary<string, List<string>> PropertyOptions = new Dictionary<string, List<string>>
 		{
-			{ "Layer", ["[DEFAULT]", "ToolTip", "Info", "FadeMiddle", "Popup", "Main", "Modal", "Middle", "Overlapped", "Back"] },
-			{ "Type", ["Widget", "Button", "Canvas", "ComboBox", "DDContainer", "EditBox", "ItemBox", "ListBox", "MenuBar", "MultiListBox", "PopupMenu", "ProgressBar", "ScrollBar", "ScrollView", "ImageBox", "TextBox", "TabControl", "Window"] }
+			{ "Layer", ["Default", "ToolTip", "Info", "FadeMiddle", "Popup", "Main", "Modal", "Middle", "Overlapped", "Back"] },
+			{ "Type", ["Widget", "Button", "Canvas", "ComboBox", "DDContainer", "EditBox", "ItemBox", "ListBox", "MenuBar", "MultiListBox", "PopupMenu", "ProgressBar", "ScrollBar", "ScrollView", "ImageBox", "TextBox", "TabControl", "Window"] },
+			{ "FlowDirection", ["Default", "LeftToRight", "RightToLeft", "TopToBottom", "BottomToTop"] }
 		};
 
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)

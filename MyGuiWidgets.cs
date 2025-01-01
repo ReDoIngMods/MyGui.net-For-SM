@@ -1,4 +1,5 @@
-﻿using SkiaSharp.Views.Gtk;
+﻿using OpenTK;
+using SkiaSharp.Views.Gtk;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -373,7 +374,7 @@ namespace MyGui.net
 		public string PointerBoundTo = "properties.Pointer";
 
 		[Category("2 - Widget Properties")]
-		[Description("Whether or not is the widget and its children rendered.")]
+		[Description("If the widget and its children are rendered.")]
 		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(TriStateConverter))]
 		public string Visible
@@ -792,7 +793,7 @@ namespace MyGui.net
 		public string CursorPositionBoundTo = "properties.CursorPosition";
 
 		[Category("4 - EditBox Properties")]
-		[DisplayName("Text Shadow")]
+		[DisplayName("Invert Selection")]
 		[Description("Whether or not the colors under the selection box are inverted. (This property is not visualized in this editor, as it is non-interactive.)")]
 		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(TriStateConverter))]
@@ -926,6 +927,51 @@ namespace MyGui.net
 		public string PasswordCharBoundTo = "properties.PasswordChar";
 
 		[Category("4 - EditBox Properties")]
+		[DisplayName("Read Only")]
+		[Description("Makes the user unable to edit the text in the EditBox.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string ReadOnly
+		{
+			get => widget.properties.TryGetValue("ReadOnly", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("ReadOnly");
+				}
+				else
+				{
+					widget.properties["ReadOnly"] = value;
+				}
+			}
+		}
+		public string ReadOnlyBoundTo = "properties.ReadOnly";
+
+		[Category("4 - EditBox Properties")]
+		[Description("Makes the user unable to select the text in the EditBox.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string Static
+		{
+			get => widget.properties.TryGetValue("Static", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("Static");
+				}
+				else
+				{
+					widget.properties["Static"] = value;
+				}
+			}
+		}
+		public string StaticBoundTo = "properties.Static";
+
+		[Category("4 - EditBox Properties")]
 		[DisplayName("Selection Range")]
 		[Description("Selects the range of characters from the first to the second number, format as \"*starting index* *ending index*\". (This property is not visualized in this editor, as it is non-interactive.)")]
 		public string TextSelect
@@ -958,6 +1004,644 @@ namespace MyGui.net
 		}
 		public string TextSelectBoundTo = "properties.TextSelect";
 
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Visible Horizontal Scrollbar")]
+		[Description("Makes it possible for the EditBox to display a horizontal scrollbar if the text doesnt fit.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string VisibleHScroll
+		{
+			get => widget.properties.TryGetValue("VisibleHScroll", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("VisibleHScroll");
+				}
+				else
+				{
+					widget.properties["VisibleHScroll"] = value;
+				}
+			}
+		}
+		public string VisibleHScrollBoundTo = "properties.VisibleHScroll";
+
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Visible Vertical Scrollbar")]
+		[Description("Makes it possible for the EditBox to display a vertical scrollbar if the text doesnt fit.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string VisibleVScroll
+		{
+			get => widget.properties.TryGetValue("VisibleVScroll", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("VisibleVScroll");
+				}
+				else
+				{
+					widget.properties["VisibleVScroll"] = value;
+				}
+			}
+		}
+		public string VisibleVScrollBoundTo = "properties.VisibleVScroll";
+
+		[Category("4 - EditBox Properties")]
+		[DisplayName("Word Wrapping")]
+		[Description("Wraps words onto next line if they happen to not fit the bounds of the widget.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string WordWrap
+		{
+			get => widget.properties.TryGetValue("WordWrap", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("WordWrap");
+				}
+				else
+				{
+					widget.properties["WordWrap"] = value;
+				}
+			}
+		}
+		public string WordWrapBoundTo = "properties.WordWrap";
+
+		#endregion
+	}
+
+	public class MyGuiWidgetDataDDContainer : MyGuiWidgetDataWidget
+	{
+		public MyGuiWidgetDataDDContainer() : base() { }
+		public MyGuiWidgetDataDDContainer(MyGuiWidgetData widget) : base(widget) { }
+
+		#region Properties
+		[Category("3 - DDContainer Properties")]
+		[DisplayName("Need Drag Drop")]
+		[Description("Unknown behaviour.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string NeedDragDrop
+		{
+			get => widget.properties.TryGetValue("NeedDragDrop", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("NeedDragDrop");
+				}
+				else
+				{
+					widget.properties["NeedDragDrop"] = value;
+				}
+			}
+		}
+		public string NeedDragDropBoundTo = "properties.NeedDragDrop";
+		#endregion
+	}
+
+	public class MyGuiWidgetDataItemBox : MyGuiWidgetDataDDContainer
+	{
+		public MyGuiWidgetDataItemBox() : base() { }
+		public MyGuiWidgetDataItemBox(MyGuiWidgetData widget) : base(widget) { }
+
+		#region Properties
+		[Category("4 - ItemBox Properties")]
+		[DisplayName("Vertical Alignment")]
+		[Description("Whether the Item Box displays items first vertically or horizontally.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string VerticalAlignment
+		{
+			get => widget.properties.TryGetValue("VerticalAlignment", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("VerticalAlignment");
+				}
+				else
+				{
+					widget.properties["VerticalAlignment"] = value;
+				}
+			}
+		}
+		public string VerticalAlignmentBoundTo = "properties.VerticalAlignment";
+
+		[Category("4 - ItemBox Properties")]
+		[DisplayName("Visible Horizontal Scrollbar")]
+		[Description("Makes it possible for the ItemBox to display a horizontal scrollbar if the items dont fit.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string VisibleHScroll
+		{
+			get => widget.properties.TryGetValue("VisibleHScroll", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("VisibleHScroll");
+				}
+				else
+				{
+					widget.properties["VisibleHScroll"] = value;
+				}
+			}
+		}
+		public string VisibleHScrollBoundTo = "properties.VisibleHScroll";
+
+		[Category("4 - ItemBox Properties")]
+		[DisplayName("Visible Vertical Scrollbar")]
+		[Description("Makes it possible for the ItemBox to display a vertical scrollbar if the items dont fit.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string VisibleVScroll
+		{
+			get => widget.properties.TryGetValue("VisibleVScroll", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("VisibleVScroll");
+				}
+				else
+				{
+					widget.properties["VisibleVScroll"] = value;
+				}
+			}
+		}
+		public string VisibleVScrollBoundTo = "properties.VisibleVScroll";
+		#endregion
+	}
+
+	public class MyGuiWidgetDataProgressBar : MyGuiWidgetDataWidget
+	{
+		public MyGuiWidgetDataProgressBar() : base() { }
+		public MyGuiWidgetDataProgressBar(MyGuiWidgetData widget) : base(widget) { }
+
+		#region Properties
+		[Category("3 - ProgressBar Properties")]
+		[DisplayName("Auto Tracking")]
+		[Description("Whether or not should the ProgressBar automatically track (move).")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string AutoTrack
+		{
+			get => widget.properties.TryGetValue("AutoTrack", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("AutoTrack");
+				}
+				else
+				{
+					widget.properties["AutoTrack"] = value;
+				}
+			}
+		}
+		public string AutoTrackBoundTo = "properties.AutoTrack";
+
+		[Category("3 - ProgressBar Properties")]
+		[DisplayName("Flow Direction")]
+		[Description("Direction in which the scrolling visuals move.")]
+		[TypeConverter(typeof(StringDropdownConverter))]
+		public string FlowDirection
+		{
+			get => widget.properties.TryGetValue("FlowDirection", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("FlowDirection");
+				}
+				else
+				{
+					widget.properties["FlowDirection"] = value;
+				}
+			}
+		}
+		public string FlowDirectionBoundTo = "properties.FlowDirection";
+
+		[Category("3 - ProgressBar Properties")]
+		[DisplayName("Maximum")]
+		[Description("The maximal value of the ProgressBar. Minimum is always 0.")]
+		public string Range
+		{
+			get => widget.properties.TryGetValue("Range", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("Range");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["Range"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string RangeBoundTo = "properties.Range";
+
+		[Category("3 - ProgressBar Properties")]
+		[DisplayName("Current Value")]
+		[Description("Current value (progress) of the ProgressBar.")]
+		public string RangePosition
+		{
+			get => widget.properties.TryGetValue("RangePosition", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("RangePosition");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["RangePosition"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string RangePositionBoundTo = "properties.RangePosition";
+		#endregion
+	}
+
+	public class MyGuiWidgetDataScrollBar : MyGuiWidgetDataWidget
+	{
+		public MyGuiWidgetDataScrollBar() : base() { }
+		public MyGuiWidgetDataScrollBar(MyGuiWidgetData widget) : base(widget) { }
+
+		#region Properties
+		[Category("3 - ScrollBar Properties")]
+		[DisplayName("Move To Click")]
+		[Description("Whether clicking the ScrollBar instantly moves the tracker to the mouse position or makes it move by 1 step.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string MoveToClick
+		{
+			get => widget.properties.TryGetValue("MoveToClick", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("MoveToClick");
+				}
+				else
+				{
+					widget.properties["MoveToClick"] = value;
+				}
+			}
+		}
+		public string MoveToClickBoundTo = "properties.MoveToClick";
+
+		[Category("3 - ScrollBar Properties")]
+		[Description("Unknown behaviour.")]
+		public string Page
+		{
+			get => widget.properties.TryGetValue("Page", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("Page");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["Page"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string PageBoundTo = "properties.Page";
+
+		[Category("3 - ScrollBar Properties")]
+		[DisplayName("Maximum")]
+		[Description("The maximal value of the ScrollBar. Minimum is always 0.")]
+		public string Range
+		{
+			get => widget.properties.TryGetValue("Range", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("Range");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["Range"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string RangeBoundTo = "properties.Range";
+
+		[Category("3 - ScrollBar Properties")]
+		[DisplayName("Default Position")]
+		[Description("Default position of the ScrollBar's tracker.")]
+		public string RangePosition
+		{
+			get => widget.properties.TryGetValue("RangePosition", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("RangePosition");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["RangePosition"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string RangePositionBoundTo = "properties.RangePosition";
+
+		[Category("3 - ScrollBar Properties")]
+		[Description("Unknown behaviour.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string Repeat
+		{
+			get => widget.properties.TryGetValue("Repeat", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("Repeat");
+				}
+				else
+				{
+					widget.properties["Repeat"] = value;
+				}
+			}
+		}
+		public string RepeatBoundTo = "properties.Repeat";
+
+		[Category("3 - ScrollBar Properties")]
+		[DisplayName("Repeat Step Time")]
+		[Description("Unknown behaviour.")]
+		public string RepeatStepTime
+		{
+			get => widget.properties.TryGetValue("RepeatStepTime", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("RepeatStepTime");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["RepeatStepTime"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string RepeatStepTimeBoundTo = "properties.RepeatStepTime";
+
+		[Category("3 - ScrollBar Properties")]
+		[DisplayName("Repeat Trigger Time")]
+		[Description("Unknown behaviour.")]
+		public string RepeatTriggerTime
+		{
+			get => widget.properties.TryGetValue("RepeatTriggerTime", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("RepeatTriggerTime");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["RepeatTriggerTime"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string RepeatTriggerTimeBoundTo = "properties.RepeatTriggerTime";
+
+		[Category("3 - ScrollBar Properties")]
+		[DisplayName("Vertical Alignment")]
+		[Description("Whether the ScrollBar's tracker moves vertically or horizontally.")]
+		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
+		[TypeConverter(typeof(TriStateConverter))]
+		public string VerticalAlignment
+		{
+			get => widget.properties.TryGetValue("VerticalAlignment", out var value) ? value : "[DEFAULT]";
+
+			set
+			{
+				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				{
+					widget.properties.Remove("VerticalAlignment");
+				}
+				else
+				{
+					widget.properties["VerticalAlignment"] = value;
+				}
+			}
+		}
+		public string VerticalAlignmentBoundTo = "properties.VerticalAlignment";
+
+		[Category("3 - ScrollBar Properties")]
+		[DisplayName("View Page")]
+		[Description("Unknown behaviour.")]
+		public string ViewPage
+		{
+			get => widget.properties.TryGetValue("ViewPage", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ViewPage");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["ViewPage"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string ViewPageBoundTo = "properties.ViewPage";
+
+		[Category("3 - ScrollBar Properties")]
+		[DisplayName("Scroll Wheel Step")]
+		[Description("Value by which the scroll wheel increments or decrements the ScrollBar's tracker position.")]
+		public string WheelPage
+		{
+			get => widget.properties.TryGetValue("WheelPage", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("WheelPage");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["WheelPage"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string WheelPageBoundTo = "properties.WheelPage";
+		#endregion
+	}
+
+	public class MyGuiWidgetDataImageBox : MyGuiWidgetDataWidget
+	{
+		public MyGuiWidgetDataImageBox() : base() { }
+		public MyGuiWidgetDataImageBox(MyGuiWidgetData widget) : base(widget) { }
+
+		#region Properties
+		[Category("3 - ImageBox Properties")]
+		[DisplayName("Image Crop")]
+		[Description("Crops the image. Format your input as \"positionX positionY sizeX sizeY\". [DEFAULT] render whole image and stretches it to the size of the ImageBox.")]
+		public string ImageCoord
+		{
+			get => widget.properties.TryGetValue("ImageCoord", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageCoord");
+				}
+				else
+				{
+					widget.properties["ImageCoord"] = value;
+				}
+			}
+		}
+		public string ImageCoordBoundTo = "properties.ImageCoord";
+
+		[Category("3 - ImageBox Properties")]
+		[DisplayName("Image Group")]
+		[Description("The group of the Image Resource to use for rendering.")]
+		public string ImageGroup
+		{
+			get => widget.properties.TryGetValue("ImageGroup", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageGroup");
+				}
+				else
+				{
+					widget.properties["ImageGroup"] = value;
+				}
+			}
+		}
+		public string ImageGroupBoundTo = "properties.ImageGroup";
+
+		[Category("3 - ImageBox Properties")]
+		[DisplayName("Image Index")]
+		[Description("Not working and obsolete, use Image Name instead! Left in for compatibility reasons.")]
+		public string ImageIndex
+		{
+			get => widget.properties.TryGetValue("ImageIndex", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageIndex");
+				}
+				else
+				{
+					var parsedAsDouble = Util.ProperlyParseDouble(value);
+					widget.properties["ImageIndex"] = !double.IsNaN(parsedAsDouble) ? ((int)parsedAsDouble).ToString() : "0";
+				}
+			}
+		}
+		public string ImageIndexBoundTo = "properties.ImageIndex";
+
+		[Category("3 - ImageBox Properties")]
+		[DisplayName("Image Name")]
+		[Description("Name of the image to pull from Image Resource.")]
+		public string ImageName
+		{
+			get => widget.properties.TryGetValue("ImageName", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageName");
+				}
+				else
+				{
+					widget.properties["ImageName"] = value;
+				}
+			}
+		}
+		public string ImageNameBoundTo = "properties.ImageName";
+
+		[Category("3 - ImageBox Properties")]
+		[DisplayName("Image Resource")]
+		[Description("Path to the XML from which you may load different images using Image Name and Image Group. Keep empty if using Image Texture!")]
+		public string ImageResource
+		{
+			get => widget.properties.TryGetValue("ImageResource", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageResource");
+				}
+				else
+				{
+					widget.properties["ImageResource"] = value;
+				}
+			}
+		}
+		public string ImageResourceBoundTo = "properties.ImageResource";
+
+		[Category("3 - ImageBox Properties")]
+		[DisplayName("Image Texture")]
+		[Description("Path to the image file to render. Keep empty if using Image Resource!")]
+		public string ImageTexture
+		{
+			get => widget.properties.TryGetValue("ImageTexture", out var value) ? value : "";
+
+			set
+			{
+				if (value == "")
+				{
+					widget.properties.Remove("ImageTexture");
+				}
+				else
+				{
+					widget.properties["ImageTexture"] = value;
+				}
+			}
+		}
+		public string ImageTextureBoundTo = "properties.ImageTexture";
 		#endregion
 	}
 

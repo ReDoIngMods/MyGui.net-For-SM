@@ -16,6 +16,7 @@ namespace MyGui.net
 {
 	//TODO: Add an undo/redo history window
 	//TODO: holding shift while using arrows ignores grid and control scales
+	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	public partial class Form1 : Form
 	{ 
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -28,32 +29,33 @@ namespace MyGui.net
 		static SKPoint _mouseDeltaLoc = new();
 		static SKPoint _viewportOffset = new SKPoint(0, 0);
 		public Size ProjectSize = Settings.Default.DefaultWorkspaceSize;//new(1920, 1080);
-		static SKBitmap _viewportBackgroundBitmap;
 
+		#region Caches
 		static Dictionary<string, SKImage> _skinAtlasCache = new();
 		static Dictionary<string, SKTypeface> _fontCache = new();
+		static Dictionary<string, string> _modUuidPathCache = new();
+
+		static Dictionary<string, MyGuiResource> _allResources = new();
+		static Dictionary<string, MyGuiFontData> _allFonts = new();
+
+		public static Dictionary<string, MyGuiResource> AllResources => _allResources;
+		public static Dictionary<string, MyGuiFontData> AllFonts => _allFonts;
+
+		static SKBitmap _viewportBackgroundBitmap;
+		static string _steamUserId;
+		#endregion
 
 		private MyGuiResource _nullSkinResource = new MyGuiResource();
 		static Dictionary<string, Type> _widgetTypeToObjectType = new()
 		{
 			{ "TextBox", typeof(MyGuiWidgetDataTextBox) },
 			{ "Button", typeof(MyGuiWidgetDataButton) },
-			{ "EditBox", typeof(MyGuiWidgetDataEditBox) }
-			/*{ "Button", ButtonMyGuiWidgetProperties.categories },
-			{ "DDContainer", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "ComboBox", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "EditBox", EditBoxMyGuiWidgetProperties.categories },
-			{ "ItemBox", ItemBoxMyGuiWidgetProperties.categories },
-			{ "ListBox", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "MenuBar", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "MultiListBox", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "PopupMenu", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "ProgressBar", ProgressBarMyGuiWidgetProperties.categories },
-			{ "ScrollBar", ScrollBarMyGuiWidgetProperties.categories },
-			{ "ScrollView", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "ImageBox", ImageBoxMyGuiWidgetProperties.categories },
-			{ "TabControl", UnsupportedMyGuiWidgetProperties.categories }, //unsupported
-			{ "Window", UnsupportedMyGuiWidgetProperties.categories },*/ //unsupported
+			{ "EditBox", typeof(MyGuiWidgetDataEditBox) },
+			{ "DDContainer", typeof(MyGuiWidgetDataDDContainer) },
+			{ "ItemBox", typeof(MyGuiWidgetDataItemBox) },
+			{ "ProgressBar", typeof(MyGuiWidgetDataProgressBar) },
+			{ "ScrollBar", typeof(MyGuiWidgetDataScrollBar) },
+			{ "ImageBox", typeof(MyGuiWidgetDataImageBox) }
 			//the rest uses default "Widget" handling
 		};
 
@@ -70,13 +72,8 @@ namespace MyGui.net
 
 		static FormSideBar? _sidebarForm;
 		CommandManager _commandManager = new CommandManager();
-		static Dictionary<string, MyGuiResource> _allResources = new();
-		static Dictionary<string, MyGuiFontData> _allFonts = new();
 
-		public static Dictionary<string, MyGuiResource> AllResources => _allResources;
-		public static Dictionary<string, MyGuiFontData> AllFonts => _allFonts;
-
-		//static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
+		static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
 		/// <summary>
 		/// DO NOT, UNDER ANY CIRCUMSTANCES USE THIS VARIABLE IN CODE THAT ISNT THE INITIALIZATION, LIKE IN THE RENDERING CODE...
 		/// </summary>
@@ -174,7 +171,7 @@ namespace MyGui.net
 							else
 							{
 								DialogResult resolution = MessageBox.Show("Not a valid game path!", "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-								Debug.WriteLine(resolution);
+								//Debug.WriteLine(resolution);
 								if (resolution == DialogResult.Cancel)
 								{
 									Application.Exit();
@@ -192,9 +189,20 @@ namespace MyGui.net
 					}
 				}
 			}
-			_allResources = Util.ReadAllResources(_ScrapMechanicPath, 1);
+			_allResources = Util.ReadAllResources(_scrapMechanicPath, 1);
 			//Util.PrintAllResources(_allResources);
-			_allFonts = Util.ReadFontData("English", _ScrapMechanicPath);
+			_allFonts = Util.ReadFontData("English", _scrapMechanicPath);
+			_steamUserId = Util.GetLoggedInSteamUserID();
+			string[] modPaths = [
+				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
+				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_{_steamUserId}\\Mods")
+			];
+			_modUuidPathCache = Util.GetModUuidsAndPaths(modPaths);
+
+			foreach (var item in _modUuidPathCache)
+			{
+				Debug.WriteLine($"{item.Key}: {item.Value}");
+			}
 			#region Create _nullSkinResource
 			_nullSkinResource.tileSize = "16 16";
 			_nullSkinResource.path = "res:SelectionRectsSkin.png";

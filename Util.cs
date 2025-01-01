@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
 
 namespace MyGui.net
 {
@@ -35,6 +36,35 @@ namespace MyGui.net
 				}
 			}
 			return null;
+		}
+
+		public static string GetLoggedInSteamUserID(string steamDirectory = null)
+		{
+			steamDirectory ??= GetSteamInstallPath();
+			string loginUsersPath = Path.Combine(steamDirectory, "config", "loginusers.vdf");
+
+			if (!File.Exists(loginUsersPath))
+			{
+				return null; // File not found
+			}
+
+			string fileContent = File.ReadAllText(loginUsersPath);
+
+			// Match each user block and extract relevant information
+			var matches = Regex.Matches(fileContent, "\"(\\d+)\"\\s*\\{([^}]*)\\}");
+			foreach (Match match in matches)
+			{
+				string steamID = match.Groups[1].Value;
+				string userBlock = match.Groups[2].Value;
+
+				// Check if MostRecent is set to 1
+				if (Regex.IsMatch(userBlock, "\"MostRecent\"\\s*\"1\""))
+				{
+					return steamID;
+				}
+			}
+
+			return null; // No active user found
 		}
 
 		public static List<string> GetSteamLibraryFolders(string steamInstallPath)
@@ -1091,21 +1121,25 @@ namespace MyGui.net
         public static Dictionary<string, string> GetModUuidsAndPaths(string[] modFolders)
 		{
 			Dictionary<string, string> dict = new();
+			JsonSerializerOptions option = new()
+			{
+				ReadCommentHandling = JsonCommentHandling.Skip
+			};
 			foreach (var path in modFolders)
 			{
 				foreach (var modPath in Directory.GetDirectories(path))
 				{
 					string descJsonPath = Path.Combine(modPath, "description.json");
                     if (!File.Exists(descJsonPath)) continue;
-                    string descJsonStr = File.ReadAllText(descJsonPath);
+                    string descJsonStr = File.ReadAllText(descJsonPath).Replace("\r\n", "").Replace("\n", "");
 					try
 					{
-						JsonElement descJson = JsonSerializer.Deserialize<JsonElement>(descJsonStr);
+						JsonElement descJson = JsonSerializer.Deserialize<JsonElement>(descJsonStr, option);
 						string type = descJson.GetProperty("type").GetString();
 						if (type == "Blocks and Parts" || type == "Custom Game")
 						{
 							string localId = descJson.GetProperty("localId").GetString();
-							dict.Add(localId, modPath);
+							dict[localId] = modPath;
 						}
 					} catch (Exception) { } //Some mods have shit wrong
                 }
