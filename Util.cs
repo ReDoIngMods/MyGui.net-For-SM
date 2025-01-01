@@ -1007,10 +1007,115 @@ namespace MyGui.net
 				Debug.WriteLine($"Name: '{font.name}', Source: '{font.source}', Size: '{font.size}', LetterSpacing: '{font.letterSpacing}', AllowedChars: '{font.allowedChars}'");
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Util Utils
-		public static Random rand = new();
+        #region Path Converting
+
+		/// <summary>
+		/// It might only work with paths with backslashes!
+		/// </summary>
+		public static string ConvertToGamePath(string path, string smPath, string localModsPath, string workshopModsPath)
+		{
+			string dataPath = Path.Combine(smPath, "Data");
+			string guiPath = Path.Combine(dataPath, "Gui");
+            if (path.StartsWith(guiPath))
+			{
+				return path.Replace(guiPath, "").Replace('\\', '/');
+			}
+			if(path.StartsWith(dataPath))
+			{
+				return path.Replace(dataPath, "$GAME_DATA").Replace('\\', '/');
+			}
+			string survivalPath = Path.Combine(smPath, "Survival");
+			if(path.StartsWith(survivalPath))
+			{
+				return path.Replace(survivalPath, "$SURVIVAL_DATA").Replace('\\', '/');
+			}
+			string challengePath = Path.Combine(smPath, "ChallengeData");
+            if (path.StartsWith(challengePath))
+            {
+                return path.Replace(challengePath, "$CHALLENGE_DATA").Replace('\\', '/');
+            }
+
+			string modWhere = "";
+			if (path.StartsWith(localModsPath)) modWhere = localModsPath;
+			else if (path.StartsWith(workshopModsPath)) modWhere = workshopModsPath;
+			if(modWhere != "")
+			{
+                string modName = path.Replace(modWhere, "").Split(['/', '\\'])[1];
+                string modPath = Path.Combine(modWhere, modName);
+                string descJsonStr = File.ReadAllText(Path.Combine(modPath, "description.json"));
+                JsonElement descJson = JsonSerializer.Deserialize<JsonElement>(descJsonStr);
+                string localId = descJson.GetProperty("localId").GetString();
+                return path.Replace(modPath, "$CONTENT_" + localId).Replace('\\', '/');
+            }
+
+            return "";
+        }
+
+        public static string ConvertToSystemPath(string path, string smPath, Dictionary<string, string> modUuidToPath)
+		{
+			if (path.StartsWith("$GAME_DATA"))
+			{
+				return path.Replace("$GAME_DATA", Path.Combine(smPath, "Data")).Replace('/', '\\');
+			}
+            if (path.StartsWith("$SURVIVAL_DATA"))
+            {
+                return path.Replace("$SURVIVAL_DATA", Path.Combine(smPath, "Survival")).Replace('/', '\\');
+            }
+            if (path.StartsWith("$CHALLENGE_DATA"))
+            {
+                return path.Replace("$CHALLENGE_DATA", Path.Combine(smPath, "ChallengeData")).Replace('/', '\\');
+            }
+			if (path.StartsWith("$CONTENT_"))
+			{
+				string uuid = path.Substring(9, 36);
+				if (modUuidToPath.TryGetValue(uuid, out string modPath))
+				{
+					return Path.Combine(modPath, path[46..]).Replace('/', '\\');
+				}
+                return "";
+            }
+			if (path.Contains('.') && !path.Contains('\\') && !path.Contains('/'))
+			{
+				return FindFileInSubDirs(Path.Combine(smPath, "Data", "Gui"), path) ?? "";
+			}
+
+            return "";
+        }
+
+        /// <summary>
+        /// modFolders should contain the path to the local mods folder and workshop mods folder
+		/// The return should also be cached, so this shouldn't be called every time you want to get it
+        /// </summary>
+        public static Dictionary<string, string> GetModUuidsAndPaths(string[] modFolders)
+		{
+			Dictionary<string, string> dict = new();
+			foreach (var path in modFolders)
+			{
+				foreach (var modPath in Directory.GetDirectories(path))
+				{
+					string descJsonPath = Path.Combine(modPath, "description.json");
+                    if (!File.Exists(descJsonPath)) continue;
+                    string descJsonStr = File.ReadAllText(descJsonPath);
+					try
+					{
+						JsonElement descJson = JsonSerializer.Deserialize<JsonElement>(descJsonStr);
+						string type = descJson.GetProperty("type").GetString();
+						if (type == "Blocks and Parts" || type == "Custom Game")
+						{
+							string localId = descJson.GetProperty("localId").GetString();
+							dict.Add(localId, modPath);
+						}
+					} catch (Exception) { } //Some mods have shit wrong
+                }
+			}
+			return dict;
+        }
+        #endregion
+
+        #region Util Utils
+        public static Random rand = new();
 
 		public static T ShallowCopy<T>(T source)
 		{
