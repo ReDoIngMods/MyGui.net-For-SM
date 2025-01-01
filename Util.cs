@@ -72,37 +72,15 @@ namespace MyGui.net
 			List<string> libraryFolders = new List<string> { Path.Combine(steamInstallPath, "steamapps") };
 			string libraryFoldersFile = Path.Combine(steamInstallPath, "steamapps", "libraryfolders.vdf");
 
-			if (File.Exists(libraryFoldersFile))
+			if (Util.IsValidFile(libraryFoldersFile))
 			{
 				string vdfContent = File.ReadAllText(libraryFoldersFile);
-				try
+				foreach (string line in File.ReadAllLines(libraryFoldersFile))
 				{
-					// Attempt to parse the file as JSON (new format)
-					using (JsonDocument doc = JsonDocument.Parse(vdfContent))
+					if (line.Contains("\"path\""))
 					{
-						JsonElement root = doc.RootElement;
-						JsonElement folders = root.GetProperty("libraryfolders");
-
-						foreach (JsonProperty folder in folders.EnumerateObject())
-						{
-							if (folder.Value.TryGetProperty("path", out JsonElement pathElement))
-							{
-								string path = pathElement.GetString();
-								libraryFolders.Add(Path.Combine(path, "steamapps"));
-							}
-						}
-					}
-				}
-				catch (JsonException)
-				{
-					// Fall back to old VDF parsing method if JSON parsing fails
-					foreach (string line in File.ReadAllLines(libraryFoldersFile))
-					{
-						if (line.Contains("\"path\""))
-						{
-							string path = line.Split('\"')[3];
-							libraryFolders.Add(Path.Combine(path, "steamapps"));
-						}
+						string path = line.Split('\"')[3];
+						libraryFolders.Add(Path.Combine(path, "steamapps"));
 					}
 				}
 			}
@@ -572,7 +550,7 @@ namespace MyGui.net
 			}
 		}
 
-		public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Control? currParent = null, Control? defaultParent = null, Dictionary<string,MyGuiResource>? allResources = null)
+		/*public static void SpawnLayoutWidgets(List<MyGuiWidgetData>? layout, Control? currParent = null, Control? defaultParent = null, Dictionary<string,MyGuiResource>? allResources = null)
 		{
 			if (layout == null) return;
 			foreach (MyGuiWidgetData data in layout)
@@ -633,7 +611,7 @@ namespace MyGui.net
 				SpawnLayoutWidgets(data.children, newWidget, defaultParent);
 			}
 			return mainParent;
-		}
+		}*/
 		#endregion
 
 		#region Resource File Reading
