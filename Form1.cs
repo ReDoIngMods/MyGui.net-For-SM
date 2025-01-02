@@ -17,6 +17,7 @@ namespace MyGui.net
 	//TODO: Add an undo/redo history window
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
+	//TODO: SaveAs doesnt open the renamed file, it should do that smh
 	public partial class Form1 : Form
 	{ 
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -2099,7 +2100,7 @@ namespace MyGui.net
 		{
 			//Debug.WriteLine($"{e.ChangedItem.PropertyDescriptor.Name} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo")}");
 			var value = Util.IsAnyOf<string>((string)e.ChangedItem.Value, ["[DEFAULT]", "Default", ""]) ? null : e.ChangedItem.Value;
-			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget().ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget)), e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
 		}
 	}
 }
