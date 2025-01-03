@@ -17,7 +17,6 @@ namespace MyGui.net
 	//TODO: Add an undo/redo history window
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
-	//TODO: SaveAs doesnt open the renamed file, it should do that smh
 	public partial class Form1 : Form
 	{ 
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -82,7 +81,7 @@ namespace MyGui.net
 		{
 			get
 			{
-				if (Settings.Default.ScrapMechanicPath == null || Settings.Default.ScrapMechanicPath == "" || !Util.IsValidPath(Settings.Default.ScrapMechanicPath, true))
+				if (Settings.Default.ScrapMechanicPath == null || Settings.Default.ScrapMechanicPath == "" || !Util.IsValidPath(Settings.Default.ScrapMechanicPath))
 				{
 					string? gamePathFromSteam = Util.GetGameInstallPath("387990");
 					if (gamePathFromSteam != null)
@@ -1549,6 +1548,7 @@ namespace MyGui.net
 			{
 				if (saveLayoutDialog.ShowDialog(this) == DialogResult.OK)
 				{
+					_currentLayoutPath = saveLayoutDialog.FileName;
 					_currentLayoutSavePath = saveLayoutDialog.FileName;
 				}
 				else
@@ -1597,6 +1597,7 @@ namespace MyGui.net
 			}
 			if (saveLayoutDialog.ShowDialog(this) == DialogResult.OK)
 			{
+				_currentLayoutPath = saveLayoutDialog.FileName;
 				_currentLayoutSavePath = saveLayoutDialog.FileName;
 				int actualExport = Settings.Default.ExportMode;
 				if (actualExport == 2)
