@@ -11,12 +11,14 @@ using System.Drawing.Imaging;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using static MyGui.net.Util;
+using System.Reflection;
 
 namespace MyGui.net
 {
 	//TODO: Add an undo/redo history window
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
+	//TODO: exporting and imporing caring about _pixels (or custom suffix)
 	public partial class Form1 : Form
 	{ 
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -458,6 +460,10 @@ namespace MyGui.net
 				widgetGridSpacingNumericUpDown.Tag = false;
 				if (Settings.Default.EditorBackgroundMode == 1)
 				{
+					if (_viewportBackgroundBitmap != null)
+					{
+						_viewportBackgroundBitmap.Dispose();
+					}
 					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
 					//mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
 				}
@@ -484,6 +490,10 @@ namespace MyGui.net
 
 		private void UpdateViewportBackground()
 		{
+			if (_viewportBackgroundBitmap != null)
+			{
+				_viewportBackgroundBitmap.Dispose();
+			}
 			switch (Settings.Default.EditorBackgroundMode)
 			{
 				case 0:
@@ -1375,7 +1385,9 @@ namespace MyGui.net
 						}
 
 						// Update only the changed property on the widget
-						_currentSelectedWidget.size = new Point(
+
+						//Using this code below will screw up the snapping if the opposite end is not aligned to grid, as such ti is not recommended.
+						/*_currentSelectedWidget.size = new Point(
 							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Left, BorderPosition.Right, BorderPosition.TopLeft, BorderPosition.TopRight, BorderPosition.BottomLeft, BorderPosition.BottomRight }) ?
 								(int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.X,
 							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Top, BorderPosition.Bottom, BorderPosition.TopLeft, BorderPosition.BottomLeft, BorderPosition.TopRight, BorderPosition.BottomRight }) ?
@@ -1387,6 +1399,16 @@ namespace MyGui.net
 								(int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.X,
 							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Center, BorderPosition.Top, BorderPosition.TopLeft, BorderPosition.TopRight }) ?
 								(int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.Y
+						);*/
+						// Adjusted snapping logic
+						_currentSelectedWidget.size = new Point(
+							Math.Max((int)Math.Round((double)_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing, _gridSpacing), // Ensure width doesn't become zero or negative
+							Math.Max((int)Math.Round((double)_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing, _gridSpacing) // Ensure height doesn't become zero or negative
+						);
+
+						_currentSelectedWidget.position = new Point(
+							(int)Math.Round((double)_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing,
+							(int)Math.Round((double)_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing
 						);
 
 						UpdateProperties();
@@ -2119,9 +2141,9 @@ namespace MyGui.net
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			//Debug.WriteLine($"{e.ChangedItem.PropertyDescriptor.Name} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo")}");
 			var value = Util.IsAnyOf<string>(e.ChangedItem.Value.ToString(), ["[DEFAULT]", "Default", ""]) ? null : e.ChangedItem.Value;
-			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget().ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget)), e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
+			Type currentWidgetPropertyType = _widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget);
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetInheritedFieldValue(currentWidgetPropertyType, e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
 		}
 	}
 }

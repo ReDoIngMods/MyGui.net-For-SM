@@ -117,6 +117,41 @@ namespace MyGui.net
 		#endregion
 
 		#region Object Utils
+		/// <summary>
+		/// Use for getting static fields from types.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <param name="fieldName"></param>
+		/// <param name="instance"></param>
+		/// <returns></returns>
+		/// <exception cref="MissingFieldException"></exception>
+		public static object GetInheritedFieldValue(Type type, string fieldName, object? instance = null)
+		{
+			if (type == null)
+				throw new ArgumentNullException(nameof(type));
+
+			// Check the current type
+			var field = type.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+			if (field != null)
+			{
+				return field.GetValue(instance);
+			}
+
+			// Traverse base types
+			Type? baseType = type.BaseType;
+			while (baseType != null)
+			{
+				field = baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance);
+				if (field != null)
+				{
+					return field.GetValue(instance);
+				}
+				baseType = baseType.BaseType;
+			}
+
+			throw new MissingFieldException($"Field '{fieldName}' not found in type hierarchy.");
+		}
+
 		public static object? GetPropertyValue(object obj, string name)
 		{
 			if (obj == null || string.IsNullOrEmpty(name))

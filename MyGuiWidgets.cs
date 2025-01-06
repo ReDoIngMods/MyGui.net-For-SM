@@ -53,7 +53,7 @@ namespace MyGui.net
 				widget.align = value == "" ? null : value;
 			}
 		}
-		public string AlignBoundTo = "align";
+		public static string AlignBoundTo = "align";
 
 		[Category("1 - Main Properties")]
 		[Description("Unknown behaviour.")]
@@ -67,7 +67,7 @@ namespace MyGui.net
 				widget.layer = value == "[DEFAULT]" || value == "" ? null : value;
 			}
 		}
-		public string LayerBoundTo = "layer";
+		public static string LayerBoundTo = "layer";
 
 		[Category("1 - Main Properties")]
 		[Description("String which refers to this exact widget in Lua code. Using non-unique names will target all widgets of the same name.")]
@@ -80,7 +80,7 @@ namespace MyGui.net
 				widget.name = value == "" ? null : value;
 			}
 		}
-		public string NameBoundTo = "name";
+		public static string NameBoundTo = "name";
 
 		[Category("1 - Main Properties")]
 		[Description("Position of the widget in pixels relative to its parent.")]
@@ -93,7 +93,7 @@ namespace MyGui.net
 				widget.position = value;
 			}
 		}
-		public string PositionBoundTo = "position";
+		public static string PositionBoundTo = "position";
 
 		[Category("1 - Main Properties")]
 		[Description("Size of the widget in pixels.")]
@@ -106,20 +106,20 @@ namespace MyGui.net
 				widget.size = value;
 			}
 		}
-		public string SizeBoundTo = "size";
+		public static string SizeBoundTo = "size";
 
 		[Category("1 - Main Properties")]
 		[Description("Visual look of the widget. Only certain skins support certain features, such as text rendering. (Try to keep the looks of your guis as close to original Scrap Mechanic looks. Refrain from using stock MyGui widget skins if possible.)")]
 		[Editor(typeof(SkinSelectorEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(SkinSelectorConverter))]
 		public string Skin { get => widget.skin; set { widget.skin = value; } }
-		public string SkinBoundTo = "skin";
+		public static string SkinBoundTo = "skin";
 
 		[Category("1 - Main Properties")]
 		[Description("Type of the widget, each type has a specific use and set of properties you may change.")]
 		[TypeConverter(typeof(StringDropdownConverter))]
 		public string Type { get => widget.type; set { widget.type = value; } }
-		public string TypeBoundTo = "type";
+		public static string TypeBoundTo = "type";
 
 		//Widget Properties
 
@@ -142,7 +142,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string AlphaBoundTo = "properties.Alpha";
+		public static string AlphaBoundTo = "properties.Alpha";
 
 		[Category("2 - Widget Properties")]
 		[Description("Color of the widget. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive). Recolors already exisiting pixels instead of coloring transparent ones.")]
@@ -192,7 +192,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ColorBoundTo = "properties.Colour";
+		public static string ColorBoundTo = "properties.Colour";
 
 		[Category("2 - Widget Properties")]
 		[Description("Whether or not the widget is enabled. Applies mainly to Buttons, where it makes them uninteractable.")]
@@ -214,7 +214,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string EnabledBoundTo = "properties.Enabled";
+		public static string EnabledBoundTo = "properties.Enabled";
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Inherits Alpha")]
@@ -237,7 +237,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string InheritsAlphaBoundTo = "properties.InheritsAlpha";
+		public static string InheritsAlphaBoundTo = "properties.InheritsAlpha";
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Inherits Pick")]
@@ -260,7 +260,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string InheritsPickBoundTo = "properties.InheritsPick";
+		public static string InheritsPickBoundTo = "properties.InheritsPick";
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Mask Pick")]
@@ -281,7 +281,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string MaskPickBoundTo = "properties.MaskPick";
+		public static string MaskPickBoundTo = "properties.MaskPick";
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Capture Keyboard")]
@@ -304,7 +304,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string NeedKeyBoundTo = "properties.NeedKey";
+		public static string NeedKeyBoundTo = "properties.NeedKey";
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Capture Mouse")]
@@ -327,7 +327,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string NeedMouseBoundTo = "properties.NeedMouse";
+		public static string NeedMouseBoundTo = "properties.NeedMouse";
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Show Tool Tip")]
@@ -350,7 +350,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string NeedToolTipBoundTo = "properties.NeedToolTip";
+		public static string NeedToolTipBoundTo = "properties.NeedToolTip";
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Cursor")]
@@ -371,7 +371,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string PointerBoundTo = "properties.Pointer";
+		public static string PointerBoundTo = "properties.Pointer";
 
 		[Category("2 - Widget Properties")]
 		[Description("If the widget and its children are rendered.")]
@@ -393,7 +393,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string VisibleBoundTo = "properties.Visible";
+		public static string VisibleBoundTo = "properties.Visible";
 		#endregion
 
 		#region Backend Functions
@@ -439,7 +439,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string CaptionBoundTo = "properties.Caption";
+		public static string CaptionBoundTo = "properties.Caption";
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Font Size")]
@@ -461,7 +461,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string FontHeightBoundTo = "properties.FontHeight";
+		public static string FontHeightBoundTo = "properties.FontHeight";
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Font")]
@@ -482,7 +482,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string FontNameBoundTo = "properties.FontName";
+		public static string FontNameBoundTo = "properties.FontName";
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Align")]
@@ -503,7 +503,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string TextAlignBoundTo = "properties.TextAlign";
+		public static string TextAlignBoundTo = "properties.TextAlign";
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Color")]
@@ -561,7 +561,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string TextColorBoundTo = "properties.TextColour";
+		public static string TextColorBoundTo = "properties.TextColour";
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Shadow")]
@@ -584,7 +584,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string TextShadowBoundTo = "properties.TextShadow";
+		public static string TextShadowBoundTo = "properties.TextShadow";
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Shadow Color")]
@@ -642,7 +642,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string TextShadowColorBoundTo = "properties.TextShadowColour";
+		public static string TextShadowColorBoundTo = "properties.TextShadowColour";
 
 		#endregion
 	}
@@ -672,7 +672,7 @@ namespace MyGui.net
 				}
 			}
 		}
-        public string ImageGroupBoundTo = "properties.ImageGroup";
+		public static string ImageGroupBoundTo = "properties.ImageGroup";
 
 		[Category("4 - Button Properties")]
 		[DisplayName("Image Name")]
@@ -693,7 +693,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ImageNameBoundTo = "properties.ImageName";
+		public static string ImageNameBoundTo = "properties.ImageName";
 
 		[Category("4 - Button Properties")]
 		[DisplayName("Image Resource")]
@@ -714,7 +714,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ImageResourceBoundTo = "properties.ImageResource";
+		public static string ImageResourceBoundTo = "properties.ImageResource";
 
 		[Category("4 - Button Properties")]
 		[Description("Unknown behaviour.")]
@@ -737,7 +737,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ModeImageBoundTo = "properties.ModeImage";
+		public static string ModeImageBoundTo = "properties.ModeImage";
 
 		[Category("4 - Button Properties")]
 		[DisplayName("Force Selected")]
@@ -760,7 +760,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string StateSelectedBoundTo = "properties.StateSelected";
+		public static string StateSelectedBoundTo = "properties.StateSelected";
 		#endregion
 	}
 
@@ -790,7 +790,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string CursorPositionBoundTo = "properties.CursorPosition";
+		public static string CursorPositionBoundTo = "properties.CursorPosition";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Invert Selection")]
@@ -813,7 +813,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string InvertSelectedBoundTo = "properties.InvertSelected";
+		public static string InvertSelectedBoundTo = "properties.InvertSelected";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Text Length Limit")]
@@ -835,7 +835,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string MaxTextLengthBoundTo = "properties.MaxTextLength";
+		public static string MaxTextLengthBoundTo = "properties.MaxTextLength";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Multi-Line")]
@@ -858,7 +858,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string MultiLineBoundTo = "properties.MultiLine";
+		public static string MultiLineBoundTo = "properties.MultiLine";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Overflow To The Left")]
@@ -881,7 +881,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string OverflowToTheLeftBoundTo = "properties.OverflowToTheLeft";
+		public static string OverflowToTheLeftBoundTo = "properties.OverflowToTheLeft";
 
 		[Category("4 - EditBox Properties")]
 		[Description("Forces each character of the string to be rendered as Password Character (by default a \"*\").")]
@@ -903,7 +903,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string PasswordBoundTo = "properties.Password";
+		public static string PasswordBoundTo = "properties.Password";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Password Character")]
@@ -924,7 +924,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string PasswordCharBoundTo = "properties.PasswordChar";
+		public static string PasswordCharBoundTo = "properties.PasswordChar";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Read Only")]
@@ -947,7 +947,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ReadOnlyBoundTo = "properties.ReadOnly";
+		public static string ReadOnlyBoundTo = "properties.ReadOnly";
 
 		[Category("4 - EditBox Properties")]
 		[Description("Makes the user unable to select the text in the EditBox.")]
@@ -969,7 +969,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string StaticBoundTo = "properties.Static";
+		public static string StaticBoundTo = "properties.Static";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Selection Range")]
@@ -1002,7 +1002,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string TextSelectBoundTo = "properties.TextSelect";
+		public static string TextSelectBoundTo = "properties.TextSelect";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Visible Horizontal Scrollbar")]
@@ -1025,7 +1025,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string VisibleHScrollBoundTo = "properties.VisibleHScroll";
+		public static string VisibleHScrollBoundTo = "properties.VisibleHScroll";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Visible Vertical Scrollbar")]
@@ -1048,7 +1048,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string VisibleVScrollBoundTo = "properties.VisibleVScroll";
+		public static string VisibleVScrollBoundTo = "properties.VisibleVScroll";
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Word Wrapping")]
@@ -1071,7 +1071,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string WordWrapBoundTo = "properties.WordWrap";
+		public static string WordWrapBoundTo = "properties.WordWrap";
 
 		#endregion
 	}
@@ -1103,7 +1103,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string NeedDragDropBoundTo = "properties.NeedDragDrop";
+		public static string NeedDragDropBoundTo = "properties.NeedDragDrop";
 		#endregion
 	}
 
@@ -1134,7 +1134,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string VerticalAlignmentBoundTo = "properties.VerticalAlignment";
+		public static string VerticalAlignmentBoundTo = "properties.VerticalAlignment";
 
 		[Category("4 - ItemBox Properties")]
 		[DisplayName("Visible Horizontal Scrollbar")]
@@ -1157,7 +1157,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string VisibleHScrollBoundTo = "properties.VisibleHScroll";
+		public static string VisibleHScrollBoundTo = "properties.VisibleHScroll";
 
 		[Category("4 - ItemBox Properties")]
 		[DisplayName("Visible Vertical Scrollbar")]
@@ -1180,7 +1180,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string VisibleVScrollBoundTo = "properties.VisibleVScroll";
+		public static string VisibleVScrollBoundTo = "properties.VisibleVScroll";
 		#endregion
 	}
 
@@ -1211,7 +1211,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string AutoTrackBoundTo = "properties.AutoTrack";
+		public static string AutoTrackBoundTo = "properties.AutoTrack";
 
 		[Category("3 - ProgressBar Properties")]
 		[DisplayName("Flow Direction")]
@@ -1233,7 +1233,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string FlowDirectionBoundTo = "properties.FlowDirection";
+		public static string FlowDirectionBoundTo = "properties.FlowDirection";
 
 		[Category("3 - ProgressBar Properties")]
 		[DisplayName("Maximum")]
@@ -1255,7 +1255,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string RangeBoundTo = "properties.Range";
+		public static string RangeBoundTo = "properties.Range";
 
 		[Category("3 - ProgressBar Properties")]
 		[DisplayName("Current Value")]
@@ -1277,7 +1277,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string RangePositionBoundTo = "properties.RangePosition";
+		public static string RangePositionBoundTo = "properties.RangePosition";
 		#endregion
 	}
 
@@ -1308,7 +1308,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string MoveToClickBoundTo = "properties.MoveToClick";
+		public static string MoveToClickBoundTo = "properties.MoveToClick";
 
 		[Category("3 - ScrollBar Properties")]
 		[Description("Unknown behaviour.")]
@@ -1329,7 +1329,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string PageBoundTo = "properties.Page";
+		public static string PageBoundTo = "properties.Page";
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Maximum")]
@@ -1351,7 +1351,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string RangeBoundTo = "properties.Range";
+		public static string RangeBoundTo = "properties.Range";
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Default Position")]
@@ -1373,7 +1373,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string RangePositionBoundTo = "properties.RangePosition";
+		public static string RangePositionBoundTo = "properties.RangePosition";
 
 		[Category("3 - ScrollBar Properties")]
 		[Description("Unknown behaviour.")]
@@ -1395,7 +1395,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string RepeatBoundTo = "properties.Repeat";
+		public static string RepeatBoundTo = "properties.Repeat";
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Repeat Step Time")]
@@ -1417,7 +1417,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string RepeatStepTimeBoundTo = "properties.RepeatStepTime";
+		public static string RepeatStepTimeBoundTo = "properties.RepeatStepTime";
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Repeat Trigger Time")]
@@ -1439,7 +1439,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string RepeatTriggerTimeBoundTo = "properties.RepeatTriggerTime";
+		public static string RepeatTriggerTimeBoundTo = "properties.RepeatTriggerTime";
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Vertical Alignment")]
@@ -1462,7 +1462,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string VerticalAlignmentBoundTo = "properties.VerticalAlignment";
+		public static string VerticalAlignmentBoundTo = "properties.VerticalAlignment";
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("View Page")]
@@ -1484,7 +1484,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ViewPageBoundTo = "properties.ViewPage";
+		public static string ViewPageBoundTo = "properties.ViewPage";
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Scroll Wheel Step")]
@@ -1506,7 +1506,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string WheelPageBoundTo = "properties.WheelPage";
+		public static string WheelPageBoundTo = "properties.WheelPage";
 		#endregion
 	}
 
@@ -1535,7 +1535,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ImageCoordBoundTo = "properties.ImageCoord";
+		public static string ImageCoordBoundTo = "properties.ImageCoord";
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Group")]
@@ -1556,7 +1556,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ImageGroupBoundTo = "properties.ImageGroup";
+		public static string ImageGroupBoundTo = "properties.ImageGroup";
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Index")]
@@ -1578,7 +1578,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ImageIndexBoundTo = "properties.ImageIndex";
+		public static string ImageIndexBoundTo = "properties.ImageIndex";
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Name")]
@@ -1599,7 +1599,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ImageNameBoundTo = "properties.ImageName";
+		public static string ImageNameBoundTo = "properties.ImageName";
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Resource")]
@@ -1620,7 +1620,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ImageResourceBoundTo = "properties.ImageResource";
+		public static string ImageResourceBoundTo = "properties.ImageResource";
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Texture")]
@@ -1641,850 +1641,9 @@ namespace MyGui.net
 				}
 			}
 		}
-		public string ImageTextureBoundTo = "properties.ImageTexture";
+		public static string ImageTextureBoundTo = "properties.ImageTexture";
 		#endregion
 	}
-
-	#region MyGui Property Classes
-	//ComboBox, DDContainer, ListBox, MenuBar, MultiListBox, PopupMenu, ScrollView Unsupported - MyGui Skins only or no skins or basically useless.
-
-	static class MyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories = new()
-        {
-            new()
-            {
-                title = "Main properties",
-                properties = new()
-                {
-                    new()
-                    {
-                        name = "Align",
-                        boundTo = "align",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "Default", "Stretch", "Center",
-                            "Left Top", "Left Bottom", "Left VStretch", "Left VCenter",
-                            "Right Top", "Right Bottom", "Right VStretch", "Right VCenter",
-                            "HStretch Top", "HStretch Bottom", "HStretch VStretch", "HStretch VCenter",
-                            "HCenter Top", "HCenter Bottom", "HCenter VStretch", "HCenter VCenter"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Layer",
-                        boundTo = "layer",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "ToolTip", "Info", "FadeMiddle", "Popup", "Main", "Modal", "Middle", "Overlapped", "Back"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Name",
-                        boundTo = "name",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Position",
-                        boundTo = "position",
-                        type = MyGuiWidgetPropertyType.PointBox
-                    },
-                    new()
-                    {
-                        name = "Size",
-                        boundTo = "size",
-                        type = MyGuiWidgetPropertyType.PointBox
-                    },
-                    new()
-                    {
-                        name = "Skin",
-                        boundTo = "skin",
-                        type = MyGuiWidgetPropertyType.SkinBox,
-                    },
-                    /*new()
-                    {
-                        name = "Template",
-                        type = MyGuiWidgetPropertyType.CheckBox
-                    },*/
-                    new()
-                    {
-                        name = "Type",
-                        boundTo = "type",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "Widget", "Button", "Canvas", "ComboBox", "DDContainer", "EditBox", "ItemBox", "ListBox", "MenuBar", "MultiListBox", "PopupMenu", "ProgressBar", "ScrollBar", "ScrollView", "ImageBox", "TextBox", "TabControl", "Window"
-                        }
-                    }
-                }
-            },
-            new()
-            {
-                title = "Widget properties",
-                properties = new()
-                {
-                    new()
-                    {
-                        name = "Alpha",
-                        boundTo = "properties.Alpha",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Color",
-                        boundTo = "properties.Colour",
-                        type = MyGuiWidgetPropertyType.ColorBox
-                    },
-                    new()
-                    {
-                        name = "Enabled",
-                        boundTo = "properties.Enabled",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Inherits Alpha",
-                        boundTo = "properties.InheritsAlpha",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Inherits Pick",
-                        boundTo = "properties.InheritsPick",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Mask Pick",
-                        boundTo = "properties.MaskPick",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Need Key",
-                        boundTo = "properties.NeedKey",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Need Mouse",
-                        boundTo = "properties.NeedMouse",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Need Tooltip",
-                        boundTo = "properties.NeedToolTip",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Pointer",
-                        boundTo = "properties.Pointer",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Visible",
-                        boundTo = "properties.Visible",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                }
-            }
-        };
-    }
-
-    static class TextBoxMyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories;
-
-        static TextBoxMyGuiWidgetProperties()
-        {
-            // Copy existing categories
-            categories = MyGuiWidgetProperties.categories.Select(category => new MyGuiWidgetPropertyCategory
-            {
-                title = category.title,
-                properties = category.properties.Select(property => new MyGuiWidgetProperty
-                {
-                    name = property.name,
-                    boundTo = property.boundTo,
-                    type = property.type,
-                    comboBoxValues = property.comboBoxValues?.ToList()
-                }).ToList()
-            }).ToList();
-
-            // Add new categories or properties
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "TextBox properties",
-                properties = new List<MyGuiWidgetProperty>
-                {
-                    new()
-                    {
-                        name = "Caption",
-                        boundTo = "properties.Caption",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Font Height",
-                        boundTo = "properties.FontHeight",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Font Name",
-                        boundTo = "properties.FontName",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Align",
-                        boundTo = "properties.TextAlign",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "Default", "Center",
-                            "Left Top", "Left Bottom", "Left VCenter",
-                            "Right Top", "Right Bottom", "Right VCenter",
-                            "HCenter Top", "HCenter Bottom", "HCenter VCenter"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Color",
-                        boundTo = "properties.TextColour", //Repeating Colour many times wont make it a real word xd
-                        type = MyGuiWidgetPropertyType.ColorBox
-                    },
-                    new()
-                    {
-                        name = "Shadow",
-                        boundTo = "properties.TextShadow",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Shadow Color",
-                        boundTo = "properties.TextShadowColour",
-                        type = MyGuiWidgetPropertyType.ColorBox
-                    },
-                }
-            });
-        }
-    }
-
-    static class ButtonMyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories;
-
-        static ButtonMyGuiWidgetProperties()
-        {
-            // Copy existing categories
-            categories = TextBoxMyGuiWidgetProperties.categories.Select(category => new MyGuiWidgetPropertyCategory
-            {
-                title = category.title,
-                properties = category.properties.Select(property => new MyGuiWidgetProperty
-                {
-                    name = property.name,
-                    boundTo = property.boundTo,
-                    type = property.type,
-                    comboBoxValues = property.comboBoxValues?.ToList()
-                }).ToList()
-            }).ToList();
-
-            // Add new categories or properties
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "Button properties",
-                properties = new List<MyGuiWidgetProperty>
-                {
-                    new()
-                    {
-                        name = "Image Group",
-                        boundTo = "properties.ImageGroup",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Image Name",
-                        boundTo = "properties.ImageName",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Img. Resource",
-                        boundTo = "properties.ImageResource",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Mode Image",
-                        boundTo = "properties.ModeImage",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Force Selected",
-                        boundTo = "properties.StateSelected",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                }
-            });
-        }
-    }
-
-    static class UnsupportedMyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories = new();
-
-        static UnsupportedMyGuiWidgetProperties()
-        {
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "!!! UNSUPPORTED WIDGET TYPE !!!",
-                properties = new List<MyGuiWidgetProperty> { }
-            });
-
-            // Copy existing categories
-            categories.AddRange(MyGuiWidgetProperties.categories.Select(category => new MyGuiWidgetPropertyCategory
-            {
-                title = category.title,
-                properties = category.properties.Select(property => new MyGuiWidgetProperty
-                {
-                    name = property.name,
-                    boundTo = property.boundTo,
-                    type = property.type,
-                    comboBoxValues = property.comboBoxValues?.ToList()
-                }).ToList()
-            }).ToList());
-
-            // Add new categories or properties
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "!!! UNSUPPORTED WIDGET TYPE !!!",
-                properties = new List<MyGuiWidgetProperty>{}
-            });
-        }
-    }
-
-    static class EditBoxMyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories;
-
-        static EditBoxMyGuiWidgetProperties()
-        {
-            // Copy existing categories
-            categories = TextBoxMyGuiWidgetProperties.categories.Select(category => new MyGuiWidgetPropertyCategory
-            {
-                title = category.title,
-                properties = category.properties.Select(property => new MyGuiWidgetProperty
-                {
-                    name = property.name,
-                    boundTo = property.boundTo,
-                    type = property.type,
-                    comboBoxValues = property.comboBoxValues?.ToList()
-                }).ToList()
-            }).ToList();
-
-            // Add new categories or properties
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "EditBox properties",
-                properties = new List<MyGuiWidgetProperty>
-                {
-                    new()
-                    {
-                        name = "Cursor Position",
-                        boundTo = "properties.CursorPosition",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Invert Selected",
-                        boundTo = "properties.InvertSelected",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Max Length",
-                        boundTo = "properties.MaxTextLength",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Multi Line",
-                        boundTo = "properties.MultiLine",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Overflow Left",
-                        boundTo = "properties.OverflowToTheLeft",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Password",
-                        boundTo = "properties.Password",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Password Char",
-                        boundTo = "properties.PasswordChar",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Read Only",
-                        boundTo = "properties.ReadOnly",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Static",
-                        boundTo = "properties.Static",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Tab Printing",
-                        boundTo = "properties.TabPrinting",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Text Select",
-                        boundTo = "properties.TextSelect",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Visible HScroll",
-                        boundTo = "properties.VisibleHScroll",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Visible VScroll",
-                        boundTo = "properties.VisibleVScroll",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Word Wrap",
-                        boundTo = "properties.WordWrap",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    static class ItemBoxMyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories;
-
-        static ItemBoxMyGuiWidgetProperties()
-        {
-            // Copy existing categories
-            categories = MyGuiWidgetProperties.categories.Select(category => new MyGuiWidgetPropertyCategory
-            {
-                title = category.title,
-                properties = category.properties.Select(property => new MyGuiWidgetProperty
-                {
-                    name = property.name,
-                    boundTo = property.boundTo,
-                    type = property.type,
-                    comboBoxValues = property.comboBoxValues?.ToList()
-                }).ToList()
-            }).ToList();
-
-            // Add new categories or properties
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "ItemBox properties",
-                properties = new List<MyGuiWidgetProperty>
-                {
-                    new()
-                    {
-                        name = "Vertical Align",
-                        boundTo = "properties.VerticalAlignment",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "HScroll",
-                        boundTo = "properties.VisibleHScroll",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "VScroll",
-                        boundTo = "properties.VisibleVScroll",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                }
-            });
-        }
-    }
-
-    static class ProgressBarMyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories;
-
-        static ProgressBarMyGuiWidgetProperties()
-        {
-            // Copy existing categories
-            categories = MyGuiWidgetProperties.categories.Select(category => new MyGuiWidgetPropertyCategory
-            {
-                title = category.title,
-                properties = category.properties.Select(property => new MyGuiWidgetProperty
-                {
-                    name = property.name,
-                    boundTo = property.boundTo,
-                    type = property.type,
-                    comboBoxValues = property.comboBoxValues?.ToList()
-                }).ToList()
-            }).ToList();
-
-            // Add new categories or properties
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "ProgressBar properties",
-                properties = new List<MyGuiWidgetProperty>
-                {
-                    new()
-                    {
-                        name = "Auto Track",
-                        boundTo = "properties.AutoTrack",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Flow Direction",
-                        boundTo = "properties.FlowDirection",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "LeftToRight", "RightToLeft", "TopToBottom", "BottomToTop"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Range",
-                        boundTo = "properties.Range",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Progress",
-                        boundTo = "properties.RangePosition",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                }
-            });
-        }
-    }
-
-    static class ScrollBarMyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories;
-
-        static ScrollBarMyGuiWidgetProperties()
-        {
-            // Copy existing categories
-            categories = MyGuiWidgetProperties.categories.Select(category => new MyGuiWidgetPropertyCategory
-            {
-                title = category.title,
-                properties = category.properties.Select(property => new MyGuiWidgetProperty
-                {
-                    name = property.name,
-                    boundTo = property.boundTo,
-                    type = property.type,
-                    comboBoxValues = property.comboBoxValues?.ToList()
-                }).ToList()
-            }).ToList();
-
-            // Add new categories or properties
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "ScrollBar properties",
-                properties = new List<MyGuiWidgetProperty>
-                {
-                    new()
-                    {
-                        name = "Move To Click",
-                        boundTo = "properties.MoveToClick",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Page",
-                        boundTo = "properties.Page",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Range",
-                        boundTo = "properties.Range",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Current",
-                        boundTo = "properties.RangePosition",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Repeat",
-                        boundTo = "properties.Repeat",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "Rep. Step Time",
-                        boundTo = "properties.RepeatStepTime",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Rep. Trig. Time",
-                        boundTo = "properties.RepeatTriggerTime",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Vertical Align",
-                        boundTo = "properties.VerticalAlignment",
-                        type = MyGuiWidgetPropertyType.ComboBox,
-                        comboBoxValues = new()
-                        {
-                            "[DEFAULT]", "true", "false"
-                        }
-                    },
-                    new()
-                    {
-                        name = "View Page",
-                        boundTo = "properties.ViewPage",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Wheel Page",
-                        boundTo = "properties.WheelPage",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                }
-            });
-        }
-    }
-
-    static class ImageBoxMyGuiWidgetProperties
-    {
-        public static readonly List<MyGuiWidgetPropertyCategory> categories;
-
-        static ImageBoxMyGuiWidgetProperties()
-        {
-            // Copy existing categories
-            categories = MyGuiWidgetProperties.categories.Select(category => new MyGuiWidgetPropertyCategory
-            {
-                title = category.title,
-                properties = category.properties.Select(property => new MyGuiWidgetProperty
-                {
-                    name = property.name,
-                    boundTo = property.boundTo,
-                    type = property.type,
-                    comboBoxValues = property.comboBoxValues?.ToList()
-                }).ToList()
-            }).ToList();
-
-            // Add new categories or properties
-            categories.Add(new MyGuiWidgetPropertyCategory
-            {
-                title = "ImageBox properties",
-                properties = new List<MyGuiWidgetProperty>
-                {
-                    new()
-                    {
-                        name = "Coordinates",
-                        boundTo = "properties.ImageCoord",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Group",
-                        boundTo = "properties.ImageGroup",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Index",
-                        boundTo = "properties.ImageIndex",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Name",
-                        boundTo = "properties.ImageName",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Resource",
-                        boundTo = "properties.ImageResource",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Texture",
-                        boundTo = "properties.ImageTexture",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                    new()
-                    {
-                        name = "Tile",
-                        boundTo = "properties.ImageTile",
-                        type = MyGuiWidgetPropertyType.TextBox
-                    },
-                }
-            });
-        }
-    }
-    #endregion
-
-    struct MyGuiWidgetPropertyCategory
-    {
-        public string title;
-        public List<MyGuiWidgetProperty> properties;
-    }
-
-    enum MyGuiWidgetPropertyType
-    {
-        TextBox,
-        PointBox,
-        CheckBox,
-        ComboBox,
-        ColorBox,
-        SkinBox
-    }
-
-    struct MyGuiWidgetProperty
-    {
-        public string name;
-        public string boundTo;
-        public MyGuiWidgetPropertyType type;
-        public List<string>? comboBoxValues;
-    }
 
     public class MyGuiBasisSkinState
     {
