@@ -595,9 +595,28 @@ namespace MyGui.net
 			_renderWidgetHighligths.Clear();
 			int beforeProjectClip = canvas.Save();
 			canvas.ClipRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height));
+			/*foreach (var item in _allResources)
+			{
+				Debug.WriteLine($"{item.Key}: {item.Value}");
+			}*/
 			foreach (var widget in _currentLayout)
 			{
-				DrawWidget(canvas, widget, new SKPoint(0, 0));
+				/*Debug.WriteLine(widget.skin);
+				if (_allResources.TryGetValue(widget.skin, out var valz))
+				{
+					Debug.WriteLine(valz);
+				}*/
+				if (_allResources.TryGetValue(widget.skin, out var val) && val.resourceLayout != null)
+				{
+					foreach (var subWidget in val.resourceLayout)
+					{
+						DrawWidget(canvas, subWidget, new SKPoint(0, 0));
+					}
+				}
+				else
+				{
+					DrawWidget(canvas, widget, new SKPoint(0, 0));
+				}
 			}
 			canvas.RestoreToCount(beforeProjectClip);
 
@@ -2100,7 +2119,7 @@ namespace MyGui.net
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			Debug.WriteLine($"{e.ChangedItem.PropertyDescriptor.Name} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo")}");
+			//Debug.WriteLine($"{e.ChangedItem.PropertyDescriptor.Name} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo")}");
 			var value = Util.IsAnyOf<string>(e.ChangedItem.Value.ToString(), ["[DEFAULT]", "Default", ""]) ? null : e.ChangedItem.Value;
 			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget().ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget)), e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
 		}
