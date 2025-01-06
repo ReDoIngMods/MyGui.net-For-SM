@@ -727,7 +727,7 @@ namespace MyGui.net
 			{
 				//WIP!!!
 				SKRect localRect = new SKRect(widget.position.X, widget.position.Y, widget.position.X + widget.size.X, widget.position.Y + widget.size.Y);
-				SKRect parentRect = parent != null ? new(0, 0, parent.size.X, parent.size.Y) : new(0, 0, ProjectSize.Width, ProjectSize.Height);
+				SKRect parentRect = parent != null ? new(1, 1, parent.size.X - 2, parent.size.Y - 2) : new(1, 1, ProjectSize.Width - 2, ProjectSize.Height - 2);
 				if (!Util.RectsOverlap(localRect, parentRect))
 				{
 					_renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Red.WithAlpha(192)));
@@ -737,8 +737,8 @@ namespace MyGui.net
 			// Recursively draw child widgets
 			foreach (var child in widget.children)
 			{
-				var widgetBounds = new SKRect(widgetPosition.X, widgetPosition.Y,
-							  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
+				var widgetBounds = new SKRect(widgetPosition.X - 1, widgetPosition.Y - 1,
+							  widgetPosition.X + widget.size.X - 2, widgetPosition.Y + widget.size.Y - 2);
 				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget);
 			}
 
@@ -748,8 +748,9 @@ namespace MyGui.net
 
 		SKPaint _baseFontPaint = new SKPaint { };
 
-		private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null)
+		private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null)
 		{
+			widgetSecondaryData ??= widget;
 			if (atlasImage == null || resource == null || resource.basisSkins == null)
 			{
 				return; // Nothing to render if essential data is missing
@@ -811,28 +812,28 @@ namespace MyGui.net
 				{
 					if (skin.type == "SimpleText")
 					{
-						if (widget.properties.ContainsKey("Caption"))
+						if (widgetSecondaryData.properties.ContainsKey("Caption"))
 						{
 							int beforeTextClip = canvas.Save();
 							canvas.ClipRect(destRect);
 
-							var fontData = widget.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widget.properties["FontName"]) ? _allFonts[widget.properties["FontName"]] : _allFonts["SM_TextLabel"];
+							var fontData = widgetSecondaryData.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widgetSecondaryData.properties["FontName"]) ? _allFonts[widgetSecondaryData.properties["FontName"]] : _allFonts["SM_TextLabel"];
 							string fontPath = Path.Combine(Settings.Default.ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
 							if (!_fontCache.ContainsKey(fontPath))
 							{
 								_fontCache[fontPath] = SKTypeface.FromFile(fontPath);
 							}
 
-							Color? textColor = widget.properties.ContainsKey("TextColour") ? ParseColorFromString(widget.properties["TextColour"]) : Color.White;
+							Color? textColor = widgetSecondaryData.properties.ContainsKey("TextColour") ? ParseColorFromString(widgetSecondaryData.properties["TextColour"]) : Color.White;
 							_baseFontPaint.Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B);
-							_baseFontPaint.TextSize = widget.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widget.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widget.properties["FontHeight"]) : (float)fontData.size;
+							_baseFontPaint.TextSize = widgetSecondaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetSecondaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetSecondaryData.properties["FontHeight"]) : (float)fontData.size;
 							_baseFontPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
 							_baseFontPaint.Typeface = _fontCache[fontPath];
 							_baseFontPaint.FilterQuality = Settings.Default.UseViewportAntiAliasing ? SKFilterQuality.High : SKFilterQuality.None;
 
 							var spacingX = destRect.Left;
 							var spacingY = destRect.Top + _baseFontPaint.TextSize;
-							foreach (var character in fontData.allowedChars == "ALL CHARACTERS" ? widget.properties["Caption"] : ReplaceInvalidChars(widget.properties["Caption"], fontData.allowedChars))
+							foreach (var character in fontData.allowedChars == "ALL CHARACTERS" ? widgetSecondaryData.properties["Caption"] : ReplaceInvalidChars(widgetSecondaryData.properties["Caption"], fontData.allowedChars))
 							{
 								/*if (!destRect.Contains(new SKPoint(spacingX + _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0), spacingY)))
 								{
@@ -2099,8 +2100,8 @@ namespace MyGui.net
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			//Debug.WriteLine($"{e.ChangedItem.PropertyDescriptor.Name} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo")}");
-			var value = Util.IsAnyOf<string>((string)e.ChangedItem.Value, ["[DEFAULT]", "Default", ""]) ? null : e.ChangedItem.Value;
+			Debug.WriteLine($"{e.ChangedItem.PropertyDescriptor.Name} changed from {e.OldValue} to {e.ChangedItem.Value}, boundto: {(string)Util.GetPropertyValue(new MyGuiWidgetDataWidget(), e.ChangedItem.PropertyDescriptor.Name + "BoundTo")}");
+			var value = Util.IsAnyOf<string>(e.ChangedItem.Value.ToString(), ["[DEFAULT]", "Default", ""]) ? null : e.ChangedItem.Value;
 			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetPropertyValue(new MyGuiWidgetDataWidget().ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget)), e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
 		}
 	}
