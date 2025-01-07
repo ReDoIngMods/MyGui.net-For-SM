@@ -584,7 +584,7 @@ namespace MyGui.net
 					Color = SKColors.Black,
 					IsAntialias = false
 				});
-				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : SKFilterQuality.High, IsAntialias = true, IsDither = false, });
+				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.viewportFilteringLevel, IsAntialias = true, IsDither = false, });
 			}
 			else
 			{
@@ -608,17 +608,7 @@ namespace MyGui.net
 				{
 					Debug.WriteLine(valz);
 				}*/
-				if (_allResources.TryGetValue(widget.skin, out var val) && val.resourceLayout != null)
-				{
-					foreach (var subWidget in val.resourceLayout)
-					{
-						DrawWidget(canvas, subWidget, new SKPoint(0, 0));
-					}
-				}
-				else
-				{
-					DrawWidget(canvas, widget, new SKPoint(0, 0));
-				}
+				DrawWidget(canvas, widget, new SKPoint(0, 0));
 			}
 			canvas.RestoreToCount(beforeProjectClip);
 
@@ -656,7 +646,7 @@ namespace MyGui.net
 			}
 		}
 
-		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null)
+		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null)
 		{
 			// Calculate widget position relative to parent
 			var widgetPosition = new SKPoint(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
@@ -665,15 +655,21 @@ namespace MyGui.net
 			var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
 								  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
 
-			// Save canvas state for clipping
-			var saveBeforeAll = canvas.Save();
 
-			// Apply clipping for the widget's bounds
-			canvas.ClipRect(rect);
-
-			// Generate a random color
-			//var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
-
+			if (_allResources.TryGetValue(widget.skin, out var val) && val.resourceLayout != null)
+			{
+				for (int i = 0; i < val.resourceLayout.Count; i++)
+				{
+					var subWidget = val.resourceLayout[i];
+					if (i == 0)
+					{
+						subWidget.position = new(0, 0);
+						subWidget.size = widget.size;
+					}
+					DrawWidget(canvas, subWidget, widgetPosition, widget, widget);
+				}
+				//return;
+			}
 			string skinPath = widget.skin != null && _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : "";
 			skinPath ??= "";
 
@@ -700,6 +696,15 @@ namespace MyGui.net
 				}
 			}
 
+			// Save canvas state for clipping
+			var saveBeforeAll = canvas.Save();
+
+			// Apply clipping for the widget's bounds
+			canvas.ClipRect(rect);
+
+			// Generate a random color
+			//var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
+
 			// Draw rectangle for the widget
 			/*var paint = new SKPaint
 			{
@@ -710,11 +715,11 @@ namespace MyGui.net
 			canvas.DrawRect(rect, paint);*/
 			if (skinPath != null && skinPath != "" && _skinAtlasCache.ContainsKey(skinPath))
 			{
-				RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect, null, widget);
+				RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect, null, widget, widgetSecondaryData);
 			}
 			else
 			{
-				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget);
+				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData);
 				//canvas.DrawRect(rect, paint);
 			}
 
@@ -725,7 +730,7 @@ namespace MyGui.net
 				{
 					Color = SKColors.White,
 					TextSize = 16,
-					IsAntialias = true,
+					IsAntialias = false,
 					Style = SKPaintStyle.StrokeAndFill,
 					StrokeWidth = 1
 				};
@@ -734,7 +739,7 @@ namespace MyGui.net
 				{
 					Color = SKColors.Black,
 					TextSize = 16,
-					IsAntialias = false
+					IsAntialias = true
 				};
 				canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaintStroke);
 			}
@@ -751,7 +756,7 @@ namespace MyGui.net
 				SKRect parentRect = parent != null ? new(1, 1, parent.size.X - 2, parent.size.Y - 2) : new(1, 1, ProjectSize.Width - 2, ProjectSize.Height - 2);
 				if (!Util.RectsOverlap(localRect, parentRect))
 				{
-					_renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Red.WithAlpha(192)));
+					_renderWidgetHighligths.TryAdd(widget, new WidgetHighlightType(widgetPosition, SKColors.Red.WithAlpha(192)));
 				}
 			}
 
@@ -848,9 +853,9 @@ namespace MyGui.net
 							Color? textColor = widgetSecondaryData.properties.ContainsKey("TextColour") ? ParseColorFromString(widgetSecondaryData.properties["TextColour"]) : Color.White;
 							_baseFontPaint.Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B);
 							_baseFontPaint.TextSize = widgetSecondaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetSecondaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetSecondaryData.properties["FontHeight"]) : (float)fontData.size;
-							_baseFontPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
+							_baseFontPaint.IsAntialias = Settings.Default.UseViewportFontAntiAliasing;
 							_baseFontPaint.Typeface = _fontCache[fontPath];
-							_baseFontPaint.FilterQuality = Settings.Default.UseViewportAntiAliasing ? SKFilterQuality.High : SKFilterQuality.None;
+							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.viewportFilteringLevel;
 
 							var spacingX = destRect.Left;
 							var spacingY = destRect.Top + _baseFontPaint.TextSize;
@@ -918,7 +923,7 @@ namespace MyGui.net
 					//int beforeClipSave = canvas.Save();
 					//canvas.ClipRect(destRect);
 					//canvas.Clear();
-					drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (Settings.Default.UseViewportAntiAliasing ? SKFilterQuality.High : SKFilterQuality.None);
+					drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.viewportFilteringLevel;
 					drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
 					drawPaint.IsDither = true;
 					canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
@@ -1672,16 +1677,6 @@ namespace MyGui.net
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_commandManager.getUndoStackCount() != 0)
-			{
-				DialogResult result = MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-				// Check which button was clicked
-				if (result != DialogResult.Yes)
-				{
-					return;
-				}
-			}
 			Application.Exit();
 		}
 

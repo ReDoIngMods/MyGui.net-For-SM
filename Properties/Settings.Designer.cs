@@ -302,7 +302,7 @@ namespace MyGui.net.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool UseViewportAntiAliasing {
             get {
                 return ((bool)(this["UseViewportAntiAliasing"]));
@@ -321,6 +321,30 @@ namespace MyGui.net.Properties {
             }
             set {
                 this["RenderInvisibleWidgets"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int viewportFilteringLevel {
+            get {
+                return ((int)(this["viewportFilteringLevel"]));
+            }
+            set {
+                this["viewportFilteringLevel"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseViewportFontAntiAliasing {
+            get {
+                return ((bool)(this["UseViewportFontAntiAliasing"]));
+            }
+            set {
+                this["UseViewportFontAntiAliasing"] = value;
             }
         }
     }

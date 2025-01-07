@@ -49,6 +49,11 @@ namespace MyGui.net
 
 			useViewportVSyncCheckBox.Checked = Settings.Default.UseViewportVSync;
 			useViewportAACheckBox.Checked = Settings.Default.UseViewportAntiAliasing;
+			useViewportFontAACheckBox.Checked = Settings.Default.UseViewportFontAntiAliasing;
+			spriteFilteringLevel0.Checked = Settings.Default.viewportFilteringLevel == 0;
+			spriteFilteringLevel1.Checked = Settings.Default.viewportFilteringLevel == 1;
+			spriteFilteringLevel2.Checked = Settings.Default.viewportFilteringLevel == 2;
+			spriteFilteringLevel3.Checked = Settings.Default.viewportFilteringLevel == 3;
 			renderInvisibleWidgetCheckBox.Checked = Settings.Default.RenderInvisibleWidgets;
 			renderWidgetNamesCheckBox.Checked = Settings.Default.RenderWidgetNames;
 
@@ -200,6 +205,20 @@ namespace MyGui.net
 		{
 			CheckBox sender = (CheckBox)senderAny;
 			Settings.Default.UseViewportAntiAliasing = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void useViewportFontAACheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			Settings.Default.UseViewportFontAntiAliasing = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void viewportFilteringLevel_CheckedChanged(object senderAny, EventArgs e)
+		{
+			RadioButton sender = (RadioButton)senderAny;
+			Settings.Default.viewportFilteringLevel = int.Parse(sender.Name.Last().ToString());
 			OnSettingChange();
 		}
 

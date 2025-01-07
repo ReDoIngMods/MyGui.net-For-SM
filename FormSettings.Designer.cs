@@ -59,6 +59,11 @@
 			useCustomLayoutCheckBox = new CheckBox();
 			saveCustomLayoutCheckBox = new CheckBox();
 			groupBox1 = new GroupBox();
+			groupBox12 = new GroupBox();
+			spriteFilteringLevel3 = new RadioButton();
+			spriteFilteringLevel1 = new RadioButton();
+			spriteFilteringLevel2 = new RadioButton();
+			spriteFilteringLevel0 = new RadioButton();
 			renderInvisibleWidgetCheckBox = new CheckBox();
 			useViewportAACheckBox = new CheckBox();
 			useViewportVSyncCheckBox = new CheckBox();
@@ -93,6 +98,7 @@
 			resetSettingsButton = new Button();
 			autoApplyCheckBox = new CheckBox();
 			editorBackgroundPathDialog = new OpenFileDialog();
+			useViewportFontAACheckBox = new CheckBox();
 			tabControl1.SuspendLayout();
 			projectTabPage.SuspendLayout();
 			flowLayoutPanel2.SuspendLayout();
@@ -109,6 +115,7 @@
 			groupBox8.SuspendLayout();
 			groupBox7.SuspendLayout();
 			groupBox1.SuspendLayout();
+			groupBox12.SuspendLayout();
 			fileTabPage.SuspendLayout();
 			flowLayoutPanel3.SuspendLayout();
 			groupBox2.SuspendLayout();
@@ -456,22 +463,85 @@
 			// 
 			// groupBox1
 			// 
+			groupBox1.Controls.Add(useViewportFontAACheckBox);
+			groupBox1.Controls.Add(groupBox12);
 			groupBox1.Controls.Add(renderInvisibleWidgetCheckBox);
 			groupBox1.Controls.Add(useViewportAACheckBox);
 			groupBox1.Controls.Add(useViewportVSyncCheckBox);
 			groupBox1.Controls.Add(renderWidgetNamesCheckBox);
 			groupBox1.Location = new Point(272, 88);
 			groupBox1.Name = "groupBox1";
-			groupBox1.Size = new Size(203, 131);
+			groupBox1.Size = new Size(278, 191);
 			groupBox1.TabIndex = 7;
 			groupBox1.TabStop = false;
 			groupBox1.Text = "Rendering";
+			// 
+			// groupBox12
+			// 
+			groupBox12.Controls.Add(spriteFilteringLevel3);
+			groupBox12.Controls.Add(spriteFilteringLevel1);
+			groupBox12.Controls.Add(spriteFilteringLevel2);
+			groupBox12.Controls.Add(spriteFilteringLevel0);
+			groupBox12.Location = new Point(6, 69);
+			groupBox12.Name = "groupBox12";
+			groupBox12.Size = new Size(266, 52);
+			groupBox12.TabIndex = 10;
+			groupBox12.TabStop = false;
+			groupBox12.Text = "Sprite Filtering Level";
+			// 
+			// spriteFilteringLevel3
+			// 
+			spriteFilteringLevel3.AutoSize = true;
+			spriteFilteringLevel3.Location = new Point(194, 22);
+			spriteFilteringLevel3.Name = "spriteFilteringLevel3";
+			spriteFilteringLevel3.Size = new Size(51, 19);
+			spriteFilteringLevel3.TabIndex = 3;
+			spriteFilteringLevel3.TabStop = true;
+			spriteFilteringLevel3.Text = "High";
+			spriteFilteringLevel3.UseVisualStyleBackColor = true;
+			spriteFilteringLevel3.CheckedChanged += viewportFilteringLevel_CheckedChanged;
+			// 
+			// spriteFilteringLevel1
+			// 
+			spriteFilteringLevel1.AutoSize = true;
+			spriteFilteringLevel1.Location = new Point(63, 22);
+			spriteFilteringLevel1.Name = "spriteFilteringLevel1";
+			spriteFilteringLevel1.Size = new Size(47, 19);
+			spriteFilteringLevel1.TabIndex = 1;
+			spriteFilteringLevel1.TabStop = true;
+			spriteFilteringLevel1.Text = "Low";
+			spriteFilteringLevel1.UseVisualStyleBackColor = true;
+			spriteFilteringLevel1.CheckedChanged += viewportFilteringLevel_CheckedChanged;
+			// 
+			// spriteFilteringLevel2
+			// 
+			spriteFilteringLevel2.AutoSize = true;
+			spriteFilteringLevel2.Location = new Point(118, 22);
+			spriteFilteringLevel2.Name = "spriteFilteringLevel2";
+			spriteFilteringLevel2.Size = new Size(70, 19);
+			spriteFilteringLevel2.TabIndex = 2;
+			spriteFilteringLevel2.TabStop = true;
+			spriteFilteringLevel2.Text = "Medium";
+			spriteFilteringLevel2.UseVisualStyleBackColor = true;
+			spriteFilteringLevel2.CheckedChanged += viewportFilteringLevel_CheckedChanged;
+			// 
+			// spriteFilteringLevel0
+			// 
+			spriteFilteringLevel0.AutoSize = true;
+			spriteFilteringLevel0.Location = new Point(6, 22);
+			spriteFilteringLevel0.Name = "spriteFilteringLevel0";
+			spriteFilteringLevel0.Size = new Size(54, 19);
+			spriteFilteringLevel0.TabIndex = 0;
+			spriteFilteringLevel0.TabStop = true;
+			spriteFilteringLevel0.Text = "None";
+			spriteFilteringLevel0.UseVisualStyleBackColor = true;
+			spriteFilteringLevel0.CheckedChanged += viewportFilteringLevel_CheckedChanged;
 			// 
 			// renderInvisibleWidgetCheckBox
 			// 
 			renderInvisibleWidgetCheckBox.AccessibleDescription = "";
 			renderInvisibleWidgetCheckBox.AutoSize = true;
-			renderInvisibleWidgetCheckBox.Location = new Point(6, 72);
+			renderInvisibleWidgetCheckBox.Location = new Point(6, 127);
 			renderInvisibleWidgetCheckBox.Name = "renderInvisibleWidgetCheckBox";
 			renderInvisibleWidgetCheckBox.Size = new Size(155, 19);
 			renderInvisibleWidgetCheckBox.TabIndex = 3;
@@ -485,9 +555,9 @@
 			useViewportAACheckBox.AutoSize = true;
 			useViewportAACheckBox.Location = new Point(6, 47);
 			useViewportAACheckBox.Name = "useViewportAACheckBox";
-			useViewportAACheckBox.Size = new Size(95, 19);
+			useViewportAACheckBox.Size = new Size(128, 19);
 			useViewportAACheckBox.TabIndex = 2;
-			useViewportAACheckBox.Text = "Anti-Aliasing";
+			useViewportAACheckBox.Text = "Sprite Anti-Aliasing";
 			useViewportAACheckBox.UseVisualStyleBackColor = true;
 			useViewportAACheckBox.CheckedChanged += useViewportAACheckBox_CheckedChanged;
 			// 
@@ -506,7 +576,7 @@
 			// renderWidgetNamesCheckBox
 			// 
 			renderWidgetNamesCheckBox.AutoSize = true;
-			renderWidgetNamesCheckBox.Location = new Point(6, 97);
+			renderWidgetNamesCheckBox.Location = new Point(6, 152);
 			renderWidgetNamesCheckBox.Name = "renderWidgetNamesCheckBox";
 			renderWidgetNamesCheckBox.Size = new Size(191, 19);
 			renderWidgetNamesCheckBox.TabIndex = 0;
@@ -841,6 +911,18 @@
 			editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
 			editorBackgroundPathDialog.Title = "Choose background image";
 			// 
+			// useViewportFontAACheckBox
+			// 
+			useViewportFontAACheckBox.AccessibleDescription = "";
+			useViewportFontAACheckBox.AutoSize = true;
+			useViewportFontAACheckBox.Location = new Point(148, 47);
+			useViewportFontAACheckBox.Name = "useViewportFontAACheckBox";
+			useViewportFontAACheckBox.Size = new Size(122, 19);
+			useViewportFontAACheckBox.TabIndex = 11;
+			useViewportFontAACheckBox.Text = "Font Anti-Aliasing";
+			useViewportFontAACheckBox.UseVisualStyleBackColor = true;
+			useViewportFontAACheckBox.CheckedChanged += useViewportFontAACheckBox_CheckedChanged;
+			// 
 			// FormSettings
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
@@ -881,6 +963,8 @@
 			groupBox7.PerformLayout();
 			groupBox1.ResumeLayout(false);
 			groupBox1.PerformLayout();
+			groupBox12.ResumeLayout(false);
+			groupBox12.PerformLayout();
 			fileTabPage.ResumeLayout(false);
 			flowLayoutPanel3.ResumeLayout(false);
 			groupBox2.ResumeLayout(false);
@@ -967,5 +1051,11 @@
 		private GroupBox groupBox11;
 		private TabPage debugTabPage;
 		private FlowLayoutPanel flowLayoutPanel4;
+		private GroupBox groupBox12;
+		private RadioButton spriteFilteringLevel3;
+		private RadioButton spriteFilteringLevel1;
+		private RadioButton spriteFilteringLevel2;
+		private RadioButton spriteFilteringLevel0;
+		private CheckBox useViewportFontAACheckBox;
 	}
 }
