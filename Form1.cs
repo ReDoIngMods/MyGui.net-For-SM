@@ -460,10 +460,6 @@ namespace MyGui.net
 				widgetGridSpacingNumericUpDown.Tag = false;
 				if (Settings.Default.EditorBackgroundMode == 1)
 				{
-					if (_viewportBackgroundBitmap != null)
-					{
-						_viewportBackgroundBitmap.Dispose();
-					}
 					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
 					//mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
 				}
@@ -490,10 +486,6 @@ namespace MyGui.net
 
 		private void UpdateViewportBackground()
 		{
-			if (_viewportBackgroundBitmap != null)
-			{
-				_viewportBackgroundBitmap.Dispose();
-			}
 			switch (Settings.Default.EditorBackgroundMode)
 			{
 				case 0:
