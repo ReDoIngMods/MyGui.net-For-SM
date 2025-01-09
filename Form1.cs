@@ -47,7 +47,8 @@ namespace MyGui.net
 		static string _steamUserId;
 		#endregion
 
-		private MyGuiResource _nullSkinResource = new MyGuiResource();
+		static MyGuiResource _nullSkinResource = new MyGuiResource();
+		public static MyGuiResource NullSkinResource => _nullSkinResource;
 		static Dictionary<string, Type> _widgetTypeToObjectType = new()
 		{
 			{ "TextBox", typeof(MyGuiWidgetDataTextBox) },
@@ -192,21 +193,6 @@ namespace MyGui.net
 					}
 				}
 			}
-			_allResources = Util.ReadAllResources(_scrapMechanicPath, 1);
-			//Util.PrintAllResources(_allResources);
-			_allFonts = Util.ReadFontData("English", _scrapMechanicPath);
-			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 12 });
-			_steamUserId = Util.GetLoggedInSteamUserID();
-			string[] modPaths = [
-				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
-				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_{_steamUserId}\\Mods")
-			];
-			_modUuidPathCache = Util.GetModUuidsAndPaths(modPaths);
-
-			/*foreach (var item in _modUuidPathCache)
-			{
-				Debug.WriteLine($"{item.Key}: {item.Value}");
-			}*/
 			#region Create _nullSkinResource
 			_nullSkinResource.tileSize = "16 16";
 			_nullSkinResource.path = "res:SelectionRectsSkin.png";
@@ -330,6 +316,22 @@ namespace MyGui.net
 				}
 			];
 			#endregion
+
+			_allResources = Util.ReadAllResources(_scrapMechanicPath, 1);
+			//Util.PrintAllResources(_allResources);
+			_allFonts = Util.ReadFontData("English", _scrapMechanicPath);
+			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 12 });
+			_steamUserId = Util.GetLoggedInSteamUserID();
+			string[] modPaths = [
+				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
+				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_{_steamUserId}\\Mods")
+			];
+			_modUuidPathCache = Util.GetModUuidsAndPaths(modPaths);
+
+			/*foreach (var item in _modUuidPathCache)
+			{
+				Debug.WriteLine($"{item.Key}: {item.Value}");
+			}*/
 			HandleWidgetSelection();
 
 			if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
@@ -745,7 +747,7 @@ namespace MyGui.net
 			}
 			else
 			{
-				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData);
+				RenderWidget(canvas, _skinAtlasCache[""], _allResources.TryGetValue(widget.skin, out val) ? val : _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData);
 				//canvas.DrawRect(rect, paint);
 			}
 
@@ -811,18 +813,18 @@ namespace MyGui.net
 				return; // Nothing to render if essential data is missing
 			}
 
-			if (resource == _nullSkinResource && !Settings.Default.RenderInvisibleWidgets)
-			{
-				return;
-			}
-
 			//Debug.WriteLine($"Rendering widget with skin {resource.name}.");
 
 			// Iterate through skins in reverse order
-			for (int i = 0; i < resource.basisSkins.Count; i++)
+			var renderedBasisSkins = resource.basisSkins ?? new();
+			if (Settings.Default.RenderInvisibleWidgets && (resource.path ?? "") == "")
 			{
-				var skin = resource.basisSkins[i];
-				
+				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, clientRect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData); //TODO: Kinda works, but sucky
+			}
+			for (int i = 0; i < renderedBasisSkins.Count; i++)
+			{
+				var skin = renderedBasisSkins[i];
+				Debug.WriteLine(skin.type);
 				if (skin.type == "EffectSkin")
 				{
 					continue; // Skip rendering for invalid skins
@@ -926,6 +928,10 @@ namespace MyGui.net
 				canvas.DrawRect(destRect, debugPaint);*/
 				//Debug.WriteLine(tileRect);
 				// Draw the atlas texture
+				if (resource == _nullSkinResource && !Settings.Default.RenderInvisibleWidgets)
+				{
+					continue;
+				}
 				if (atlasImage == null)
 				{
 					continue;

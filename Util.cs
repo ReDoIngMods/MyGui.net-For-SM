@@ -748,7 +748,7 @@ namespace MyGui.net
 						MyGuiResource newRes = new()
 						{
 							name = r.Attribute("name")?.Value ?? "NO NAME",
-							path = texPath ?? "NONE",
+							path = texPath,
 							tileSize = r.Attribute("size")?.Value,
 							pathSpecial = path,
 							correctType = "",
