@@ -327,12 +327,12 @@ namespace MyGui.net.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int viewportFilteringLevel {
+        public int ViewportFilteringLevel {
             get {
-                return ((int)(this["viewportFilteringLevel"]));
+                return ((int)(this["ViewportFilteringLevel"]));
             }
             set {
-                this["viewportFilteringLevel"] = value;
+                this["ViewportFilteringLevel"] = value;
             }
         }
         
@@ -345,6 +345,18 @@ namespace MyGui.net.Properties {
             }
             set {
                 this["UseViewportFontAntiAliasing"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RedrawViewportOnResize {
+            get {
+                return ((bool)(this["RedrawViewportOnResize"]));
+            }
+            set {
+                this["RedrawViewportOnResize"] = value;
             }
         }
     }

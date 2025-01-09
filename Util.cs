@@ -743,12 +743,12 @@ namespace MyGui.net
 						if (resourceType == "ResourceImageSet") { continue; } //Special cases, "ResourceImageSet" is just set of images (different resources)
 						
 						string texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
-						if (texPath == null && resourceType != "ResourceLayout") { continue; }
+						//if (texPath == null && resourceType != "ResourceLayout") { continue; }
 
 						MyGuiResource newRes = new()
 						{
 							name = r.Attribute("name")?.Value ?? "NO NAME",
-							path = texPath,
+							path = texPath ?? "NONE",
 							tileSize = r.Attribute("size")?.Value,
 							pathSpecial = path,
 							correctType = "",

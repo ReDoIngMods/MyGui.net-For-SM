@@ -59,6 +59,8 @@
 			useCustomLayoutCheckBox = new CheckBox();
 			saveCustomLayoutCheckBox = new CheckBox();
 			groupBox1 = new GroupBox();
+			redrawViewportOnResizeCheckBox = new CheckBox();
+			useViewportFontAACheckBox = new CheckBox();
 			groupBox12 = new GroupBox();
 			spriteFilteringLevel3 = new RadioButton();
 			spriteFilteringLevel1 = new RadioButton();
@@ -98,7 +100,6 @@
 			resetSettingsButton = new Button();
 			autoApplyCheckBox = new CheckBox();
 			editorBackgroundPathDialog = new OpenFileDialog();
-			useViewportFontAACheckBox = new CheckBox();
 			tabControl1.SuspendLayout();
 			projectTabPage.SuspendLayout();
 			flowLayoutPanel2.SuspendLayout();
@@ -463,6 +464,7 @@
 			// 
 			// groupBox1
 			// 
+			groupBox1.Controls.Add(redrawViewportOnResizeCheckBox);
 			groupBox1.Controls.Add(useViewportFontAACheckBox);
 			groupBox1.Controls.Add(groupBox12);
 			groupBox1.Controls.Add(renderInvisibleWidgetCheckBox);
@@ -471,10 +473,34 @@
 			groupBox1.Controls.Add(renderWidgetNamesCheckBox);
 			groupBox1.Location = new Point(272, 88);
 			groupBox1.Name = "groupBox1";
-			groupBox1.Size = new Size(278, 191);
+			groupBox1.Size = new Size(278, 206);
 			groupBox1.TabIndex = 7;
 			groupBox1.TabStop = false;
 			groupBox1.Text = "Rendering";
+			// 
+			// redrawViewportOnResizeCheckBox
+			// 
+			redrawViewportOnResizeCheckBox.AccessibleDescription = "";
+			redrawViewportOnResizeCheckBox.AutoSize = true;
+			redrawViewportOnResizeCheckBox.Location = new Point(6, 46);
+			redrawViewportOnResizeCheckBox.Name = "redrawViewportOnResizeCheckBox";
+			redrawViewportOnResizeCheckBox.Size = new Size(167, 19);
+			redrawViewportOnResizeCheckBox.TabIndex = 12;
+			redrawViewportOnResizeCheckBox.Text = "Redraw Viewport on Resize";
+			redrawViewportOnResizeCheckBox.UseVisualStyleBackColor = true;
+			redrawViewportOnResizeCheckBox.CheckedChanged += redrawViewportOnResizeCheckBox_CheckedChanged;
+			// 
+			// useViewportFontAACheckBox
+			// 
+			useViewportFontAACheckBox.AccessibleDescription = "";
+			useViewportFontAACheckBox.AutoSize = true;
+			useViewportFontAACheckBox.Location = new Point(148, 71);
+			useViewportFontAACheckBox.Name = "useViewportFontAACheckBox";
+			useViewportFontAACheckBox.Size = new Size(122, 19);
+			useViewportFontAACheckBox.TabIndex = 11;
+			useViewportFontAACheckBox.Text = "Font Anti-Aliasing";
+			useViewportFontAACheckBox.UseVisualStyleBackColor = true;
+			useViewportFontAACheckBox.CheckedChanged += useViewportFontAACheckBox_CheckedChanged;
 			// 
 			// groupBox12
 			// 
@@ -482,7 +508,7 @@
 			groupBox12.Controls.Add(spriteFilteringLevel1);
 			groupBox12.Controls.Add(spriteFilteringLevel2);
 			groupBox12.Controls.Add(spriteFilteringLevel0);
-			groupBox12.Location = new Point(6, 69);
+			groupBox12.Location = new Point(6, 97);
 			groupBox12.Name = "groupBox12";
 			groupBox12.Size = new Size(266, 52);
 			groupBox12.TabIndex = 10;
@@ -541,7 +567,7 @@
 			// 
 			renderInvisibleWidgetCheckBox.AccessibleDescription = "";
 			renderInvisibleWidgetCheckBox.AutoSize = true;
-			renderInvisibleWidgetCheckBox.Location = new Point(6, 127);
+			renderInvisibleWidgetCheckBox.Location = new Point(6, 155);
 			renderInvisibleWidgetCheckBox.Name = "renderInvisibleWidgetCheckBox";
 			renderInvisibleWidgetCheckBox.Size = new Size(155, 19);
 			renderInvisibleWidgetCheckBox.TabIndex = 3;
@@ -553,7 +579,7 @@
 			// 
 			useViewportAACheckBox.AccessibleDescription = "";
 			useViewportAACheckBox.AutoSize = true;
-			useViewportAACheckBox.Location = new Point(6, 47);
+			useViewportAACheckBox.Location = new Point(6, 71);
 			useViewportAACheckBox.Name = "useViewportAACheckBox";
 			useViewportAACheckBox.Size = new Size(128, 19);
 			useViewportAACheckBox.TabIndex = 2;
@@ -576,7 +602,7 @@
 			// renderWidgetNamesCheckBox
 			// 
 			renderWidgetNamesCheckBox.AutoSize = true;
-			renderWidgetNamesCheckBox.Location = new Point(6, 152);
+			renderWidgetNamesCheckBox.Location = new Point(6, 180);
 			renderWidgetNamesCheckBox.Name = "renderWidgetNamesCheckBox";
 			renderWidgetNamesCheckBox.Size = new Size(191, 19);
 			renderWidgetNamesCheckBox.TabIndex = 0;
@@ -911,18 +937,6 @@
 			editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
 			editorBackgroundPathDialog.Title = "Choose background image";
 			// 
-			// useViewportFontAACheckBox
-			// 
-			useViewportFontAACheckBox.AccessibleDescription = "";
-			useViewportFontAACheckBox.AutoSize = true;
-			useViewportFontAACheckBox.Location = new Point(148, 47);
-			useViewportFontAACheckBox.Name = "useViewportFontAACheckBox";
-			useViewportFontAACheckBox.Size = new Size(122, 19);
-			useViewportFontAACheckBox.TabIndex = 11;
-			useViewportFontAACheckBox.Text = "Font Anti-Aliasing";
-			useViewportFontAACheckBox.UseVisualStyleBackColor = true;
-			useViewportFontAACheckBox.CheckedChanged += useViewportFontAACheckBox_CheckedChanged;
-			// 
 			// FormSettings
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1057,5 +1071,6 @@
 		private RadioButton spriteFilteringLevel2;
 		private RadioButton spriteFilteringLevel0;
 		private CheckBox useViewportFontAACheckBox;
+		private CheckBox redrawViewportOnResizeCheckBox;
 	}
 }

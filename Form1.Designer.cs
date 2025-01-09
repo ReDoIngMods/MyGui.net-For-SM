@@ -103,6 +103,7 @@ namespace MyGui.net
 			// 
 			// splitContainer1.Panel1
 			// 
+			splitContainer1.Panel1.BackColor = Color.DimGray;
 			splitContainer1.Panel1.Controls.Add(centerButton);
 			splitContainer1.Panel1.Controls.Add(viewport);
 			splitContainer1.Panel1.Controls.Add(viewportScrollX);
@@ -558,6 +559,8 @@ namespace MyGui.net
 			Text = "MyGui.net";
 			FormClosing += Form1_FormClosing;
 			Load += Form1_Load;
+			ResizeBegin += Form1_ResizeBegin;
+			ResizeEnd += Form1_ResizeEnd;
 			DragDrop += Form1_DragDrop;
 			DragEnter += Form1_DragEnter;
 			KeyDown += Form1_KeyDown;

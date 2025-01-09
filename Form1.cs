@@ -20,7 +20,7 @@ namespace MyGui.net
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	//TODO: exporting and imporing caring about _pixels (or custom suffix)
 	public partial class Form1 : Form
-	{ 
+	{
 		static List<MyGuiWidgetData> _currentLayout = new();
 		static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
 		static string _currentLayoutSavePath = "";
@@ -126,6 +126,7 @@ namespace MyGui.net
 
 		void HandleLoad(string autoloadPath = "")
 		{
+
 			this.Text = $"{Util.programName} - {(autoloadPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? autoloadPath : Path.GetFileName(autoloadPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
 			Settings.Default.PropertyChanged += Settings_PropertyChanged;
 			widgetGridSpacingNumericUpDown.Value = _gridSpacing;
@@ -194,6 +195,7 @@ namespace MyGui.net
 			_allResources = Util.ReadAllResources(_scrapMechanicPath, 1);
 			//Util.PrintAllResources(_allResources);
 			_allFonts = Util.ReadFontData("English", _scrapMechanicPath);
+			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 12 });
 			_steamUserId = Util.GetLoggedInSteamUserID();
 			string[] modPaths = [
 				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
@@ -201,10 +203,10 @@ namespace MyGui.net
 			];
 			_modUuidPathCache = Util.GetModUuidsAndPaths(modPaths);
 
-			foreach (var item in _modUuidPathCache)
+			/*foreach (var item in _modUuidPathCache)
 			{
 				Debug.WriteLine($"{item.Key}: {item.Value}");
-			}
+			}*/
 			#region Create _nullSkinResource
 			_nullSkinResource.tileSize = "16 16";
 			_nullSkinResource.path = "res:SelectionRectsSkin.png";
@@ -432,21 +434,7 @@ namespace MyGui.net
 
 		void Form1_Load(object sender, EventArgs e)
 		{
-			//Debug.WriteLine(Util.GetGameInstallPath("387990"));
-			if (_ScrapMechanicPath == "")
-			{
-				string? gamePathFromSteam = Util.GetGameInstallPath("387990");
-				if (gamePathFromSteam != null)
-				{
-					_ScrapMechanicPath = gamePathFromSteam;
-					return;
-				}
-
-				if (smPathDialog.ShowDialog(this) == DialogResult.OK)
-				{
-					_ScrapMechanicPath = smPathDialog.SelectedPath;
-				}
-			}
+			centerButton_Click(null, new EventArgs());
 		}
 
 		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -584,7 +572,7 @@ namespace MyGui.net
 					Color = SKColors.Black,
 					IsAntialias = false
 				});
-				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.viewportFilteringLevel, IsAntialias = true, IsDither = false, });
+				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel, IsAntialias = true, IsDither = false, });
 			}
 			else
 			{
@@ -646,7 +634,7 @@ namespace MyGui.net
 			}
 		}
 
-		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null)
+		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false)
 		{
 			// Calculate widget position relative to parent
 			var widgetPosition = new SKPoint(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
@@ -655,19 +643,57 @@ namespace MyGui.net
 			var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
 								  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
 
+			var paroffset = widgetPosition;
+
+			if (adjustToParent)
+			{
+				/*
+				 widgetPosition = new SKPoint(widgetSecondaryData.position.X, widgetSecondaryData.position.Y);
+					rect = GetAlignedRectangle(widget.align, new SKRect(widgetPosition.X, widgetPosition.Y, widgetPosition.X + parent.size.X, widgetPosition.Y + parent.size.Y), new(widget.size.X, widget.size.Y),
+					new SKRect(
+						widget.position.X,
+						widget.position.Y,
+						widget.position.X + widget.size.X,
+						widget.position.Y + widget.size.Y
+					), new(widget.position.X + widget.size.X, widget.position.Y + widget.size.Y));
+				 */
+
+
+				//widgetPosition = new SKPoint(widgetSecondaryData.position.X + widget.position , widgetSecondaryData.position.Y);
+				rect = GetAlignedRectangle(widget.align, new SKRect(parentOffset.X, parentOffset.Y, parentOffset.X + widgetSecondaryData.size.X, parentOffset.Y + widgetSecondaryData.size.Y), new(widget.size.X, widget.size.Y),
+				new SKRect(
+					widget.position.X,
+					widget.position.Y,
+					widget.position.X + parent.size.X,
+					widget.position.Y + parent.size.Y
+				), new(widget.position.X + widget.size.X, widget.position.Y + widget.size.Y));
+				//widgetPosition = new((int)rect.Location.X, (int)rect.Location.Y);
+				//widget.size = new((int)rect.Size.Width, (int)rect.Size.Height);
+
+				/*var textPaint = new SKPaint
+				{
+					Color = SKColors.White,
+					TextSize = 5,
+					IsAntialias = false,
+					StrokeWidth = 1
+				};
+				canvas.DrawText(parent.name ?? "null", rect.Left + 5, rect.Top + Util.rand.Next(0, 20), textPaint);*/
+
+				paroffset = rect.Location;
+			}
+
 
 			if (_allResources.TryGetValue(widget.skin, out var val) && val.resourceLayout != null)
 			{
-				for (int i = 0; i < val.resourceLayout.Count; i++)
-				{
-					var subWidget = val.resourceLayout[i];
-					if (i == 0)
-					{
-						subWidget.position = new(0, 0);
-						subWidget.size = widget.size;
-					}
-					DrawWidget(canvas, subWidget, widgetPosition, widget, widget);
-				}
+				//for (int i = 0; i < val.resourceLayout.Count; i++)
+				//{
+				//var subWidget = val.resourceLayout[i];
+				var subWidget = val.resourceLayout[0];
+				subWidget.position = new(0, 0);
+				subWidget.size = widget.size;
+
+				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true);
+				//}
 				//return;
 			}
 			string skinPath = widget.skin != null && _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : "";
@@ -700,7 +726,7 @@ namespace MyGui.net
 			var saveBeforeAll = canvas.Save();
 
 			// Apply clipping for the widget's bounds
-			canvas.ClipRect(rect);
+			//canvas.ClipRect(rect);
 
 			// Generate a random color
 			//var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
@@ -724,39 +750,42 @@ namespace MyGui.net
 			}
 
 			// Draw the widget's name (optional)
-			if (Settings.Default.RenderWidgetNames && !string.IsNullOrEmpty(widget.name))
+			if (!adjustToParent)
 			{
-				var textPaint = new SKPaint
+				if (Settings.Default.RenderWidgetNames && !string.IsNullOrEmpty(widget.name))
 				{
-					Color = SKColors.White,
-					TextSize = 16,
-					IsAntialias = false,
-					Style = SKPaintStyle.StrokeAndFill,
-					StrokeWidth = 1
-				};
-				canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
-				var textPaintStroke = new SKPaint
-				{
-					Color = SKColors.Black,
-					TextSize = 16,
-					IsAntialias = true
-				};
-				canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaintStroke);
-			}
+					var textPaint = new SKPaint
+					{
+						Color = SKColors.White,
+						TextSize = 16,
+						IsAntialias = false,
+						Style = SKPaintStyle.StrokeAndFill,
+						StrokeWidth = 1
+					};
+					canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
+					var textPaintStroke = new SKPaint
+					{
+						Color = SKColors.Black,
+						TextSize = 16,
+						IsAntialias = true
+					};
+					canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaintStroke);
+				}
 
-			// Temporarily ignore clipping to draw selection box
-			if (widget == _currentSelectedWidget)
-			{
-				_renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128)));
-			}
-			else
-			{
-				//WIP!!!
-				SKRect localRect = new SKRect(widget.position.X, widget.position.Y, widget.position.X + widget.size.X, widget.position.Y + widget.size.Y);
-				SKRect parentRect = parent != null ? new(1, 1, parent.size.X - 2, parent.size.Y - 2) : new(1, 1, ProjectSize.Width - 2, ProjectSize.Height - 2);
-				if (!Util.RectsOverlap(localRect, parentRect))
+				// Temporarily ignore clipping to draw selection box
+				if (widget == _currentSelectedWidget)
 				{
-					_renderWidgetHighligths.TryAdd(widget, new WidgetHighlightType(widgetPosition, SKColors.Red.WithAlpha(192)));
+					_renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128)));
+				}
+				else
+				{
+					//WIP!!!
+					SKRect localRect = new SKRect(widget.position.X, widget.position.Y, widget.position.X + widget.size.X, widget.position.Y + widget.size.Y);
+					SKRect parentRect = parent != null ? new(1, 1, parent.size.X - 2, parent.size.Y - 2) : new(1, 1, ProjectSize.Width - 2, ProjectSize.Height - 2);
+					if (!Util.RectsOverlap(localRect, parentRect))
+					{
+						_renderWidgetHighligths.TryAdd(widget, new WidgetHighlightType(widgetPosition, SKColors.Red.WithAlpha(192)));
+					}
 				}
 			}
 
@@ -765,7 +794,7 @@ namespace MyGui.net
 			{
 				var widgetBounds = new SKRect(widgetPosition.X - 1, widgetPosition.Y - 1,
 							  widgetPosition.X + widget.size.X - 2, widgetPosition.Y + widget.size.Y - 2);
-				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget);
+				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, paroffset, widget, widgetSecondaryData, adjustToParent);
 			}
 
 			// Restore the canvas to its previous state (removes clipping for this widget)
@@ -777,7 +806,7 @@ namespace MyGui.net
 		private void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null)
 		{
 			widgetSecondaryData ??= widget;
-			if (atlasImage == null || resource == null || resource.basisSkins == null)
+			if (resource == null || resource.basisSkins == null)
 			{
 				return; // Nothing to render if essential data is missing
 			}
@@ -793,6 +822,7 @@ namespace MyGui.net
 			for (int i = 0; i < resource.basisSkins.Count; i++)
 			{
 				var skin = resource.basisSkins[i];
+				
 				if (skin.type == "EffectSkin")
 				{
 					continue; // Skip rendering for invalid skins
@@ -805,7 +835,8 @@ namespace MyGui.net
 				var normalState = widget.properties.TryGetValue("StateSelected", out var val) && val == "true" && skin.states.FirstOrDefault(state => state.name == "pushed") != null ? skin.states.FirstOrDefault(state => state.name == "pushed") : skin.states.FirstOrDefault(state => state.name == "normal");
 				if (normalState == null)
 				{
-					continue; // Skip if no normal state is found
+					normalState = new() { name = "normal", offset = skin.offset };
+					//continue; // Skip if no normal state is found
 				}
 				var correctOffset = normalState.offset;
 				if (normalState.offset == null)
@@ -836,14 +867,14 @@ namespace MyGui.net
 
 				if (widget != null)
 				{
-					if (skin.type == "SimpleText")
+					if (skin.type == "SimpleText" || skin.type == "EditText")
 					{
 						if (widgetSecondaryData.properties.ContainsKey("Caption"))
 						{
 							int beforeTextClip = canvas.Save();
 							canvas.ClipRect(destRect);
 
-							var fontData = widgetSecondaryData.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widgetSecondaryData.properties["FontName"]) ? _allFonts[widgetSecondaryData.properties["FontName"]] : _allFonts["SM_TextLabel"];
+							var fontData = widgetSecondaryData.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widgetSecondaryData.properties["FontName"]) ? _allFonts[widgetSecondaryData.properties["FontName"]] : _allFonts["DeJaVuSans"];
 							string fontPath = Path.Combine(Settings.Default.ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
 							if (!_fontCache.ContainsKey(fontPath))
 							{
@@ -855,7 +886,7 @@ namespace MyGui.net
 							_baseFontPaint.TextSize = widgetSecondaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetSecondaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetSecondaryData.properties["FontHeight"]) : (float)fontData.size;
 							_baseFontPaint.IsAntialias = Settings.Default.UseViewportFontAntiAliasing;
 							_baseFontPaint.Typeface = _fontCache[fontPath];
-							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.viewportFilteringLevel;
+							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 
 							var spacingX = destRect.Left;
 							var spacingY = destRect.Top + _baseFontPaint.TextSize;
@@ -877,23 +908,28 @@ namespace MyGui.net
 
 
 				//DEBUG
-				/*var textPaintStroke = new SKPaint
+				/*var coloraaa = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
+				var textPaintStroke = new SKPaint
 				{
-					Color = SKColors.White,
+					Color = coloraaa,
 					TextSize = 7,
 					IsAntialias = false
 				};
-				canvas.DrawText(skin.align, destRect.Left + 2, destRect.Top + rand.Next(5,40), textPaintStroke);
+				canvas.DrawText(skin.align, destRect.Left + 2, destRect.Top + 5, textPaintStroke);
 
 				var debugPaint = new SKPaint
 				{
-					Color = SKColors.Red.WithAlpha(128),
+					Color = coloraaa.WithAlpha(128),
 					Style = SKPaintStyle.Stroke,
 					StrokeWidth = 2
 				};
 				canvas.DrawRect(destRect, debugPaint);*/
 				//Debug.WriteLine(tileRect);
 				// Draw the atlas texture
+				if (atlasImage == null)
+				{
+					continue;
+				}
 				var drawPaint = new SKPaint();
 				if (drawColor != null)
 				{
@@ -923,7 +959,7 @@ namespace MyGui.net
 					//int beforeClipSave = canvas.Save();
 					//canvas.ClipRect(destRect);
 					//canvas.Clear();
-					drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.viewportFilteringLevel;
+					drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 					drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
 					drawPaint.IsDither = true;
 					canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
@@ -1399,13 +1435,13 @@ namespace MyGui.net
 						);*/
 						// Adjusted snapping logic
 						_currentSelectedWidget.size = new Point(
-							Math.Max((int)Math.Round((double)_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing, _gridSpacing), // Ensure width doesn't become zero or negative
-							Math.Max((int)Math.Round((double)_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing, _gridSpacing) // Ensure height doesn't become zero or negative
+							Math.Max((int)Math.Round((float)_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing, _gridSpacing), // Ensure width doesn't become zero or negative
+							Math.Max((int)Math.Round((float)_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing, _gridSpacing) // Ensure height doesn't become zero or negative
 						);
 
 						_currentSelectedWidget.position = new Point(
-							(int)Math.Round((double)_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing,
-							(int)Math.Round((double)_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing
+							(int)Math.Round((float)_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing,
+							(int)Math.Round((float)_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing
 						);
 
 						UpdateProperties();
@@ -1704,9 +1740,13 @@ namespace MyGui.net
 			var screen = Screen.FromControl(this);
 
 			Settings.Default.MainWindomMaximized = this.WindowState == FormWindowState.Maximized;
+
+			var prevState = this.WindowState;
+			this.WindowState = FormWindowState.Normal;
 			Settings.Default.MainWindowPos = this.Location;
 			Settings.Default.MainWindowSize = this.Size;
 			Settings.Default.MainWindowMonitor = screen.DeviceName;
+			this.WindowState = prevState;
 
 			Settings.Default.SidePanelAttached = !splitContainer1.Panel2Collapsed;
 			if (_sidebarForm != null && !_sidebarForm.Disposing && !Settings.Default.SidePanelAttached)
@@ -2131,6 +2171,21 @@ namespace MyGui.net
 			var value = Util.IsAnyOf<string>(e.ChangedItem.Value.ToString(), ["[DEFAULT]", "Default", ""]) ? null : e.ChangedItem.Value;
 			Type currentWidgetPropertyType = _widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget);
 			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetInheritedFieldValue(currentWidgetPropertyType, e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
+		}
+		private void Form1_ResizeBegin(object sender, EventArgs e)
+		{
+			if (!Settings.Default.RedrawViewportOnResize)
+			{
+				viewport.Visible = false;
+			}
+		}
+
+		private void Form1_ResizeEnd(object sender, EventArgs e)
+		{
+			if (!Settings.Default.RedrawViewportOnResize)
+			{
+				viewport.Visible = true;
+			}
 		}
 	}
 }

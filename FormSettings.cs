@@ -48,12 +48,13 @@ namespace MyGui.net
 			exportAsBothRadioButton.Checked = Settings.Default.ExportMode == 3;
 
 			useViewportVSyncCheckBox.Checked = Settings.Default.UseViewportVSync;
+			redrawViewportOnResizeCheckBox.Checked = Settings.Default.RedrawViewportOnResize;
 			useViewportAACheckBox.Checked = Settings.Default.UseViewportAntiAliasing;
 			useViewportFontAACheckBox.Checked = Settings.Default.UseViewportFontAntiAliasing;
-			spriteFilteringLevel0.Checked = Settings.Default.viewportFilteringLevel == 0;
-			spriteFilteringLevel1.Checked = Settings.Default.viewportFilteringLevel == 1;
-			spriteFilteringLevel2.Checked = Settings.Default.viewportFilteringLevel == 2;
-			spriteFilteringLevel3.Checked = Settings.Default.viewportFilteringLevel == 3;
+			spriteFilteringLevel0.Checked = Settings.Default.ViewportFilteringLevel == 0;
+			spriteFilteringLevel1.Checked = Settings.Default.ViewportFilteringLevel == 1;
+			spriteFilteringLevel2.Checked = Settings.Default.ViewportFilteringLevel == 2;
+			spriteFilteringLevel3.Checked = Settings.Default.ViewportFilteringLevel == 3;
 			renderInvisibleWidgetCheckBox.Checked = Settings.Default.RenderInvisibleWidgets;
 			renderWidgetNamesCheckBox.Checked = Settings.Default.RenderWidgetNames;
 
@@ -140,7 +141,7 @@ namespace MyGui.net
 					else
 					{
 						DialogResult resolution = MessageBox.Show("Not a valid game path!", "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-						Debug.WriteLine(resolution);
+						//Debug.WriteLine(resolution);
 						if (resolution == DialogResult.Cancel)
 						{
 							break;
@@ -149,8 +150,6 @@ namespace MyGui.net
 				}
 				else
 				{
-					Application.Exit();
-					this.Close();
 					return;
 				}
 			}
@@ -201,6 +200,13 @@ namespace MyGui.net
 			OnSettingChange();
 		}
 
+		private void redrawViewportOnResizeCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			Settings.Default.RedrawViewportOnResize = sender.Checked;
+			OnSettingChange();
+		}
+
 		private void useViewportAACheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
@@ -218,7 +224,7 @@ namespace MyGui.net
 		private void viewportFilteringLevel_CheckedChanged(object senderAny, EventArgs e)
 		{
 			RadioButton sender = (RadioButton)senderAny;
-			Settings.Default.viewportFilteringLevel = int.Parse(sender.Name.Last().ToString());
+			Settings.Default.ViewportFilteringLevel = int.Parse(sender.Name.Last().ToString());
 			OnSettingChange();
 		}
 
