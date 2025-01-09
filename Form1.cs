@@ -574,7 +574,7 @@ namespace MyGui.net
 					Color = SKColors.Black,
 					IsAntialias = false
 				});
-				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel, IsAntialias = true, IsDither = false, });
+				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel, IsAntialias = true, IsDither = true, });
 			}
 			else
 			{
@@ -817,14 +817,13 @@ namespace MyGui.net
 
 			// Iterate through skins in reverse order
 			var renderedBasisSkins = resource.basisSkins ?? new();
-			if (Settings.Default.RenderInvisibleWidgets && (resource.path ?? "") == "")
+			if (Settings.Default.RenderInvisibleWidgets && (resource.path ?? "") == "" && (_allResources[widgetSecondaryData.skin].resourceLayout == null || widget == _allResources[widgetSecondaryData.skin].resourceLayout[0]))
 			{
-				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, clientRect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData); //TODO: Kinda works, but sucky
+				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, clientRect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData); //Ik, it is kinda terrible but it works, k?
 			}
 			for (int i = 0; i < renderedBasisSkins.Count; i++)
 			{
 				var skin = renderedBasisSkins[i];
-				Debug.WriteLine(skin.type);
 				if (skin.type == "EffectSkin")
 				{
 					continue; // Skip rendering for invalid skins
