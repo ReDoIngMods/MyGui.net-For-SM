@@ -14,6 +14,8 @@ using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Principal;
 
 namespace MyGui.net
 {
@@ -938,7 +940,7 @@ namespace MyGui.net
 				}
 
 				fontToAllowedChars.Add(fontName, characters);
-				Debug.WriteLine($"{fontName}: {characters}");
+				//Debug.WriteLine($"{fontName}: {characters}");
 			}
 			return fontToAllowedChars;
 		}
@@ -1171,6 +1173,22 @@ namespace MyGui.net
 
 			MethodInfo memberwiseClone = typeof(object).GetMethod("MemberwiseClone", BindingFlags.Instance | BindingFlags.NonPublic);
 			return (T)memberwiseClone.Invoke(source, null);
+		}
+
+		public static T DeepCopy<T>(T source)
+		{
+			if (source == null)
+				throw new ArgumentNullException(nameof(source));
+
+			// Serialize the source object to JSON and deserialize it back into a new object
+			var serialized = JsonSerializer.Serialize(source, new JsonSerializerOptions
+			{
+				IncludeFields = true // Include private fields if required
+			});
+			return JsonSerializer.Deserialize<T>(serialized, new JsonSerializerOptions
+			{
+				IncludeFields = true
+			});
 		}
 
 		public static Point GetWidgetPos(bool isReal, string input, Point parentSize)
@@ -1797,6 +1815,17 @@ namespace MyGui.net
 				g.DrawImage(image, 0, 0, 4, 4);
 			}
 			return newImage;
+		}
+		#endregion
+
+		#region Windows Utils
+		public static bool RunningAsAdministrator()
+		{
+			using (var identity = WindowsIdentity.GetCurrent())
+			{
+				var principal = new WindowsPrincipal(identity);
+				return principal.IsInRole(WindowsBuiltInRole.Administrator);
+			}
 		}
 		#endregion
 

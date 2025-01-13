@@ -19,6 +19,7 @@ namespace MyGui.net
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	//TODO: exporting and imporing caring about _pixels (or custom suffix)
+	//TODO: add reload cache, clears it all and does the stuff
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -320,7 +321,7 @@ namespace MyGui.net
 			_allResources = Util.ReadAllResources(_scrapMechanicPath, 1);
 			//Util.PrintAllResources(_allResources);
 			_allFonts = Util.ReadFontData("English", _scrapMechanicPath);
-			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 12 });
+			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 15 });
 			_steamUserId = Util.GetLoggedInSteamUserID();
 			string[] modPaths = [
 				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
@@ -636,17 +637,14 @@ namespace MyGui.net
 			}
 		}
 
-		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false)
+		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null)
 		{
 			// Calculate widget position relative to parent
 			var widgetPosition = new SKPoint(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
 
 			// Create rectangle for this widget
-			var rect = new SKRect(widgetPosition.X, widgetPosition.Y,
-								  widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
-
-			var paroffset = widgetPosition;
-
+			var rect = new SKRect(widgetPosition.X, widgetPosition.Y, widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
+			var oldSizeParam = widget.size;
 			if (adjustToParent)
 			{
 				/*
@@ -662,15 +660,55 @@ namespace MyGui.net
 
 
 				//widgetPosition = new SKPoint(widgetSecondaryData.position.X + widget.position , widgetSecondaryData.position.Y);
-				rect = GetAlignedRectangle(widget.align, new SKRect(parentOffset.X, parentOffset.Y, parentOffset.X + widgetSecondaryData.size.X, parentOffset.Y + widgetSecondaryData.size.Y), new(widget.size.X, widget.size.Y),
+				/*rect = GetAlignedRectangle(widget.align, new SKRect(parentOffset.X, parentOffset.Y, parentOffset.X + widgetSecondaryData.size.X, parentOffset.Y + widgetSecondaryData.size.Y), new(widget.size.X, widget.size.Y),
 				new SKRect(
 					widget.position.X,
 					widget.position.Y,
 					widget.position.X + parent.size.X,
 					widget.position.Y + parent.size.Y
-				), new(widget.position.X + widget.size.X, widget.position.Y + widget.size.Y));
-				//widgetPosition = new((int)rect.Location.X, (int)rect.Location.Y);
-				//widget.size = new((int)rect.Size.Width, (int)rect.Size.Height);
+				), new(widget.position.X + widget.size.X, widget.position.Y + widget.size.Y));*/
+
+				Point a = new Point(oldSize.Value.X - widget.position.X, oldSize.Value.Y - widget.position.Y);
+				rect = GetAlignedRectangle(
+					widget.align,
+					new SKRect(
+						parentOffset.X,
+						parentOffset.Y,
+						parentOffset.X + parent.size.X,
+						parentOffset.Y + parent.size.Y
+					),
+					new(widget.size.X, widget.size.Y),
+					new SKRect(
+						widget.position.X,
+						widget.position.Y,
+						widget.position.X + widget.size.X,
+						widget.position.Y + widget.size.Y
+					),
+					new(
+						widget.position.X + widget.size.X,
+						widget.position.Y + widget.size.Y
+					)
+				);
+
+				if (widget.type == "ScrollBar")
+				{
+					Debug.WriteLine($"oldSize: {oldSize}, widget.position: {widget.position}");
+					Debug.WriteLine($"a: {a}");
+				}
+
+				//Debug.WriteLine($"oldSize: {oldSize}, widget.position: {widget.position}");
+				//Debug.WriteLine($"a: {a}");
+				Tuple<Point, Point> offsets = GetWidgetOffset(widget.align, widget.size, a, widget.position, oldSize.GetValueOrDefault(new(0,0)));
+				if (widget.align == "Right VStretch")
+				{
+					Debug.WriteLine(offsets.Item1);
+				}
+				rect.Offset(new(offsets.Item1.X, offsets.Item1.Y));
+				rect.Right += offsets.Item2.X;
+				rect.Bottom += offsets.Item2.Y;
+
+				widget.position = new Point((int)rect.Location.X, (int)rect.Location.Y);
+				widget.size = new Point((int)rect.Size.Width, (int)rect.Size.Height);
 
 				/*var textPaint = new SKPaint
 				{
@@ -680,8 +718,6 @@ namespace MyGui.net
 					StrokeWidth = 1
 				};
 				canvas.DrawText(parent.name ?? "null", rect.Left + 5, rect.Top + Util.rand.Next(0, 20), textPaint);*/
-
-				paroffset = rect.Location;
 			}
 
 
@@ -690,11 +726,14 @@ namespace MyGui.net
 				//for (int i = 0; i < val.resourceLayout.Count; i++)
 				//{
 				//var subWidget = val.resourceLayout[i];
-				var subWidget = val.resourceLayout[0];
+				var layoutCopy = DeepCopy(val.resourceLayout);
+
+				var subWidget = layoutCopy[0];
 				subWidget.position = new(0, 0);
+				var sss = subWidget.size;
 				subWidget.size = widget.size;
 
-				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true);
+				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, sss);
 				//}
 				//return;
 			}
@@ -796,11 +835,96 @@ namespace MyGui.net
 			{
 				var widgetBounds = new SKRect(widgetPosition.X - 1, widgetPosition.Y - 1,
 							  widgetPosition.X + widget.size.X - 2, widgetPosition.Y + widget.size.Y - 2);
-				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, paroffset, widget, widgetSecondaryData, adjustToParent);
+				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget, widgetSecondaryData, adjustToParent, oldSizeParam);
 			}
 
 			// Restore the canvas to its previous state (removes clipping for this widget)
 			canvas.RestoreToCount(saveBeforeAll);
+		}
+
+		private static Tuple<Point, Point> GetWidgetOffset(string? align, Point widgetSize, Point widgetPosFromRight, Point widgetPosFromLeft, Point widgetSizeOriginal)
+		{
+			int offsetX = 0, offsetY = 0;
+			int sizeOffsetX = 0, sizeOffsetY = 0;
+
+			if (align == "Right VStretch")
+			{
+				Debug.WriteLine($"widgetSize: {widgetSize}, widgetPosFromRight: {widgetPosFromRight}, widgetPosFromLeft: {widgetPosFromLeft}");
+			}
+
+			switch (align)
+			{
+				case "[DEFAULT]":
+				case "Default":
+				case null:
+					// Default alignment: No offset
+					break;
+
+				case "Stretch":
+					// Stretched: ???
+					//parentSize - position + size 
+					Point parentSize = new(widgetPosFromRight.X + widgetSize.X, widgetPosFromRight.Y + widgetSize.Y);
+					Debug.WriteLine($"widgetPosFromLeft.X: {-widgetPosFromLeft.X}");
+					sizeOffsetX = parentSize.X - widgetPosFromLeft.X + widgetSizeOriginal.X;
+					Debug.WriteLine($"sizeOffsetX: {sizeOffsetX}");
+					sizeOffsetY = parentSize.Y - widgetPosFromLeft.Y + widgetSizeOriginal.Y;
+					break;
+
+				case "Center":
+					offsetX = 0;
+					offsetY = 0;
+					break;
+
+				case "Left Top":
+					// No offset; already at top-left
+					break;
+
+				case "Left Bottom":
+					offsetY = widgetSize.Y - widgetPosFromRight.Y;
+					break;
+
+				case "Left VStretch":
+				case "Left VCenter":
+					offsetY = 0;
+					break;
+
+				case "Right Top":
+					offsetX = widgetSize.X - widgetPosFromRight.X;
+					offsetY = widgetPosFromRight.Y - widgetSize.Y;
+					break;
+
+				case "Right Bottom":
+					offsetX = widgetSize.X - widgetPosFromRight.X;
+					offsetY = widgetSize.Y - widgetPosFromRight.Y;
+					break;
+
+				case "Right VStretch":
+				case "Right VCenter":
+					//offsetX = widgetPosFromRight.X - widgetSize.X;
+					offsetX = -999;
+					break;
+
+				case "HStretch Top":
+				case "HCenter Top":
+					offsetX = 0;
+					break;
+
+				case "HStretch Bottom":
+					offsetX = 0;
+					offsetY = 0;
+					break;
+
+				case "HCenter Bottom":
+					offsetX = 0;
+					offsetY = 0;
+					break;
+
+				default:
+					Debug.WriteLine($"Unknown align type: {align}");
+					break;
+			}
+
+			return new Tuple<Point, Point>(new Point(offsetX, offsetY), new Point(sizeOffsetX, sizeOffsetY));
 		}
 
 		SKPaint _baseFontPaint = new SKPaint { };
@@ -819,7 +943,7 @@ namespace MyGui.net
 			var renderedBasisSkins = resource.basisSkins ?? new();
 			if (Settings.Default.RenderInvisibleWidgets && (resource.path ?? "") == "" && (_allResources[widgetSecondaryData.skin].resourceLayout == null || widget == _allResources[widgetSecondaryData.skin].resourceLayout[0]))
 			{
-				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, clientRect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData); //Ik, it is kinda terrible but it works, k?
+				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, clientRect, _widgetTypeColors.ContainsKey(widgetSecondaryData.type) ? _widgetTypeColors[widgetSecondaryData.type] : null, widget, widgetSecondaryData); //Ik, it is kinda terrible but it works, k?
 			}
 			for (int i = 0; i < renderedBasisSkins.Count; i++)
 			{
@@ -978,7 +1102,6 @@ namespace MyGui.net
 		private static SKRect GetAlignedRectangle(string? align, SKRect container, SKSize tileSize, SKRect subskinOffset, SKSize maxSize)
 		{
 			float x = container.Left, y = container.Top, width = tileSize.Width, height = tileSize.Height;
-
 			switch (align)
 			{
 				case "[DEFAULT]":

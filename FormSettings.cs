@@ -1,4 +1,5 @@
 ﻿using Cyotek.Windows.Forms;
+using Microsoft.Win32;
 using MyGui.net.Properties;
 using System;
 using System.Collections.Generic;
@@ -38,14 +39,17 @@ namespace MyGui.net
 			_formLoaded = false;
 			_hasChanged = false;
 			//editorBackgroundPathDialog.ShowDialog();
-			//TAB PROGRAM
+			bool runningAsAdmin = Util.RunningAsAdministrator();
+
+			//TAB FILE
 			smPathLabel.Text = Settings.Default.ScrapMechanicPath;
 			showFullFilePathCheckBox.Checked = Settings.Default.ShowFullFilePathInTitle;
-
 			exportAsPxRadioButton.Checked = Settings.Default.ExportMode == 0;
 			exportAsPercentRadioButton.Checked = Settings.Default.ExportMode == 1;
 			exportAskRadioButton.Checked = Settings.Default.ExportMode == 2;
 			exportAsBothRadioButton.Checked = Settings.Default.ExportMode == 3;
+			buttonRestartAdmin.Enabled = !runningAsAdmin;
+			buttonAssociateWithFiles.Enabled = runningAsAdmin;
 
 			useViewportVSyncCheckBox.Checked = Settings.Default.UseViewportVSync;
 			redrawViewportOnResizeCheckBox.Checked = Settings.Default.RedrawViewportOnResize;
@@ -191,6 +195,103 @@ namespace MyGui.net
 			if (!sender.Checked) { return; }
 			Settings.Default.ExportMode = (int)Enum.Parse<ExportMode>(sender.Name, true);
 			OnSettingChange();
+		}
+
+		private void buttonAssociateWithFiles_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				// Path to the current executable
+				string appPath = Application.ExecutablePath;
+
+				// File extension
+				string fileExtension = ".layout";
+
+				// ProgID (Program Identifier)
+				string progId = "MyGuiDotNet.LayoutFile";
+
+				// Create or update the file extension key
+				using (var extKey = Registry.ClassesRoot.CreateSubKey(fileExtension))
+				{
+					if (extKey == null)
+						throw new Exception($"Failed to create registry key for {fileExtension}");
+
+					extKey.SetValue("", progId); // Link the extension with the ProgID
+				}
+
+				// Create or update the ProgID key
+				using (var progKey = Registry.ClassesRoot.CreateSubKey(progId))
+				{
+					if (progKey == null)
+						throw new Exception($"Failed to create registry key for {progId}");
+
+					progKey.SetValue("", "MyGui layout file."); // Description of the file type
+
+					// Set the default icon to the app's icon
+					using (var iconKey = progKey.CreateSubKey("DefaultIcon"))
+					{
+						if (iconKey == null)
+							throw new Exception($"Failed to create DefaultIcon key for {progId}");
+
+						// Use the application's icon (index 0)
+						iconKey.SetValue("", $"{appPath},0");
+					}
+
+					// Set the command to open the file
+					using (var shellKey = progKey.CreateSubKey(@"shell\open\command"))
+					{
+						if (shellKey == null)
+							throw new Exception($"Failed to create shell\\open\\command key for {progId}");
+
+						shellKey.SetValue("", $"\"{appPath}\" \"%1\""); // Pass the file path as an argument
+					}
+				}
+
+				// Notify Windows about the file association change
+				const int SHCNE_ASSOCCHANGED = 0x8000000;
+				const int SHCNF_IDLIST = 0x0;
+
+				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
+
+				MessageBox.Show(".layout files have been successfully associated. If you already set an app for opening .layout files, you need to go to the Open With menu and set MyGui.net as default (should be on top of the list and labeled as New).",
+								"Association Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Failed to associate .layout files.\nError: {ex.Message}",
+								"Association Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		[System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+		private static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);
+
+		private void buttonRestartAdmin_Click(object sender, EventArgs e)
+		{
+			DialogResult resolution = MessageBox.Show("Are you sure you want to restart the app with Administrator Privileges?", "Restart As Administrator", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+			//Debug.WriteLine(resolution);
+			if (resolution == DialogResult.Yes)
+			{
+				try
+				{
+					var startInfo = new ProcessStartInfo
+					{
+						FileName = Application.ExecutablePath,
+						UseShellExecute = true,
+						Verb = "runas"
+					};
+					Process.Start(startInfo);
+					Application.Exit();
+					return;
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Couldn't restart with Admin Privileges.\n" +
+									$"Error: {ex.Message}", "Restart As Administrator",
+									MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+
 		}
 
 		private void useViewportVSyncCheckBox_CheckedChanged(object senderAny, EventArgs e)

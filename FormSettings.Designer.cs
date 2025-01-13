@@ -83,6 +83,10 @@
 			exportAsPercentRadioButton = new RadioButton();
 			exportAskRadioButton = new RadioButton();
 			exportAsPxRadioButton = new RadioButton();
+			groupBox13 = new GroupBox();
+			buttonAssociateWithFiles = new Button();
+			buttonRestartAdmin = new Button();
+			label5 = new Label();
 			debugTabPage = new TabPage();
 			flowLayoutPanel4 = new FlowLayoutPanel();
 			groupBox6 = new GroupBox();
@@ -121,6 +125,7 @@
 			flowLayoutPanel3.SuspendLayout();
 			groupBox2.SuspendLayout();
 			groupBox4.SuspendLayout();
+			groupBox13.SuspendLayout();
 			debugTabPage.SuspendLayout();
 			flowLayoutPanel4.SuspendLayout();
 			groupBox6.SuspendLayout();
@@ -627,6 +632,7 @@
 			flowLayoutPanel3.Controls.Add(groupBox2);
 			flowLayoutPanel3.Controls.Add(groupBox11);
 			flowLayoutPanel3.Controls.Add(groupBox4);
+			flowLayoutPanel3.Controls.Add(groupBox13);
 			flowLayoutPanel3.Location = new Point(0, 0);
 			flowLayoutPanel3.Name = "flowLayoutPanel3";
 			flowLayoutPanel3.Size = new Size(652, 380);
@@ -754,6 +760,49 @@
 			exportAsPxRadioButton.Text = "As Pixels";
 			exportAsPxRadioButton.UseVisualStyleBackColor = true;
 			exportAsPxRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+			// 
+			// groupBox13
+			// 
+			groupBox13.Controls.Add(buttonAssociateWithFiles);
+			groupBox13.Controls.Add(buttonRestartAdmin);
+			groupBox13.Controls.Add(label5);
+			groupBox13.Location = new Point(178, 104);
+			groupBox13.Name = "groupBox13";
+			groupBox13.Size = new Size(242, 100);
+			groupBox13.TabIndex = 8;
+			groupBox13.TabStop = false;
+			groupBox13.Text = "Windows File Association";
+			// 
+			// buttonAssociateWithFiles
+			// 
+			buttonAssociateWithFiles.FlatStyle = FlatStyle.System;
+			buttonAssociateWithFiles.Location = new Point(6, 70);
+			buttonAssociateWithFiles.Name = "buttonAssociateWithFiles";
+			buttonAssociateWithFiles.Size = new Size(230, 23);
+			buttonAssociateWithFiles.TabIndex = 7;
+			buttonAssociateWithFiles.Text = "Associate with .layout files";
+			buttonAssociateWithFiles.UseVisualStyleBackColor = true;
+			buttonAssociateWithFiles.Click += buttonAssociateWithFiles_Click;
+			// 
+			// buttonRestartAdmin
+			// 
+			buttonRestartAdmin.FlatStyle = FlatStyle.System;
+			buttonRestartAdmin.Location = new Point(6, 41);
+			buttonRestartAdmin.Name = "buttonRestartAdmin";
+			buttonRestartAdmin.Size = new Size(230, 23);
+			buttonRestartAdmin.TabIndex = 6;
+			buttonRestartAdmin.Text = "Restart with Admin Privileges";
+			buttonRestartAdmin.UseVisualStyleBackColor = true;
+			buttonRestartAdmin.Click += buttonRestartAdmin_Click;
+			// 
+			// label5
+			// 
+			label5.Location = new Point(6, 19);
+			label5.Name = "label5";
+			label5.Size = new Size(157, 19);
+			label5.TabIndex = 5;
+			label5.Text = "Requires Admin Privileges";
+			label5.TextAlign = ContentAlignment.MiddleLeft;
 			// 
 			// debugTabPage
 			// 
@@ -985,6 +1034,7 @@
 			groupBox2.PerformLayout();
 			groupBox4.ResumeLayout(false);
 			groupBox4.PerformLayout();
+			groupBox13.ResumeLayout(false);
 			debugTabPage.ResumeLayout(false);
 			flowLayoutPanel4.ResumeLayout(false);
 			groupBox6.ResumeLayout(false);
@@ -1072,5 +1122,9 @@
 		private RadioButton spriteFilteringLevel0;
 		private CheckBox useViewportFontAACheckBox;
 		private CheckBox redrawViewportOnResizeCheckBox;
+		private GroupBox groupBox13;
+		private Button buttonAssociateWithFiles;
+		private Button buttonRestartAdmin;
+		private Label label5;
 	}
 }
