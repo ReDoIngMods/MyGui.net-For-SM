@@ -767,7 +767,7 @@ namespace MyGui.net
 			var saveBeforeAll = canvas.Save();
 
 			// Apply clipping for the widget's bounds
-			//canvas.ClipRect(rect);
+			canvas.ClipRect(rect);
 
 			// Generate a random color
 			//var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));

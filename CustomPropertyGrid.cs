@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Text;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -226,69 +227,28 @@ namespace MyGui.net
 
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			if (provider?.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService editorService)
+			FormTextEditor editorForm = new();
+			editorForm.mainTextBox.Text = value?.ToString() ?? "";
+
+			var privateFontCollection = new PrivateFontCollection();
+
+			// Load the font from the file
+			/*byte[] fontData = File.ReadAllBytes("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Scrap Mechanic\\Data\\Gui\\Fonts\\SovjetBoxBd_v0_9.otf");
+			IntPtr fontPtr = System.Runtime.InteropServices.Marshal.AllocCoTaskMem(fontData.Length);
+			try
 			{
-				// Main panel to hold the top bar and TextBox
-				var mainPanel = new Panel
-				{
-					BackColor = SystemColors.Window,
-					BorderStyle = BorderStyle.FixedSingle,
-					Size = new Size(400, 200)
-				};
-
-				// TextBox for text editing
-				var textBox = new TextBox
-				{
-					Multiline = true,
-					WordWrap = true,
-					ScrollBars = ScrollBars.Both,
-					Text = value as string ?? string.Empty,
-					Dock = DockStyle.Fill,
-					AcceptsReturn = true,
-					AcceptsTab = true
-				};
-
-				// Top bar for additional functionality
-				var topBar = new FlowLayoutPanel
-				{
-					Dock = DockStyle.Top,
-					Height = 23,
-					BackColor = SystemColors.Control,
-					Margin = Padding.Empty,
-					Padding = Padding.Empty
-				};
-
-				// Add buttons to the top bar
-				var insertButton = new Button { Text = "Insert Special", Height = 23, Width = 75, FlatStyle = FlatStyle.System, Margin = Padding.Empty, Padding = Padding.Empty };
-				var clearButton = new Button { Text = "Clear", Height = 23, Width = 50, FlatStyle = FlatStyle.System, Margin = Padding.Empty, Padding = Padding.Empty };
-
-				insertButton.Click += (s, e) =>
-				{
-					// Insert special content at the cursor position
-					var insertText = "[SPECIAL]";
-					textBox.SelectedText = insertText;
-				};
-
-				clearButton.Click += (s, e) =>
-				{
-					// Clear the TextBox content
-					textBox.Clear();
-				};
-
-				topBar.Controls.Add(insertButton);
-				topBar.Controls.Add(clearButton);
-
-				// Assemble the main panel
-				mainPanel.Controls.Add(textBox);
-				mainPanel.Controls.Add(topBar);
-
-				// Show the control as a dropdown
-				editorService.DropDownControl(mainPanel);
-
-				// Return the edited value
-				return textBox.Text;
+				System.Runtime.InteropServices.Marshal.Copy(fontData, 0, fontPtr, fontData.Length);
+				privateFontCollection.AddMemoryFont(fontPtr, fontData.Length);
 			}
-			return value;
+			finally
+			{
+				System.Runtime.InteropServices.Marshal.FreeCoTaskMem(fontPtr);
+			}
+
+			editorForm.mainTextBox.Font = new Font(privateFontCollection.Families[0], 12);*/
+			editorForm.ShowDialog();
+
+			return editorForm.mainTextBox.Text;
 		}
 	}
 
