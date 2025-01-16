@@ -698,7 +698,7 @@ namespace MyGui.net
 
 				//Debug.WriteLine($"oldSize: {oldSize}, widget.position: {widget.position}");
 				//Debug.WriteLine($"a: {a}");
-				Tuple<Point, Point> offsets = GetWidgetOffset(widget.align, widget.size, a, widget.position, oldSize.GetValueOrDefault(new(0,0)));
+				Tuple<Point, Point> offsets = GetWidgetOffset(widget.align, widget.size, a, widget.position, oldSize.GetValueOrDefault(new(0, 0)));
 				/*if (widget.align == "Right VStretch")
 				{
 					Debug.WriteLine(offsets.Item1);
@@ -2129,6 +2129,30 @@ namespace MyGui.net
 					this.ActiveControl = null;
 					e.Handled = true;
 				}
+				else if (e.Control && e.KeyCode == Keys.N)
+				{
+					XDocument doc = XDocument.Parse("<MyGUI type=\"Layout\" version=\"3.2.0\"><Widget type=\"Widget\" skin=\"HudBackgroundLarge\" position=\"0 0 100 100\"/></MyGUI>");
+					List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc, null);
+					MyGuiWidgetData widgetToPasteInto =  _currentSelectedWidget;
+
+					// Convert cursor position to local coordinates
+					Point viewportRelPos = viewport.PointToClient(Cursor.Position);
+					var newPos = Util.TransformPointToLocal(
+						_currentLayout,
+						widgetToPasteInto,
+						new Point(
+							(int)(viewportRelPos.X / _viewportScale - _viewportOffset.X),
+							(int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y)
+						)
+					);
+
+					parsedLayout[0].position = newPos;
+
+					ExecuteCommand(new CreateControlCommand(parsedLayout[0], widgetToPasteInto, _currentLayout));
+				}
+
+
+
 				if (_currentSelectedWidget != null)
 				{
 					bool didStuff = false;
@@ -2211,6 +2235,12 @@ namespace MyGui.net
 				UpdateProperties();
 				e.Handled = true;
 			}
+		}
+
+		private void newWidgetToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			_viewportFocused = true;
+			Form1_KeyDown(sender, new KeyEventArgs(Keys.Control | Keys.N));
 		}
 
 		private void copyToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2296,9 +2326,13 @@ namespace MyGui.net
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			var value = Util.IsAnyOf<string>(e.ChangedItem.Value.ToString(), ["[DEFAULT]", "Default", ""]) ? null : e.ChangedItem.Value;
+			Debug.WriteLine(e.ChangedItem.Parent);
+
+			var property = e.ChangedItem.Parent?.PropertyDescriptor != null ? e.ChangedItem.Parent : e.ChangedItem;
+
+			var value = Util.IsAnyOf<string>(property.Value.ToString(), ["[DEFAULT]", "Default", ""]) ? null : property.Value;
 			Type currentWidgetPropertyType = _widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget);
-			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetInheritedFieldValue(currentWidgetPropertyType, e.ChangedItem.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetInheritedFieldValue(currentWidgetPropertyType, property.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
 		}
 		private void Form1_ResizeBegin(object sender, EventArgs e)
 		{

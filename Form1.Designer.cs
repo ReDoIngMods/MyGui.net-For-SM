@@ -69,6 +69,8 @@ namespace MyGui.net
 			widgetGridSpacingNumericUpDown = new CustomNumericUpDown();
 			label2 = new Label();
 			editorMenuStrip = new ContextMenuStrip(components);
+			newWidgetToolStripMenuItem = new ToolStripMenuItem();
+			toolStripSeparator6 = new ToolStripSeparator();
 			copyToolStripMenuItem = new ToolStripMenuItem();
 			copyExclusiveToolStripMenuItem = new ToolStripMenuItem();
 			cutToolStripMenuItem = new ToolStripMenuItem();
@@ -272,7 +274,7 @@ namespace MyGui.net
 			// 
 			newToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
 			newToolStripMenuItem.Name = "newToolStripMenuItem";
-			newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
+			newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Shift | Keys.N;
 			newToolStripMenuItem.Size = new Size(186, 22);
 			newToolStripMenuItem.Text = "New";
 			newToolStripMenuItem.Click += newToolStripMenuItem_Click;
@@ -348,7 +350,7 @@ namespace MyGui.net
 			// 
 			exitToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
 			exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-			exitToolStripMenuItem.ShortcutKeyDisplayString = "Alt + F4";
+			exitToolStripMenuItem.ShortcutKeyDisplayString = "Alt+F4";
 			exitToolStripMenuItem.Size = new Size(186, 22);
 			exitToolStripMenuItem.Text = "Exit";
 			exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
@@ -450,16 +452,29 @@ namespace MyGui.net
 			// 
 			// editorMenuStrip
 			// 
-			editorMenuStrip.Items.AddRange(new ToolStripItem[] { copyToolStripMenuItem, copyExclusiveToolStripMenuItem, cutToolStripMenuItem, toolStripSeparator4, pasteToolStripMenuItem, pasteAsSiblingToolStripMenuItem, toolStripSeparator5, deleteToolStripMenuItem });
+			editorMenuStrip.Items.AddRange(new ToolStripItem[] { newWidgetToolStripMenuItem, toolStripSeparator6, copyToolStripMenuItem, copyExclusiveToolStripMenuItem, cutToolStripMenuItem, toolStripSeparator4, pasteToolStripMenuItem, pasteAsSiblingToolStripMenuItem, toolStripSeparator5, deleteToolStripMenuItem });
 			editorMenuStrip.Name = "editorMenuStrip";
 			editorMenuStrip.RenderMode = ToolStripRenderMode.System;
-			editorMenuStrip.Size = new Size(241, 148);
+			editorMenuStrip.Size = new Size(229, 176);
+			// 
+			// newWidgetToolStripMenuItem
+			// 
+			newWidgetToolStripMenuItem.Name = "newWidgetToolStripMenuItem";
+			newWidgetToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+N";
+			newWidgetToolStripMenuItem.Size = new Size(228, 22);
+			newWidgetToolStripMenuItem.Text = "New Widget";
+			newWidgetToolStripMenuItem.Click += newWidgetToolStripMenuItem_Click;
+			// 
+			// toolStripSeparator6
+			// 
+			toolStripSeparator6.Name = "toolStripSeparator6";
+			toolStripSeparator6.Size = new Size(225, 6);
 			// 
 			// copyToolStripMenuItem
 			// 
 			copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-			copyToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + C";
-			copyToolStripMenuItem.Size = new Size(240, 22);
+			copyToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+C";
+			copyToolStripMenuItem.Size = new Size(228, 22);
 			copyToolStripMenuItem.Text = "Copy";
 			copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
 			// 
@@ -467,50 +482,50 @@ namespace MyGui.net
 			// 
 			copyExclusiveToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
 			copyExclusiveToolStripMenuItem.Name = "copyExclusiveToolStripMenuItem";
-			copyExclusiveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + Shift + C";
-			copyExclusiveToolStripMenuItem.Size = new Size(240, 22);
+			copyExclusiveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+C";
+			copyExclusiveToolStripMenuItem.Size = new Size(228, 22);
 			copyExclusiveToolStripMenuItem.Text = "Copy Exclusive";
 			copyExclusiveToolStripMenuItem.Click += copyExclusiveToolStripMenuItem_Click;
 			// 
 			// cutToolStripMenuItem
 			// 
 			cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-			cutToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + X";
-			cutToolStripMenuItem.Size = new Size(240, 22);
+			cutToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+X";
+			cutToolStripMenuItem.Size = new Size(228, 22);
 			cutToolStripMenuItem.Text = "Cut";
 			cutToolStripMenuItem.Click += cutToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator4
 			// 
 			toolStripSeparator4.Name = "toolStripSeparator4";
-			toolStripSeparator4.Size = new Size(237, 6);
+			toolStripSeparator4.Size = new Size(225, 6);
 			// 
 			// pasteToolStripMenuItem
 			// 
 			pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-			pasteToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + V";
-			pasteToolStripMenuItem.Size = new Size(240, 22);
+			pasteToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+V";
+			pasteToolStripMenuItem.Size = new Size(228, 22);
 			pasteToolStripMenuItem.Text = "Paste";
 			pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
 			// 
 			// pasteAsSiblingToolStripMenuItem
 			// 
 			pasteAsSiblingToolStripMenuItem.Name = "pasteAsSiblingToolStripMenuItem";
-			pasteAsSiblingToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl + Shift + V";
-			pasteAsSiblingToolStripMenuItem.Size = new Size(240, 22);
+			pasteAsSiblingToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+Shift+V";
+			pasteAsSiblingToolStripMenuItem.Size = new Size(228, 22);
 			pasteAsSiblingToolStripMenuItem.Text = "Paste as Sibling";
 			pasteAsSiblingToolStripMenuItem.Click += pasteAsSiblingToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator5
 			// 
 			toolStripSeparator5.Name = "toolStripSeparator5";
-			toolStripSeparator5.Size = new Size(237, 6);
+			toolStripSeparator5.Size = new Size(225, 6);
 			// 
 			// deleteToolStripMenuItem
 			// 
 			deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
 			deleteToolStripMenuItem.ShortcutKeyDisplayString = "Delete";
-			deleteToolStripMenuItem.Size = new Size(240, 22);
+			deleteToolStripMenuItem.Size = new Size(228, 22);
 			deleteToolStripMenuItem.Text = "Delete";
 			deleteToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
 			// 
@@ -631,5 +646,7 @@ namespace MyGui.net
 		private ToolStripMenuItem cutToolStripMenuItem;
 		private ToolStripSeparator toolStripSeparator4;
 		private ToolStripSeparator toolStripSeparator5;
+		private ToolStripSeparator toolStripSeparator6;
+		private ToolStripMenuItem newWidgetToolStripMenuItem;
 	}
 }

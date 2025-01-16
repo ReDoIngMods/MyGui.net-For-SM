@@ -225,7 +225,7 @@ namespace MyGui.net
 					if (progKey == null)
 						throw new Exception($"Failed to create registry key for {progId}");
 
-					progKey.SetValue("", "MyGui layout file."); // Description of the file type
+					progKey.SetValue("", "MyGui LAYOUT file"); // Description of the file type
 
 					// Set the default icon to the app's icon
 					using (var iconKey = progKey.CreateSubKey("DefaultIcon"))
