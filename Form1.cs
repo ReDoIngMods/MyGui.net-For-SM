@@ -690,19 +690,19 @@ namespace MyGui.net
 					)
 				);
 
-				if (widget.type == "ScrollBar")
+				/*if (widget.type == "ScrollBar")
 				{
 					Debug.WriteLine($"oldSize: {oldSize}, widget.position: {widget.position}");
 					Debug.WriteLine($"a: {a}");
-				}
+				}*/
 
 				//Debug.WriteLine($"oldSize: {oldSize}, widget.position: {widget.position}");
 				//Debug.WriteLine($"a: {a}");
 				Tuple<Point, Point> offsets = GetWidgetOffset(widget.align, widget.size, a, widget.position, oldSize.GetValueOrDefault(new(0,0)));
-				if (widget.align == "Right VStretch")
+				/*if (widget.align == "Right VStretch")
 				{
 					Debug.WriteLine(offsets.Item1);
-				}
+				}*/
 				rect.Offset(new(offsets.Item1.X, offsets.Item1.Y));
 				rect.Right += offsets.Item2.X;
 				rect.Bottom += offsets.Item2.Y;
@@ -847,10 +847,10 @@ namespace MyGui.net
 			int offsetX = 0, offsetY = 0;
 			int sizeOffsetX = 0, sizeOffsetY = 0;
 
-			if (align == "Right VStretch")
+			/*if (align == "Right VStretch")
 			{
 				Debug.WriteLine($"widgetSize: {widgetSize}, widgetPosFromRight: {widgetPosFromRight}, widgetPosFromLeft: {widgetPosFromLeft}");
-			}
+			}*/
 
 			switch (align)
 			{
@@ -864,9 +864,9 @@ namespace MyGui.net
 					// Stretched: ???
 					//parentSize - position + size 
 					Point parentSize = new(widgetPosFromRight.X + widgetSize.X, widgetPosFromRight.Y + widgetSize.Y);
-					Debug.WriteLine($"widgetPosFromLeft.X: {-widgetPosFromLeft.X}");
+					//Debug.WriteLine($"widgetPosFromLeft.X: {-widgetPosFromLeft.X}");
 					sizeOffsetX = parentSize.X - widgetPosFromLeft.X + widgetSizeOriginal.X;
-					Debug.WriteLine($"sizeOffsetX: {sizeOffsetX}");
+					//Debug.WriteLine($"sizeOffsetX: {sizeOffsetX}");
 					sizeOffsetY = parentSize.Y - widgetPosFromLeft.Y + widgetSizeOriginal.Y;
 					break;
 
@@ -920,7 +920,7 @@ namespace MyGui.net
 					break;
 
 				default:
-					Debug.WriteLine($"Unknown align type: {align}");
+					//Debug.WriteLine($"Unknown align type: {align}");
 					break;
 			}
 
@@ -1180,7 +1180,7 @@ namespace MyGui.net
 					break;
 
 				default:
-					Debug.WriteLine($"Unknown align type: {align}");
+					//Debug.WriteLine($"Unknown align type: {align}");
 					break;
 			}
 
