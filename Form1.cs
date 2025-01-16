@@ -43,9 +43,11 @@ namespace MyGui.net
 
 		public static Dictionary<string, MyGuiResource> AllResources => _allResources;
 		public static Dictionary<string, MyGuiFontData> AllFonts => _allFonts;
+		public static Dictionary<string, string> ModUuidPathCache => _modUuidPathCache;
 
 		static SKBitmap _viewportBackgroundBitmap;
 		static string _steamUserId;
+		public static string SteamUserId => _steamUserId;
 		#endregion
 
 		static MyGuiResource _nullSkinResource = new MyGuiResource();
@@ -78,6 +80,8 @@ namespace MyGui.net
 		CommandManager _commandManager = new CommandManager();
 
 		static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
+
+		public static string ScrapMechanicPath => _scrapMechanicPath;
 		/// <summary>
 		/// DO NOT, UNDER ANY CIRCUMSTANCES USE THIS VARIABLE IN CODE THAT ISNT THE INITIALIZATION, LIKE IN THE RENDERING CODE...
 		/// </summary>
@@ -119,6 +123,8 @@ namespace MyGui.net
 		static Size _draggedWidgetSizeStart = new Size(0, 0);
 
 		static Point _mouseLoc = new Point(0, 0);
+
+		public static FormInterfaceTag tagForm = new();
 
 		public Form1(string _DefaultOpenedDir = "")
 		{

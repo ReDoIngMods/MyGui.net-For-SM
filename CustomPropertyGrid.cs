@@ -210,7 +210,7 @@ namespace MyGui.net
 			editorBackgroundColorDialog.Color = Util.ParseColorFromString((string)value) ?? Color.FromArgb(128,128,128);
 			if (editorBackgroundColorDialog.ShowDialog() == DialogResult.OK)
 			{
-				return ColorTranslator.ToHtml(editorBackgroundColorDialog.Color);
+				return Util.ColorToHexString(editorBackgroundColorDialog.Color);
 			}
 
 			return value;
@@ -228,27 +228,14 @@ namespace MyGui.net
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
 			FormTextEditor editorForm = new();
-			editorForm.mainTextBox.Text = value?.ToString() ?? "";
+			editorForm.mainTextBox.Text = Util.MyGuiToSystemString(value?.ToString()) ?? "";
 
-			var privateFontCollection = new PrivateFontCollection();
-
-			// Load the font from the file
-			/*byte[] fontData = File.ReadAllBytes("C:\\Program Files (x86)\\Steam\\steamapps\\common\\Scrap Mechanic\\Data\\Gui\\Fonts\\SovjetBoxBd_v0_9.otf");
-			IntPtr fontPtr = System.Runtime.InteropServices.Marshal.AllocCoTaskMem(fontData.Length);
-			try
+			if (editorForm.ShowDialog() == DialogResult.OK)
 			{
-				System.Runtime.InteropServices.Marshal.Copy(fontData, 0, fontPtr, fontData.Length);
-				privateFontCollection.AddMemoryFont(fontPtr, fontData.Length);
-			}
-			finally
-			{
-				System.Runtime.InteropServices.Marshal.FreeCoTaskMem(fontPtr);
+				return Util.SystemToMyGuiString(editorForm.mainTextBox.Text);
 			}
 
-			editorForm.mainTextBox.Font = new Font(privateFontCollection.Families[0], 12);*/
-			editorForm.ShowDialog();
-
-			return editorForm.mainTextBox.Text;
+			return value;
 		}
 	}
 
@@ -276,11 +263,71 @@ namespace MyGui.net
 				if (form.ShowDialog() == DialogResult.OK)
 				{
 					value = "Button";
-					Debug.WriteLine("accepted!");
+					//Debug.WriteLine("accepted!");
 				}
 			}
 
 			return value;
+		}
+	}
+
+	public class GamePathEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Specify that this editor uses a drop-down style.
+			return UITypeEditorEditStyle.DropDown;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			OpenFileDialog editorForm = new()
+			{
+				InitialDirectory = Util.ConvertToSystemPath(value.ToString(), Form1.ScrapMechanicPath, Form1.ModUuidPathCache),
+				ShowHiddenFiles = true,
+				DereferenceLinks = false,
+			};
+
+			string path = "";
+
+			while (true)
+			{
+				if (editorForm.ShowDialog() == DialogResult.OK)
+				{
+					path = Util.ConvertToGamePath(
+						editorForm.FileName,
+						Form1.ScrapMechanicPath,
+						Path.Combine(
+							Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+							"AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_" + Form1.SteamUserId + "\\Mods"
+						),
+						Path.GetFullPath(Path.Combine(Form1.ScrapMechanicPath, "..", "..", "workshop\\content\\387990"))
+					);
+
+					if (path != "")
+					{
+						break; // Exit the loop when a valid path is provided
+					}
+
+					var result = MessageBox.Show(
+						"Invalid Location!",
+						"Path Error",
+						MessageBoxButtons.RetryCancel,
+						MessageBoxIcon.Error
+					);
+
+					if (result == DialogResult.Cancel)
+					{
+						return value;
+					}
+				}
+				else
+				{
+					return value;
+				}
+			}
+
+			return path;
 		}
 	}
 

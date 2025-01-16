@@ -999,7 +999,7 @@ namespace MyGui.net
 			return fontData;
 		}
 
-		static Dictionary<string, string> languageTags = [];
+		public static Dictionary<string, string> languageTags = [];
 		static string lastLang = "";
 		public static string? GetLanguageTagString(string tagName, string language, string smPath)
 		{
@@ -1065,7 +1065,7 @@ namespace MyGui.net
 			string guiPath = Path.Combine(dataPath, "Gui");
             if (path.StartsWith(guiPath))
 			{
-				return path.Replace(guiPath, "").Replace('\\', '/');
+				return Path.GetFileName(path.Replace(guiPath, ""));
 			}
 			if(path.StartsWith(dataPath))
 			{
@@ -1089,7 +1089,13 @@ namespace MyGui.net
 			{
                 string modName = path.Replace(modWhere, "").Split(['/', '\\'])[1];
                 string modPath = Path.Combine(modWhere, modName);
-                string descJsonStr = File.ReadAllText(Path.Combine(modPath, "description.json"));
+
+				string descPath = Path.Combine(modPath, "description.json");
+				if (!Util.IsValidFile(descPath))
+				{
+					return "";
+				}
+				string descJsonStr = File.ReadAllText(descPath);
                 JsonElement descJson = JsonSerializer.Deserialize<JsonElement>(descJsonStr);
                 string localId = descJson.GetProperty("localId").GetString();
                 return path.Replace(modPath, "$CONTENT_" + localId).Replace('\\', '/');
@@ -1165,6 +1171,17 @@ namespace MyGui.net
 
         #region Util Utils
         public static Random rand = new();
+
+		public static string SystemToMyGuiString(string input)
+		{
+			return input.ReplaceLineEndings("\\n");
+
+		}
+
+		public static string MyGuiToSystemString(string input)
+		{
+			return input.Replace("\\n", Environment.NewLine);
+		}
 
 		public static T ShallowCopy<T>(T source)
 		{

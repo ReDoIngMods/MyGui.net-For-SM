@@ -265,6 +265,7 @@ namespace MyGui.net
 		[Category("2 - Widget Properties")]
 		[DisplayName("Mask Pick")]
 		[Description("Path to the image file to be used as the button's hitbox (Absolute paths don't work, only Scrap Mechanic specific path references do). Has major performance impact on the game.")]
+		[Editor(typeof(GamePathEditor), typeof(UITypeEditor))]
 		public string MaskPick
 		{
 			get => widget.properties.TryGetValue("MaskPick", out var value) ? value : "";
@@ -1625,6 +1626,7 @@ namespace MyGui.net
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Texture")]
 		[Description("Path to the image file to render. Keep empty if using Image Resource!")]
+		[Editor(typeof(GamePathEditor), typeof(UITypeEditor))]
 		public string ImageTexture
 		{
 			get => widget.properties.TryGetValue("ImageTexture", out var value) ? value : "";
