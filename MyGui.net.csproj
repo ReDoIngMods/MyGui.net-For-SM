@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <StartupObject>MyGui.net.Program</StartupObject>
     <ApplicationIcon>MyGUI.net_Icon.ico</ApplicationIcon>
-	<RuntimeIdentifier>win-x86</RuntimeIdentifier>
+	<!--<RuntimeIdentifier>win-x86</RuntimeIdentifier>-->
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
 
