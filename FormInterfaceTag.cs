@@ -80,5 +80,14 @@ namespace MyGui.net
 				dataGridView1.Refresh();
 			}
 		}
+
+		private void FormInterfaceTag_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (e.KeyCode == Keys.Enter)
+			{
+				dataGridView1_CellContentDoubleClick(null, new DataGridViewCellEventArgs(0,0));
+				e.Handled = true;
+			}
+		}
 	}
 }

@@ -76,7 +76,6 @@ namespace MyGui.net
 			{ "ScrollView", new SKColor(0xFF2F00) }
 		};
 
-		static FormSideBar? _sidebarForm;
 		CommandManager _commandManager = new CommandManager();
 
 		static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
@@ -124,7 +123,10 @@ namespace MyGui.net
 
 		static Point _mouseLoc = new Point(0, 0);
 
+		static FormSideBar? _sidebarForm;
+
 		public static FormInterfaceTag tagForm = new();
+		public static FormTextEditor textEditorForm = new();
 
 		public Form1(string _DefaultOpenedDir = "")
 		{

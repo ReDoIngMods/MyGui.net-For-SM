@@ -72,10 +72,14 @@
 			dataGridView1.RowHeadersVisible = false;
 			dataGridView1.RowHeadersWidth = 4;
 			dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+			dataGridView1.RowTemplate.ReadOnly = true;
 			dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+			dataGridView1.ShowCellErrors = false;
+			dataGridView1.ShowCellToolTips = false;
 			dataGridView1.ShowEditingIcon = false;
 			dataGridView1.ShowRowErrors = false;
 			dataGridView1.Size = new Size(760, 379);
+			dataGridView1.StandardTab = true;
 			dataGridView1.TabIndex = 0;
 			dataGridView1.CellContentDoubleClick += dataGridView1_CellContentDoubleClick;
 			// 
@@ -122,6 +126,7 @@
 			Controls.Add(cancelButton);
 			Controls.Add(searchBox);
 			Controls.Add(dataGridView1);
+			KeyPreview = true;
 			MinimizeBox = false;
 			Name = "FormInterfaceTag";
 			ShowIcon = false;
@@ -130,6 +135,7 @@
 			Text = "Interface Tags";
 			FormClosing += FormInterfaceTag_FormClosing;
 			Load += FormInterfaceTag_Load;
+			KeyDown += FormInterfaceTag_KeyDown;
 			((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
 			ResumeLayout(false);
 			PerformLayout();

@@ -227,7 +227,7 @@ namespace MyGui.net
 
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			FormTextEditor editorForm = new();
+			FormTextEditor editorForm = Form1.textEditorForm;
 			editorForm.mainTextBox.Text = Util.MyGuiToSystemString(value?.ToString()) ?? "";
 
 			if (editorForm.ShowDialog() == DialogResult.OK)
