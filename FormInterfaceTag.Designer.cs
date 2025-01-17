@@ -128,6 +128,7 @@
 			Controls.Add(dataGridView1);
 			KeyPreview = true;
 			MinimizeBox = false;
+			MinimumSize = new Size(290, 200);
 			Name = "FormInterfaceTag";
 			ShowIcon = false;
 			ShowInTaskbar = false;

@@ -125,8 +125,8 @@ namespace MyGui.net
 
 		static FormSideBar? _sidebarForm;
 
-		public static FormInterfaceTag tagForm = new();
-		public static FormTextEditor textEditorForm = new();
+		public static FormInterfaceTag tagForm;
+		public static FormTextEditor textEditorForm;
 
 		public Form1(string _DefaultOpenedDir = "")
 		{
@@ -163,7 +163,7 @@ namespace MyGui.net
 			if (!Util.IsValidFile(Path.Combine(_ScrapMechanicPath, "Data/Gui/GuiConfig.xml")))
 			{
 				string? gamePathFromSteam = Util.GetGameInstallPath("387990");
-				if (gamePathFromSteam == null)
+				if (gamePathFromSteam != null)
 				{
 					Settings.Default.ScrapMechanicPath = gamePathFromSteam;
 					Settings.Default.Save();
@@ -406,6 +406,10 @@ namespace MyGui.net
 			  ControlStyles.UserPaint |
 			  ControlStyles.AllPaintingInWmPaint | ControlStyles.CacheText, true);
 			this.UpdateStyles();
+
+			tagForm = new();
+			textEditorForm = new();
+
 			AdjustViewportScrollers();
 			centerButton_Click(null, new EventArgs());
 		}

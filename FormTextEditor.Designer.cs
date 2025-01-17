@@ -161,7 +161,7 @@
 			Controls.Add(splitContainer1);
 			Controls.Add(menuStrip1);
 			MinimizeBox = false;
-			MinimumSize = new Size(250, 250);
+			MinimumSize = new Size(300, 250);
 			Name = "FormTextEditor";
 			ShowIcon = false;
 			ShowInTaskbar = false;
