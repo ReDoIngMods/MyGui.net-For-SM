@@ -359,5 +359,29 @@ namespace MyGui.net.Properties {
                 this["RedrawViewportOnResize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("_pixels")]
+        public string PixelLayoutSuffix {
+            get {
+                return ((string)(this["PixelLayoutSuffix"]));
+            }
+            set {
+                this["PixelLayoutSuffix"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool PreferPixelLayouts {
+            get {
+                return ((bool)(this["PreferPixelLayouts"]));
+            }
+            set {
+                this["PreferPixelLayouts"] = value;
+            }
+        }
     }
 }

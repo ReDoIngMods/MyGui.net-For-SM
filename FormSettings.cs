@@ -4,6 +4,7 @@ using MyGui.net.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -13,6 +14,7 @@ using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static OpenTK.Graphics.OpenGL.GL;
 
 namespace MyGui.net
 {
@@ -43,7 +45,11 @@ namespace MyGui.net
 
 			//TAB FILE
 			smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+			pixelLayoutSuffixTextBox.Text = Settings.Default.PixelLayoutSuffix;
 			showFullFilePathCheckBox.Checked = Settings.Default.ShowFullFilePathInTitle;
+
+			preferPixelLayoutsCheckBox.Checked = Settings.Default.PreferPixelLayouts;
+
 			exportAsPxRadioButton.Checked = Settings.Default.ExportMode == 0;
 			exportAsPercentRadioButton.Checked = Settings.Default.ExportMode == 1;
 			exportAskRadioButton.Checked = Settings.Default.ExportMode == 2;
@@ -104,7 +110,7 @@ namespace MyGui.net
 			_formLoaded = true;
 
 			//Change about text
-			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp (github.com/mono/SkiaSharp) by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• Ben Bingo{Environment.NewLine}{Environment.NewLine}Feel free to take a look at the source code at (github.com/ReDoIngMods/MyGui.net-For-SM)!";
+			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• Ben Bingo{Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
 		}
 
 		private void OnSettingChange()
@@ -174,10 +180,24 @@ namespace MyGui.net
 			}
 		}
 
+		private void pixelLayoutSuffixTextBox_TextChanged(object senderAny, EventArgs e)
+		{
+			TextBox sender = (TextBox)senderAny;
+			Settings.Default.PixelLayoutSuffix = sender.Text == "" ? "_pixels" : sender.Text;
+			OnSettingChange();
+		}
+
 		private void showFullFilePathCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
 			Settings.Default.ShowFullFilePathInTitle = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void preferPixelLayoutsCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			Settings.Default.PreferPixelLayouts = sender.Checked;
 			OnSettingChange();
 		}
 
@@ -531,6 +551,44 @@ namespace MyGui.net
 		{
 			CheckBox sender = (CheckBox)senderAny;
 			_autoApply = sender.Checked;
+		}
+
+		private void inspectInExplorerButton_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				Debug.WriteLine(Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath));
+				string userConfigDirectory = Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath);
+
+				// Open the folder using Process.Start
+				if (userConfigDirectory != null && Directory.Exists(userConfigDirectory))
+				{
+					Process.Start(new ProcessStartInfo
+					{
+						FileName = userConfigDirectory,
+						UseShellExecute = true // Required for opening folders
+					});
+				}
+			}
+			catch (Win32Exception win32Exception)
+			{
+				Debug.WriteLine(win32Exception.Message);
+			}
+		}
+
+		private void joinDiscordButton_Click(object sender, EventArgs e)
+		{
+			Process.Start(new ProcessStartInfo("https://discord.gg/DyUxeyAJRz") { UseShellExecute = true });
+		}
+
+		private void gitHubOrgButton_Click(object sender, EventArgs e)
+		{
+			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods") { UseShellExecute = true });
+		}
+
+		private void gitHubRepoButton_Click(object sender, EventArgs e)
+		{
+			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods/MyGui.net-For-SM") { UseShellExecute = true });
 		}
 	}
 }

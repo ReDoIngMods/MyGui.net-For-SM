@@ -73,11 +73,15 @@
 			fileTabPage = new TabPage();
 			flowLayoutPanel3 = new FlowLayoutPanel();
 			groupBox2 = new GroupBox();
+			label6 = new Label();
+			pixelLayoutSuffixTextBox = new TextBox();
+			inspectInExplorerButton = new Button();
 			detectSmPath = new Button();
 			smPathLabel = new TextBox();
 			chooseSmPath = new Button();
 			label1 = new Label();
 			groupBox11 = new GroupBox();
+			preferPixelLayoutsCheckBox = new CheckBox();
 			groupBox4 = new GroupBox();
 			exportAsBothRadioButton = new RadioButton();
 			exportAsPercentRadioButton = new RadioButton();
@@ -95,6 +99,9 @@
 			showWarningsCheckBox = new CheckBox();
 			aboutTabPage = new TabPage();
 			panel1 = new Panel();
+			gitHubOrgButton = new Button();
+			gitHubRepoButton = new Button();
+			joinDiscordButton = new Button();
 			aboutTextBox = new TextBox();
 			pictureBox2 = new PictureBox();
 			pictureBox1 = new PictureBox();
@@ -124,6 +131,7 @@
 			fileTabPage.SuspendLayout();
 			flowLayoutPanel3.SuspendLayout();
 			groupBox2.SuspendLayout();
+			groupBox11.SuspendLayout();
 			groupBox4.SuspendLayout();
 			groupBox13.SuspendLayout();
 			debugTabPage.SuspendLayout();
@@ -640,16 +648,49 @@
 			// 
 			// groupBox2
 			// 
+			groupBox2.Controls.Add(label6);
+			groupBox2.Controls.Add(pixelLayoutSuffixTextBox);
+			groupBox2.Controls.Add(inspectInExplorerButton);
 			groupBox2.Controls.Add(detectSmPath);
 			groupBox2.Controls.Add(smPathLabel);
 			groupBox2.Controls.Add(chooseSmPath);
 			groupBox2.Controls.Add(label1);
 			groupBox2.Location = new Point(3, 3);
 			groupBox2.Name = "groupBox2";
-			groupBox2.Size = new Size(348, 95);
+			groupBox2.Size = new Size(348, 125);
 			groupBox2.TabIndex = 5;
 			groupBox2.TabStop = false;
 			groupBox2.Text = "General";
+			// 
+			// label6
+			// 
+			label6.Location = new Point(6, 66);
+			label6.Name = "label6";
+			label6.Size = new Size(110, 23);
+			label6.TabIndex = 7;
+			label6.Text = "Pixel Layout Suffix";
+			label6.TextAlign = ContentAlignment.MiddleLeft;
+			// 
+			// pixelLayoutSuffixTextBox
+			// 
+			pixelLayoutSuffixTextBox.BackColor = SystemColors.ControlLightLight;
+			pixelLayoutSuffixTextBox.Location = new Point(122, 66);
+			pixelLayoutSuffixTextBox.Name = "pixelLayoutSuffixTextBox";
+			pixelLayoutSuffixTextBox.PlaceholderText = "_pixels";
+			pixelLayoutSuffixTextBox.Size = new Size(220, 23);
+			pixelLayoutSuffixTextBox.TabIndex = 6;
+			pixelLayoutSuffixTextBox.TextChanged += pixelLayoutSuffixTextBox_TextChanged;
+			// 
+			// inspectInExplorerButton
+			// 
+			inspectInExplorerButton.FlatStyle = FlatStyle.System;
+			inspectInExplorerButton.Location = new Point(6, 95);
+			inspectInExplorerButton.Name = "inspectInExplorerButton";
+			inspectInExplorerButton.Size = new Size(336, 23);
+			inspectInExplorerButton.TabIndex = 5;
+			inspectInExplorerButton.Text = "Inspect Setting Folder";
+			inspectInExplorerButton.UseVisualStyleBackColor = true;
+			inspectInExplorerButton.Click += inspectInExplorerButton_Click;
 			// 
 			// detectSmPath
 			// 
@@ -665,7 +706,7 @@
 			// smPathLabel
 			// 
 			smPathLabel.BackColor = SystemColors.ControlLightLight;
-			smPathLabel.Location = new Point(140, 38);
+			smPathLabel.Location = new Point(140, 37);
 			smPathLabel.Name = "smPathLabel";
 			smPathLabel.ReadOnly = true;
 			smPathLabel.Size = new Size(202, 23);
@@ -693,12 +734,24 @@
 			// 
 			// groupBox11
 			// 
+			groupBox11.Controls.Add(preferPixelLayoutsCheckBox);
 			groupBox11.Location = new Point(357, 3);
 			groupBox11.Name = "groupBox11";
-			groupBox11.Size = new Size(169, 73);
+			groupBox11.Size = new Size(184, 48);
 			groupBox11.TabIndex = 7;
 			groupBox11.TabStop = false;
 			groupBox11.Text = "Import";
+			// 
+			// preferPixelLayoutsCheckBox
+			// 
+			preferPixelLayoutsCheckBox.AutoSize = true;
+			preferPixelLayoutsCheckBox.Location = new Point(6, 22);
+			preferPixelLayoutsCheckBox.Name = "preferPixelLayoutsCheckBox";
+			preferPixelLayoutsCheckBox.Size = new Size(168, 19);
+			preferPixelLayoutsCheckBox.TabIndex = 0;
+			preferPixelLayoutsCheckBox.Text = "Prefer Pixel Layouts over %";
+			preferPixelLayoutsCheckBox.UseVisualStyleBackColor = true;
+			preferPixelLayoutsCheckBox.CheckedChanged += preferPixelLayoutsCheckBox_CheckedChanged;
 			// 
 			// groupBox4
 			// 
@@ -706,7 +759,7 @@
 			groupBox4.Controls.Add(exportAsPercentRadioButton);
 			groupBox4.Controls.Add(exportAskRadioButton);
 			groupBox4.Controls.Add(exportAsPxRadioButton);
-			groupBox4.Location = new Point(3, 104);
+			groupBox4.Location = new Point(3, 134);
 			groupBox4.Name = "groupBox4";
 			groupBox4.Size = new Size(169, 73);
 			groupBox4.TabIndex = 6;
@@ -766,7 +819,7 @@
 			groupBox13.Controls.Add(buttonAssociateWithFiles);
 			groupBox13.Controls.Add(buttonRestartAdmin);
 			groupBox13.Controls.Add(label5);
-			groupBox13.Location = new Point(178, 104);
+			groupBox13.Location = new Point(178, 134);
 			groupBox13.Name = "groupBox13";
 			groupBox13.Size = new Size(242, 100);
 			groupBox13.TabIndex = 8;
@@ -881,6 +934,9 @@
 			// panel1
 			// 
 			panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			panel1.Controls.Add(gitHubOrgButton);
+			panel1.Controls.Add(gitHubRepoButton);
+			panel1.Controls.Add(joinDiscordButton);
 			panel1.Controls.Add(aboutTextBox);
 			panel1.Controls.Add(pictureBox2);
 			panel1.Controls.Add(pictureBox1);
@@ -888,6 +944,42 @@
 			panel1.Name = "panel1";
 			panel1.Size = new Size(652, 380);
 			panel1.TabIndex = 3;
+			// 
+			// gitHubOrgButton
+			// 
+			gitHubOrgButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			gitHubOrgButton.FlatStyle = FlatStyle.System;
+			gitHubOrgButton.Location = new Point(96, 322);
+			gitHubOrgButton.Name = "gitHubOrgButton";
+			gitHubOrgButton.Size = new Size(460, 23);
+			gitHubOrgButton.TabIndex = 5;
+			gitHubOrgButton.Text = "Visit our GitHub Organization";
+			gitHubOrgButton.UseVisualStyleBackColor = true;
+			gitHubOrgButton.Click += gitHubOrgButton_Click;
+			// 
+			// gitHubRepoButton
+			// 
+			gitHubRepoButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			gitHubRepoButton.FlatStyle = FlatStyle.System;
+			gitHubRepoButton.Location = new Point(96, 293);
+			gitHubRepoButton.Name = "gitHubRepoButton";
+			gitHubRepoButton.Size = new Size(460, 23);
+			gitHubRepoButton.TabIndex = 4;
+			gitHubRepoButton.Text = "Visit MyGui.net Repository";
+			gitHubRepoButton.UseVisualStyleBackColor = true;
+			gitHubRepoButton.Click += gitHubRepoButton_Click;
+			// 
+			// joinDiscordButton
+			// 
+			joinDiscordButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			joinDiscordButton.FlatStyle = FlatStyle.System;
+			joinDiscordButton.Location = new Point(96, 351);
+			joinDiscordButton.Name = "joinDiscordButton";
+			joinDiscordButton.Size = new Size(460, 23);
+			joinDiscordButton.TabIndex = 3;
+			joinDiscordButton.Text = "Join our Discord Server";
+			joinDiscordButton.UseVisualStyleBackColor = true;
+			joinDiscordButton.Click += joinDiscordButton_Click;
 			// 
 			// aboutTextBox
 			// 
@@ -901,7 +993,6 @@
 			aboutTextBox.ScrollBars = ScrollBars.Vertical;
 			aboutTextBox.Size = new Size(646, 281);
 			aboutTextBox.TabIndex = 1;
-			aboutTextBox.Text = resources.GetString("aboutTextBox.Text");
 			// 
 			// pictureBox2
 			// 
@@ -1032,6 +1123,8 @@
 			flowLayoutPanel3.ResumeLayout(false);
 			groupBox2.ResumeLayout(false);
 			groupBox2.PerformLayout();
+			groupBox11.ResumeLayout(false);
+			groupBox11.PerformLayout();
 			groupBox4.ResumeLayout(false);
 			groupBox4.PerformLayout();
 			groupBox13.ResumeLayout(false);
@@ -1126,5 +1219,12 @@
 		private Button buttonAssociateWithFiles;
 		private Button buttonRestartAdmin;
 		private Label label5;
+		private Button inspectInExplorerButton;
+		private Label label6;
+		private TextBox pixelLayoutSuffixTextBox;
+		private CheckBox preferPixelLayoutsCheckBox;
+		private Button gitHubOrgButton;
+		private Button gitHubRepoButton;
+		private Button joinDiscordButton;
 	}
 }

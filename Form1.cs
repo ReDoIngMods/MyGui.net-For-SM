@@ -452,7 +452,7 @@ namespace MyGui.net
 			centerButton_Click(null, new EventArgs());
 		}
 
-		private void Settings_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == nameof(Settings.Default.WidgetGridSpacing) && Settings.Default.WidgetGridSpacing != _gridSpacing)
 			{
@@ -1739,6 +1739,13 @@ namespace MyGui.net
 		{
 			ClearStacks();
 
+			string fileName = Path.GetFileNameWithoutExtension(file);
+
+			if (Settings.Default.PreferPixelLayouts && !fileName.EndsWith(Settings.Default.PixelLayoutSuffix) && Util.IsValidFile(Util.AppendToFile(file, Settings.Default.PixelLayoutSuffix)))
+			{
+				file = Util.AppendToFile(file, Settings.Default.PixelLayoutSuffix);
+			}
+
 			_currentLayoutPath = file;
 			_currentLayoutSavePath = _currentLayoutPath;
 			_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize) ?? new();
@@ -1788,14 +1795,30 @@ namespace MyGui.net
 			}
 			if (actualExport == 0 || actualExport == 3)
 			{
-				using (StreamWriter outputFile = new StreamWriter(actualExport == 3 ? Util.AppendToFile(_currentLayoutSavePath, "_pixels") : _currentLayoutSavePath))
+
+				using (StreamWriter outputFile = new StreamWriter(actualExport == 3 && !Path.GetFileNameWithoutExtension(_currentLayoutSavePath).EndsWith(Settings.Default.PixelLayoutSuffix) ? Util.AppendToFile(_currentLayoutSavePath, "_pixels") : _currentLayoutSavePath))
 				{
 					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
 				}
 			}
 			if (actualExport == 1 || actualExport == 3)
 			{
-				using (StreamWriter outputFile = new StreamWriter(_currentLayoutSavePath))
+				string actualPath = Path.GetFileNameWithoutExtension(_currentLayoutSavePath);
+				string suffix = Settings.Default.PixelLayoutSuffix;
+
+				// If the file name ends with the suffix, remove it.
+				if (actualPath.EndsWith(suffix))
+				{
+					string directory = Path.GetDirectoryName(_currentLayoutSavePath);
+					string fileNameWithoutSuffix = actualPath.Substring(0, actualPath.Length - suffix.Length);
+					string extension = Path.GetExtension(_currentLayoutSavePath);
+					actualPath = Path.Combine(directory, fileNameWithoutSuffix + extension);
+				}
+				else
+				{
+					actualPath = _currentLayoutSavePath; // Return the original path if it doesn't end with the suffix.
+				}
+				using (StreamWriter outputFile = new StreamWriter(actualPath))
 				{
 					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
 				}
