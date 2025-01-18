@@ -104,6 +104,13 @@ namespace MyGui.net
 			workspaceSizeDefaultXNumericUpDown.Value = Settings.Default.DefaultWorkspaceSize.Width;
 			workspaceSizeDefaultYNumericUpDown.Value = Settings.Default.DefaultWorkspaceSize.Height;
 
+			referenceResolutionComboBox.SelectedIndex = Settings.Default.ReferenceResolution;
+
+			referenceLanguageComboBox.Items.Clear();
+			referenceLanguageComboBox.Items.AddRange(Directory.GetDirectories(Path.Combine(Form1.ScrapMechanicPath, "Data/Gui/Language")).Select(path => Path.GetFileName(path)).ToArray());
+
+			referenceLanguageComboBox.Text = Settings.Default.ReferenceLanguage;
+
 			showTypesForNamedWidgetsCheckBox.Checked = Settings.Default.ShowTypesForNamedWidgets;
 			widgetGridSpacingNumericUpDown.Value = Settings.Default.WidgetGridSpacing;
 
@@ -496,6 +503,28 @@ namespace MyGui.net
 		{
 			NumericUpDown sender = (NumericUpDown)senderAny;
 			Settings.Default.DefaultWorkspaceSize = new Size(Settings.Default.DefaultWorkspaceSize.Width, (int)sender.Value);
+			OnSettingChange();
+		}
+
+		private void referenceResolutionComboBox_SelectedIndexChanged(object senderAny, EventArgs e)
+		{
+			ComboBox sender = (ComboBox)senderAny;
+			if (sender.SelectedIndex != Settings.Default.ReferenceResolution)
+			{
+				_needsRestartToApply = true;
+			}
+			Settings.Default.ReferenceResolution = sender.SelectedIndex;
+			OnSettingChange();
+		}
+
+		private void referenceLanguageComboBox_SelectedValueChanged(object senderAny, EventArgs e)
+		{
+			ComboBox sender = (ComboBox)senderAny;
+			if (sender.Text != Settings.Default.ReferenceLanguage)
+			{
+				_needsRestartToApply = true;
+			}
+			Settings.Default.ReferenceLanguage = sender.Text;
 			OnSettingChange();
 		}
 

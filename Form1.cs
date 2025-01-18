@@ -18,7 +18,6 @@ namespace MyGui.net
 	//TODO: Add an undo/redo history window
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
-	//TODO: exporting and imporing caring about _pixels (or custom suffix)
 	//TODO: add reload cache, clears it all and does the stuff
 	public partial class Form1 : Form
 	{
@@ -326,9 +325,9 @@ namespace MyGui.net
 			];
 			#endregion
 
-			_allResources = Util.ReadAllResources(_scrapMechanicPath, 1);
+			_allResources = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
 			//Util.PrintAllResources(_allResources);
-			_allFonts = Util.ReadFontData("English", _scrapMechanicPath);
+			_allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
 			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 15 });
 			_steamUserId = Util.GetLoggedInSteamUserID();
 			string[] modPaths = [

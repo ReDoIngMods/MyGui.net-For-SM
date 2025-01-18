@@ -383,5 +383,29 @@ namespace MyGui.net.Properties {
                 this["PreferPixelLayouts"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int ReferenceResolution {
+            get {
+                return ((int)(this["ReferenceResolution"]));
+            }
+            set {
+                this["ReferenceResolution"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("English")]
+        public string ReferenceLanguage {
+            get {
+                return ((string)(this["ReferenceLanguage"]));
+            }
+            set {
+                this["ReferenceLanguage"] = value;
+            }
+        }
     }
 }

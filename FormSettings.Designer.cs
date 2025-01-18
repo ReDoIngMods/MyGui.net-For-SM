@@ -42,6 +42,9 @@
 			workspaceSizeDefaultYNumericUpDown = new CustomNumericUpDown();
 			workspaceSizeDefaultXNumericUpDown = new CustomNumericUpDown();
 			label4 = new Label();
+			groupBox14 = new GroupBox();
+			referenceResolutionComboBox = new ComboBox();
+			label7 = new Label();
 			windowTabPage = new TabPage();
 			flowLayoutPanel1 = new FlowLayoutPanel();
 			groupBox5 = new GroupBox();
@@ -111,6 +114,8 @@
 			resetSettingsButton = new Button();
 			autoApplyCheckBox = new CheckBox();
 			editorBackgroundPathDialog = new OpenFileDialog();
+			referenceLanguageComboBox = new ComboBox();
+			label8 = new Label();
 			tabControl1.SuspendLayout();
 			projectTabPage.SuspendLayout();
 			flowLayoutPanel2.SuspendLayout();
@@ -121,6 +126,7 @@
 			groupBox10.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultYNumericUpDown).BeginInit();
 			((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultXNumericUpDown).BeginInit();
+			groupBox14.SuspendLayout();
 			windowTabPage.SuspendLayout();
 			flowLayoutPanel1.SuspendLayout();
 			groupBox5.SuspendLayout();
@@ -174,6 +180,7 @@
 			flowLayoutPanel2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			flowLayoutPanel2.AutoScroll = true;
 			flowLayoutPanel2.Controls.Add(groupBox9);
+			flowLayoutPanel2.Controls.Add(groupBox14);
 			flowLayoutPanel2.Location = new Point(0, 0);
 			flowLayoutPanel2.Name = "flowLayoutPanel2";
 			flowLayoutPanel2.Size = new Size(652, 380);
@@ -286,6 +293,39 @@
 			label4.TabIndex = 10;
 			label4.Text = "Project Size (px)";
 			label4.TextAlign = ContentAlignment.MiddleLeft;
+			// 
+			// groupBox14
+			// 
+			groupBox14.Controls.Add(referenceLanguageComboBox);
+			groupBox14.Controls.Add(label8);
+			groupBox14.Controls.Add(referenceResolutionComboBox);
+			groupBox14.Controls.Add(label7);
+			groupBox14.Location = new Point(304, 3);
+			groupBox14.Name = "groupBox14";
+			groupBox14.Size = new Size(318, 147);
+			groupBox14.TabIndex = 8;
+			groupBox14.TabStop = false;
+			groupBox14.Text = "References";
+			// 
+			// referenceResolutionComboBox
+			// 
+			referenceResolutionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			referenceResolutionComboBox.FormattingEnabled = true;
+			referenceResolutionComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
+			referenceResolutionComboBox.Location = new Point(6, 37);
+			referenceResolutionComboBox.Name = "referenceResolutionComboBox";
+			referenceResolutionComboBox.Size = new Size(306, 23);
+			referenceResolutionComboBox.TabIndex = 4;
+			referenceResolutionComboBox.SelectedIndexChanged += referenceResolutionComboBox_SelectedIndexChanged;
+			// 
+			// label7
+			// 
+			label7.Location = new Point(6, 19);
+			label7.Name = "label7";
+			label7.Size = new Size(120, 15);
+			label7.TabIndex = 3;
+			label7.Text = "Reference Resolution";
+			label7.TextAlign = ContentAlignment.MiddleLeft;
 			// 
 			// windowTabPage
 			// 
@@ -1077,6 +1117,26 @@
 			editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
 			editorBackgroundPathDialog.Title = "Choose background image";
 			// 
+			// referenceLanguageComboBox
+			// 
+			referenceLanguageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			referenceLanguageComboBox.FormattingEnabled = true;
+			referenceLanguageComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
+			referenceLanguageComboBox.Location = new Point(6, 81);
+			referenceLanguageComboBox.Name = "referenceLanguageComboBox";
+			referenceLanguageComboBox.Size = new Size(306, 23);
+			referenceLanguageComboBox.TabIndex = 6;
+			referenceLanguageComboBox.SelectedValueChanged += referenceLanguageComboBox_SelectedValueChanged;
+			// 
+			// label8
+			// 
+			label8.Location = new Point(6, 63);
+			label8.Name = "label8";
+			label8.Size = new Size(120, 15);
+			label8.TabIndex = 5;
+			label8.Text = "Reference Language";
+			label8.TextAlign = ContentAlignment.MiddleLeft;
+			// 
 			// FormSettings
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1107,6 +1167,7 @@
 			groupBox10.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultYNumericUpDown).EndInit();
 			((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultXNumericUpDown).EndInit();
+			groupBox14.ResumeLayout(false);
 			windowTabPage.ResumeLayout(false);
 			flowLayoutPanel1.ResumeLayout(false);
 			groupBox5.ResumeLayout(false);
@@ -1226,5 +1287,10 @@
 		private Button gitHubOrgButton;
 		private Button gitHubRepoButton;
 		private Button joinDiscordButton;
+		private GroupBox groupBox14;
+		private ComboBox referenceResolutionComboBox;
+		private Label label7;
+		private ComboBox referenceLanguageComboBox;
+		private Label label8;
 	}
 }

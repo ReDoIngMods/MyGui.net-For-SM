@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyGui.net.Properties;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,17 +19,11 @@ namespace MyGui.net
 
 		private BindingSource bindingSource;
 
-		class KeyValuePairItem
-		{
-			public string Tag { get; set; }
-			public string Text { get; set; }
-		}
-
 		public FormInterfaceTag()
 		{
 			InitializeComponent();
 
-			Util.GetLanguageTagString("a", "English", Form1.ScrapMechanicPath); //TODO: create specialized load Interface Tags function
+			Util.GetLanguageTagString("a", Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath); //TODO: create specialized load Interface Tags function
 
 			bindingSource = new BindingSource();
 
