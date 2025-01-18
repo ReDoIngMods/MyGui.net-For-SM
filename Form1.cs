@@ -126,6 +126,7 @@ namespace MyGui.net
 
 		public static FormInterfaceTag tagForm;
 		public static FormTextEditor textEditorForm;
+		public static FormSettings settingsForm;
 
 		public Form1(string _DefaultOpenedDir = "")
 		{
@@ -159,7 +160,7 @@ namespace MyGui.net
 			UpdateViewportBackground();
 
 			//Util.PrintAllResources(_ScrapMechanicPath);
-			if (!Util.IsValidFile(Path.Combine(_ScrapMechanicPath, "Data/Gui/GuiConfig.xml")))
+			if ((_scrapMechanicPath ?? "") == "" || !Util.IsValidFile(Path.Combine(_scrapMechanicPath, "Data/Gui/GuiConfig.xml")))
 			{
 				string? gamePathFromSteam = Util.GetGameInstallPath("387990");
 				if (gamePathFromSteam != null)
@@ -408,6 +409,8 @@ namespace MyGui.net
 
 			tagForm = new();
 			textEditorForm = new();
+			settingsForm = new();
+			settingsForm.Owner = this;
 
 			AdjustViewportScrollers();
 			centerButton_Click(null, new EventArgs());
@@ -449,6 +452,12 @@ namespace MyGui.net
 		void Form1_Load(object sender, EventArgs e)
 		{
 			centerButton_Click(null, new EventArgs());
+			if (!Settings.Default.HideSplashScreen)
+			{
+				FormSplashScreen splash = new FormSplashScreen();
+				splash.Owner = this;
+				splash.Show();
+			}
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -1863,9 +1872,9 @@ namespace MyGui.net
 
 		private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			FormSettings formSettings = new FormSettings();
-			formSettings.Owner = this;
-			formSettings.Show();
+			settingsForm = new();
+			settingsForm.Owner = this;
+			settingsForm.Show();
 		}
 
 		private void testToolStripMenuItem_Click(object sender, EventArgs e)

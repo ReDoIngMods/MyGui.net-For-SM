@@ -26,17 +26,21 @@ namespace MyGui.net
 		#region Steam Utils
 		public static string? GetSteamInstallPath()
 		{
-			using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam"))
+			try
 			{
-				if (key != null)
+				using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam"))
 				{
-					Object o = key.GetValue("InstallPath");
-					if (o != null)
+					if (key != null)
 					{
-						return o.ToString();
+						Object o = key.GetValue("InstallPath");
+						if (o != null)
+						{
+							return o.ToString();
+						}
 					}
 				}
 			}
+			catch (Exception){ return null; }
 			return null;
 		}
 
@@ -92,28 +96,32 @@ namespace MyGui.net
 
 		public static string? GetGameInstallPath(string appID)
 		{
-			string? steamInstallPath = GetSteamInstallPath();
-			if (steamInstallPath == null)
-				return null;
-
-			List<string> libraryFolders = GetSteamLibraryFolders(steamInstallPath);
-
-			foreach (string libraryFolder in libraryFolders)
+			try
 			{
-				string appManifestFile = Path.Combine(libraryFolder, $"appmanifest_{appID}.acf");
-				if (File.Exists(appManifestFile))
+				string? steamInstallPath = GetSteamInstallPath();
+				if (steamInstallPath == null)
+					return null;
+
+				List<string> libraryFolders = GetSteamLibraryFolders(steamInstallPath);
+
+				foreach (string libraryFolder in libraryFolders)
 				{
-					string[] lines = File.ReadAllLines(appManifestFile);
-					foreach (string line in lines)
+					string appManifestFile = Path.Combine(libraryFolder, $"appmanifest_{appID}.acf");
+					if (File.Exists(appManifestFile))
 					{
-						if (line.Trim().StartsWith("\"installdir\""))
+						string[] lines = File.ReadAllLines(appManifestFile);
+						foreach (string line in lines)
 						{
-							string installDir = line.Split('\"')[3];
-							return Path.Combine(libraryFolder, "common", installDir);
+							if (line.Trim().StartsWith("\"installdir\""))
+							{
+								string installDir = line.Split('\"')[3];
+								return Path.Combine(libraryFolder, "common", installDir);
+							}
 						}
 					}
 				}
 			}
+			catch (Exception){}
 			return null;
 		}
 		#endregion

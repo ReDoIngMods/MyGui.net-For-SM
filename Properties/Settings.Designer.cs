@@ -407,5 +407,17 @@ namespace MyGui.net.Properties {
                 this["ReferenceLanguage"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool HideSplashScreen {
+            get {
+                return ((bool)(this["HideSplashScreen"]));
+            }
+            set {
+                this["HideSplashScreen"] = value;
+            }
+        }
     }
 }

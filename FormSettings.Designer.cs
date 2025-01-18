@@ -43,6 +43,8 @@
 			workspaceSizeDefaultXNumericUpDown = new CustomNumericUpDown();
 			label4 = new Label();
 			groupBox14 = new GroupBox();
+			referenceLanguageComboBox = new ComboBox();
+			label8 = new Label();
 			referenceResolutionComboBox = new ComboBox();
 			label7 = new Label();
 			windowTabPage = new TabPage();
@@ -114,8 +116,8 @@
 			resetSettingsButton = new Button();
 			autoApplyCheckBox = new CheckBox();
 			editorBackgroundPathDialog = new OpenFileDialog();
-			referenceLanguageComboBox = new ComboBox();
-			label8 = new Label();
+			groupBox15 = new GroupBox();
+			hideSplashScreenCheckBox = new CheckBox();
 			tabControl1.SuspendLayout();
 			projectTabPage.SuspendLayout();
 			flowLayoutPanel2.SuspendLayout();
@@ -148,6 +150,7 @@
 			panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+			groupBox15.SuspendLayout();
 			SuspendLayout();
 			// 
 			// tabControl1
@@ -307,6 +310,26 @@
 			groupBox14.TabStop = false;
 			groupBox14.Text = "References";
 			// 
+			// referenceLanguageComboBox
+			// 
+			referenceLanguageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			referenceLanguageComboBox.FormattingEnabled = true;
+			referenceLanguageComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
+			referenceLanguageComboBox.Location = new Point(6, 81);
+			referenceLanguageComboBox.Name = "referenceLanguageComboBox";
+			referenceLanguageComboBox.Size = new Size(306, 23);
+			referenceLanguageComboBox.TabIndex = 6;
+			referenceLanguageComboBox.SelectedValueChanged += referenceLanguageComboBox_SelectedValueChanged;
+			// 
+			// label8
+			// 
+			label8.Location = new Point(6, 63);
+			label8.Name = "label8";
+			label8.Size = new Size(120, 15);
+			label8.TabIndex = 5;
+			label8.Text = "Reference Language";
+			label8.TextAlign = ContentAlignment.MiddleLeft;
+			// 
 			// referenceResolutionComboBox
 			// 
 			referenceResolutionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -346,6 +369,7 @@
 			flowLayoutPanel1.Controls.Add(groupBox8);
 			flowLayoutPanel1.Controls.Add(groupBox7);
 			flowLayoutPanel1.Controls.Add(groupBox1);
+			flowLayoutPanel1.Controls.Add(groupBox15);
 			flowLayoutPanel1.Location = new Point(0, 0);
 			flowLayoutPanel1.Margin = new Padding(0);
 			flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -1117,25 +1141,27 @@
 			editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
 			editorBackgroundPathDialog.Title = "Choose background image";
 			// 
-			// referenceLanguageComboBox
+			// groupBox15
 			// 
-			referenceLanguageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-			referenceLanguageComboBox.FormattingEnabled = true;
-			referenceLanguageComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
-			referenceLanguageComboBox.Location = new Point(6, 81);
-			referenceLanguageComboBox.Name = "referenceLanguageComboBox";
-			referenceLanguageComboBox.Size = new Size(306, 23);
-			referenceLanguageComboBox.TabIndex = 6;
-			referenceLanguageComboBox.SelectedValueChanged += referenceLanguageComboBox_SelectedValueChanged;
+			groupBox15.Controls.Add(hideSplashScreenCheckBox);
+			groupBox15.Location = new Point(3, 300);
+			groupBox15.Name = "groupBox15";
+			groupBox15.Size = new Size(178, 52);
+			groupBox15.TabIndex = 11;
+			groupBox15.TabStop = false;
+			groupBox15.Text = "Other";
 			// 
-			// label8
+			// hideSplashScreenCheckBox
 			// 
-			label8.Location = new Point(6, 63);
-			label8.Name = "label8";
-			label8.Size = new Size(120, 15);
-			label8.TabIndex = 5;
-			label8.Text = "Reference Language";
-			label8.TextAlign = ContentAlignment.MiddleLeft;
+			hideSplashScreenCheckBox.AccessibleDescription = "";
+			hideSplashScreenCheckBox.AutoSize = true;
+			hideSplashScreenCheckBox.Location = new Point(3, 22);
+			hideSplashScreenCheckBox.Name = "hideSplashScreenCheckBox";
+			hideSplashScreenCheckBox.Size = new Size(126, 19);
+			hideSplashScreenCheckBox.TabIndex = 2;
+			hideSplashScreenCheckBox.Text = "Hide Splash Screen";
+			hideSplashScreenCheckBox.UseVisualStyleBackColor = true;
+			hideSplashScreenCheckBox.CheckedChanged += hideSplashScreenCheckBox_CheckedChanged;
 			// 
 			// FormSettings
 			// 
@@ -1200,13 +1226,13 @@
 			panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+			groupBox15.ResumeLayout(false);
+			groupBox15.PerformLayout();
 			ResumeLayout(false);
 		}
 
 		#endregion
-
-		private TabControl tabControl1;
-        private TabPage windowTabPage;
+		private TabPage windowTabPage;
         private TabPage aboutTabPage;
         private FlowLayoutPanel flowLayoutPanel1;
         private CheckBox showWarningsCheckBox;
@@ -1292,5 +1318,8 @@
 		private Label label7;
 		private ComboBox referenceLanguageComboBox;
 		private Label label8;
+		public TabControl tabControl1;
+		private GroupBox groupBox15;
+		private CheckBox hideSplashScreenCheckBox;
 	}
 }

@@ -67,6 +67,7 @@ namespace MyGui.net
 			spriteFilteringLevel3.Checked = Settings.Default.ViewportFilteringLevel == 3;
 			renderInvisibleWidgetCheckBox.Checked = Settings.Default.RenderInvisibleWidgets;
 			renderWidgetNamesCheckBox.Checked = Settings.Default.RenderWidgetNames;
+			hideSplashScreenCheckBox.Checked = Settings.Default.HideSplashScreen;
 
 			useBackgroundImageColor.Checked = Settings.Default.EditorBackgroundMode == 0;
 			useBackgroundImageGrid.Checked = Settings.Default.EditorBackgroundMode == 1;
@@ -370,6 +371,13 @@ namespace MyGui.net
 			OnSettingChange();
 		}
 
+		private void hideSplashScreenCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			Settings.Default.HideSplashScreen = sender.Checked;
+			OnSettingChange();
+		}
+
 		public enum BackgroundMode
 		{
 			useBackgroundImageColor,
@@ -601,7 +609,6 @@ namespace MyGui.net
 			}
 			catch (Win32Exception win32Exception)
 			{
-				Debug.WriteLine(win32Exception.Message);
 			}
 		}
 
