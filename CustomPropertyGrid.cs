@@ -249,24 +249,10 @@ namespace MyGui.net
 
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			if (provider == null)
-				return value;
-
-				// Get the editor service for showing UI
-				var editorService = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
-			if (editorService == null)
-				return value;
-
-			// Select skin here
-			using (var form = new FormSkin())
+			if (Form1.skinForm.ShowDialog() == DialogResult.OK)
 			{
-				if (form.ShowDialog() == DialogResult.OK)
-				{
-					value = "Button";
-					//Debug.WriteLine("accepted!");
-				}
+				value = Form1.skinForm.outcome;
 			}
-
 			return value;
 		}
 	}

@@ -19,6 +19,7 @@ namespace MyGui.net
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	//TODO: add reload cache, clears it all and does the stuff
+	//TODO: better visualization of paths, like which steam user you are
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -125,6 +126,7 @@ namespace MyGui.net
 
 		static FormSideBar? _sidebarForm;
 
+		public static FormSkin skinForm;
 		public static FormInterfaceTag tagForm;
 		public static FormTextEditor textEditorForm;
 		public static FormSettings settingsForm;
@@ -415,6 +417,7 @@ namespace MyGui.net
 			  ControlStyles.AllPaintingInWmPaint | ControlStyles.CacheText, true);
 			this.UpdateStyles();
 
+			skinForm = new();
 			tagForm = new();
 			textEditorForm = new();
 			settingsForm = new();

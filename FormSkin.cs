@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,17 +22,17 @@ namespace MyGui.net
 		{
 			InitializeComponent();
 
-			Util.GetLanguageTagString("a", Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath); //TODO: create specialized load Interface Tags function
-
 			bindingSource = new BindingSource();
 
 			DataTable dataTable = new DataTable();
-			dataTable.Columns.Add("Tag", typeof(string));
-			dataTable.Columns.Add("Text", typeof(string));
+			dataTable.Columns.Add("Name", typeof(string));
+			dataTable.Columns.Add("Correct Type", typeof(string));
+			dataTable.Columns.Add("Texture Path", typeof(string));
 
-			foreach (var kv in Util.languageTags)
+			foreach (var kv in Form1.AllResources)
 			{
-				dataTable.Rows.Add(kv.Key, kv.Value);
+				MyGuiResource res = kv.Value;
+				dataTable.Rows.Add(kv.Key, res.correctType == "" ? "Any" : res.correctType, res.path ?? "Texture-less");
 			}
 
 			DataView dataView = new DataView(dataTable);
@@ -40,13 +41,13 @@ namespace MyGui.net
 			dataGridView1.DataSource = bindingSource;
 		}
 
-		private void FormInterfaceTag_Load(object sender, EventArgs e)
+		private void FormSkin_Load(object sender, EventArgs e)
 		{
 			DialogResult = DialogResult.None;
 			outcome = "";
 		}
 
-		private void FormInterfaceTag_FormClosing(object sender, FormClosingEventArgs e)
+		private void FormSkin_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			outcome = dataGridView1.SelectedCells[0].Value.ToString();
 		}
@@ -69,12 +70,12 @@ namespace MyGui.net
 			}
 			else
 			{
-				bindingSource.Filter = $"Tag LIKE '*{searchValue}*' OR Text LIKE '*{searchValue}*'";
+				bindingSource.Filter = $"Name LIKE '*{searchValue}*'";
 				dataGridView1.Refresh();
 			}
 		}
 
-		private void FormInterfaceTag_KeyDown(object sender, KeyEventArgs e)
+		private void FormSkin_KeyDown(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter)
 			{

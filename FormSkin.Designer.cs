@@ -35,12 +35,16 @@
 			searchBox = new TextBox();
 			dataGridView1 = new DataGridView();
 			splitContainer1 = new SplitContainer();
-			skControl1 = new SkiaSharp.Views.Desktop.SKControl();
+			splitContainer2 = new SplitContainer();
+			previewViewport = new SkiaSharp.Views.Desktop.SKControl();
 			((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
 			splitContainer1.Panel1.SuspendLayout();
 			splitContainer1.Panel2.SuspendLayout();
 			splitContainer1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+			splitContainer2.Panel1.SuspendLayout();
+			splitContainer2.SuspendLayout();
 			SuspendLayout();
 			// 
 			// applyButton
@@ -75,6 +79,7 @@
 			searchBox.PlaceholderText = "Search";
 			searchBox.Size = new Size(250, 23);
 			searchBox.TabIndex = 11;
+			searchBox.TextChanged += searchBox_TextChanged;
 			// 
 			// dataGridView1
 			// 
@@ -121,6 +126,7 @@
 			dataGridView1.Size = new Size(503, 377);
 			dataGridView1.StandardTab = true;
 			dataGridView1.TabIndex = 10;
+			dataGridView1.CellContentDoubleClick += dataGridView1_CellContentDoubleClick;
 			// 
 			// splitContainer1
 			// 
@@ -136,20 +142,36 @@
 			// 
 			// splitContainer1.Panel2
 			// 
-			splitContainer1.Panel2.Controls.Add(skControl1);
+			splitContainer1.Panel2.Controls.Add(splitContainer2);
 			splitContainer1.Size = new Size(760, 379);
 			splitContainer1.SplitterDistance = 505;
 			splitContainer1.TabIndex = 14;
 			// 
-			// skControl1
+			// splitContainer2
 			// 
-			skControl1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-			skControl1.BackColor = Color.Black;
-			skControl1.Location = new Point(0, 0);
-			skControl1.Name = "skControl1";
-			skControl1.Size = new Size(250, 250);
-			skControl1.TabIndex = 0;
-			skControl1.Text = "skControl1";
+			splitContainer2.BorderStyle = BorderStyle.FixedSingle;
+			splitContainer2.Dock = DockStyle.Fill;
+			splitContainer2.FixedPanel = FixedPanel.Panel1;
+			splitContainer2.Location = new Point(0, 0);
+			splitContainer2.Name = "splitContainer2";
+			splitContainer2.Orientation = Orientation.Horizontal;
+			// 
+			// splitContainer2.Panel1
+			// 
+			splitContainer2.Panel1.Controls.Add(previewViewport);
+			splitContainer2.Size = new Size(251, 379);
+			splitContainer2.SplitterDistance = 208;
+			splitContainer2.TabIndex = 1;
+			// 
+			// previewViewport
+			// 
+			previewViewport.BackColor = Color.Black;
+			previewViewport.Dock = DockStyle.Fill;
+			previewViewport.Location = new Point(0, 0);
+			previewViewport.Name = "previewViewport";
+			previewViewport.Size = new Size(249, 206);
+			previewViewport.TabIndex = 0;
+			previewViewport.Text = "skControl1";
 			// 
 			// FormSkin
 			// 
@@ -160,6 +182,7 @@
 			Controls.Add(applyButton);
 			Controls.Add(cancelButton);
 			Controls.Add(searchBox);
+			KeyPreview = true;
 			MinimizeBox = false;
 			MinimumSize = new Size(300, 200);
 			Name = "FormSkin";
@@ -168,11 +191,17 @@
 			SizeGripStyle = SizeGripStyle.Show;
 			StartPosition = FormStartPosition.CenterParent;
 			Text = "Select Skin";
+			FormClosing += FormSkin_FormClosing;
+			Load += FormSkin_Load;
+			KeyDown += FormSkin_KeyDown;
 			((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
 			splitContainer1.Panel1.ResumeLayout(false);
 			splitContainer1.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
 			splitContainer1.ResumeLayout(false);
+			splitContainer2.Panel1.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
+			splitContainer2.ResumeLayout(false);
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -184,6 +213,7 @@
 		private TextBox searchBox;
 		private DataGridView dataGridView1;
 		private SplitContainer splitContainer1;
-		private SkiaSharp.Views.Desktop.SKControl skControl1;
+		private SkiaSharp.Views.Desktop.SKControl previewViewport;
+		private SplitContainer splitContainer2;
 	}
 }

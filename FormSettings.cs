@@ -151,9 +151,14 @@ namespace MyGui.net
 				{
 					if (Util.IsValidFile(Path.Combine(smPathDialog.SelectedPath, "Data/Gui/GuiConfig.xml")))
 					{
-						Settings.Default.ScrapMechanicPath = smPathDialog.SelectedPath;
-						smPathLabel.Text = Settings.Default.ScrapMechanicPath;
-						OnSettingChange();
+
+						if (Settings.Default.ScrapMechanicPath != smPathDialog.SelectedPath)
+						{
+							Settings.Default.ScrapMechanicPath = smPathDialog.SelectedPath;
+							smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+							_needsRestartToApply = true;
+							OnSettingChange();
+						}
 						break;
 					}
 					else
@@ -178,9 +183,13 @@ namespace MyGui.net
 			string? gamePathFromSteam = Util.GetGameInstallPath("387990");
 			if (gamePathFromSteam != null)
 			{
-				Settings.Default.ScrapMechanicPath = gamePathFromSteam;
-				smPathLabel.Text = Settings.Default.ScrapMechanicPath;
-				OnSettingChange();
+				if (Settings.Default.ScrapMechanicPath != gamePathFromSteam)
+				{
+					Settings.Default.ScrapMechanicPath = gamePathFromSteam;
+					smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+					_needsRestartToApply = true;
+					OnSettingChange();
+				}
 			}
 			else
 			{

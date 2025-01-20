@@ -86,7 +86,7 @@ namespace MyGui.net
 					if (line.Contains("\"path\""))
 					{
 						string path = line.Split('\"')[3];
-						libraryFolders.Add(Path.Combine(path, "steamapps"));
+						libraryFolders.Add(Path.Combine(path.Replace(@"\\", @"\"), "steamapps"));
 					}
 				}
 			}
