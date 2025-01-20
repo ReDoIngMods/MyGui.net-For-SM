@@ -1156,6 +1156,10 @@ namespace MyGui.net
 			};
 			foreach (var path in modFolders)
 			{
+				if (!Directory.Exists(path))
+				{
+					continue;
+				}
 				foreach (var modPath in Directory.GetDirectories(path))
 				{
 					string descJsonPath = Path.Combine(modPath, "description.json");
