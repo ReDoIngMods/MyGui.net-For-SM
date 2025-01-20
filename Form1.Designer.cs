@@ -48,6 +48,7 @@ namespace MyGui.net
 			fileToolStripMenuItem = new ToolStripMenuItem();
 			newToolStripMenuItem = new ToolStripMenuItem();
 			openToolStripMenuItem = new ToolStripMenuItem();
+			openRecentToolStripMenuItem = new ToolStripMenuItem();
 			refreshToolStripMenuItem = new ToolStripMenuItem();
 			toolStripSeparator1 = new ToolStripSeparator();
 			saveToolStripMenuItem = new ToolStripMenuItem();
@@ -161,6 +162,7 @@ namespace MyGui.net
 			viewportScrollX.Maximum = 1920;
 			viewportScrollX.Minimum = -1920;
 			viewportScrollX.Name = "viewportScrollX";
+			viewportScrollX.ScaleScrollBarForDpiChange = false;
 			viewportScrollX.Size = new Size(906, 16);
 			viewportScrollX.SmallChange = 10;
 			viewportScrollX.TabIndex = 2;
@@ -174,6 +176,7 @@ namespace MyGui.net
 			viewportScrollY.Maximum = 1080;
 			viewportScrollY.Minimum = -1080;
 			viewportScrollY.Name = "viewportScrollY";
+			viewportScrollY.ScaleScrollBarForDpiChange = false;
 			viewportScrollY.Size = new Size(16, 623);
 			viewportScrollY.SmallChange = 10;
 			viewportScrollY.TabIndex = 1;
@@ -265,7 +268,7 @@ namespace MyGui.net
 			// fileToolStripMenuItem
 			// 
 			fileToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
-			fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, refreshToolStripMenuItem, toolStripSeparator1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator3, optionsToolStripMenuItem, testToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
+			fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { newToolStripMenuItem, openToolStripMenuItem, openRecentToolStripMenuItem, refreshToolStripMenuItem, toolStripSeparator1, saveToolStripMenuItem, saveAsToolStripMenuItem, toolStripSeparator3, optionsToolStripMenuItem, testToolStripMenuItem, toolStripSeparator2, exitToolStripMenuItem });
 			fileToolStripMenuItem.Name = "fileToolStripMenuItem";
 			fileToolStripMenuItem.Size = new Size(37, 20);
 			fileToolStripMenuItem.Text = "File";
@@ -287,6 +290,13 @@ namespace MyGui.net
 			openToolStripMenuItem.Size = new Size(186, 22);
 			openToolStripMenuItem.Text = "Open";
 			openToolStripMenuItem.Click += openToolStripMenuItem_Click;
+			// 
+			// openRecentToolStripMenuItem
+			// 
+			openRecentToolStripMenuItem.Enabled = false;
+			openRecentToolStripMenuItem.Name = "openRecentToolStripMenuItem";
+			openRecentToolStripMenuItem.Size = new Size(186, 22);
+			openRecentToolStripMenuItem.Text = "Recent";
 			// 
 			// refreshToolStripMenuItem
 			// 
@@ -648,5 +658,6 @@ namespace MyGui.net
 		private ToolStripSeparator toolStripSeparator5;
 		private ToolStripSeparator toolStripSeparator6;
 		private ToolStripMenuItem newWidgetToolStripMenuItem;
+		private ToolStripMenuItem openRecentToolStripMenuItem;
 	}
 }

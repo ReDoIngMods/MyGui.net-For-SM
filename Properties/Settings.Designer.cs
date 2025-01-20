@@ -419,5 +419,17 @@ namespace MyGui.net.Properties {
                 this["HideSplashScreen"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RecentlyOpenedFiles {
+            get {
+                return ((string)(this["RecentlyOpenedFiles"]));
+            }
+            set {
+                this["RecentlyOpenedFiles"] = value;
+            }
+        }
     }
 }

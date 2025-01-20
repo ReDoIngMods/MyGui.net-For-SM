@@ -76,6 +76,7 @@ namespace MyGui.net
 		};
 
 		CommandManager _commandManager = new CommandManager();
+		List<string> _recentFiles = new();
 
 		static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
 
@@ -342,6 +343,13 @@ namespace MyGui.net
 				Debug.WriteLine($"{item.Key}: {item.Value}");
 			}*/
 			HandleWidgetSelection();
+
+
+			if (!string.IsNullOrEmpty(Settings.Default.RecentlyOpenedFiles))
+			{
+				_recentFiles = Settings.Default.RecentlyOpenedFiles.Split(';').ToList();
+				UpdateRecentFilesMenu();
+			}
 
 			if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
 			{
@@ -1725,6 +1733,41 @@ namespace MyGui.net
 			}
 		}
 
+		void AddToRecentFiles(string filePath)
+		{
+			// Remove if it already exists
+			_recentFiles.Remove(filePath);
+
+			// Insert at the beginning
+			_recentFiles.Insert(0, filePath);
+
+			// Limit the list size
+			if (_recentFiles.Count > 10)
+				_recentFiles.RemoveAt(10);
+
+			UpdateRecentFilesMenu();
+
+			Settings.Default.RecentlyOpenedFiles = string.Join(";", _recentFiles);
+			Settings.Default.Save();
+		}
+
+		void UpdateRecentFilesMenu()
+		{
+			openRecentToolStripMenuItem.Enabled = _recentFiles.Count > 0;
+			openRecentToolStripMenuItem.DropDownItems.Clear();
+
+			var resetItem = new ToolStripMenuItem("Clear");
+			resetItem.Click += (s, e) => { _recentFiles.Clear(); UpdateRecentFilesMenu(); };
+			openRecentToolStripMenuItem.DropDownItems.Add(resetItem);
+
+			foreach (string file in _recentFiles)
+			{
+				var item = new ToolStripMenuItem(file);
+				item.Click += (s, e) => OpenLayout(file);
+				openRecentToolStripMenuItem.DropDownItems.Add(item);
+			}
+		}
+
 		private void refreshToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (Util.IsValidFile(_currentLayoutPath))
@@ -1746,6 +1789,8 @@ namespace MyGui.net
 		private void OpenLayout(string file)
 		{
 			ClearStacks();
+
+			AddToRecentFiles(file);
 
 			string fileName = Path.GetFileNameWithoutExtension(file);
 
@@ -1904,6 +1949,9 @@ namespace MyGui.net
 			{
 				SaveFormPosition();
 			}
+
+			Settings.Default.RecentlyOpenedFiles = string.Join(";", _recentFiles);
+			Settings.Default.Save();
 		}
 
 		private void SaveFormPosition()
