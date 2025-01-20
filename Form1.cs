@@ -2373,7 +2373,7 @@ namespace MyGui.net
 
 			var property = e.ChangedItem.Parent?.PropertyDescriptor != null ? e.ChangedItem.Parent : e.ChangedItem;
 
-			var value = Util.IsAnyOf<string>(property.Value.ToString(), ["[DEFAULT]", "Default", ""]) ? null : property.Value;
+			var value = Util.IsAnyOf<string>(property.Value?.ToString() ?? "", ["[DEFAULT]", "Default", ""]) ? null : property.Value;
 			Type currentWidgetPropertyType = _widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget);
 			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetInheritedFieldValue(currentWidgetPropertyType, property.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
 		}
