@@ -140,6 +140,12 @@ namespace MyGui.net
 		void HandleLoad(string autoloadPath = "")
 		{
 
+			if (!string.IsNullOrEmpty(Settings.Default.RecentlyOpenedFiles))
+			{
+				_recentFiles = Settings.Default.RecentlyOpenedFiles.Split(';').ToList();
+				UpdateRecentFilesMenu();
+			}
+
 			this.Text = $"{Util.programName} - {(autoloadPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? autoloadPath : Path.GetFileName(autoloadPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
 			Settings.Default.PropertyChanged += Settings_PropertyChanged;
 			widgetGridSpacingNumericUpDown.Value = _gridSpacing;
@@ -153,6 +159,7 @@ namespace MyGui.net
 				_currentLayoutPath = autoloadPath;
 				_currentLayoutSavePath = autoloadPath;
 				//Debug.WriteLine(_currentLayoutPath);
+				AddToRecentFiles(autoloadPath);
 				_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize) ?? new();
 				refreshToolStripMenuItem.Enabled = true;
 				viewport.Refresh();
@@ -345,13 +352,6 @@ namespace MyGui.net
 				Debug.WriteLine($"{item.Key}: {item.Value}");
 			}*/
 			HandleWidgetSelection();
-
-
-			if (!string.IsNullOrEmpty(Settings.Default.RecentlyOpenedFiles))
-			{
-				_recentFiles = Settings.Default.RecentlyOpenedFiles.Split(';').ToList();
-				UpdateRecentFilesMenu();
-			}
 
 			if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
 			{
