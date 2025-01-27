@@ -53,12 +53,6 @@ namespace MyGui.net
 			outcome = dataGridView1.SelectedCells[0].Value.ToString();
 		}
 
-		private void dataGridView1_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
-		{
-			DialogResult = DialogResult.OK;
-			this.Close();
-		}
-
 		private void searchBox_TextChanged(object senderAny, EventArgs e)
 		{
 			string searchValue = searchBox.Text.Trim().ToLower();
@@ -80,8 +74,17 @@ namespace MyGui.net
 		{
 			if (e.KeyCode == Keys.Enter)
 			{
-				dataGridView1_CellContentDoubleClick(null, new DataGridViewCellEventArgs(0,0));
+				dataGridView1_CellMouseDoubleClick(null, new DataGridViewCellMouseEventArgs(1, 1, 0, 0, new(MouseButtons.Left, 2, 1, 1, 1)));
 				e.Handled = true;
+			}
+		}
+
+		private void dataGridView1_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
+		{
+			if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+			{
+				DialogResult = DialogResult.OK;
+				this.Close();
 			}
 		}
 	}

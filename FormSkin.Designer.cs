@@ -126,7 +126,7 @@
 			dataGridView1.Size = new Size(503, 377);
 			dataGridView1.StandardTab = true;
 			dataGridView1.TabIndex = 10;
-			dataGridView1.CellDoubleClick += dataGridView1_CellContentDoubleClick;
+			dataGridView1.CellMouseDoubleClick += dataGridView1_CellMouseDoubleClick;
 			// 
 			// splitContainer1
 			// 
