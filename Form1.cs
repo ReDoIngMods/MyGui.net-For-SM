@@ -20,6 +20,9 @@ namespace MyGui.net
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	//TODO: add reload cache, clears it all and does the stuff
 	//TODO: better visualization of paths, like which steam user you are
+	//TODO: SaveAs disrespects _pixels
+	//TODO: Opening via file explorer also ignores the px over % override
+	//TODO: exporting at custom resolutions doesnt apply
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -79,7 +82,7 @@ namespace MyGui.net
 		CommandManager _commandManager = new CommandManager();
 		List<string> _recentFiles = new();
 
-		static string _scrapMechanicPath = Settings.Default.ScrapMechanicPath;
+		static string _scrapMechanicPath => Settings.Default.ScrapMechanicPath;
 
 		public static string ScrapMechanicPath => _scrapMechanicPath;
 		/// <summary>
@@ -699,7 +702,7 @@ namespace MyGui.net
 					widget.position.Y + parent.size.Y
 				), new(widget.position.X + widget.size.X, widget.position.Y + widget.size.Y));*/
 
-				Point a = new Point(oldSize.Value.X - widget.position.X, oldSize.Value.Y - widget.position.Y);
+				Point a = new Point(oldSize.Value.X - (widget.position.X + widget.size.X), oldSize.Value.Y - (widget.position.Y + widget.size.Y));
 				rect = GetAlignedRectangle(
 					widget.align,
 					new SKRect(
@@ -894,11 +897,16 @@ namespace MyGui.net
 				case "Stretch":
 					// Stretched: ???
 					//parentSize - position + size 
-					Point parentSize = new(widgetPosFromRight.X + widgetSize.X, widgetPosFromRight.Y + widgetSize.Y);
-					//Debug.WriteLine($"widgetPosFromLeft.X: {-widgetPosFromLeft.X}");
+					/*Point parentSize = new(widgetPosFromRight.X - widgetSize.X, widgetPosFromRight.Y - widgetSize.Y);
 					sizeOffsetX = parentSize.X - widgetPosFromLeft.X + widgetSizeOriginal.X;
-					//Debug.WriteLine($"sizeOffsetX: {sizeOffsetX}");
-					sizeOffsetY = parentSize.Y - widgetPosFromLeft.Y + widgetSizeOriginal.Y;
+					sizeOffsetY = parentSize.Y - widgetPosFromLeft.Y + widgetSizeOriginal.Y;*/
+
+
+					//sizeOffsetX = - 5; // fixes for thing
+					//sizeOffsetY = -5;
+
+
+					//sizeOffsetY = widgetPosFromLeft.Y;
 					break;
 
 				case "Center":
