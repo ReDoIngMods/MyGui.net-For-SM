@@ -12,7 +12,7 @@ using System.Windows.Forms.Design;
 namespace MyGui.net
 {
 	#region Templates
-	public class CustomSelectorControl : UserControl
+	/*public class CustomSelectorControl : UserControl
 	{
 		private ComboBox _comboBox;
 		private Button _button;
@@ -94,7 +94,7 @@ namespace MyGui.net
 
 			return value;
 		}
-	}
+	}*/
 	#endregion
 
 	#region TypeConverters
