@@ -1050,6 +1050,17 @@ namespace MyGui.net
 			return languageTags[tagName];
 		}
 
+		public static string ReplaceLanguageTagsInString(string str, string language, string smPath)
+		{
+			string pattern = @"#\{(.*?)\}";  // Matches #{ANYTHING}
+
+			str = Regex.Replace(str, pattern, match =>
+			{
+				return GetLanguageTagString(match.Groups[0].Value.Replace("#{", "").Replace("}", ""), language, smPath);  // Replace match
+			});
+			return str;
+		}
+
 		public static void PrintFontData(string language, string smPath)
 		{
 			Debug.WriteLine("FONT DATA:");

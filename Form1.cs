@@ -20,9 +20,9 @@ namespace MyGui.net
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	//TODO: add reload cache, clears it all and does the stuff
 	//TODO: better visualization of paths, like which steam user you are
-	//TODO: SaveAs disrespects _pixels
 	//TODO: Opening via file explorer also ignores the px over % override
 	//TODO: exporting at custom resolutions doesnt apply
+	//TODO: when pressing another arrow when moving, it moves the control to 0,0 on Undo for some reason
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -160,6 +160,8 @@ namespace MyGui.net
 					return;
 				}
 				_currentLayoutPath = autoloadPath;
+				OpenLayout(_currentLayoutPath);
+				/*_currentLayoutPath = autoloadPath;
 				_currentLayoutSavePath = autoloadPath;
 				//Debug.WriteLine(_currentLayoutPath);
 				AddToRecentFiles(autoloadPath);
@@ -167,7 +169,7 @@ namespace MyGui.net
 				refreshToolStripMenuItem.Enabled = true;
 				viewport.Refresh();
 				//Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
-				//Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+				//Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));*/
 			}
 
 			UpdateViewportBackground();
@@ -1052,9 +1054,11 @@ namespace MyGui.net
 							_baseFontPaint.Typeface = _fontCache[fontPath];
 							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 
+							string captionText = Util.ReplaceLanguageTagsInString(widgetSecondaryData.properties["Caption"], Settings.Default.ReferenceLanguage, _scrapMechanicPath);
+
 							var spacingX = destRect.Left;
 							var spacingY = destRect.Top + _baseFontPaint.TextSize;
-							foreach (var character in fontData.allowedChars == "ALL CHARACTERS" ? widgetSecondaryData.properties["Caption"] : ReplaceInvalidChars(widgetSecondaryData.properties["Caption"], fontData.allowedChars))
+							foreach (var character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
 							{
 								/*if (!destRect.Contains(new SKPoint(spacingX + _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0), spacingY)))
 								{
@@ -1801,14 +1805,14 @@ namespace MyGui.net
 		{
 			ClearStacks();
 
-			AddToRecentFiles(file);
-
 			string fileName = Path.GetFileNameWithoutExtension(file);
 
 			if (Settings.Default.PreferPixelLayouts && !fileName.EndsWith(Settings.Default.PixelLayoutSuffix) && Util.IsValidFile(Util.AppendToFile(file, Settings.Default.PixelLayoutSuffix)))
 			{
 				file = Util.AppendToFile(file, Settings.Default.PixelLayoutSuffix);
 			}
+
+			AddToRecentFiles(file);
 
 			_currentLayoutPath = file;
 			_currentLayoutSavePath = _currentLayoutPath;
@@ -1901,6 +1905,24 @@ namespace MyGui.net
 			{
 				_currentLayoutPath = saveLayoutDialog.FileName;
 				_currentLayoutSavePath = saveLayoutDialog.FileName;
+
+				string actualPath = Path.GetFileNameWithoutExtension(_currentLayoutSavePath);
+				string suffix = Settings.Default.PixelLayoutSuffix;
+
+				// If the file name ends with the suffix, remove it.
+				if (actualPath.EndsWith(suffix))
+				{
+					string directory = Path.GetDirectoryName(_currentLayoutSavePath);
+					string fileNameWithoutSuffix = actualPath.Substring(0, actualPath.Length - suffix.Length);
+					string extension = Path.GetExtension(_currentLayoutSavePath);
+					actualPath = Path.Combine(directory, fileNameWithoutSuffix + extension);
+				}
+				else
+				{
+					actualPath = _currentLayoutSavePath; // Return the original path if it doesn't end with the suffix.
+				}
+
+
 				int actualExport = Settings.Default.ExportMode;
 				if (actualExport == 2)
 				{
@@ -1910,14 +1932,14 @@ namespace MyGui.net
 				}
 				if (actualExport == 0 || actualExport == 3)
 				{
-					using (StreamWriter outputFile = new StreamWriter(actualExport == 3 ? Util.AppendToFile(_currentLayoutSavePath, "_pixels") : _currentLayoutSavePath))
+					using (StreamWriter outputFile = new StreamWriter(actualExport == 3 ? Util.AppendToFile(actualPath, suffix) : actualPath))
 					{
 						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
 					}
 				}
 				if (actualExport == 1 || actualExport == 3)
 				{
-					using (StreamWriter outputFile = new StreamWriter(_currentLayoutSavePath))
+					using (StreamWriter outputFile = new StreamWriter(actualPath))
 					{
 						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
 					}
