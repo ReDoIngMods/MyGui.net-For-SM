@@ -444,9 +444,49 @@ namespace MyGui.net
 			viewport.Refresh();
 		}
 
+		private void LoadTreeView(List<MyGuiWidgetData> customList)
+		{
+			// Clear the TreeView before adding new nodes
+			treeView1.Nodes.Clear();
+
+			// Loop through each item in the custom list
+			foreach (var customItem in customList)
+			{
+				// Create the root node for each Custom item
+				string treeNodeText = (customItem.name ?? $"[DEFAULT]") + (customItem.name == null || Settings.Default.ShowTypesForNamedWidgets ? $" ({customItem.type})" : "");
+
+				TreeNode rootNode = new TreeNode(treeNodeText);
+
+				// Add the root node to the TreeView
+				treeView1.Nodes.Add(rootNode);
+
+				// Recursively add children
+				AddChildrenToTree(rootNode, customItem.children);
+			}
+		}
+
+		// Recursive method to add children to the TreeNode
+		private void AddChildrenToTree(TreeNode parentNode, List<MyGuiWidgetData> children)
+		{
+			foreach (var child in children)
+			{
+				// Create a TreeNode for each child and add it as a child to the parent
+				string treeNodeText = (child.name ?? $"[DEFAULT]") + (child.name == null || Settings.Default.ShowTypesForNamedWidgets ? $" ({child.type})" : "");
+
+				TreeNode childNode = new TreeNode(treeNodeText);
+				parentNode.Nodes.Add(childNode);
+
+				// Recursively add any further children
+				AddChildrenToTree(childNode, child.children);
+			}
+		}
+
 		void ExecuteCommand(IEditorAction command)
 		{
 			_commandManager.ExecuteCommand(command);
+
+			LoadTreeView(_currentLayout);
+
 			viewport.Refresh();
 			UpdateUndoRedo();
 		}
