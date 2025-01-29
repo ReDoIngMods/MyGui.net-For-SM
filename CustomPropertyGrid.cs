@@ -105,7 +105,9 @@ namespace MyGui.net
 		{
 			{ "Layer", ["Default", "ToolTip", "Info", "FadeMiddle", "Popup", "Main", "Modal", "Middle", "Overlapped", "Back"] },
 			{ "Type", ["Widget", "Button", "Canvas", "ComboBox", "DDContainer", "EditBox", "ItemBox", "ListBox", "MenuBar", "MultiListBox", "PopupMenu", "ProgressBar", "ScrollBar", "ScrollView", "ImageBox", "TextBox", "TabControl", "Window"] },
-			{ "FlowDirection", ["Default", "LeftToRight", "RightToLeft", "TopToBottom", "BottomToTop"] }
+			{ "FlowDirection", ["Default", "LeftToRight", "RightToLeft", "TopToBottom", "BottomToTop"] },
+			{ "TextAlign", ["Default", "Center", "Left Top", "Left Bottom", "Left VCenter", "Right Top", "Right Bottom", "Right VCenter", "HCenter Top", "HCenter Bottom", "HCenter VCenter"] },
+			{ "Align", ["Default", "Stretch", "Center", "Left Top", "Left Bottom", "Left VStretch", "Left VCenter", "Right Top", "Right Bottom", "Right VStretch", "Right VCenter", "HStretch Top", "HCenter Top", "HStretch Bottom", "HStretch VCenter", "HCenter Bottom", "HCenter VCenter", "HCenter VStretch"] }
 		};
 
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
@@ -396,6 +398,460 @@ namespace MyGui.net
 				CheckState.Checked => CheckState.Indeterminate,
 				_ => CheckState.Unchecked
 			};
+		}
+	}
+
+	public class BasicAlignEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Indicate that this editor will use a modal dialog
+			return UITypeEditorEditStyle.DropDown;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			if (provider?.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService editorService)
+			{
+				// Create a panel to hold the checkbox and label
+				var panel = new Panel { Height = 125, Width = 125 };
+
+				var buttonCenter = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 39),
+					Name = "buttonCenter",
+					Size = new Size(47, 47),
+					TabIndex = 8,
+					Text = "+",
+					UseVisualStyleBackColor = true,
+					Tag = "Center"
+				};
+
+				var buttonBottom = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 92),
+					Name = "buttonBottom",
+					Size = new Size(47, 30),
+					TabIndex = 7,
+					Text = "↓",
+					UseVisualStyleBackColor = true,
+					Tag = "HCenter Bottom"
+				};
+
+				var buttonTop = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 3),
+					Name = "buttonTop",
+					Size = new Size(47, 30),
+					TabIndex = 6,
+					Text = "↑",
+					UseVisualStyleBackColor = true,
+					Tag = "HCenter Top"
+				};
+
+				var buttonRight = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(92, 39),
+					Name = "buttonRight",
+					Size = new Size(30, 47),
+					TabIndex = 5,
+					Text = "→",
+					UseVisualStyleBackColor = true,
+					Tag = "Right VCenter"
+				};
+
+				var buttonLeft = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(3, 39),
+					Name = "buttonLeft",
+					Size = new Size(30, 47),
+					TabIndex = 4,
+					Text = "←",
+					UseVisualStyleBackColor = true,
+					Tag = "Left VCenter"
+				};
+
+				var buttonBottomRight = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(92, 92),
+					Name = "buttonBottomRight",
+					Size = new Size(30, 30),
+					TabIndex = 3,
+					Text = "↘",
+					UseVisualStyleBackColor = true,
+					Tag = "Right Bottom"
+				};
+
+				var buttonBottomLeft = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(3, 92),
+					Name = "buttonBottomLeft",
+					Size = new Size(30, 30),
+					TabIndex = 2,
+					Text = "↙",
+					UseVisualStyleBackColor = true,
+					Tag = "Left Bottom"
+				};
+
+				var buttonTopRight = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(92, 3),
+					Name = "buttonTopRight",
+					Size = new Size(30, 30),
+					TabIndex = 1,
+					Text = "↗",
+					UseVisualStyleBackColor = true,
+					Tag = "Right Top"
+				};
+
+				var buttonTopLeft = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(3, 3),
+					Name = "buttonTopLeft",
+					Size = new Size(30, 30),
+					TabIndex = 0,
+					Text = "↖",
+					UseVisualStyleBackColor = true,
+					Tag = ""
+				};
+
+				Control[] controls = [
+					buttonCenter, buttonBottom, buttonTop, buttonRight, buttonLeft,
+					buttonBottomRight, buttonBottomLeft, buttonTopRight, buttonTopLeft
+				];
+
+				foreach (var item in controls)
+				{
+					item.Click += (senderAny, e) => {
+						value = ((Control)senderAny).Tag.ToString(); // Set the return value
+						editorService.CloseDropDown(); // Close dropdown after selection
+					};
+				}
+
+				panel.Controls.AddRange(controls);
+
+				// Show the dropdown with the panel
+				editorService.DropDownControl(panel);
+			}
+
+			return value;
+		}
+	}
+
+	public class AdvancedAlignEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Indicate that this editor will use a modal dialog
+			return UITypeEditorEditStyle.DropDown;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			if (provider?.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService editorService)
+			{
+				// Create a panel to hold the checkbox and label
+				var panel = new Panel { Height = 151, Width = 271 };
+
+				// panel2
+				var panel2 = new Panel
+				{
+					Location = new Point(6, 18),
+					Name = "panel2",
+					Size = new Size(127, 127),
+					TabIndex = 9,
+					BorderStyle = BorderStyle.FixedSingle
+				};
+
+				// buttonBottomLeft
+				var buttonBottomLeft = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(3, 92),
+					Name = "buttonBottomLeft",
+					Size = new Size(30, 30),
+					TabIndex = 2,
+					Text = "↙",
+					UseVisualStyleBackColor = true,
+					Tag = "Left Bottom"
+				};
+
+				// buttonTopLeft
+				var buttonTopLeft = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(3, 3),
+					Name = "buttonTopLeft",
+					Size = new Size(30, 30),
+					TabIndex = 0,
+					Text = "↖",
+					UseVisualStyleBackColor = true,
+					Tag = ""
+				};
+
+				// buttonTop
+				var buttonTop = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 3),
+					Name = "buttonTop",
+					Size = new Size(47, 30),
+					TabIndex = 6,
+					Text = "↑",
+					UseVisualStyleBackColor = true,
+					Tag = "HCenter Top"
+				};
+
+				// buttonCenter
+				var buttonCenter = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 39),
+					Name = "buttonCenter",
+					Size = new Size(47, 47),
+					TabIndex = 8,
+					Text = "+",
+					UseVisualStyleBackColor = true,
+					Tag = "Center"
+				};
+
+				// buttonBottom
+				var buttonBottom = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 92),
+					Name = "buttonBottom",
+					Size = new Size(47, 30),
+					TabIndex = 7,
+					Text = "↓",
+					UseVisualStyleBackColor = true,
+					Tag = "HCenter Bottom"
+				};
+
+				// buttonLeft
+				var buttonLeft = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(3, 39),
+					Name = "buttonLeft",
+					Size = new Size(30, 47),
+					TabIndex = 4,
+					Text = "←",
+					UseVisualStyleBackColor = true,
+					Tag = "Left VCenter"
+				};
+
+				// buttonRight
+				var buttonRight = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(92, 39),
+					Name = "buttonRight",
+					Size = new Size(30, 47),
+					TabIndex = 5,
+					Text = "→",
+					UseVisualStyleBackColor = true,
+					Tag = "Right VCenter"
+				};
+
+				// buttonTopRight
+				var buttonTopRight = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(92, 3),
+					Name = "buttonTopRight",
+					Size = new Size(30, 30),
+					TabIndex = 1,
+					Text = "↗",
+					UseVisualStyleBackColor = true,
+					Tag = "Right Top"
+				};
+
+				// buttonBottomRight
+				var buttonBottomRight = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(92, 92),
+					Name = "buttonBottomRight",
+					Size = new Size(30, 30),
+					TabIndex = 3,
+					Text = "↘",
+					UseVisualStyleBackColor = true,
+					Tag = "Right Bottom"
+				};
+
+				// Add controls to panel2
+				panel2.Controls.Add(buttonBottomLeft);
+				panel2.Controls.Add(buttonTopLeft);
+				panel2.Controls.Add(buttonTop);
+				panel2.Controls.Add(buttonCenter);
+				panel2.Controls.Add(buttonBottom);
+				panel2.Controls.Add(buttonLeft);
+				panel2.Controls.Add(buttonRight);
+				panel2.Controls.Add(buttonTopRight);
+				panel2.Controls.Add(buttonBottomRight);
+
+				// panel4
+				var panel4 = new Panel
+				{
+					Location = new Point(139, 18),
+					Name = "panel4",
+					Size = new Size(127, 127),
+					TabIndex = 10,
+					BorderStyle = BorderStyle.FixedSingle
+				};
+
+				// buttonTopScale
+				var buttonTopScale = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 3),
+					Name = "buttonTopScale",
+					Size = new Size(47, 30),
+					TabIndex = 6,
+					Text = "↔",
+					TextAlign = ContentAlignment.BottomCenter,
+					UseVisualStyleBackColor = true,
+					Tag = "HStretch Top"
+				};
+
+				// buttonStretch
+				var buttonStretch = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 39),
+					Name = "buttonStretch",
+					Size = new Size(47, 47),
+					TabIndex = 8,
+					Text = "+",
+					UseVisualStyleBackColor = true,
+					Tag = "Stretch"
+				};
+
+				// buttonBottomScale
+				var buttonBottomScale = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(39, 92),
+					Name = "buttonBottomScale",
+					Size = new Size(47, 30),
+					TabIndex = 7,
+					Text = "↔",
+					TextAlign = ContentAlignment.BottomCenter,
+					UseVisualStyleBackColor = true,
+					Tag = "HStretch Bottom"
+				};
+
+				// buttonLeftScale
+				var buttonLeftScale = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(3, 39),
+					Name = "buttonLeftScale",
+					Size = new Size(30, 47),
+					TabIndex = 4,
+					Text = "↕",
+					UseVisualStyleBackColor = true,
+					Tag = "Left VStretch"
+				};
+
+				// buttonRightScale
+				var buttonRightScale = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(92, 39),
+					Name = "buttonRightScale",
+					Size = new Size(30, 47),
+					TabIndex = 5,
+					Text = "↕",
+					UseVisualStyleBackColor = true,
+					Tag = "Right VStretch"
+				};
+
+				// Add controls to panel4
+				panel4.Controls.Add(buttonTopScale);
+				panel4.Controls.Add(buttonStretch);
+				panel4.Controls.Add(buttonBottomScale);
+				panel4.Controls.Add(buttonLeftScale);
+				panel4.Controls.Add(buttonRightScale);
+
+				// labels
+				var label9 = new Label
+				{
+					AutoSize = true,
+					Location = new Point(6, 0),
+					Name = "label9",
+					Size = new Size(36, 15),
+					TabIndex = 11,
+					Text = "Static"
+				};
+
+				var label10 = new Label
+				{
+					AutoSize = true,
+					Location = new Point(140, 0),
+					Name = "label10",
+					Size = new Size(44, 15),
+					TabIndex = 12,
+					Text = "Stretch"
+				};
+
+				panel.Controls.Add(label9);
+				panel.Controls.Add(label10);
+				panel.Controls.Add(panel4);
+				panel.Controls.Add(panel2);
+
+				Control[] controls = [
+					buttonCenter, buttonBottom, buttonTop, buttonRight, buttonLeft,
+					buttonBottomRight, buttonBottomLeft, buttonTopRight, buttonTopLeft,
+					buttonTopScale, buttonStretch, buttonBottomScale, buttonLeftScale, buttonRightScale,
+				];
+
+				foreach (var item in controls)
+				{
+					item.Click += (senderAny, e) => {
+						value = ((Control)senderAny).Tag.ToString(); // Set the return value
+						editorService.CloseDropDown(); // Close dropdown after selection
+					};
+				}
+
+				// Show the dropdown with the panel
+				editorService.DropDownControl(panel);
+			}
+
+			return value;
 		}
 	}
 }

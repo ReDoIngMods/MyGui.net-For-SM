@@ -635,5 +635,10 @@ namespace MyGui.net
 		{
 			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods/MyGui.net-For-SM") { UseShellExecute = true });
 		}
+
+		private void flowLayoutPanel2_Paint(object sender, PaintEventArgs e)
+		{
+
+		}
 	}
 }

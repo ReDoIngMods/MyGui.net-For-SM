@@ -75,6 +75,8 @@
 			useViewportAACheckBox = new CheckBox();
 			useViewportVSyncCheckBox = new CheckBox();
 			renderWidgetNamesCheckBox = new CheckBox();
+			groupBox15 = new GroupBox();
+			hideSplashScreenCheckBox = new CheckBox();
 			fileTabPage = new TabPage();
 			flowLayoutPanel3 = new FlowLayoutPanel();
 			groupBox2 = new GroupBox();
@@ -116,8 +118,6 @@
 			resetSettingsButton = new Button();
 			autoApplyCheckBox = new CheckBox();
 			editorBackgroundPathDialog = new OpenFileDialog();
-			groupBox15 = new GroupBox();
-			hideSplashScreenCheckBox = new CheckBox();
 			tabControl1.SuspendLayout();
 			projectTabPage.SuspendLayout();
 			flowLayoutPanel2.SuspendLayout();
@@ -136,6 +136,7 @@
 			groupBox7.SuspendLayout();
 			groupBox1.SuspendLayout();
 			groupBox12.SuspendLayout();
+			groupBox15.SuspendLayout();
 			fileTabPage.SuspendLayout();
 			flowLayoutPanel3.SuspendLayout();
 			groupBox2.SuspendLayout();
@@ -150,7 +151,6 @@
 			panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-			groupBox15.SuspendLayout();
 			SuspendLayout();
 			// 
 			// tabControl1
@@ -188,6 +188,7 @@
 			flowLayoutPanel2.Name = "flowLayoutPanel2";
 			flowLayoutPanel2.Size = new Size(652, 380);
 			flowLayoutPanel2.TabIndex = 1;
+			flowLayoutPanel2.Paint += flowLayoutPanel2_Paint;
 			// 
 			// groupBox9
 			// 
@@ -687,6 +688,28 @@
 			renderWidgetNamesCheckBox.UseVisualStyleBackColor = true;
 			renderWidgetNamesCheckBox.CheckedChanged += renderWidgetNamesCheckBox_CheckedChanged;
 			// 
+			// groupBox15
+			// 
+			groupBox15.Controls.Add(hideSplashScreenCheckBox);
+			groupBox15.Location = new Point(3, 300);
+			groupBox15.Name = "groupBox15";
+			groupBox15.Size = new Size(178, 52);
+			groupBox15.TabIndex = 11;
+			groupBox15.TabStop = false;
+			groupBox15.Text = "Other";
+			// 
+			// hideSplashScreenCheckBox
+			// 
+			hideSplashScreenCheckBox.AccessibleDescription = "";
+			hideSplashScreenCheckBox.AutoSize = true;
+			hideSplashScreenCheckBox.Location = new Point(3, 22);
+			hideSplashScreenCheckBox.Name = "hideSplashScreenCheckBox";
+			hideSplashScreenCheckBox.Size = new Size(126, 19);
+			hideSplashScreenCheckBox.TabIndex = 2;
+			hideSplashScreenCheckBox.Text = "Hide Splash Screen";
+			hideSplashScreenCheckBox.UseVisualStyleBackColor = true;
+			hideSplashScreenCheckBox.CheckedChanged += hideSplashScreenCheckBox_CheckedChanged;
+			// 
 			// fileTabPage
 			// 
 			fileTabPage.Controls.Add(flowLayoutPanel3);
@@ -1141,28 +1164,6 @@
 			editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
 			editorBackgroundPathDialog.Title = "Choose background image";
 			// 
-			// groupBox15
-			// 
-			groupBox15.Controls.Add(hideSplashScreenCheckBox);
-			groupBox15.Location = new Point(3, 300);
-			groupBox15.Name = "groupBox15";
-			groupBox15.Size = new Size(178, 52);
-			groupBox15.TabIndex = 11;
-			groupBox15.TabStop = false;
-			groupBox15.Text = "Other";
-			// 
-			// hideSplashScreenCheckBox
-			// 
-			hideSplashScreenCheckBox.AccessibleDescription = "";
-			hideSplashScreenCheckBox.AutoSize = true;
-			hideSplashScreenCheckBox.Location = new Point(3, 22);
-			hideSplashScreenCheckBox.Name = "hideSplashScreenCheckBox";
-			hideSplashScreenCheckBox.Size = new Size(126, 19);
-			hideSplashScreenCheckBox.TabIndex = 2;
-			hideSplashScreenCheckBox.Text = "Hide Splash Screen";
-			hideSplashScreenCheckBox.UseVisualStyleBackColor = true;
-			hideSplashScreenCheckBox.CheckedChanged += hideSplashScreenCheckBox_CheckedChanged;
-			// 
 			// FormSettings
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
@@ -1206,6 +1207,8 @@
 			groupBox1.PerformLayout();
 			groupBox12.ResumeLayout(false);
 			groupBox12.PerformLayout();
+			groupBox15.ResumeLayout(false);
+			groupBox15.PerformLayout();
 			fileTabPage.ResumeLayout(false);
 			flowLayoutPanel3.ResumeLayout(false);
 			groupBox2.ResumeLayout(false);
@@ -1226,8 +1229,6 @@
 			panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-			groupBox15.ResumeLayout(false);
-			groupBox15.PerformLayout();
 			ResumeLayout(false);
 		}
 

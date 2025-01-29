@@ -47,6 +47,10 @@ namespace MyGui.net
 		public static string GetLoggedInSteamUserID(string steamDirectory = null)
 		{
 			steamDirectory ??= GetSteamInstallPath();
+			if (steamDirectory == null)
+			{
+				return null;
+			}
 			string loginUsersPath = Path.Combine(steamDirectory, "config", "loginusers.vdf");
 
 			if (!File.Exists(loginUsersPath))

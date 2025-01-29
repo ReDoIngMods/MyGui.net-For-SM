@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
 using System.Globalization;
+using System.Reflection.Metadata.Ecma335;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
@@ -44,6 +45,8 @@ namespace MyGui.net
 		#region Properties
 		[Category("1 - Main Properties")]
 		[Description("Behavior of the widget when resizing its parent (both in-editor and in-game).")]
+		[TypeConverter(typeof(StringDropdownConverter))]
+		[Editor(typeof(AdvancedAlignEditor), typeof(UITypeEditor))]
 		public string Align
 		{
 			get => widget.align ?? "";
@@ -488,6 +491,8 @@ namespace MyGui.net
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Align")]
 		[Description("Text alignment within the widget.")]
+		[TypeConverter(typeof(StringDropdownConverter))]
+		[Editor(typeof(BasicAlignEditor), typeof(UITypeEditor))]
 		public string TextAlign
 		{
 			get => widget.properties.TryGetValue("TextAlign", out var value) ? value : "";

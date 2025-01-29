@@ -21,7 +21,6 @@ namespace MyGui.net
 	//TODO: add reload cache, clears it all and does the stuff
 	//TODO: better visualization of paths, like which steam user you are
 	//TODO: Opening via file explorer also ignores the px over % override
-	//TODO: exporting at custom resolutions doesnt apply
 	//TODO: when pressing another arrow when moving, it moves the control to 0,0 on Undo for some reason
 	public partial class Form1 : Form
 	{
@@ -1888,7 +1887,7 @@ namespace MyGui.net
 				}
 				using (StreamWriter outputFile = new StreamWriter(actualPath))
 				{
-					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, (Point)ProjectSize));
 				}
 			}
 			ClearStacks();
@@ -1941,7 +1940,7 @@ namespace MyGui.net
 				{
 					using (StreamWriter outputFile = new StreamWriter(actualPath))
 					{
-						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));
+						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, (Point)ProjectSize));
 					}
 				}
 				ClearStacks();
@@ -2257,7 +2256,7 @@ namespace MyGui.net
 				{
 					XDocument doc = XDocument.Parse("<MyGUI type=\"Layout\" version=\"3.2.0\"><Widget type=\"Widget\" skin=\"HudBackgroundLarge\" position=\"0 0 100 100\"/></MyGUI>");
 					List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc, null);
-					MyGuiWidgetData widgetToPasteInto =  _currentSelectedWidget;
+					MyGuiWidgetData widgetToPasteInto = _currentSelectedWidget;
 
 					// Convert cursor position to local coordinates
 					Point viewportRelPos = viewport.PointToClient(Cursor.Position);
