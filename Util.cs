@@ -1032,7 +1032,7 @@ namespace MyGui.net
 
 								string key = parts[0];
 								string value = parts[1];
-								languageTags.Add(key, value);
+								languageTags.TryAdd(key, value);
 							}
 						}
 					}
