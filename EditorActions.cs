@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Input;
-
-namespace MyGui.net
+﻿namespace MyGui.net
 {
-    public class MoveCommand : IEditorAction
+	public class MoveCommand : IEditorAction
     {
         private MyGuiWidgetData _control;
         private Point _oldPosition;

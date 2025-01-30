@@ -1,12 +1,9 @@
 ﻿using Microsoft.Win32;
 using Cyotek.Windows.Forms;
-using MyGui.net.Properties;
 using SkiaSharp;
 using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -14,7 +11,6 @@ using System.Text.Json;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Principal;
 
 namespace MyGui.net

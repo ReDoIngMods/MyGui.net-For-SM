@@ -1,17 +1,10 @@
 using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
-using Cyotek.Windows.Forms;
-using SkiaSharp.Views.Gtk;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Design;
-using System.Drawing.Imaging;
-using System.Windows.Forms;
 using System.Xml.Linq;
 using static MyGui.net.Util;
-using System.Reflection;
 
 namespace MyGui.net
 {
@@ -441,7 +434,47 @@ namespace MyGui.net
 			}
 			_draggedWidgetPosition = _currentSelectedWidget.position;
 			_draggedWidgetSize = (Size)_currentSelectedWidget.size;
+			SelectNodeByTag(treeView1, _currentSelectedWidget);
 			viewport.Refresh();
+		}
+
+		void SelectNodeByTag(TreeView treeView, object targetTag)
+		{
+			TreeNode foundNode = FindNodeByTag(treeView.Nodes, targetTag);
+			if (foundNode != null)
+			{
+				// Expand all parent nodes
+				TreeNode parent = foundNode.Parent;
+				while (parent != null)
+				{
+					parent.Expand();
+					parent = parent.Parent;
+				}
+
+				// Ensure the node is visible
+				foundNode.EnsureVisible();
+
+				// Select and focus the node
+				treeView.SelectedNode = foundNode;
+				treeView.Focus(); // Ensure visual highlight
+			}
+		}
+
+		TreeNode FindNodeByTag(TreeNodeCollection nodes, object targetTag)
+		{
+			foreach (TreeNode node in nodes)
+			{
+				if (node.Tag != null && node.Tag.Equals(targetTag))
+					return node;
+
+				if (node.Nodes.Count > 0)
+				{
+					TreeNode found = FindNodeByTag(node.Nodes, targetTag);
+					if (found != null)
+						return found;
+				}
+			}
+			return null;
 		}
 
 		//Here lies quick rename, it had caused some of the weirdest issues that ever existed.
@@ -525,7 +558,7 @@ namespace MyGui.net
 
 				string treeNodeText = ((child.name ?? "") == "" ? "[DEFAULT]" : child.name) + ((child.name ?? "") == "" || Settings.Default.ShowTypesForNamedWidgets ? $" ({child.type})" : "");
 
-				TreeNode childNode = new (treeNodeText);
+				TreeNode childNode = new(treeNodeText);
 				childNode.Tag = child;
 				parentNode.Nodes.Add(childNode);
 				nodeLookup[treeNodeText] = childNode;

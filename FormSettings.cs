@@ -1,20 +1,10 @@
 ﻿using Cyotek.Windows.Forms;
 using Microsoft.Win32;
 using MyGui.net.Properties;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Reflection;
-using System.Runtime;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static OpenTK.Graphics.OpenGL.GL;
 
 namespace MyGui.net
 {

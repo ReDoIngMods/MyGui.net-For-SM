@@ -1,12 +1,6 @@
 ﻿using Cyotek.Windows.Forms;
-using MyGui.net.Properties;
-using System;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Design;
-using System.Drawing.Text;
-using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
 namespace MyGui.net

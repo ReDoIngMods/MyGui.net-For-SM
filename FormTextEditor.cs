@@ -1,16 +1,5 @@
 ﻿using Cyotek.Windows.Forms;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using static MyGui.net.Util;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace MyGui.net
 {

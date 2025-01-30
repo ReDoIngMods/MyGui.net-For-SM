@@ -257,7 +257,6 @@ namespace MyGui.net
 			treeView1.BackColor = SystemColors.ControlLightLight;
 			treeView1.BorderStyle = BorderStyle.None;
 			treeView1.Dock = DockStyle.Fill;
-			treeView1.FullRowSelect = true;
 			treeView1.Indent = 20;
 			treeView1.ItemHeight = 23;
 			treeView1.Location = new Point(0, 0);

@@ -1,13 +1,6 @@
-﻿using OpenTK;
-using SkiaSharp.Views.Gtk;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.ComponentModel;
 using System.Drawing.Design;
 using System.Globalization;
-using System.Reflection.Metadata.Ecma335;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
 namespace MyGui.net
 {
