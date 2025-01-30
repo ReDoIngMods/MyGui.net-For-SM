@@ -29,6 +29,7 @@ namespace MyGui.net
 		static bool _needsRestartToApply = false;
 		static bool _formLoaded = false;
 		static bool _autoApply = false;
+		Settings _setDef = Settings.Default;
 
 		//Set to current states
 		private void FormSettings_Load(object sender, EventArgs e)
@@ -41,49 +42,50 @@ namespace MyGui.net
 			_formLoaded = false;
 			_hasChanged = false;
 			//editorBackgroundPathDialog.ShowDialog();
+
 			bool runningAsAdmin = Util.RunningAsAdministrator();
 
 			//TAB FILE
-			smPathLabel.Text = Settings.Default.ScrapMechanicPath;
-			pixelLayoutSuffixTextBox.Text = Settings.Default.PixelLayoutSuffix;
-			showFullFilePathCheckBox.Checked = Settings.Default.ShowFullFilePathInTitle;
+			smPathLabel.Text = _setDef.ScrapMechanicPath;
+			pixelLayoutSuffixTextBox.Text = _setDef.PixelLayoutSuffix;
+			showFullFilePathCheckBox.Checked = _setDef.ShowFullFilePathInTitle;
 
-			preferPixelLayoutsCheckBox.Checked = Settings.Default.PreferPixelLayouts;
+			preferPixelLayoutsCheckBox.Checked = _setDef.PreferPixelLayouts;
 
-			exportAsPxRadioButton.Checked = Settings.Default.ExportMode == 0;
-			exportAsPercentRadioButton.Checked = Settings.Default.ExportMode == 1;
-			exportAskRadioButton.Checked = Settings.Default.ExportMode == 2;
-			exportAsBothRadioButton.Checked = Settings.Default.ExportMode == 3;
+			exportAsPxRadioButton.Checked = _setDef.ExportMode == 0;
+			exportAsPercentRadioButton.Checked = _setDef.ExportMode == 1;
+			exportAskRadioButton.Checked = _setDef.ExportMode == 2;
+			exportAsBothRadioButton.Checked = _setDef.ExportMode == 3;
 			buttonRestartAdmin.Enabled = !runningAsAdmin;
 			buttonAssociateWithFiles.Enabled = runningAsAdmin;
 
-			useViewportVSyncCheckBox.Checked = Settings.Default.UseViewportVSync;
-			redrawViewportOnResizeCheckBox.Checked = Settings.Default.RedrawViewportOnResize;
-			useViewportAACheckBox.Checked = Settings.Default.UseViewportAntiAliasing;
-			useViewportFontAACheckBox.Checked = Settings.Default.UseViewportFontAntiAliasing;
-			spriteFilteringLevel0.Checked = Settings.Default.ViewportFilteringLevel == 0;
-			spriteFilteringLevel1.Checked = Settings.Default.ViewportFilteringLevel == 1;
-			spriteFilteringLevel2.Checked = Settings.Default.ViewportFilteringLevel == 2;
-			spriteFilteringLevel3.Checked = Settings.Default.ViewportFilteringLevel == 3;
-			renderInvisibleWidgetCheckBox.Checked = Settings.Default.RenderInvisibleWidgets;
-			renderWidgetNamesCheckBox.Checked = Settings.Default.RenderWidgetNames;
-			hideSplashScreenCheckBox.Checked = Settings.Default.HideSplashScreen;
+			useViewportVSyncCheckBox.Checked = _setDef.UseViewportVSync;
+			redrawViewportOnResizeCheckBox.Checked = _setDef.RedrawViewportOnResize;
+			useViewportAACheckBox.Checked = _setDef.UseViewportAntiAliasing;
+			useViewportFontAACheckBox.Checked = _setDef.UseViewportFontAntiAliasing;
+			spriteFilteringLevel0.Checked = _setDef.ViewportFilteringLevel == 0;
+			spriteFilteringLevel1.Checked = _setDef.ViewportFilteringLevel == 1;
+			spriteFilteringLevel2.Checked = _setDef.ViewportFilteringLevel == 2;
+			spriteFilteringLevel3.Checked = _setDef.ViewportFilteringLevel == 3;
+			renderInvisibleWidgetCheckBox.Checked = _setDef.RenderInvisibleWidgets;
+			renderWidgetNamesCheckBox.Checked = _setDef.RenderWidgetNames;
+			hideSplashScreenCheckBox.Checked = _setDef.HideSplashScreen;
 
-			useBackgroundImageColor.Checked = Settings.Default.EditorBackgroundMode == 0;
-			useBackgroundImageGrid.Checked = Settings.Default.EditorBackgroundMode == 1;
-			useBackgroundImageCustom.Checked = Settings.Default.EditorBackgroundMode == 2;
-			backgroundImageSelectButton.Enabled = Settings.Default.EditorBackgroundMode == 0 || Settings.Default.EditorBackgroundMode == 2;
-			backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 0 ? Util.ColorToHexString(Settings.Default.EditorBackgroundColor) : (Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "");
+			useBackgroundImageColor.Checked = _setDef.EditorBackgroundMode == 0;
+			useBackgroundImageGrid.Checked = _setDef.EditorBackgroundMode == 1;
+			useBackgroundImageCustom.Checked = _setDef.EditorBackgroundMode == 2;
+			backgroundImageSelectButton.Enabled = _setDef.EditorBackgroundMode == 0 || _setDef.EditorBackgroundMode == 2;
+			backgroundImagePathTextBox.Text = _setDef.EditorBackgroundMode == 0 ? Util.ColorToHexString(_setDef.EditorBackgroundColor) : (_setDef.EditorBackgroundMode == 2 ? _setDef.EditorBackgroundImagePath : "");
 
 
-			useLightTheme.Checked = Settings.Default.Theme == 0;
-			useAutoTheme.Checked = Settings.Default.Theme == 1;
-			useDarkTheme.Checked = Settings.Default.Theme == 2;
+			useLightTheme.Checked = _setDef.Theme == 0;
+			useAutoTheme.Checked = _setDef.Theme == 1;
+			useDarkTheme.Checked = _setDef.Theme == 2;
 
-			saveCustomLayoutCheckBox.Checked = Settings.Default.SaveWindowLayout;
-			useCustomLayoutCheckBox.Checked = Settings.Default.UseCustomWindowLayout;
+			saveCustomLayoutCheckBox.Checked = _setDef.SaveWindowLayout;
+			useCustomLayoutCheckBox.Checked = _setDef.UseCustomWindowLayout;
 
-			showWarningsCheckBox.Checked = Settings.Default.ShowWarnings;
+			showWarningsCheckBox.Checked = _setDef.ShowWarnings;
 
 			//TAB PROJECT
 			if (this.Owner != null) //Multithreading safety
@@ -102,32 +104,32 @@ namespace MyGui.net
 					workspaceSizeYNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Height;
 				}
 			}
-			workspaceSizeDefaultXNumericUpDown.Value = Settings.Default.DefaultWorkspaceSize.Width;
-			workspaceSizeDefaultYNumericUpDown.Value = Settings.Default.DefaultWorkspaceSize.Height;
+			workspaceSizeDefaultXNumericUpDown.Value = _setDef.DefaultWorkspaceSize.Width;
+			workspaceSizeDefaultYNumericUpDown.Value = _setDef.DefaultWorkspaceSize.Height;
 
-			referenceResolutionComboBox.SelectedIndex = Settings.Default.ReferenceResolution;
+			referenceResolutionComboBox.SelectedIndex = _setDef.ReferenceResolution;
 
 			referenceLanguageComboBox.Items.Clear();
 			referenceLanguageComboBox.Items.AddRange(Directory.GetDirectories(Path.Combine(Form1.ScrapMechanicPath, "Data/Gui/Language")).Select(path => Path.GetFileName(path)).ToArray());
 
-			referenceLanguageComboBox.Text = Settings.Default.ReferenceLanguage;
+			referenceLanguageComboBox.Text = _setDef.ReferenceLanguage;
 
-			showTypesForNamedWidgetsCheckBox.Checked = Settings.Default.ShowTypesForNamedWidgets;
-			widgetGridSpacingNumericUpDown.Value = Settings.Default.WidgetGridSpacing;
+			showTypesForNamedWidgetsCheckBox.Checked = _setDef.ShowTypesForNamedWidgets;
+			widgetGridSpacingNumericUpDown.Value = _setDef.WidgetGridSpacing;
 
 			_formLoaded = true;
 
 			//Change about text
-			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• Ben Bingo{Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
+			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• Ben Bingo{Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
 		}
 
 		private void OnSettingChange()
 		{
-			backgroundImageSelectButton.Enabled = Settings.Default.EditorBackgroundMode == 0 || Settings.Default.EditorBackgroundMode == 2;
-			backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundMode == 0 ? Util.ColorToHexString(Settings.Default.EditorBackgroundColor) : (Settings.Default.EditorBackgroundMode == 2 ? Settings.Default.EditorBackgroundImagePath : "");
+			backgroundImageSelectButton.Enabled = _setDef.EditorBackgroundMode == 0 || _setDef.EditorBackgroundMode == 2;
+			backgroundImagePathTextBox.Text = _setDef.EditorBackgroundMode == 0 ? Util.ColorToHexString(_setDef.EditorBackgroundColor) : (_setDef.EditorBackgroundMode == 2 ? _setDef.EditorBackgroundImagePath : "");
 			if (_autoApply)
 			{
-				Settings.Default.Save();
+				_setDef.Save();
 				applySettingsButton.Enabled = false;
 				_hasChanged = false;
 				return;
@@ -143,7 +145,7 @@ namespace MyGui.net
 
 		private void chooseSmPath_Click(object sender, EventArgs e)
 		{
-			smPathDialog.InitialDirectory = Util.IsValidPath(Settings.Default.ScrapMechanicPath) ? Settings.Default.ScrapMechanicPath : "C:\\";
+			smPathDialog.InitialDirectory = Util.IsValidPath(_setDef.ScrapMechanicPath) ? _setDef.ScrapMechanicPath : "C:\\";
 
 			while (true)
 			{
@@ -152,10 +154,10 @@ namespace MyGui.net
 					if (Util.IsValidFile(Path.Combine(smPathDialog.SelectedPath, "Data/Gui/GuiConfig.xml")))
 					{
 
-						if (Settings.Default.ScrapMechanicPath != smPathDialog.SelectedPath)
+						if (_setDef.ScrapMechanicPath != smPathDialog.SelectedPath)
 						{
-							Settings.Default.ScrapMechanicPath = smPathDialog.SelectedPath;
-							smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+							_setDef.ScrapMechanicPath = smPathDialog.SelectedPath;
+							smPathLabel.Text = _setDef.ScrapMechanicPath;
 							_needsRestartToApply = true;
 							OnSettingChange();
 						}
@@ -183,10 +185,10 @@ namespace MyGui.net
 			string? gamePathFromSteam = Util.GetGameInstallPath("387990");
 			if (gamePathFromSteam != null)
 			{
-				if (Settings.Default.ScrapMechanicPath != gamePathFromSteam)
+				if (_setDef.ScrapMechanicPath != gamePathFromSteam)
 				{
-					Settings.Default.ScrapMechanicPath = gamePathFromSteam;
-					smPathLabel.Text = Settings.Default.ScrapMechanicPath;
+					_setDef.ScrapMechanicPath = gamePathFromSteam;
+					smPathLabel.Text = _setDef.ScrapMechanicPath;
 					_needsRestartToApply = true;
 					OnSettingChange();
 				}
@@ -200,21 +202,21 @@ namespace MyGui.net
 		private void pixelLayoutSuffixTextBox_TextChanged(object senderAny, EventArgs e)
 		{
 			TextBox sender = (TextBox)senderAny;
-			Settings.Default.PixelLayoutSuffix = sender.Text == "" ? "_pixels" : sender.Text;
+			_setDef.PixelLayoutSuffix = sender.Text == "" ? "_pixels" : sender.Text;
 			OnSettingChange();
 		}
 
 		private void showFullFilePathCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.ShowFullFilePathInTitle = sender.Checked;
+			_setDef.ShowFullFilePathInTitle = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void preferPixelLayoutsCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.PreferPixelLayouts = sender.Checked;
+			_setDef.PreferPixelLayouts = sender.Checked;
 			OnSettingChange();
 		}
 
@@ -230,7 +232,7 @@ namespace MyGui.net
 		{
 			RadioButton sender = (RadioButton)senderAny;
 			if (!sender.Checked) { return; }
-			Settings.Default.ExportMode = (int)Enum.Parse<ExportMode>(sender.Name, true);
+			_setDef.ExportMode = (int)Enum.Parse<ExportMode>(sender.Name, true);
 			OnSettingChange();
 		}
 
@@ -334,56 +336,56 @@ namespace MyGui.net
 		private void useViewportVSyncCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.UseViewportVSync = sender.Checked;
+			_setDef.UseViewportVSync = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void redrawViewportOnResizeCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.RedrawViewportOnResize = sender.Checked;
+			_setDef.RedrawViewportOnResize = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void useViewportAACheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.UseViewportAntiAliasing = sender.Checked;
+			_setDef.UseViewportAntiAliasing = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void useViewportFontAACheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.UseViewportFontAntiAliasing = sender.Checked;
+			_setDef.UseViewportFontAntiAliasing = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void viewportFilteringLevel_CheckedChanged(object senderAny, EventArgs e)
 		{
 			RadioButton sender = (RadioButton)senderAny;
-			Settings.Default.ViewportFilteringLevel = int.Parse(sender.Name.Last().ToString());
+			_setDef.ViewportFilteringLevel = int.Parse(sender.Name.Last().ToString());
 			OnSettingChange();
 		}
 
 		private void renderInvisibleWidgetCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.RenderInvisibleWidgets = sender.Checked;
+			_setDef.RenderInvisibleWidgets = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void renderWidgetNamesCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.RenderWidgetNames = sender.Checked;
+			_setDef.RenderWidgetNames = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void hideSplashScreenCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.HideSplashScreen = sender.Checked;
+			_setDef.HideSplashScreen = sender.Checked;
 			OnSettingChange();
 		}
 
@@ -397,29 +399,29 @@ namespace MyGui.net
 		private void backgroundImage_CheckedChanged(object senderAny, EventArgs e)
 		{
 			RadioButton sender = (RadioButton)senderAny;
-			Settings.Default.EditorBackgroundMode = (int)Enum.Parse<BackgroundMode>(sender.Name, true);
+			_setDef.EditorBackgroundMode = (int)Enum.Parse<BackgroundMode>(sender.Name, true);
 			OnSettingChange();
 		}
 
 		private void backgroundImageSelectButton_Click(object sender, EventArgs e)
 		{
-			if (Settings.Default.EditorBackgroundMode == 0)
+			if (_setDef.EditorBackgroundMode == 0)
 			{
 				ColorPickerDialog editorBackgroundColorDialog = Util.NewFixedColorPickerDialog();
-				editorBackgroundColorDialog.Color = Settings.Default.EditorBackgroundColor;
+				editorBackgroundColorDialog.Color = _setDef.EditorBackgroundColor;
 				if (editorBackgroundColorDialog.ShowDialog(this) == DialogResult.OK)
 				{
-					Settings.Default.EditorBackgroundColor = editorBackgroundColorDialog.Color;
+					_setDef.EditorBackgroundColor = editorBackgroundColorDialog.Color;
 					OnSettingChange();
 				}
 			}
 			else
 			{
-				editorBackgroundPathDialog.InitialDirectory = Util.IsValidPath(Path.GetDirectoryName(Settings.Default.EditorBackgroundImagePath)) ? Path.GetDirectoryName(Settings.Default.EditorBackgroundImagePath) : "C:\\";
+				editorBackgroundPathDialog.InitialDirectory = Util.IsValidPath(Path.GetDirectoryName(_setDef.EditorBackgroundImagePath)) ? Path.GetDirectoryName(_setDef.EditorBackgroundImagePath) : "C:\\";
 				if (editorBackgroundPathDialog.ShowDialog(this) == DialogResult.OK)
 				{
-					Settings.Default.EditorBackgroundImagePath = editorBackgroundPathDialog.FileName;
-					backgroundImagePathTextBox.Text = Settings.Default.EditorBackgroundImagePath;
+					_setDef.EditorBackgroundImagePath = editorBackgroundPathDialog.FileName;
+					backgroundImagePathTextBox.Text = _setDef.EditorBackgroundImagePath;
 					OnSettingChange();
 				}
 			}
@@ -436,7 +438,7 @@ namespace MyGui.net
 		{
 			RadioButton sender = (RadioButton)senderAny;
 			if (!sender.Checked || !_formLoaded) { return; }
-			Settings.Default.Theme = (int)Enum.Parse<ProgramThemes>(sender.Name, true);
+			_setDef.Theme = (int)Enum.Parse<ProgramThemes>(sender.Name, true);
 			OnSettingChange();
 			if (_autoApply)
 			{
@@ -448,21 +450,21 @@ namespace MyGui.net
 		private void saveCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.SaveWindowLayout = sender.Checked;
+			_setDef.SaveWindowLayout = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void useCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.UseCustomWindowLayout = sender.Checked;
+			_setDef.UseCustomWindowLayout = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void showWarningsCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.ShowWarnings = sender.Checked;
+			_setDef.ShowWarnings = sender.Checked;
 			OnSettingChange();
 		}
 
@@ -512,50 +514,50 @@ namespace MyGui.net
 		private void workspaceSizeDefaultXNumericUpDown_ValueChanged(object senderAny, EventArgs e)
 		{
 			NumericUpDown sender = (NumericUpDown)senderAny;
-			Settings.Default.DefaultWorkspaceSize = new Size((int)sender.Value, Settings.Default.DefaultWorkspaceSize.Height);
+			_setDef.DefaultWorkspaceSize = new Size((int)sender.Value, _setDef.DefaultWorkspaceSize.Height);
 			OnSettingChange();
 		}
 
 		private void workspaceSizeDefaultYNumericUpDown_ValueChanged(object senderAny, EventArgs e)
 		{
 			NumericUpDown sender = (NumericUpDown)senderAny;
-			Settings.Default.DefaultWorkspaceSize = new Size(Settings.Default.DefaultWorkspaceSize.Width, (int)sender.Value);
+			_setDef.DefaultWorkspaceSize = new Size(_setDef.DefaultWorkspaceSize.Width, (int)sender.Value);
 			OnSettingChange();
 		}
 
 		private void referenceResolutionComboBox_SelectedIndexChanged(object senderAny, EventArgs e)
 		{
 			ComboBox sender = (ComboBox)senderAny;
-			if (sender.SelectedIndex != Settings.Default.ReferenceResolution)
+			if (sender.SelectedIndex != _setDef.ReferenceResolution)
 			{
 				_needsRestartToApply = true;
 			}
-			Settings.Default.ReferenceResolution = sender.SelectedIndex;
+			_setDef.ReferenceResolution = sender.SelectedIndex;
 			OnSettingChange();
 		}
 
 		private void referenceLanguageComboBox_SelectedValueChanged(object senderAny, EventArgs e)
 		{
 			ComboBox sender = (ComboBox)senderAny;
-			if (sender.Text != Settings.Default.ReferenceLanguage)
+			if (sender.Text != _setDef.ReferenceLanguage)
 			{
 				_needsRestartToApply = true;
 			}
-			Settings.Default.ReferenceLanguage = sender.Text;
+			_setDef.ReferenceLanguage = sender.Text;
 			OnSettingChange();
 		}
 
 		private void showTypesForNamedWidgetsCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
-			Settings.Default.ShowTypesForNamedWidgets = sender.Checked;
+			_setDef.ShowTypesForNamedWidgets = sender.Checked;
 			OnSettingChange();
 		}
 
 		private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
 		{
 			NumericUpDown sender = (NumericUpDown)senderAny;
-			Settings.Default.WidgetGridSpacing = (int)sender.Value;
+			_setDef.WidgetGridSpacing = (int)sender.Value;
 			OnSettingChange();
 		}
 
@@ -563,7 +565,7 @@ namespace MyGui.net
 
 		private void FormSettings_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Settings.Default.Reload();
+			_setDef.Reload();
 			_autoApply = false;
 		}
 
@@ -578,7 +580,7 @@ namespace MyGui.net
 			{
 				MessageBox.Show("Some options require program restart in order to apply.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
-			Settings.Default.Save();
+			_setDef.Save();
 			_hasChanged = false;
 			applySettingsButton.Enabled = _hasChanged;
 		}
@@ -588,7 +590,7 @@ namespace MyGui.net
 			DialogResult result = MessageBox.Show("Are you sure you want to reset your options to default? This cannot be undone!", "Default Options", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 			if (result == DialogResult.Yes)
 			{
-				Settings.Default.Reset();
+				_setDef.Reset();
 				this.Close();
 			}
 		}

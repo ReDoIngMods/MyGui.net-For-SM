@@ -444,17 +444,36 @@ namespace MyGui.net
 			viewport.Refresh();
 		}
 
+		//Here lies quick rename, it had caused some of the weirdest issues that ever existed.
 		private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+		{
+			treeView1.LabelEdit = false;
+			if (e.Node == null)
+			{
+				e.CancelEdit = true;
+				return;
+			}
+			e.Node.EndEdit(false);
+			ExecuteCommand(new ChangePropertyCommand((MyGuiWidgetData)e.Node.Tag, "name", e.Label ?? ""));
+			LoadTreeView(_currentLayout);
+		}
+
+		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
 		{
 			if (e.Node == null)
 			{
 				return;
 			}
-			treeView1.LabelEdit = false;
-			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "name", e.Label));
+			if (e.Button == MouseButtons.Right)
+			{
+				treeView1.SelectedNode = e.Node;
+				e.Node.Text = ((MyGuiWidgetData)e.Node.Tag).name ?? "";
+				treeView1.LabelEdit = true;
+				e.Node.BeginEdit();
+			}
 		}
 
-		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
 		{
 			if (e.Node == null)
 			{
@@ -464,22 +483,12 @@ namespace MyGui.net
 			HandleWidgetSelection();
 		}
 
-		private void treeView1_NodeMouseDoubleClick(object senderAny, TreeNodeMouseClickEventArgs e)
-		{
-			if (e.Node == null)
-			{
-				return;
-			}
-			//TreeView sender = (TreeView)senderAny;
-			e.Node.Text = ((MyGuiWidgetData)e.Node.Tag).name;
-			treeView1.LabelEdit = true;
-			e.Node.BeginEdit();
-		}
-
 		private void LoadTreeView(List<MyGuiWidgetData> customList)
 		{
 			// Store expanded node paths before clearing the tree
-			HashSet<string> expandedPaths = GetExpandedNodes(treeView1.Nodes);
+			HashSet<MyGuiWidgetData> expandedPaths = GetExpandedNodes(treeView1.Nodes);
+
+			treeView1.SuspendLayout();
 
 			// Clear the TreeView before adding new nodes
 			treeView1.Nodes.Clear();
@@ -490,9 +499,7 @@ namespace MyGui.net
 			// Loop through each item in the custom list
 			foreach (var customItem in customList)
 			{
-				customItem.name = customItem.name == "" ? null : customItem.name;
-
-				string treeNodeText = (customItem.name ?? "[DEFAULT]") + (customItem.name == null || Settings.Default.ShowTypesForNamedWidgets ? $" ({customItem.type})" : "");
+				string treeNodeText = (string.IsNullOrEmpty(customItem.name) ? "[DEFAULT]" : customItem.name) + (string.IsNullOrEmpty(customItem.name) || Settings.Default.ShowTypesForNamedWidgets ? $" ({customItem.type})" : "");
 
 				TreeNode rootNode = new TreeNode(treeNodeText);
 				rootNode.Tag = customItem;
@@ -505,6 +512,9 @@ namespace MyGui.net
 
 			// Restore expanded nodes
 			RestoreExpandedNodes(treeView1.Nodes, expandedPaths);
+
+			treeView1.ResumeLayout();
+			treeView1.Refresh();
 		}
 
 		// Recursive method to add children to the TreeNode
@@ -512,12 +522,10 @@ namespace MyGui.net
 		{
 			foreach (var child in children)
 			{
-				child.name = child.name == "" ? null : child.name;
 
-				string treeNodeText = (child.name ?? "[DEFAULT]") + (child.name == null || Settings.Default.ShowTypesForNamedWidgets
-									   ? $" ({child.type})" : "");
+				string treeNodeText = ((child.name ?? "") == "" ? "[DEFAULT]" : child.name) + ((child.name ?? "") == "" || Settings.Default.ShowTypesForNamedWidgets ? $" ({child.type})" : "");
 
-				TreeNode childNode = new TreeNode(treeNodeText);
+				TreeNode childNode = new (treeNodeText);
 				childNode.Tag = child;
 				parentNode.Nodes.Add(childNode);
 				nodeLookup[treeNodeText] = childNode;
@@ -528,38 +536,36 @@ namespace MyGui.net
 		}
 
 		// Get a set of expanded node paths
-		private HashSet<string> GetExpandedNodes(TreeNodeCollection nodes, string parentPath = "")
+		private HashSet<MyGuiWidgetData> GetExpandedNodes(TreeNodeCollection nodes)
 		{
-			HashSet<string> expandedPaths = new();
+			HashSet<MyGuiWidgetData> expandedPaths = new();
 
 			foreach (TreeNode node in nodes)
 			{
-				string fullPath = parentPath + "\\" + node.Text;
 				if (node.IsExpanded)
 				{
-					expandedPaths.Add(fullPath);
+					expandedPaths.Add((MyGuiWidgetData)node.Tag);
 				}
 
 				// Recursive check for children
-				expandedPaths.UnionWith(GetExpandedNodes(node.Nodes, fullPath));
+				expandedPaths.UnionWith(GetExpandedNodes(node.Nodes));
 			}
 
 			return expandedPaths;
 		}
 
 		// Restore expanded nodes from saved paths
-		private void RestoreExpandedNodes(TreeNodeCollection nodes, HashSet<string> expandedPaths, string parentPath = "")
+		private void RestoreExpandedNodes(TreeNodeCollection nodes, HashSet<MyGuiWidgetData> expandedPaths)
 		{
 			foreach (TreeNode node in nodes)
 			{
-				string fullPath = parentPath + "\\" + node.Text;
-				if (expandedPaths.Contains(fullPath))
+				if (expandedPaths.Contains(node.Tag))
 				{
 					node.Expand();
 				}
 
 				// Recursive restore for children
-				RestoreExpandedNodes(node.Nodes, expandedPaths, fullPath);
+				RestoreExpandedNodes(node.Nodes, expandedPaths);
 			}
 		}
 
@@ -2479,7 +2485,7 @@ namespace MyGui.net
 
 		private void Form1_KeyUp(object sender, KeyEventArgs e)
 		{
-			
+
 			//TODO: this sucks ass and causes all the problem, fiks this
 
 			if (_currentSelectedWidget != null && Util.IsAnyOf<Keys>(e.KeyCode, [Keys.Up, Keys.Down, Keys.Left, Keys.Right]) && _viewportFocused)
