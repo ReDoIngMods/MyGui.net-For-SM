@@ -616,7 +616,7 @@ namespace MyGui.net
 					});
 				}
 			}
-			catch (Win32Exception win32Exception)
+			catch (Win32Exception)
 			{
 			}
 		}

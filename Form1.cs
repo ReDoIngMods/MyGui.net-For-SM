@@ -444,48 +444,128 @@ namespace MyGui.net
 			viewport.Refresh();
 		}
 
+		private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+		{
+			if (e.Node == null)
+			{
+				return;
+			}
+			treeView1.LabelEdit = false;
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, "name", e.Label));
+		}
+
+		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+		{
+			if (e.Node == null)
+			{
+				return;
+			}
+			_currentSelectedWidget = (MyGuiWidgetData)e.Node.Tag;
+			HandleWidgetSelection();
+		}
+
+		private void treeView1_NodeMouseDoubleClick(object senderAny, TreeNodeMouseClickEventArgs e)
+		{
+			if (e.Node == null)
+			{
+				return;
+			}
+			//TreeView sender = (TreeView)senderAny;
+			e.Node.Text = ((MyGuiWidgetData)e.Node.Tag).name;
+			treeView1.LabelEdit = true;
+			e.Node.BeginEdit();
+		}
+
 		private void LoadTreeView(List<MyGuiWidgetData> customList)
 		{
+			// Store expanded node paths before clearing the tree
+			HashSet<string> expandedPaths = GetExpandedNodes(treeView1.Nodes);
+
 			// Clear the TreeView before adding new nodes
 			treeView1.Nodes.Clear();
+
+			// Dictionary to store node paths and references
+			Dictionary<string, TreeNode> nodeLookup = new();
 
 			// Loop through each item in the custom list
 			foreach (var customItem in customList)
 			{
-				// Create the root node for each Custom item
-				string treeNodeText = (customItem.name ?? $"[DEFAULT]") + (customItem.name == null || Settings.Default.ShowTypesForNamedWidgets ? $" ({customItem.type})" : "");
+				customItem.name = customItem.name == "" ? null : customItem.name;
+
+				string treeNodeText = (customItem.name ?? "[DEFAULT]") + (customItem.name == null || Settings.Default.ShowTypesForNamedWidgets ? $" ({customItem.type})" : "");
 
 				TreeNode rootNode = new TreeNode(treeNodeText);
-
-				// Add the root node to the TreeView
+				rootNode.Tag = customItem;
 				treeView1.Nodes.Add(rootNode);
+				nodeLookup[treeNodeText] = rootNode;
 
 				// Recursively add children
-				AddChildrenToTree(rootNode, customItem.children);
+				AddChildrenToTree(rootNode, customItem.children, nodeLookup);
 			}
+
+			// Restore expanded nodes
+			RestoreExpandedNodes(treeView1.Nodes, expandedPaths);
 		}
 
 		// Recursive method to add children to the TreeNode
-		private void AddChildrenToTree(TreeNode parentNode, List<MyGuiWidgetData> children)
+		private void AddChildrenToTree(TreeNode parentNode, List<MyGuiWidgetData> children, Dictionary<string, TreeNode> nodeLookup)
 		{
 			foreach (var child in children)
 			{
-				// Create a TreeNode for each child and add it as a child to the parent
-				string treeNodeText = (child.name ?? $"[DEFAULT]") + (child.name == null || Settings.Default.ShowTypesForNamedWidgets ? $" ({child.type})" : "");
+				child.name = child.name == "" ? null : child.name;
+
+				string treeNodeText = (child.name ?? "[DEFAULT]") + (child.name == null || Settings.Default.ShowTypesForNamedWidgets
+									   ? $" ({child.type})" : "");
 
 				TreeNode childNode = new TreeNode(treeNodeText);
+				childNode.Tag = child;
 				parentNode.Nodes.Add(childNode);
+				nodeLookup[treeNodeText] = childNode;
 
 				// Recursively add any further children
-				AddChildrenToTree(childNode, child.children);
+				AddChildrenToTree(childNode, child.children, nodeLookup);
+			}
+		}
+
+		// Get a set of expanded node paths
+		private HashSet<string> GetExpandedNodes(TreeNodeCollection nodes, string parentPath = "")
+		{
+			HashSet<string> expandedPaths = new();
+
+			foreach (TreeNode node in nodes)
+			{
+				string fullPath = parentPath + "\\" + node.Text;
+				if (node.IsExpanded)
+				{
+					expandedPaths.Add(fullPath);
+				}
+
+				// Recursive check for children
+				expandedPaths.UnionWith(GetExpandedNodes(node.Nodes, fullPath));
+			}
+
+			return expandedPaths;
+		}
+
+		// Restore expanded nodes from saved paths
+		private void RestoreExpandedNodes(TreeNodeCollection nodes, HashSet<string> expandedPaths, string parentPath = "")
+		{
+			foreach (TreeNode node in nodes)
+			{
+				string fullPath = parentPath + "\\" + node.Text;
+				if (expandedPaths.Contains(fullPath))
+				{
+					node.Expand();
+				}
+
+				// Recursive restore for children
+				RestoreExpandedNodes(node.Nodes, expandedPaths, fullPath);
 			}
 		}
 
 		void ExecuteCommand(IEditorAction command)
 		{
 			_commandManager.ExecuteCommand(command);
-
-			LoadTreeView(_currentLayout);
 
 			viewport.Refresh();
 			UpdateUndoRedo();
@@ -1761,6 +1841,8 @@ namespace MyGui.net
 			HandleWidgetSelection();
 			AdjustViewportScrollers();
 			viewport.Refresh();
+
+			LoadTreeView(_currentLayout);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1863,6 +1945,8 @@ namespace MyGui.net
 			_draggingWidgetAt = BorderPosition.None;
 			refreshToolStripMenuItem.Enabled = true;
 			viewport.Refresh();
+
+			LoadTreeView(_currentLayout);
 			//Refresh ui
 			/*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
 			{
@@ -2115,6 +2199,8 @@ namespace MyGui.net
 		{
 			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
 
+			LoadTreeView(_currentLayout);
+
 			undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
 			redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
 			redoToolStripMenuItem1.Enabled = _commandManager.getRedoStackCount() > 0;
@@ -2163,6 +2249,7 @@ namespace MyGui.net
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
+			Debug.WriteLine(_viewportFocused);
 			if (_viewportFocused)
 			{
 				if (e.Control && e.KeyCode == Keys.C && _currentSelectedWidget != null)
@@ -2316,15 +2403,16 @@ namespace MyGui.net
 
 
 
+				if (e.KeyCode == Keys.Apps)
+				{
+					this.ActiveControl = null;
+					ShowEditorMenuStrip(Cursor.Position);
+					e.Handled = true;
+				}
+
 				if (_currentSelectedWidget != null)
 				{
 					bool didStuff = false;
-					if (e.KeyCode == Keys.Apps)
-					{
-						this.ActiveControl = null;
-						ShowEditorMenuStrip(Cursor.Position);
-						didStuff = true;
-					}
 					if (e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Left || e.KeyCode == Keys.Right)
 					{
 						if (_draggedWidgetPositionStart == new Point(0, 0))
@@ -2391,7 +2479,10 @@ namespace MyGui.net
 
 		private void Form1_KeyUp(object sender, KeyEventArgs e)
 		{
-			if (_currentSelectedWidget != null && Util.IsAnyOf<Keys>(e.KeyCode, [Keys.Up, Keys.Down, Keys.Left, Keys.Right]))
+			
+			//TODO: this sucks ass and causes all the problem, fiks this
+
+			if (_currentSelectedWidget != null && Util.IsAnyOf<Keys>(e.KeyCode, [Keys.Up, Keys.Down, Keys.Left, Keys.Right]) && _viewportFocused)
 			{
 				ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.position, _draggedWidgetPositionStart));
 				_draggedWidgetPositionStart = new Point(0, 0);

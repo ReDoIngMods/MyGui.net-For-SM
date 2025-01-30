@@ -264,6 +264,9 @@ namespace MyGui.net
 			treeView1.Name = "treeView1";
 			treeView1.Size = new Size(302, 611);
 			treeView1.TabIndex = 0;
+			treeView1.AfterLabelEdit += treeView1_AfterLabelEdit;
+			treeView1.NodeMouseClick += treeView1_NodeMouseClick;
+			treeView1.NodeMouseDoubleClick += treeView1_NodeMouseDoubleClick;
 			// 
 			// smPathDialog
 			// 
