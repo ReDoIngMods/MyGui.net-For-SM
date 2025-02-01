@@ -1,10 +1,17 @@
-﻿using System.Data;
+﻿using MyGui.net.Properties;
+using SkiaSharp;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.Security.Policy;
 
 namespace MyGui.net
 {
 	public partial class FormSkin : Form
 	{
 		public string outcome = "";
+
+		//private SkiaSharp.Views.Desktop.SKGLControl previewViewport;
 
 		private BindingSource bindingSource;
 
@@ -19,7 +26,7 @@ namespace MyGui.net
 			dataTable.Columns.Add("Correct Type", typeof(string));
 			dataTable.Columns.Add("Texture Path", typeof(string));
 
-			foreach (var kv in Form1.AllResources)
+			foreach (var kv in RenderBackend.AllResources)
 			{
 				MyGuiResource res = kv.Value;
 				dataTable.Rows.Add(kv.Key, res.correctType == "" ? "Any" : res.correctType, res.path ?? "Texture-less");
@@ -75,6 +82,57 @@ namespace MyGui.net
 				DialogResult = DialogResult.OK;
 				this.Close();
 			}
+		}
+
+		SKMatrix _viewportMatrix = SKMatrix.Identity;
+
+		private void previewViewport_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
+		{
+			SKCanvas canvas = e.Surface.Canvas;
+			canvas.Clear(new SKColor(105, 105, 105));
+
+			if (dataGridView1.SelectedCells.Count < 1)
+			{
+				return;
+			}
+
+			var selectedItem = dataGridView1.SelectedCells[0].Value.ToString();
+			Debug.WriteLine(selectedItem);
+			var selecteditemResource = RenderBackend.AllResources[selectedItem];
+
+			// Get the control's size
+			var controlWidth = previewViewport.Width;
+			var controlHeight = previewViewport.Height;
+
+			// Apply viewport transformations
+
+			bool useTileSize = selecteditemResource.tileSize != null;
+
+			Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : new(controlWidth - 10, controlHeight - 10);
+			int maxSizeAxis = Math.Max(widgetSize.X, widgetSize.Y);
+
+			float viewportZoom = (Math.Min(controlWidth, controlHeight) * 0.9f) / maxSizeAxis;
+
+			Point widgetPos = useTileSize ? new((int)((controlWidth / viewportZoom - widgetSize.X) / 2), (int)((controlHeight / viewportZoom - widgetSize.Y) / 2)) : new(5, 5);
+
+			_viewportMatrix = SKMatrix.CreateScale(viewportZoom, viewportZoom);
+			canvas.SetMatrix(_viewportMatrix);
+
+			canvas.ClipRect(new SKRect(0, 0, controlWidth, controlHeight));
+
+			var widget = new MyGuiWidgetData()
+			{
+				size = widgetSize,
+				position = widgetPos,
+				skin = selectedItem
+			};
+
+			RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0));
+		}
+
+		private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+		{
+			previewViewport.Refresh();
 		}
 	}
 }

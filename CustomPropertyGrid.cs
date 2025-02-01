@@ -155,7 +155,7 @@ namespace MyGui.net
 		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
 		{
 			// Provides the standard values for the dropdown
-			return new StandardValuesCollection(Form1.AllResources.Keys.ToList());
+			return new StandardValuesCollection(RenderBackend.AllResources.Keys.ToList());
 		}
 
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
@@ -175,7 +175,7 @@ namespace MyGui.net
 			// Validates if the provided value exists as a key in the dictionary
 			if (value is string stringValue)
 			{
-				return Form1.AllResources.ContainsKey(stringValue);
+				return RenderBackend.AllResources.ContainsKey(stringValue);
 			}
 			return false;
 		}
@@ -183,7 +183,7 @@ namespace MyGui.net
 		public override object? ConvertFrom(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object value)
 		{
 			// Converts input to a valid key if it's in the dictionary, or throws an exception
-			if (value is string stringValue && Form1.AllResources.ContainsKey(stringValue))
+			if (value is string stringValue && RenderBackend.AllResources.ContainsKey(stringValue))
 			{
 				return stringValue;
 			}

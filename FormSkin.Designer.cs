@@ -127,6 +127,7 @@
 			dataGridView1.StandardTab = true;
 			dataGridView1.TabIndex = 10;
 			dataGridView1.CellMouseDoubleClick += dataGridView1_CellMouseDoubleClick;
+			dataGridView1.SelectionChanged += dataGridView1_SelectionChanged;
 			// 
 			// splitContainer1
 			// 
@@ -172,6 +173,7 @@
 			previewViewport.Size = new Size(249, 206);
 			previewViewport.TabIndex = 0;
 			previewViewport.Text = "skControl1";
+			previewViewport.PaintSurface += previewViewport_PaintSurface;
 			// 
 			// FormSkin
 			// 
@@ -213,7 +215,7 @@
 		private TextBox searchBox;
 		private DataGridView dataGridView1;
 		private SplitContainer splitContainer1;
-		private SkiaSharp.Views.Desktop.SKControl previewViewport;
 		private SplitContainer splitContainer2;
+		private SkiaSharp.Views.Desktop.SKControl previewViewport;
 	}
 }

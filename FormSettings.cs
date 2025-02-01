@@ -78,22 +78,8 @@ namespace MyGui.net
 			showWarningsCheckBox.Checked = _setDef.ShowWarnings;
 
 			//TAB PROJECT
-			if (this.Owner != null) //Multithreading safety
-			{
-				if (this.Owner.InvokeRequired)
-				{
-					this.Owner.Invoke(new Action(() =>
-					{
-						workspaceSizeXNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Width;
-						workspaceSizeYNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Height;
-					}));
-				}
-				else
-				{
-					workspaceSizeXNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Width;
-					workspaceSizeYNumericUpDown.Value = ((Form1)this.Owner).ProjectSize.Height;
-				}
-			}
+			workspaceSizeXNumericUpDown.Value = Form1.ProjectSize.Width;
+			workspaceSizeYNumericUpDown.Value = Form1.ProjectSize.Height;
 			workspaceSizeDefaultXNumericUpDown.Value = _setDef.DefaultWorkspaceSize.Width;
 			workspaceSizeDefaultYNumericUpDown.Value = _setDef.DefaultWorkspaceSize.Height;
 
@@ -468,13 +454,13 @@ namespace MyGui.net
 				{
 					this.Owner.Invoke(new Action(() =>
 					{
-						((Form1)this.Owner).ProjectSize = new Size((int)sender.Value, ((Form1)this.Owner).ProjectSize.Height);
+						Form1.ProjectSize = new Size((int)sender.Value, Form1.ProjectSize.Height);
 						((Form1)this.Owner).AdjustViewportScrollers();
 					}));
 				}
 				else
 				{
-					((Form1)this.Owner).ProjectSize = new Size((int)sender.Value, ((Form1)this.Owner).ProjectSize.Height);
+					Form1.ProjectSize = new Size((int)sender.Value, Form1.ProjectSize.Height);
 					((Form1)this.Owner).AdjustViewportScrollers();
 				}
 			}
@@ -489,13 +475,13 @@ namespace MyGui.net
 				{
 					this.Owner.Invoke(new Action(() =>
 					{
-						((Form1)this.Owner).ProjectSize = new Size(((Form1)this.Owner).ProjectSize.Width, (int)sender.Value);
+						Form1.ProjectSize = new Size(Form1.ProjectSize.Width, (int)sender.Value);
 						((Form1)this.Owner).AdjustViewportScrollers();
 					}));
 				}
 				else
 				{
-					((Form1)this.Owner).ProjectSize = new Size(((Form1)this.Owner).ProjectSize.Width, (int)sender.Value);
+					Form1.ProjectSize = new Size(Form1.ProjectSize.Width, (int)sender.Value);
 					((Form1)this.Owner).AdjustViewportScrollers();
 				}
 			}
