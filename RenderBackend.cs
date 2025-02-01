@@ -22,8 +22,6 @@ namespace MyGui.net
 		public static Dictionary<string, MyGuiResource> AllResources => _allResources;
 		public static Dictionary<string, MyGuiFontData> AllFonts => _allFonts;
 
-		public static SKBitmap _viewportBackgroundBitmap;
-
 		public static MyGuiResource _nullSkinResource = new MyGuiResource();
 		public static MyGuiResource NullSkinResource => _nullSkinResource;
 
@@ -49,6 +47,12 @@ namespace MyGui.net
 				this.position = position;
 				this.highlightColor = highlightColor;
 			}
+		}
+
+		public static void ReloadCache()
+		{
+			_allResources = new();
+			_allFonts = new();
 		}
 
 		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null)

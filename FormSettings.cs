@@ -17,6 +17,7 @@ namespace MyGui.net
 
 		static bool _hasChanged = false;
 		static bool _needsRestartToApply = false;
+		static bool _needsCacheReload = false;
 		static bool _formLoaded = false;
 		static bool _autoApply = false;
 		Settings _setDef = Settings.Default;
@@ -506,7 +507,7 @@ namespace MyGui.net
 			ComboBox sender = (ComboBox)senderAny;
 			if (sender.SelectedIndex != _setDef.ReferenceResolution)
 			{
-				_needsRestartToApply = true;
+				_needsCacheReload = true;
 			}
 			_setDef.ReferenceResolution = sender.SelectedIndex;
 			OnSettingChange();
@@ -517,7 +518,7 @@ namespace MyGui.net
 			ComboBox sender = (ComboBox)senderAny;
 			if (sender.Text != _setDef.ReferenceLanguage)
 			{
-				_needsRestartToApply = true;
+				_needsCacheReload = true;
 			}
 			_setDef.ReferenceLanguage = sender.Text;
 			OnSettingChange();
@@ -541,6 +542,11 @@ namespace MyGui.net
 
 		private void FormSettings_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (_needsCacheReload)
+			{
+				Form1.ReloadCache();
+				_needsCacheReload = false;
+			}
 			_setDef.Reload();
 			_autoApply = false;
 		}

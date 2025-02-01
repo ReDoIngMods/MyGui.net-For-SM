@@ -1,5 +1,6 @@
 ﻿using MyGui.net.Properties;
 using System.Data;
+using System.Diagnostics;
 
 namespace MyGui.net
 {
@@ -8,12 +9,17 @@ namespace MyGui.net
 
 		public string outcome = "";
 
-		private BindingSource bindingSource;
+		private static BindingSource bindingSource;
 
 		public FormInterfaceTag()
 		{
 			InitializeComponent();
+			ReloadCache();
+		}
 
+		public void ReloadCache()
+		{
+			Util.languageTags = new();
 			Util.GetLanguageTagString("a", Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath); //TODO: create specialized load Interface Tags function
 
 			bindingSource = new BindingSource();

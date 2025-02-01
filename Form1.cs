@@ -113,6 +113,23 @@ namespace MyGui.net
 			HandleLoad(_DefaultOpenedDir);
 		}
 
+		public static void ReloadCache()
+		{
+			RenderBackend.ReloadCache();
+			tagForm.ReloadCache();
+
+			_allResources = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
+			//Util.PrintAllResources(_allResources);
+			_allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
+			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 15 });
+			_steamUserId = Util.GetLoggedInSteamUserID() ?? "0";
+			string[] modPaths = [
+				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
+				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_{_steamUserId}\\Mods")
+			];
+			_modUuidPathCache = Util.GetModUuidsAndPaths(modPaths);
+		}
+
 		void HandleLoad(string autoloadPath = "")
 		{
 
@@ -134,15 +151,6 @@ namespace MyGui.net
 				}
 				_currentLayoutPath = autoloadPath;
 				OpenLayout(_currentLayoutPath);
-				/*_currentLayoutPath = autoloadPath;
-				_currentLayoutSavePath = autoloadPath;
-				//Debug.WriteLine(_currentLayoutPath);
-				AddToRecentFiles(autoloadPath);
-				_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize) ?? new();
-				refreshToolStripMenuItem.Enabled = true;
-				viewport.Refresh();
-				//Util.SpawnLayoutWidgets(_currentLayout, mainPanel, mainPanel, _allResources);
-				//Debug.WriteLine(Util.ExportLayoutToXmlString(_currentLayout));*/
 			}
 
 			UpdateViewportBackground();
