@@ -14,7 +14,6 @@ namespace MyGui.net
 	//TODO: add reload cache, clears it all and does the stuff
 	//TODO: better visualization of paths, like which steam user you are
 	//TODO: Opening via file explorer also ignores the px over % override
-	//TODO: when pressing another arrow when moving, it moves the control to 0,0 on Undo for some reason
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -2518,10 +2517,7 @@ namespace MyGui.net
 
 		private void Form1_KeyUp(object sender, KeyEventArgs e)
 		{
-
-			//TODO: this sucks ass and causes all the problem, fiks this
-
-			if (_currentSelectedWidget != null && Util.IsAnyOf<Keys>(e.KeyCode, [Keys.Up, Keys.Down, Keys.Left, Keys.Right]) && _viewportFocused)
+			if (_currentSelectedWidget != null && Util.IsAnyOf<Keys>(e.KeyCode, [Keys.Up, Keys.Down, Keys.Left, Keys.Right]) && _viewportFocused && !Util.AreAnyOf<Keys>(Util.GetPressedKeys(), [Keys.Up, Keys.Down, Keys.Left, Keys.Right]))
 			{
 				ExecuteCommand(new MoveCommand(_currentSelectedWidget, _currentSelectedWidget.position, _draggedWidgetPositionStart));
 				_draggedWidgetPositionStart = new Point(0, 0);
