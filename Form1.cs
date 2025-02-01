@@ -1,6 +1,8 @@
 using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
+using SkiaSharp.Views.Gtk;
+using SkiaSharp.Views.WPF;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Xml.Linq;
@@ -14,6 +16,7 @@ namespace MyGui.net
 	//TODO: add reload cache, clears it all and does the stuff
 	//TODO: better visualization of paths, like which steam user you are
 	//TODO: Opening via file explorer also ignores the px over % override
+	//TODO: make text editor autocompelte tags
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -832,73 +835,23 @@ namespace MyGui.net
 
 		private void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null)
 		{
+
+			Point oldSizeParam = new(widget.size.X, widget.size.Y);
+
+			if ((System.Object.ReferenceEquals(parent, widgetSecondaryData) || widget.name == "Root") && widgetSecondaryData != null) //This fixes the scaling issues that i had before, sets the scale 
+			{
+				widget.size = new(widgetSecondaryData.size.X, widgetSecondaryData.size.Y);
+			}
+
 			// Calculate widget position relative to parent
-			var widgetPosition = new SKPoint(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
+			SKPoint widgetPosition = new(parentOffset.X + widget.position.X, parentOffset.Y + widget.position.Y);
 
 			// Create rectangle for this widget
-			var rect = new SKRect(widgetPosition.X, widgetPosition.Y, widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
-			var oldSizeParam = widget.size;
-			if (adjustToParent)
+			SKRect rect = new(widgetPosition.X, widgetPosition.Y, widgetPosition.X + widget.size.X, widgetPosition.Y + widget.size.Y);
+
+			if (adjustToParent && parent != widgetSecondaryData)
 			{
-				/*
-				 widgetPosition = new SKPoint(widgetSecondaryData.position.X, widgetSecondaryData.position.Y);
-					rect = GetAlignedRectangle(widget.align, new SKRect(widgetPosition.X, widgetPosition.Y, widgetPosition.X + parent.size.X, widgetPosition.Y + parent.size.Y), new(widget.size.X, widget.size.Y),
-					new SKRect(
-						widget.position.X,
-						widget.position.Y,
-						widget.position.X + widget.size.X,
-						widget.position.Y + widget.size.Y
-					), new(widget.position.X + widget.size.X, widget.position.Y + widget.size.Y));
-				 */
-
-
-				//widgetPosition = new SKPoint(widgetSecondaryData.position.X + widget.position , widgetSecondaryData.position.Y);
-				/*rect = GetAlignedRectangle(widget.align, new SKRect(parentOffset.X, parentOffset.Y, parentOffset.X + widgetSecondaryData.size.X, parentOffset.Y + widgetSecondaryData.size.Y), new(widget.size.X, widget.size.Y),
-				new SKRect(
-					widget.position.X,
-					widget.position.Y,
-					widget.position.X + parent.size.X,
-					widget.position.Y + parent.size.Y
-				), new(widget.position.X + widget.size.X, widget.position.Y + widget.size.Y));*/
-
-				Point a = new Point(oldSize.Value.X - (widget.position.X + widget.size.X), oldSize.Value.Y - (widget.position.Y + widget.size.Y));
-				rect = GetAlignedRectangle(
-					widget.align,
-					new SKRect(
-						parentOffset.X,
-						parentOffset.Y,
-						parentOffset.X + parent.size.X,
-						parentOffset.Y + parent.size.Y
-					),
-					new(widget.size.X, widget.size.Y),
-					new SKRect(
-						widget.position.X,
-						widget.position.Y,
-						widget.position.X + widget.size.X,
-						widget.position.Y + widget.size.Y
-					),
-					new(
-						widget.position.X + widget.size.X,
-						widget.position.Y + widget.size.Y
-					)
-				);
-
-				/*if (widget.type == "ScrollBar")
-				{
-					Debug.WriteLine($"oldSize: {oldSize}, widget.position: {widget.position}");
-					Debug.WriteLine($"a: {a}");
-				}*/
-
-				//Debug.WriteLine($"oldSize: {oldSize}, widget.position: {widget.position}");
-				//Debug.WriteLine($"a: {a}");
-				Tuple<Point, Point> offsets = GetWidgetOffset(widget.align, widget.size, a, widget.position, oldSize.GetValueOrDefault(new(0, 0)));
-				/*if (widget.align == "Right VStretch")
-				{
-					Debug.WriteLine(offsets.Item1);
-				}*/
-				rect.Offset(new(offsets.Item1.X, offsets.Item1.Y));
-				rect.Right += offsets.Item2.X;
-				rect.Bottom += offsets.Item2.Y;
+				rect = GetWidgetOffset(widget, parent, new((int)widgetPosition.X, (int)widgetPosition.Y), oldSize.Value);
 
 				widget.position = new Point((int)rect.Location.X, (int)rect.Location.Y);
 				widget.size = new Point((int)rect.Size.Width, (int)rect.Size.Height);
@@ -916,17 +869,13 @@ namespace MyGui.net
 
 			if (_allResources.TryGetValue(widget.skin, out var val) && val.resourceLayout != null)
 			{
-				//for (int i = 0; i < val.resourceLayout.Count; i++)
-				//{
-				//var subWidget = val.resourceLayout[i];
+				//Debug.WriteLine(ExportLayoutToXmlString(val.resourceLayout, new(1, 1), true));
 				var layoutCopy = DeepCopy(val.resourceLayout);
 
 				var subWidget = layoutCopy[0];
 				subWidget.position = new(0, 0);
-				var sss = subWidget.size;
-				subWidget.size = widget.size;
 
-				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, sss);
+				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, new Point(subWidget.size.X, subWidget.size.Y));
 				//}
 				//return;
 			}
@@ -1035,94 +984,85 @@ namespace MyGui.net
 			canvas.RestoreToCount(saveBeforeAll);
 		}
 
-		private static Tuple<Point, Point> GetWidgetOffset(string? align, Point widgetSize, Point widgetPosFromRight, Point widgetPosFromLeft, Point widgetSizeOriginal)
+		private static SKRect GetWidgetOffset(MyGuiWidgetData current, MyGuiWidgetData parent, Point currentPosition, Point parentOriginalSize)
 		{
-			int offsetX = 0, offsetY = 0;
-			int sizeOffsetX = 0, sizeOffsetY = 0;
-
-			/*if (align == "Right VStretch")
-			{
-				Debug.WriteLine($"widgetSize: {widgetSize}, widgetPosFromRight: {widgetPosFromRight}, widgetPosFromLeft: {widgetPosFromLeft}");
-			}*/
-
-			switch (align)
+			int x = currentPosition.X, y = currentPosition.Y, width = current.size.X, height = current.size.Y;
+			int widthOffset = parentOriginalSize.X - (current.position.X + current.size.X);
+			int heightOffset = parentOriginalSize.Y - (current.position.Y + current.size.Y);
+			switch (current.align)
 			{
 				case "[DEFAULT]":
 				case "Default":
+				case "Left Top":
 				case null:
-					// Default alignment: No offset
 					break;
 
 				case "Stretch":
-					// Stretched: ???
-					//parentSize - position + size 
-					/*Point parentSize = new(widgetPosFromRight.X - widgetSize.X, widgetPosFromRight.Y - widgetSize.Y);
-					sizeOffsetX = parentSize.X - widgetPosFromLeft.X + widgetSizeOriginal.X;
-					sizeOffsetY = parentSize.Y - widgetPosFromLeft.Y + widgetSizeOriginal.Y;*/
-
-
-					//sizeOffsetX = - 5; // fixes for thing
-					//sizeOffsetY = -5;
-
-
-					//sizeOffsetY = widgetPosFromLeft.Y;
+				case "HStretch VStretch":
+					width = parent.size.X - current.position.X - widthOffset;//parent.size.X - current.position.X - (parentOriginalSize.X - (current.position.X + current.size.X));
+					height = parent.size.Y - current.position.Y - heightOffset;//parent.size.Y - current.position.Y - (parentOriginalSize.Y - (current.position.Y + current.size.Y));
 					break;
 
 				case "Center":
-					offsetX = 0;
-					offsetY = 0;
-					break;
-
-				case "Left Top":
-					// No offset; already at top-left
+				case "HCenter VCenter":
+					x = (parent.size.X - current.size.X) / 2 + currentPosition.X - current.position.X;
+					y = (parent.size.Y - current.size.Y) / 2 + currentPosition.Y - current.position.Y;
 					break;
 
 				case "Left Bottom":
-					offsetY = widgetSize.Y - widgetPosFromRight.Y;
+					y += parent.size.Y - current.size.Y - heightOffset - current.position.Y;
 					break;
 
 				case "Left VStretch":
+					height = parent.size.Y - current.position.Y - heightOffset;
+					break;
+
 				case "Left VCenter":
-					offsetY = 0;
+					y = (parent.size.Y - current.size.Y) / 2 + currentPosition.Y - current.position.Y;
 					break;
 
 				case "Right Top":
-					offsetX = widgetSize.X - widgetPosFromRight.X;
-					offsetY = widgetPosFromRight.Y - widgetSize.Y;
+					x += parent.size.X - current.size.X - widthOffset - current.position.X;
 					break;
 
 				case "Right Bottom":
-					offsetX = widgetSize.X - widgetPosFromRight.X;
-					offsetY = widgetSize.Y - widgetPosFromRight.Y;
+					x += parent.size.X - current.size.X - widthOffset - current.position.X;
+					y += parent.size.Y - current.size.Y - heightOffset - current.position.Y;
 					break;
 
 				case "Right VStretch":
+					x += parent.size.X - current.size.X - widthOffset - current.position.X;
+					height = parent.size.Y - current.position.Y - heightOffset;
+					break;
+
 				case "Right VCenter":
-					//offsetX = widgetPosFromRight.X - widgetSize.X;
-					offsetX = -999;
+					x += parent.size.X - current.size.X - widthOffset - current.position.X;
+					y = (parent.size.Y - current.size.Y) / 2 + currentPosition.Y - current.position.Y;
 					break;
 
 				case "HStretch Top":
+					width = parent.size.X - current.position.X - widthOffset;
+					break;
+
 				case "HCenter Top":
-					offsetX = 0;
+					x = (parent.size.X - current.size.X) / 2 + currentPosition.X - current.position.X;
 					break;
 
 				case "HStretch Bottom":
-					offsetX = 0;
-					offsetY = 0;
+					y += parent.size.Y - current.size.Y - heightOffset - current.position.Y;
+					width = parent.size.X - current.position.X - widthOffset;
 					break;
 
 				case "HCenter Bottom":
-					offsetX = 0;
-					offsetY = 0;
+					x = (parent.size.X - current.size.X) / 2 + currentPosition.X - current.position.X;
+					y += parent.size.Y - current.size.Y - heightOffset - current.position.Y;
 					break;
 
 				default:
-					//Debug.WriteLine($"Unknown align type: {align}");
 					break;
+					//Debug.WriteLine($"Unknown align type: {align}");
 			}
-
-			return new Tuple<Point, Point>(new Point(offsetX, offsetY), new Point(sizeOffsetX, sizeOffsetY));
+			return new SKRect(x, y, x + width, y + height);
 		}
 
 		SKPaint _baseFontPaint = new SKPaint { };
@@ -2287,7 +2227,6 @@ namespace MyGui.net
 
 		private void Form1_KeyDown(object sender, KeyEventArgs e)
 		{
-			Debug.WriteLine(_viewportFocused);
 			if (_viewportFocused)
 			{
 				if (e.Control && e.KeyCode == Keys.C && _currentSelectedWidget != null)
@@ -2615,8 +2554,6 @@ namespace MyGui.net
 
 		private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
 		{
-			Debug.WriteLine(e.ChangedItem.Parent);
-
 			var property = e.ChangedItem.Parent?.PropertyDescriptor != null ? e.ChangedItem.Parent : e.ChangedItem;
 
 			var value = Util.IsAnyOf<string>(property.Value?.ToString() ?? "", ["[DEFAULT]", "Default", ""]) ? null : property.Value;
