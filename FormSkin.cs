@@ -118,7 +118,7 @@ namespace MyGui.net
 			_viewportMatrix = SKMatrix.CreateScale(viewportZoom, viewportZoom);
 			canvas.SetMatrix(_viewportMatrix);
 
-			canvas.ClipRect(new SKRect(0, 0, controlWidth, controlHeight));
+			canvas.ClipRect(new SKRect(0, 0, controlWidth / viewportZoom, controlHeight / viewportZoom));
 
 			var widget = new MyGuiWidgetData()
 			{
