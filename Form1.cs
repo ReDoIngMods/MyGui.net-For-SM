@@ -17,6 +17,7 @@ namespace MyGui.net
 	//TODO: add reload cache, clears it all and does the stuff
 	//TODO: better visualization of paths, like which steam user you are
 	//TODO: make text editor autocomplete tags
+	//TODO: ResourceImage (new gui) and ResourceTexture (just render the image) support
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -121,7 +122,7 @@ namespace MyGui.net
 			_allResources = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
 			//Util.PrintAllResources(_allResources);
 			_allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
-			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 15 });
+			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 15, letterSpacing = 1.15f });
 			_steamUserId = Util.GetLoggedInSteamUserID() ?? "0";
 			string[] modPaths = [
 				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),

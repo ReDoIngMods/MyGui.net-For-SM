@@ -1871,7 +1871,7 @@ namespace MyGui.net
 
 		#region Key Utils
 		[DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
-		public static extern short GetKeyState(int keyCode);
+		private static extern short GetKeyState(int keyCode);
 
 		/// <summary>
 		/// Gets a list of all currently pressed keys.

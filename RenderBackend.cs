@@ -99,7 +99,7 @@ namespace MyGui.net
 				var subWidget = layoutCopy[0];
 				subWidget.position = new(0, 0);
 
-				DrawWidget(canvas, subWidget, widgetPosition, widget, widgetSecondaryData != null ? widgetSecondaryData : widget, true, new Point(subWidget.size.X, subWidget.size.Y));
+				DrawWidget(canvas, subWidget, widgetPosition, widget, widgetSecondaryData != null ? widgetSecondaryData : widget, true, new Point(subWidget.size.X, subWidget.size.Y)); //Breaks sliders
 				//}
 				//return;
 			}
@@ -293,7 +293,6 @@ namespace MyGui.net
 
 		public static void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null)
 		{
-			//TODO: fix text rendering in Window widget skins
 			widgetSecondaryData ??= widget;
 			if (resource == null || resource.basisSkins == null)
 			{

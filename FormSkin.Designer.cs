@@ -37,6 +37,10 @@
 			splitContainer1 = new SplitContainer();
 			splitContainer2 = new SplitContainer();
 			previewViewport = new SkiaSharp.Views.Desktop.SKControl();
+			panel1 = new Panel();
+			label1 = new Label();
+			viewportWidgetSizeY = new CustomNumericUpDown();
+			viewportWidgetSizeX = new CustomNumericUpDown();
 			((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
 			((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
 			splitContainer1.Panel1.SuspendLayout();
@@ -44,7 +48,11 @@
 			splitContainer1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
 			splitContainer2.Panel1.SuspendLayout();
+			splitContainer2.Panel2.SuspendLayout();
 			splitContainer2.SuspendLayout();
+			panel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)viewportWidgetSizeY).BeginInit();
+			((System.ComponentModel.ISupportInitialize)viewportWidgetSizeX).BeginInit();
 			SuspendLayout();
 			// 
 			// applyButton
@@ -160,8 +168,12 @@
 			// splitContainer2.Panel1
 			// 
 			splitContainer2.Panel1.Controls.Add(previewViewport);
+			// 
+			// splitContainer2.Panel2
+			// 
+			splitContainer2.Panel2.Controls.Add(panel1);
 			splitContainer2.Size = new Size(251, 379);
-			splitContainer2.SplitterDistance = 208;
+			splitContainer2.SplitterDistance = 153;
 			splitContainer2.TabIndex = 1;
 			// 
 			// previewViewport
@@ -170,10 +182,53 @@
 			previewViewport.Dock = DockStyle.Fill;
 			previewViewport.Location = new Point(0, 0);
 			previewViewport.Name = "previewViewport";
-			previewViewport.Size = new Size(249, 206);
+			previewViewport.Size = new Size(249, 151);
 			previewViewport.TabIndex = 0;
 			previewViewport.Text = "skControl1";
 			previewViewport.PaintSurface += previewViewport_PaintSurface;
+			// 
+			// panel1
+			// 
+			panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			panel1.BorderStyle = BorderStyle.FixedSingle;
+			panel1.Controls.Add(label1);
+			panel1.Controls.Add(viewportWidgetSizeY);
+			panel1.Controls.Add(viewportWidgetSizeX);
+			panel1.Location = new Point(-1, -1);
+			panel1.Name = "panel1";
+			panel1.Size = new Size(251, 100);
+			panel1.TabIndex = 0;
+			// 
+			// label1
+			// 
+			label1.AutoSize = true;
+			label1.Location = new Point(3, 0);
+			label1.Name = "label1";
+			label1.Size = new Size(88, 15);
+			label1.TabIndex = 2;
+			label1.Text = "Widget size (%)";
+			// 
+			// viewportWidgetSizeY
+			// 
+			viewportWidgetSizeY.Increment = new decimal(new int[] { 10, 0, 0, 0 });
+			viewportWidgetSizeY.Location = new Point(79, 18);
+			viewportWidgetSizeY.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+			viewportWidgetSizeY.Name = "viewportWidgetSizeY";
+			viewportWidgetSizeY.Size = new Size(70, 23);
+			viewportWidgetSizeY.TabIndex = 1;
+			viewportWidgetSizeY.Value = new decimal(new int[] { 100, 0, 0, 0 });
+			viewportWidgetSizeY.ValueChanged += viewportWidgetSizeY_ValueChanged;
+			// 
+			// viewportWidgetSizeX
+			// 
+			viewportWidgetSizeX.Increment = new decimal(new int[] { 10, 0, 0, 0 });
+			viewportWidgetSizeX.Location = new Point(3, 18);
+			viewportWidgetSizeX.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+			viewportWidgetSizeX.Name = "viewportWidgetSizeX";
+			viewportWidgetSizeX.Size = new Size(70, 23);
+			viewportWidgetSizeX.TabIndex = 0;
+			viewportWidgetSizeX.Value = new decimal(new int[] { 100, 0, 0, 0 });
+			viewportWidgetSizeX.ValueChanged += viewportWidgetSizeX_ValueChanged;
 			// 
 			// FormSkin
 			// 
@@ -202,8 +257,13 @@
 			((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
 			splitContainer1.ResumeLayout(false);
 			splitContainer2.Panel1.ResumeLayout(false);
+			splitContainer2.Panel2.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
 			splitContainer2.ResumeLayout(false);
+			panel1.ResumeLayout(false);
+			panel1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)viewportWidgetSizeY).EndInit();
+			((System.ComponentModel.ISupportInitialize)viewportWidgetSizeX).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -217,5 +277,9 @@
 		private SplitContainer splitContainer1;
 		private SplitContainer splitContainer2;
 		private SkiaSharp.Views.Desktop.SKControl previewViewport;
+		private Panel panel1;
+		private Label label1;
+		private CustomNumericUpDown viewportWidgetSizeY;
+		private CustomNumericUpDown viewportWidgetSizeX;
 	}
 }

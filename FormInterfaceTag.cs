@@ -47,6 +47,11 @@ namespace MyGui.net
 
 		private void FormInterfaceTag_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (dataGridView1.SelectedCells.Count < 1)
+			{
+				outcome = "";
+				return;
+			}
 			outcome = dataGridView1.SelectedCells[0].Value.ToString();
 		}
 

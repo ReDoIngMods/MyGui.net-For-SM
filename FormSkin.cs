@@ -3,6 +3,7 @@ using SkiaSharp;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Security.Policy;
 
 namespace MyGui.net
@@ -46,6 +47,11 @@ namespace MyGui.net
 
 		private void FormSkin_FormClosing(object sender, FormClosingEventArgs e)
 		{
+			if (dataGridView1.SelectedCells.Count < 1)
+			{
+				outcome = "";
+				return;
+			}
 			outcome = dataGridView1.SelectedCells[0].Value.ToString();
 		}
 
@@ -97,7 +103,6 @@ namespace MyGui.net
 			}
 
 			var selectedItem = dataGridView1.SelectedCells[0].Value.ToString();
-			Debug.WriteLine(selectedItem);
 			var selecteditemResource = RenderBackend.AllResources[selectedItem];
 
 			// Get the control's size
@@ -108,17 +113,22 @@ namespace MyGui.net
 
 			bool useTileSize = selecteditemResource.tileSize != null;
 
-			Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : new(controlWidth - 10, controlHeight - 10);
+			Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : (selecteditemResource.resourceLayout != null ? selecteditemResource.resourceLayout[0].size : new(100,100));
+
+			widgetSize.X = (int)(widgetSize.X * viewportWidgetSizeX.Value / 100);
+			widgetSize.Y = (int)(widgetSize.Y * viewportWidgetSizeY.Value / 100);
+
 			int maxSizeAxis = Math.Max(widgetSize.X, widgetSize.Y);
 
-			float viewportZoom = (Math.Min(controlWidth, controlHeight) * 0.9f) / maxSizeAxis;
+			float viewportZoom = Math.Min(controlWidth / (float)widgetSize.X, controlHeight / (float)widgetSize.Y);
 
-			Point widgetPos = useTileSize ? new((int)((controlWidth / viewportZoom - widgetSize.X) / 2), (int)((controlHeight / viewportZoom - widgetSize.Y) / 2)) : new(5, 5);
+
+			Point widgetPos = new((int)((controlWidth / viewportZoom - widgetSize.X) / 2), (int)((controlHeight / viewportZoom - widgetSize.Y) / 2));
 
 			_viewportMatrix = SKMatrix.CreateScale(viewportZoom, viewportZoom);
 			canvas.SetMatrix(_viewportMatrix);
 
-			canvas.ClipRect(new SKRect(0, 0, controlWidth / viewportZoom, controlHeight / viewportZoom));
+			//canvas.ClipRect(new SKRect(0, 0, controlWidth / viewportZoom, controlHeight / viewportZoom));
 
 			var widget = new MyGuiWidgetData()
 			{
@@ -133,6 +143,25 @@ namespace MyGui.net
 		private void dataGridView1_SelectionChanged(object sender, EventArgs e)
 		{
 			previewViewport.Refresh();
+		}
+
+		private void viewportWidgetSizeX_ValueChanged(object sender, EventArgs e)
+		{
+			previewViewport.Refresh();
+			if (Util.IsKeyPressed(Keys.E))
+			{
+				Debug.WriteLine("E");
+				viewportWidgetSizeY.Value = viewportWidgetSizeX.Value;
+			}
+		}
+
+		private void viewportWidgetSizeY_ValueChanged(object sender, EventArgs e)
+		{
+			previewViewport.Refresh();
+			if (Util.IsKeyPressed(Keys.Control) && viewportWidgetSizeX.Value != viewportWidgetSizeY.Value)
+			{
+				viewportWidgetSizeX.Value = viewportWidgetSizeY.Value;
+			}
 		}
 	}
 }
