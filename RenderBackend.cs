@@ -78,6 +78,8 @@ namespace MyGui.net
 				widget.position = new Point((int)rect.Location.X, (int)rect.Location.Y);
 				widget.size = new Point((int)rect.Size.Width, (int)rect.Size.Height);
 
+				widgetPosition = new(widget.position.X, widget.position.Y);
+
 				/*var textPaint = new SKPaint
 				{
 					Color = SKColors.White,
