@@ -99,7 +99,7 @@ namespace MyGui.net
 				var subWidget = layoutCopy[0];
 				subWidget.position = new(0, 0);
 
-				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, new Point(subWidget.size.X, subWidget.size.Y));
+				DrawWidget(canvas, subWidget, widgetPosition, widget, widgetSecondaryData != null ? widgetSecondaryData : widget, true, new Point(subWidget.size.X, subWidget.size.Y));
 				//}
 				//return;
 			}
