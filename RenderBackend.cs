@@ -55,7 +55,18 @@ namespace MyGui.net
 			_allFonts = new();
 		}
 
-		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null)
+		/// <summary>
+		/// Repositions and adjsuts Widgets to be rendered by calling RenderWidget.
+		/// </summary>
+		/// <param name="canvas">Canvas to render onto</param>
+		/// <param name="widget">Witget to render</param>
+		/// <param name="parentOffset">Parent tree offset</param>
+		/// <param name="parent">Parent Widget</param>
+		/// <param name="widgetSecondaryData">Widget, from which other data should be pulled</param>
+		/// <param name="adjustToParent">Enabled automatically when rendering a ResourceLayout</param>
+		/// <param name="oldSize">Original size, used to render ResourceLayout skins</param>
+		/// <param name="widgetTertiaryData">Widget, from which other, less important, data should be pulled</param>
+		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null, MyGuiWidgetData? widgetTertiaryData = null)
 		{
 
 			Point oldSizeParam = new(widget.size.X, widget.size.Y);
@@ -99,7 +110,7 @@ namespace MyGui.net
 				var subWidget = layoutCopy[0];
 				subWidget.position = new(0, 0);
 
-				DrawWidget(canvas, subWidget, widgetPosition, widget, widgetSecondaryData != null ? widgetSecondaryData : widget, true, new Point(subWidget.size.X, subWidget.size.Y)); //Breaks sliders
+				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, new Point(subWidget.size.X, subWidget.size.Y), widgetSecondaryData != null ? widgetSecondaryData : widget);
 				//}
 				//return;
 			}
@@ -148,11 +159,11 @@ namespace MyGui.net
 			canvas.DrawRect(rect, paint);*/
 			if (skinPath != null && skinPath != "" && _skinAtlasCache.ContainsKey(skinPath))
 			{
-				RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect, null, widget, widgetSecondaryData);
+				RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect, null, widget, widgetSecondaryData, widgetTertiaryData);
 			}
 			else
 			{
-				RenderWidget(canvas, _skinAtlasCache[""], _allResources.TryGetValue(widget.skin, out val) ? val : _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData);
+				RenderWidget(canvas, _skinAtlasCache[""], _allResources.TryGetValue(widget.skin, out val) ? val : _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData, widgetTertiaryData);
 				//canvas.DrawRect(rect, paint);
 			}
 
@@ -201,7 +212,7 @@ namespace MyGui.net
 			{
 				var widgetBounds = new SKRect(widgetPosition.X - 1, widgetPosition.Y - 1,
 							  widgetPosition.X + widget.size.X - 2, widgetPosition.Y + widget.size.Y - 2);
-				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget, widgetSecondaryData, adjustToParent, oldSizeParam);
+				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget, widgetSecondaryData, adjustToParent, oldSizeParam, widgetTertiaryData);
 			}
 
 			// Restore the canvas to its previous state (removes clipping for this widget)
@@ -291,9 +302,10 @@ namespace MyGui.net
 
 		static SKPaint _baseFontPaint = new SKPaint { };
 
-		public static void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null)
+		public static void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null, MyGuiWidgetData? widgetTertiaryData = null)
 		{
 			widgetSecondaryData ??= widget;
+			widgetTertiaryData ??= widgetSecondaryData;
 			if (resource == null || resource.basisSkins == null)
 			{
 				return; // Nothing to render if essential data is missing
@@ -356,26 +368,26 @@ namespace MyGui.net
 				{
 					if (skin.type == "SimpleText" || skin.type == "EditText")
 					{
-						if (widgetSecondaryData.properties.ContainsKey("Caption"))
+						if (widgetTertiaryData.properties.ContainsKey("Caption"))
 						{
 							int beforeTextClip = canvas.Save();
 							canvas.ClipRect(destRect);
 
-							var fontData = widgetSecondaryData.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widgetSecondaryData.properties["FontName"]) ? _allFonts[widgetSecondaryData.properties["FontName"]] : _allFonts["DeJaVuSans"];
+							var fontData = widgetTertiaryData.properties.ContainsKey("FontName") && _allFonts.ContainsKey(widgetTertiaryData.properties["FontName"]) ? _allFonts[widgetTertiaryData.properties["FontName"]] : _allFonts["DeJaVuSans"];
 							string fontPath = Path.Combine(Settings.Default.ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
 							if (!_fontCache.ContainsKey(fontPath))
 							{
 								_fontCache[fontPath] = SKTypeface.FromFile(fontPath);
 							}
 
-							Color? textColor = widgetSecondaryData.properties.ContainsKey("TextColour") ? ParseColorFromString(widgetSecondaryData.properties["TextColour"]) : Color.White;
+							Color? textColor = widgetTertiaryData.properties.ContainsKey("TextColour") ? ParseColorFromString(widgetTertiaryData.properties["TextColour"]) : Color.White;
 							_baseFontPaint.Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B);
-							_baseFontPaint.TextSize = widgetSecondaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetSecondaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetSecondaryData.properties["FontHeight"]) : (float)fontData.size;
+							_baseFontPaint.TextSize = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) : (float)fontData.size;
 							_baseFontPaint.IsAntialias = Settings.Default.UseViewportFontAntiAliasing;
 							_baseFontPaint.Typeface = _fontCache[fontPath];
 							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 
-							string captionText = Util.ReplaceLanguageTagsInString(widgetSecondaryData.properties["Caption"], Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath);
+							string captionText = Util.ReplaceLanguageTagsInString(widgetTertiaryData.properties["Caption"], Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath);
 
 							var spacingX = destRect.Left;
 							var spacingY = destRect.Top + _baseFontPaint.TextSize;

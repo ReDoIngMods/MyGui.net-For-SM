@@ -38,6 +38,8 @@
 			splitContainer2 = new SplitContainer();
 			previewViewport = new SkiaSharp.Views.Desktop.SKControl();
 			panel1 = new Panel();
+			alwaysSetDefaultSize = new CheckBox();
+			viewportWidgetSizePreffered = new Button();
 			label1 = new Label();
 			viewportWidgetSizeY = new CustomNumericUpDown();
 			viewportWidgetSizeX = new CustomNumericUpDown();
@@ -152,6 +154,7 @@
 			// splitContainer1.Panel2
 			// 
 			splitContainer1.Panel2.Controls.Add(splitContainer2);
+			splitContainer1.Panel2MinSize = 250;
 			splitContainer1.Size = new Size(760, 379);
 			splitContainer1.SplitterDistance = 505;
 			splitContainer1.TabIndex = 14;
@@ -191,6 +194,8 @@
 			// 
 			panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			panel1.BorderStyle = BorderStyle.FixedSingle;
+			panel1.Controls.Add(alwaysSetDefaultSize);
+			panel1.Controls.Add(viewportWidgetSizePreffered);
 			panel1.Controls.Add(label1);
 			panel1.Controls.Add(viewportWidgetSizeY);
 			panel1.Controls.Add(viewportWidgetSizeX);
@@ -199,14 +204,36 @@
 			panel1.Size = new Size(251, 100);
 			panel1.TabIndex = 0;
 			// 
+			// alwaysSetDefaultSize
+			// 
+			alwaysSetDefaultSize.AutoSize = true;
+			alwaysSetDefaultSize.Checked = true;
+			alwaysSetDefaultSize.CheckState = CheckState.Checked;
+			alwaysSetDefaultSize.Location = new Point(153, 23);
+			alwaysSetDefaultSize.Name = "alwaysSetDefaultSize";
+			alwaysSetDefaultSize.Size = new Size(15, 14);
+			alwaysSetDefaultSize.TabIndex = 4;
+			alwaysSetDefaultSize.UseVisualStyleBackColor = true;
+			// 
+			// viewportWidgetSizePreffered
+			// 
+			viewportWidgetSizePreffered.FlatStyle = FlatStyle.System;
+			viewportWidgetSizePreffered.Location = new Point(170, 19);
+			viewportWidgetSizePreffered.Name = "viewportWidgetSizePreffered";
+			viewportWidgetSizePreffered.Size = new Size(77, 23);
+			viewportWidgetSizePreffered.TabIndex = 3;
+			viewportWidgetSizePreffered.Text = "Default";
+			viewportWidgetSizePreffered.UseVisualStyleBackColor = true;
+			viewportWidgetSizePreffered.Click += viewportWidgetSizePreffered_Click;
+			// 
 			// label1
 			// 
 			label1.AutoSize = true;
 			label1.Location = new Point(3, 0);
 			label1.Name = "label1";
-			label1.Size = new Size(88, 15);
+			label1.Size = new Size(91, 15);
 			label1.TabIndex = 2;
-			label1.Text = "Widget size (%)";
+			label1.Text = "Widget size (px)";
 			// 
 			// viewportWidgetSizeY
 			// 
@@ -241,7 +268,7 @@
 			Controls.Add(searchBox);
 			KeyPreview = true;
 			MinimizeBox = false;
-			MinimumSize = new Size(300, 200);
+			MinimumSize = new Size(375, 200);
 			Name = "FormSkin";
 			ShowIcon = false;
 			ShowInTaskbar = false;
@@ -281,5 +308,7 @@
 		private Label label1;
 		private CustomNumericUpDown viewportWidgetSizeY;
 		private CustomNumericUpDown viewportWidgetSizeX;
+		private Button viewportWidgetSizePreffered;
+		private CheckBox alwaysSetDefaultSize;
 	}
 }

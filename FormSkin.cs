@@ -12,8 +12,6 @@ namespace MyGui.net
 	{
 		public string outcome = "";
 
-		//private SkiaSharp.Views.Desktop.SKGLControl previewViewport;
-
 		private BindingSource bindingSource;
 
 		public FormSkin()
@@ -113,10 +111,10 @@ namespace MyGui.net
 
 			bool useTileSize = selecteditemResource.tileSize != null;
 
-			Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : (selecteditemResource.resourceLayout != null ? selecteditemResource.resourceLayout[0].size : new(100,100));
+			Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : (selecteditemResource.resourceLayout != null ? selecteditemResource.resourceLayout[0].size : new(100, 100));
 
-			widgetSize.X = (int)(widgetSize.X * viewportWidgetSizeX.Value / 100);
-			widgetSize.Y = (int)(widgetSize.Y * viewportWidgetSizeY.Value / 100);
+			widgetSize.X = (int)viewportWidgetSizeX.Value;
+			widgetSize.Y = (int)viewportWidgetSizeY.Value;
 
 			int maxSizeAxis = Math.Max(widgetSize.X, widgetSize.Y);
 
@@ -142,6 +140,17 @@ namespace MyGui.net
 
 		private void dataGridView1_SelectionChanged(object sender, EventArgs e)
 		{
+			if (alwaysSetDefaultSize.Checked && dataGridView1.SelectedCells.Count > 0)
+			{
+				var selectedItem = dataGridView1.SelectedCells[0].Value.ToString();
+				var selecteditemResource = RenderBackend.AllResources[selectedItem];
+				bool useTileSize = selecteditemResource.tileSize != null;
+
+				Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : (selecteditemResource.resourceLayout != null ? selecteditemResource.resourceLayout[0].size : new(100, 100));
+
+				viewportWidgetSizeX.Value = widgetSize.X;
+				viewportWidgetSizeY.Value = widgetSize.Y;
+			}
 			previewViewport.Refresh();
 		}
 
@@ -161,6 +170,21 @@ namespace MyGui.net
 			if (Util.IsKeyPressed(Keys.Control) && viewportWidgetSizeX.Value != viewportWidgetSizeY.Value)
 			{
 				viewportWidgetSizeX.Value = viewportWidgetSizeY.Value;
+			}
+		}
+
+		private void viewportWidgetSizePreffered_Click(object sender, EventArgs e)
+		{
+			if (dataGridView1.SelectedCells.Count > 0)
+			{
+				var selectedItem = dataGridView1.SelectedCells[0].Value.ToString();
+				var selecteditemResource = RenderBackend.AllResources[selectedItem];
+				bool useTileSize = selecteditemResource.tileSize != null;
+
+				Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : (selecteditemResource.resourceLayout != null ? selecteditemResource.resourceLayout[0].size : new(100, 100));
+
+				viewportWidgetSizeX.Value = widgetSize.X;
+				viewportWidgetSizeY.Value = widgetSize.Y;
 			}
 		}
 	}
