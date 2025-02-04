@@ -143,6 +143,10 @@ namespace MyGui.net
 			if (alwaysSetDefaultSize.Checked && dataGridView1.SelectedCells.Count > 0)
 			{
 				var selectedItem = dataGridView1.SelectedCells[0].Value.ToString();
+				if (!RenderBackend.AllResources.ContainsKey(selectedItem))
+				{
+					return;
+				}
 				var selecteditemResource = RenderBackend.AllResources[selectedItem];
 				bool useTileSize = selecteditemResource.tileSize != null;
 
