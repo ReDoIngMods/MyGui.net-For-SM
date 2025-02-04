@@ -1447,7 +1447,7 @@ namespace MyGui.net
 			if (actualExport == 0 || actualExport == 3)
 			{
 
-				using (StreamWriter outputFile = new StreamWriter(actualExport == 3 && !Path.GetFileNameWithoutExtension(_currentLayoutSavePath).EndsWith(Settings.Default.PixelLayoutSuffix) ? Util.AppendToFile(_currentLayoutSavePath, "_pixels") : _currentLayoutSavePath))
+				using (StreamWriter outputFile = new StreamWriter(actualExport == 3 && !Path.GetFileNameWithoutExtension(_currentLayoutSavePath).EndsWith(Settings.Default.PixelLayoutSuffix) ? Util.AppendToFile(_currentLayoutSavePath, Settings.Default.PixelLayoutSuffix) : _currentLayoutSavePath))
 				{
 					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
 				}
