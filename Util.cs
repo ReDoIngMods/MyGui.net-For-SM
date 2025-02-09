@@ -751,11 +751,15 @@ namespace MyGui.net
 					{
 						string resourceType = r.Attribute("type")?.Value;
 						if (resourceType == "ResourceImageSet") { continue; } //Special cases, "ResourceImageSet" is just set of images (different resources)
-						
-						string texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
-						if (texPath == null || texPath == "")
+
+						string texPath = null;
+						if (resourceType == "ResourceSkin")
 						{
-							texPath = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), r.Attribute("texture")?.Value);
+							texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
+							if (texPath == null || texPath == "")
+							{
+								texPath = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), r.Attribute("texture")?.Value);
+							}
 						}
 						//if (texPath == null && resourceType != "ResourceLayout") { continue; }
 
