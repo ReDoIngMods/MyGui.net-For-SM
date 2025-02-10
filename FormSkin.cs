@@ -22,13 +22,24 @@ namespace MyGui.net
 
 			DataTable dataTable = new DataTable();
 			dataTable.Columns.Add("Name", typeof(string));
+			dataTable.Columns.Add("Category", typeof(string));
 			dataTable.Columns.Add("Correct Type", typeof(string));
 			dataTable.Columns.Add("Texture Path", typeof(string));
 
 			foreach (var kv in RenderBackend.AllResources)
 			{
 				MyGuiResource res = kv.Value;
-				dataTable.Rows.Add(kv.Key, res.correctType == "" ? "Any" : res.correctType, res.path ?? "Texture-less");
+				string texPath = res.path ?? (res.resourceLayout != null ? "Resource Layout" : "Texture-less");
+				//TODO: VERY WIP, categories arent correct
+				string catStr = res.pathSpecial == null ? "Neutral" : 
+					(
+						Util.IsAnyOf<string>(Path.GetFileName(res.pathSpecial), ["ScrapMekSkin.xml", "ScrapMekTemplate.xml"]) ? "Old Scrap Mechanic" : 
+						(
+							Util.IsAnyOf<string>(Path.GetFileName(res.pathSpecial), ["MyGUI_BlackOrangeSkins.xml", "ScrapMekTemplate.xml"]) ? "Old MyGui" : "Modern Scrap Mechanic"
+						)
+					);
+				
+				dataTable.Rows.Add(kv.Key, catStr, res.correctType == "" ? "Any" : res.correctType, texPath);
 			}
 
 			DataView dataView = new DataView(dataTable);
@@ -135,45 +146,71 @@ namespace MyGui.net
 				skin = selectedItem
 			};
 
-			RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0));
+			RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0), forceDebug: showDebugCheckBox.Checked);
 		}
 
 		private void dataGridView1_SelectionChanged(object sender, EventArgs e)
 		{
-			if (alwaysSetDefaultSize.Checked && dataGridView1.SelectedCells.Count > 0)
+			if (dataGridView1.SelectedCells.Count > 0)
 			{
 				var selectedItem = dataGridView1.SelectedCells[0].Value.ToString();
-				if (!RenderBackend.AllResources.ContainsKey(selectedItem))
+				if (RenderBackend.AllResources.ContainsKey(selectedItem))
 				{
-					return;
+					var selecteditemResource = RenderBackend.AllResources[selectedItem];
+					if (alwaysSetDefaultSize.Checked)
+					{
+						bool useTileSize = selecteditemResource.tileSize != null;
+
+						Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : (selecteditemResource.resourceLayout != null ? selecteditemResource.resourceLayout[0].size : new(100, 100));
+
+						viewportWidgetSizeX.Value = widgetSize.X;
+						viewportWidgetSizeY.Value = widgetSize.Y;
+					}
+					resourceInfoLabel.Text = $"Skin Info:\n● Name: \"{selecteditemResource.name}\"\n● Skin Type: \"{(selecteditemResource.resourceLayout == null ? "ResourceSkin" : "ResourceLayout")}\"";
+					if (selecteditemResource.basisSkins != null)
+					{
+						resourceInfoLabel.Text += $"\n    ● Basis Skin Count: {selecteditemResource.basisSkins.Count}";
+					}
+					copyResourceLayoutButton.Enabled = selecteditemResource.resourceLayout != null;
 				}
-				var selecteditemResource = RenderBackend.AllResources[selectedItem];
-				bool useTileSize = selecteditemResource.tileSize != null;
-
-				Point widgetSize = useTileSize ? Util.GetWidgetPos(true, selecteditemResource.tileSize, new(1, 1)) : (selecteditemResource.resourceLayout != null ? selecteditemResource.resourceLayout[0].size : new(100, 100));
-
-				viewportWidgetSizeX.Value = widgetSize.X;
-				viewportWidgetSizeY.Value = widgetSize.Y;
 			}
 			previewViewport.Refresh();
 		}
 
+		bool _viewportWidgetSizeBlockValueChanged = false;
+
+		private decimal _prevValueX;
+		private decimal _prevValueY;
+
 		private void viewportWidgetSizeX_ValueChanged(object sender, EventArgs e)
 		{
 			previewViewport.Refresh();
-			if (Util.IsKeyPressed(Keys.E))
+			if (_viewportWidgetSizeBlockValueChanged) return;
+
+			decimal delta = viewportWidgetSizeX.Value - _prevValueX;
+			_prevValueX = viewportWidgetSizeX.Value;
+
+			if (Util.IsKeyPressed(Keys.ShiftKey))
 			{
-				Debug.WriteLine("E");
-				viewportWidgetSizeY.Value = viewportWidgetSizeX.Value;
+				_viewportWidgetSizeBlockValueChanged = true;
+				viewportWidgetSizeY.Value = Math.Clamp(viewportWidgetSizeY.Value + delta, viewportWidgetSizeY.Minimum, viewportWidgetSizeY.Maximum);
+				_viewportWidgetSizeBlockValueChanged = false;
 			}
 		}
 
 		private void viewportWidgetSizeY_ValueChanged(object sender, EventArgs e)
 		{
 			previewViewport.Refresh();
-			if (Util.IsKeyPressed(Keys.Control) && viewportWidgetSizeX.Value != viewportWidgetSizeY.Value)
+			if (_viewportWidgetSizeBlockValueChanged) return;
+
+			decimal delta = viewportWidgetSizeY.Value - _prevValueY;
+			_prevValueY = viewportWidgetSizeY.Value;
+
+			if (Util.IsKeyPressed(Keys.ShiftKey))
 			{
-				viewportWidgetSizeX.Value = viewportWidgetSizeY.Value;
+				_viewportWidgetSizeBlockValueChanged = true;
+				viewportWidgetSizeX.Value = Math.Clamp(viewportWidgetSizeX.Value + delta, viewportWidgetSizeX.Minimum, viewportWidgetSizeX.Maximum);
+				_viewportWidgetSizeBlockValueChanged = false;
 			}
 		}
 
@@ -190,6 +227,23 @@ namespace MyGui.net
 				viewportWidgetSizeX.Value = widgetSize.X;
 				viewportWidgetSizeY.Value = widgetSize.Y;
 			}
+		}
+
+		private void showDebugCheckBox_CheckedChanged(object sender, EventArgs e)
+		{
+			previewViewport.Refresh();
+		}
+
+		private void copyResourceLayoutButton_Click(object sender, EventArgs e)
+		{
+			var selectedItem = dataGridView1.SelectedCells[0].Value.ToString();
+			var selecteditemResource = RenderBackend.AllResources[selectedItem];
+
+			if (Clipboard.ContainsText())
+			{
+				Clipboard.Clear();
+			}
+			Clipboard.SetText(Util.ExportLayoutToXmlString(selecteditemResource.resourceLayout, new Point(1, 1), true, false), TextDataFormat.Text);
 		}
 	}
 }

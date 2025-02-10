@@ -37,7 +37,10 @@
 			splitContainer1 = new SplitContainer();
 			splitContainer2 = new SplitContainer();
 			previewViewport = new SkiaSharp.Views.Desktop.SKControl();
+			resourceInfoLabel = new Label();
 			panel1 = new Panel();
+			showDebugCheckBox = new CheckBox();
+			copyResourceLayoutButton = new Button();
 			alwaysSetDefaultSize = new CheckBox();
 			viewportWidgetSizePreffered = new Button();
 			label1 = new Label();
@@ -174,6 +177,7 @@
 			// 
 			// splitContainer2.Panel2
 			// 
+			splitContainer2.Panel2.Controls.Add(resourceInfoLabel);
 			splitContainer2.Panel2.Controls.Add(panel1);
 			splitContainer2.Size = new Size(251, 379);
 			splitContainer2.SplitterDistance = 153;
@@ -190,10 +194,21 @@
 			previewViewport.Text = "skControl1";
 			previewViewport.PaintSurface += previewViewport_PaintSurface;
 			// 
+			// resourceInfoLabel
+			// 
+			resourceInfoLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			resourceInfoLabel.Location = new Point(3, 102);
+			resourceInfoLabel.Name = "resourceInfoLabel";
+			resourceInfoLabel.Size = new Size(243, 118);
+			resourceInfoLabel.TabIndex = 1;
+			resourceInfoLabel.Text = "Something is screwed up...";
+			// 
 			// panel1
 			// 
 			panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			panel1.BorderStyle = BorderStyle.FixedSingle;
+			panel1.Controls.Add(showDebugCheckBox);
+			panel1.Controls.Add(copyResourceLayoutButton);
 			panel1.Controls.Add(alwaysSetDefaultSize);
 			panel1.Controls.Add(viewportWidgetSizePreffered);
 			panel1.Controls.Add(label1);
@@ -203,6 +218,30 @@
 			panel1.Name = "panel1";
 			panel1.Size = new Size(251, 100);
 			panel1.TabIndex = 0;
+			// 
+			// showDebugCheckBox
+			// 
+			showDebugCheckBox.AutoSize = true;
+			showDebugCheckBox.Location = new Point(3, 47);
+			showDebugCheckBox.Name = "showDebugCheckBox";
+			showDebugCheckBox.Size = new Size(91, 19);
+			showDebugCheckBox.TabIndex = 6;
+			showDebugCheckBox.Text = "Debug Draw";
+			showDebugCheckBox.UseVisualStyleBackColor = true;
+			showDebugCheckBox.CheckedChanged += showDebugCheckBox_CheckedChanged;
+			// 
+			// copyResourceLayoutButton
+			// 
+			copyResourceLayoutButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			copyResourceLayoutButton.Enabled = false;
+			copyResourceLayoutButton.FlatStyle = FlatStyle.System;
+			copyResourceLayoutButton.Location = new Point(3, 72);
+			copyResourceLayoutButton.Name = "copyResourceLayoutButton";
+			copyResourceLayoutButton.Size = new Size(243, 23);
+			copyResourceLayoutButton.TabIndex = 5;
+			copyResourceLayoutButton.Text = "Copy Resource Layout";
+			copyResourceLayoutButton.UseVisualStyleBackColor = true;
+			copyResourceLayoutButton.Click += copyResourceLayoutButton_Click;
 			// 
 			// alwaysSetDefaultSize
 			// 
@@ -217,6 +256,7 @@
 			// 
 			// viewportWidgetSizePreffered
 			// 
+			viewportWidgetSizePreffered.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			viewportWidgetSizePreffered.FlatStyle = FlatStyle.System;
 			viewportWidgetSizePreffered.Location = new Point(170, 19);
 			viewportWidgetSizePreffered.Name = "viewportWidgetSizePreffered";
@@ -310,5 +350,8 @@
 		private CustomNumericUpDown viewportWidgetSizeX;
 		private Button viewportWidgetSizePreffered;
 		private CheckBox alwaysSetDefaultSize;
+		private CheckBox showDebugCheckBox;
+		private Button copyResourceLayoutButton;
+		private Label resourceInfoLabel;
 	}
 }

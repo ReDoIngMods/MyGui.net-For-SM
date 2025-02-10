@@ -66,7 +66,8 @@ namespace MyGui.net
 		/// <param name="adjustToParent">Enabled automatically when rendering a ResourceLayout</param>
 		/// <param name="oldSize">Original size, used to render ResourceLayout skins</param>
 		/// <param name="widgetTertiaryData">Widget, from which other, less important, data should be pulled</param>
-		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null, MyGuiWidgetData? widgetTertiaryData = null)
+		/// <param name="forceDebug">Forces debug drawing of slices and all</param>
+		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null, MyGuiWidgetData? widgetTertiaryData = null, bool forceDebug = false)
 		{
 
 			Point oldSizeParam = new(widget.size.X, widget.size.Y);
@@ -110,7 +111,7 @@ namespace MyGui.net
 				var subWidget = layoutCopy[0];
 				subWidget.position = new(0, 0);
 
-				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, new Point(subWidget.size.X, subWidget.size.Y), widgetSecondaryData != null ? widgetSecondaryData : widget);
+				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, new Point(subWidget.size.X, subWidget.size.Y), widgetSecondaryData != null ? widgetSecondaryData : widget, forceDebug);
 				//}
 				//return;
 			}
@@ -159,11 +160,11 @@ namespace MyGui.net
 			canvas.DrawRect(rect, paint);*/
 			if (skinPath != null && skinPath != "" && _skinAtlasCache.ContainsKey(skinPath))
 			{
-				RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect, null, widget, widgetSecondaryData, widgetTertiaryData);
+				RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect, null, widget, widgetSecondaryData, widgetTertiaryData, forceDebug);
 			}
 			else
 			{
-				RenderWidget(canvas, _skinAtlasCache[""], _allResources.TryGetValue(widget.skin, out val) ? val : _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData, widgetTertiaryData);
+				RenderWidget(canvas, _skinAtlasCache[""], _allResources.TryGetValue(widget.skin, out val) ? val : _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData, widgetTertiaryData, forceDebug);
 				//canvas.DrawRect(rect, paint);
 			}
 
@@ -302,7 +303,7 @@ namespace MyGui.net
 
 		static SKPaint _baseFontPaint = new SKPaint { };
 
-		public static void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null, MyGuiWidgetData? widgetTertiaryData = null)
+		public static void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null, MyGuiWidgetData? widgetTertiaryData = null, bool forceDebug = false)
 		{
 			widgetSecondaryData ??= widget;
 			widgetTertiaryData ??= widgetSecondaryData;
@@ -317,7 +318,7 @@ namespace MyGui.net
 			var renderedBasisSkins = resource.basisSkins ?? new();
 			if (Settings.Default.RenderInvisibleWidgets && (resource.path ?? "") == "" && (_allResources[widgetSecondaryData.skin].resourceLayout == null || widget == _allResources[widgetSecondaryData.skin].resourceLayout[0]))
 			{
-				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, clientRect, _widgetTypeColors.ContainsKey(widgetSecondaryData.type) ? _widgetTypeColors[widgetSecondaryData.type] : null, widget, widgetSecondaryData); //Ik, it is kinda terrible but it works, k?
+				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, clientRect, _widgetTypeColors.ContainsKey(widgetSecondaryData.type) ? _widgetTypeColors[widgetSecondaryData.type] : null, widget, widgetSecondaryData, null, forceDebug); //Ik, it is kinda terrible but it works, k?
 			}
 			for (int i = 0; i < renderedBasisSkins.Count; i++)
 			{
@@ -409,22 +410,16 @@ namespace MyGui.net
 
 
 				//DEBUG
-				/*var coloraaa = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
-				var textPaintStroke = new SKPaint
+				if (forceDebug)
 				{
-					Color = coloraaa,
-					TextSize = 7,
-					IsAntialias = false
-				};
-				canvas.DrawText(skin.align, destRect.Left + 2, destRect.Top + 5, textPaintStroke);
-
-				var debugPaint = new SKPaint
-				{
-					Color = coloraaa.WithAlpha(128),
-					Style = SKPaintStyle.Stroke,
-					StrokeWidth = 2
-				};
-				canvas.DrawRect(destRect, debugPaint);*/
+					var debugPaint = new SKPaint
+					{
+						Color = new SKColor(255, 0, 0).WithAlpha(128),
+						Style = SKPaintStyle.Stroke,
+						StrokeWidth = 2
+					};
+					canvas.DrawRect(destRect, debugPaint);
+				}
 				//Debug.WriteLine(tileRect);
 				// Draw the atlas texture
 				if (resource == _nullSkinResource && !Settings.Default.RenderInvisibleWidgets)
