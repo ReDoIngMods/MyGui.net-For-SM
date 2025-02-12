@@ -1,13 +1,17 @@
 using MyGui.net.Properties;
+using System.Runtime.InteropServices;
 
 namespace MyGui.net
 {
     internal static class Program
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
+
+		[DllImport("user32.dll")]
+		private static extern bool SetProcessDPIAware();
+		/// <summary>
+		///  The main entry point for the application.
+		/// </summary>
+		[STAThread]
         static void Main(string[] args)
         {
             // To customize application configuration such as set high DPI settings or default font,
@@ -17,7 +21,11 @@ namespace MyGui.net
             {
                 _DefaultOpenedDir = args[0];
             }
-            ApplicationConfiguration.Initialize();
+			if (Environment.OSVersion.Version.Major >= 6)
+			{
+				SetProcessDPIAware();
+			}
+			ApplicationConfiguration.Initialize();
             //Application.SetColorMode(SystemColorMode.Dark);
             Application.SetColorMode((SystemColorMode)Settings.Default.Theme);
             try

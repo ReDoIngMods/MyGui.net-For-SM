@@ -1407,6 +1407,7 @@ namespace MyGui.net
 			viewport.Refresh();
 
 			LoadTreeView(_currentLayout);
+			UpdateProperties();
 			//Refresh ui
 			/*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
 			{

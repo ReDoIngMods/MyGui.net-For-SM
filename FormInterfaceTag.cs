@@ -50,6 +50,7 @@ namespace MyGui.net
 			if (dataGridView1.SelectedCells.Count < 1)
 			{
 				outcome = "";
+				DialogResult = DialogResult.Cancel;
 				return;
 			}
 			outcome = dataGridView1.SelectedCells[0].Value.ToString();

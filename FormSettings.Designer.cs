@@ -169,21 +169,22 @@
 			// 
 			// projectTabPage
 			// 
+			projectTabPage.BackColor = SystemColors.ControlLightLight;
 			projectTabPage.Controls.Add(flowLayoutPanel2);
 			projectTabPage.Location = new Point(4, 24);
+			projectTabPage.Margin = new Padding(0);
 			projectTabPage.Name = "projectTabPage";
-			projectTabPage.Padding = new Padding(3);
 			projectTabPage.Size = new Size(652, 380);
 			projectTabPage.TabIndex = 2;
 			projectTabPage.Text = "Project";
-			projectTabPage.UseVisualStyleBackColor = true;
 			// 
 			// flowLayoutPanel2
 			// 
-			flowLayoutPanel2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			flowLayoutPanel2.AutoScroll = true;
+			flowLayoutPanel2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 			flowLayoutPanel2.Controls.Add(groupBox9);
 			flowLayoutPanel2.Controls.Add(groupBox14);
+			flowLayoutPanel2.Dock = DockStyle.Fill;
 			flowLayoutPanel2.Location = new Point(0, 0);
 			flowLayoutPanel2.Name = "flowLayoutPanel2";
 			flowLayoutPanel2.Size = new Size(652, 380);
@@ -306,7 +307,7 @@
 			groupBox14.Controls.Add(label7);
 			groupBox14.Location = new Point(304, 3);
 			groupBox14.Name = "groupBox14";
-			groupBox14.Size = new Size(318, 147);
+			groupBox14.Size = new Size(237, 147);
 			groupBox14.TabIndex = 8;
 			groupBox14.TabStop = false;
 			groupBox14.Text = "References";
@@ -318,7 +319,7 @@
 			referenceLanguageComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
 			referenceLanguageComboBox.Location = new Point(6, 81);
 			referenceLanguageComboBox.Name = "referenceLanguageComboBox";
-			referenceLanguageComboBox.Size = new Size(306, 23);
+			referenceLanguageComboBox.Size = new Size(225, 23);
 			referenceLanguageComboBox.TabIndex = 6;
 			referenceLanguageComboBox.SelectedValueChanged += referenceLanguageComboBox_SelectedValueChanged;
 			// 
@@ -338,7 +339,7 @@
 			referenceResolutionComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
 			referenceResolutionComboBox.Location = new Point(6, 37);
 			referenceResolutionComboBox.Name = "referenceResolutionComboBox";
-			referenceResolutionComboBox.Size = new Size(306, 23);
+			referenceResolutionComboBox.Size = new Size(225, 23);
 			referenceResolutionComboBox.TabIndex = 4;
 			referenceResolutionComboBox.SelectedIndexChanged += referenceResolutionComboBox_SelectedIndexChanged;
 			// 
@@ -353,24 +354,25 @@
 			// 
 			// windowTabPage
 			// 
+			windowTabPage.BackColor = SystemColors.ControlLightLight;
 			windowTabPage.Controls.Add(flowLayoutPanel1);
 			windowTabPage.Location = new Point(4, 24);
+			windowTabPage.Margin = new Padding(0);
 			windowTabPage.Name = "windowTabPage";
-			windowTabPage.Padding = new Padding(3);
 			windowTabPage.Size = new Size(652, 380);
 			windowTabPage.TabIndex = 0;
 			windowTabPage.Text = "Window";
-			windowTabPage.UseVisualStyleBackColor = true;
 			// 
 			// flowLayoutPanel1
 			// 
-			flowLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			flowLayoutPanel1.AutoScroll = true;
+			flowLayoutPanel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 			flowLayoutPanel1.Controls.Add(groupBox5);
 			flowLayoutPanel1.Controls.Add(groupBox8);
 			flowLayoutPanel1.Controls.Add(groupBox7);
 			flowLayoutPanel1.Controls.Add(groupBox1);
 			flowLayoutPanel1.Controls.Add(groupBox15);
+			flowLayoutPanel1.Dock = DockStyle.Fill;
 			flowLayoutPanel1.Location = new Point(0, 0);
 			flowLayoutPanel1.Margin = new Padding(0);
 			flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -722,12 +724,13 @@
 			// 
 			// flowLayoutPanel3
 			// 
-			flowLayoutPanel3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			flowLayoutPanel3.AutoScroll = true;
+			flowLayoutPanel3.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 			flowLayoutPanel3.Controls.Add(groupBox2);
 			flowLayoutPanel3.Controls.Add(groupBox11);
 			flowLayoutPanel3.Controls.Add(groupBox4);
 			flowLayoutPanel3.Controls.Add(groupBox13);
+			flowLayoutPanel3.Dock = DockStyle.Fill;
 			flowLayoutPanel3.Location = new Point(0, 0);
 			flowLayoutPanel3.Name = "flowLayoutPanel3";
 			flowLayoutPanel3.Size = new Size(652, 380);
@@ -956,10 +959,11 @@
 			// 
 			// flowLayoutPanel4
 			// 
-			flowLayoutPanel4.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			flowLayoutPanel4.AutoScroll = true;
+			flowLayoutPanel4.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 			flowLayoutPanel4.Controls.Add(groupBox6);
 			flowLayoutPanel4.Controls.Add(groupBox3);
+			flowLayoutPanel4.Dock = DockStyle.Fill;
 			flowLayoutPanel4.Location = new Point(0, 0);
 			flowLayoutPanel4.Name = "flowLayoutPanel4";
 			flowLayoutPanel4.Size = new Size(652, 380);
@@ -1011,8 +1015,8 @@
 			// 
 			aboutTabPage.Controls.Add(panel1);
 			aboutTabPage.Location = new Point(4, 24);
+			aboutTabPage.Margin = new Padding(0);
 			aboutTabPage.Name = "aboutTabPage";
-			aboutTabPage.Padding = new Padding(3);
 			aboutTabPage.Size = new Size(652, 380);
 			aboutTabPage.TabIndex = 1;
 			aboutTabPage.Text = "About";
@@ -1020,13 +1024,14 @@
 			// 
 			// panel1
 			// 
-			panel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 			panel1.Controls.Add(gitHubOrgButton);
 			panel1.Controls.Add(gitHubRepoButton);
 			panel1.Controls.Add(joinDiscordButton);
 			panel1.Controls.Add(aboutTextBox);
 			panel1.Controls.Add(pictureBox2);
 			panel1.Controls.Add(pictureBox1);
+			panel1.Dock = DockStyle.Fill;
 			panel1.Location = new Point(0, 0);
 			panel1.Name = "panel1";
 			panel1.Size = new Size(652, 380);
@@ -1166,8 +1171,8 @@
 			// 
 			// FormSettings
 			// 
-			AutoScaleDimensions = new SizeF(7F, 15F);
-			AutoScaleMode = AutoScaleMode.Font;
+			AutoScaleDimensions = new SizeF(96F, 96F);
+			AutoScaleMode = AutoScaleMode.Dpi;
 			ClientSize = new Size(684, 461);
 			Controls.Add(autoApplyCheckBox);
 			Controls.Add(resetSettingsButton);

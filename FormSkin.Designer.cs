@@ -206,6 +206,7 @@
 			// panel1
 			// 
 			panel1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			panel1.AutoSize = true;
 			panel1.BorderStyle = BorderStyle.FixedSingle;
 			panel1.Controls.Add(showDebugCheckBox);
 			panel1.Controls.Add(copyResourceLayoutButton);
@@ -299,8 +300,8 @@
 			// 
 			// FormSkin
 			// 
-			AutoScaleDimensions = new SizeF(7F, 15F);
-			AutoScaleMode = AutoScaleMode.Font;
+			AutoScaleDimensions = new SizeF(96F, 96F);
+			AutoScaleMode = AutoScaleMode.Dpi;
 			ClientSize = new Size(784, 461);
 			Controls.Add(splitContainer1);
 			Controls.Add(applyButton);
@@ -325,6 +326,7 @@
 			splitContainer1.ResumeLayout(false);
 			splitContainer2.Panel1.ResumeLayout(false);
 			splitContainer2.Panel2.ResumeLayout(false);
+			splitContainer2.Panel2.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
 			splitContainer2.ResumeLayout(false);
 			panel1.ResumeLayout(false);

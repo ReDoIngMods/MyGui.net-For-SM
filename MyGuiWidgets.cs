@@ -184,7 +184,14 @@ namespace MyGui.net
 						}
 					}
 					var parsedAsColor = Util.ParseColorFromString(editedValue, false);
-				    widget.properties["Colour"] = editedValue;
+					if (parsedAsColor == null)
+					{
+						widget.properties.Remove("Colour");
+					}
+					else
+					{
+						widget.properties["Colour"] = editedValue;
+					}
 				}
 			}
 		}
