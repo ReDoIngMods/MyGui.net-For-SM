@@ -190,6 +190,47 @@ namespace MyGui.net
 			return "";
 		}
 	}
+
+	public class FontSelectorConverter : TypeConverter
+	{
+		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+		{
+			// Provides the standard values for the dropdown
+			return new StandardValuesCollection(RenderBackend.AllFonts.Keys.ToList());
+		}
+
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			// Indicates that this object supports a standard set of values
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
+			return false;
+		}
+
+		public override bool IsValid(ITypeDescriptorContext? context, object? value)
+		{
+			// Validates if the provided value exists as a key in the dictionary
+			if (value is string stringValue)
+			{
+				return RenderBackend.AllFonts.ContainsKey(stringValue);
+			}
+			return false;
+		}
+
+		public override object? ConvertFrom(ITypeDescriptorContext? context, System.Globalization.CultureInfo? culture, object value)
+		{
+			// Converts input to a valid key if it's in the dictionary, or throws an exception
+			if (value is string stringValue && RenderBackend.AllFonts.ContainsKey(stringValue))
+			{
+				return stringValue;
+			}
+			return "";
+		}
+	}
 	#endregion
 
 	public class ColorPickerEditor : UITypeEditor
@@ -248,6 +289,24 @@ namespace MyGui.net
 			if (Form1.skinForm.ShowDialog() == DialogResult.OK)
 			{
 				value = Form1.skinForm.outcome;
+			}
+			return value;
+		}
+	}
+
+	public class FontSelectorEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Indicate that the editor supports a dropdown with a button
+			return UITypeEditorEditStyle.DropDown;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			if (Form1.fontForm.ShowDialog() == DialogResult.OK)
+			{
+				value = Form1.fontForm.outcome;
 			}
 			return value;
 		}

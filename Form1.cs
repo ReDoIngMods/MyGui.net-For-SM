@@ -107,6 +107,7 @@ namespace MyGui.net
 		public static FormInterfaceTag tagForm;
 		public static FormTextEditor textEditorForm;
 		public static FormSettings settingsForm;
+		public static FormFont fontForm;
 
 		public Form1(string _DefaultOpenedDir = "")
 		{
@@ -114,15 +115,18 @@ namespace MyGui.net
 			HandleLoad(_DefaultOpenedDir);
 		}
 
-		public static void ReloadCache()
+		public static void ReloadCache(bool initial = false)
 		{
-			RenderBackend.ReloadCache();
-			tagForm.ReloadCache();
-
+			if (!initial)
+			{
+				RenderBackend.ReloadCache();
+				tagForm.ReloadCache();
+				fontForm.ReloadCache();
+			}
 			_allResources = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
 			//Util.PrintAllResources(_allResources);
 			_allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
-			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 15, letterSpacing = 1.15f });
+			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 15, letterSpacing = 1.15f });
 			_steamUserId = Util.GetLoggedInSteamUserID() ?? "0";
 			string[] modPaths = [
 				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
@@ -323,16 +327,7 @@ namespace MyGui.net
 			];
 			#endregion
 
-			_allResources = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
-			//Util.PrintAllResources(_allResources);
-			_allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
-			_allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts\\DejaVuSans.ttf"), size = 15 });
-			_steamUserId = Util.GetLoggedInSteamUserID() ?? "0";
-			string[] modPaths = [
-				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
-				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_{_steamUserId}\\Mods")
-			];
-			_modUuidPathCache = Util.GetModUuidsAndPaths(modPaths);
+			ReloadCache(true);
 
 			/*foreach (var item in _modUuidPathCache)
 			{
@@ -407,6 +402,7 @@ namespace MyGui.net
 			skinForm = new();
 			tagForm = new();
 			textEditorForm = new();
+			fontForm = new();
 			settingsForm = new();
 			settingsForm.Owner = this;
 

@@ -189,7 +189,6 @@
 			flowLayoutPanel2.Name = "flowLayoutPanel2";
 			flowLayoutPanel2.Size = new Size(652, 380);
 			flowLayoutPanel2.TabIndex = 1;
-			flowLayoutPanel2.Paint += flowLayoutPanel2_Paint;
 			// 
 			// groupBox9
 			// 

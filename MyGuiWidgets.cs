@@ -470,6 +470,8 @@ namespace MyGui.net
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Font")]
 		[Description("The used font. Each font has a default dynamic size and a set of characters that it is allowed to use, which is reflected in the editor.")]
+		[TypeConverter(typeof(FontSelectorConverter))]
+		[Editor(typeof(FontSelectorEditor), typeof(UITypeEditor))]
 		public string FontName
 		{
 			get => widget.properties.TryGetValue("FontName", out var value) ? value : "";

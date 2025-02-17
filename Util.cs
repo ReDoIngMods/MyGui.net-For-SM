@@ -869,21 +869,34 @@ namespace MyGui.net
 		{
 			Dictionary<string, string> fontToAllowedChars = new();
 
-			XDocument xmlDocument;
+			XDocument xmlDocument = null;
+
 			try
 			{
-				if (!Util.IsValidFile(Path.Combine(smPath, "Cache/Fonts/" + language + "/LimitedFontData.xml")))
-				{
-					MessageBox.Show($"Failed to read allowed font characters file!\nLaunch Scrap Mechanic so that the cache gets created.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return null;
-				}
-				xmlDocument = XDocument.Load(Path.Combine(smPath, "Cache/Fonts/" + language + "/LimitedFontData.xml"));
-
+				xmlDocument = XDocument.Load(Path.Combine(Application.ExecutablePath, "..", "FontRanges/FontRanges_" + language + ".xml"));
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show($"Failed to read allowed font characters file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return null;
+				xmlDocument = null;
+			}
+
+			if (xmlDocument == null)
+			{
+				try
+				{
+					if (!Util.IsValidFile(Path.Combine(smPath, "Cache/Fonts/" + language + "/LimitedFontData.xml")))
+					{
+						MessageBox.Show($"Failed to read allowed font characters file!\nLaunch Scrap Mechanic so that the cache gets created.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return null;
+					}
+					xmlDocument = XDocument.Load(Path.Combine(smPath, "Cache/Fonts/" + language + "/LimitedFontData.xml"));
+
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show($"Failed to read allowed font characters file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					return null;
+				}
 			}
 
 			XElement root = xmlDocument.Root;

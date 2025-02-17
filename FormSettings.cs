@@ -97,7 +97,7 @@ namespace MyGui.net
 			_formLoaded = true;
 
 			//Change about text
-			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• Ben Bingo{Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
+			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
 		}
 
 		private void OnSettingChange()
@@ -618,11 +618,6 @@ namespace MyGui.net
 		private void gitHubRepoButton_Click(object sender, EventArgs e)
 		{
 			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods/MyGui.net-For-SM") { UseShellExecute = true });
-		}
-
-		private void flowLayoutPanel2_Paint(object sender, PaintEventArgs e)
-		{
-
 		}
 	}
 }
