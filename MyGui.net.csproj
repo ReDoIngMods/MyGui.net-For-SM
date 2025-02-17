@@ -11,6 +11,12 @@
 	<!--<RuntimeIdentifier>win-x86</RuntimeIdentifier>-->
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Remove="SelectionRectsSkin.png" />
