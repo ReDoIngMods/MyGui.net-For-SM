@@ -120,8 +120,8 @@ namespace MyGui.net
 			splitContainer1.Panel2.BackColor = SystemColors.Control;
 			splitContainer1.Panel2.Controls.Add(tabControl1);
 			splitContainer1.Panel2MinSize = 300;
-			splitContainer1.Size = new Size(1240, 641);
-			splitContainer1.SplitterDistance = 924;
+			splitContainer1.Size = new Size(1073, 555);
+			splitContainer1.SplitterDistance = 757;
 			splitContainer1.TabIndex = 1;
 			splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
 			splitContainer1.Resize += splitContainer1_Resize;
@@ -130,7 +130,7 @@ namespace MyGui.net
 			// 
 			centerButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			centerButton.FlatStyle = FlatStyle.System;
-			centerButton.Location = new Point(906, 623);
+			centerButton.Location = new Point(739, 537);
 			centerButton.Margin = new Padding(0);
 			centerButton.Name = "centerButton";
 			centerButton.Size = new Size(16, 16);
@@ -147,7 +147,7 @@ namespace MyGui.net
 			viewport.Location = new Point(0, 0);
 			viewport.Margin = new Padding(0);
 			viewport.Name = "viewport";
-			viewport.Size = new Size(906, 623);
+			viewport.Size = new Size(739, 537);
 			viewport.TabIndex = 3;
 			viewport.VSync = true;
 			viewport.PaintSurface += viewport_PaintSurface;
@@ -160,12 +160,11 @@ namespace MyGui.net
 			// viewportScrollX
 			// 
 			viewportScrollX.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			viewportScrollX.Location = new Point(0, 623);
+			viewportScrollX.Location = new Point(0, 537);
 			viewportScrollX.Maximum = 1920;
 			viewportScrollX.Minimum = -1920;
 			viewportScrollX.Name = "viewportScrollX";
-			viewportScrollX.ScaleScrollBarForDpiChange = false;
-			viewportScrollX.Size = new Size(906, 16);
+			viewportScrollX.Size = new Size(739, 16);
 			viewportScrollX.SmallChange = 10;
 			viewportScrollX.TabIndex = 2;
 			viewportScrollX.Scroll += viewportScrollX_Scroll;
@@ -174,12 +173,11 @@ namespace MyGui.net
 			// viewportScrollY
 			// 
 			viewportScrollY.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
-			viewportScrollY.Location = new Point(906, 0);
+			viewportScrollY.Location = new Point(739, 0);
 			viewportScrollY.Maximum = 1080;
 			viewportScrollY.Minimum = -1080;
 			viewportScrollY.Name = "viewportScrollY";
-			viewportScrollY.ScaleScrollBarForDpiChange = false;
-			viewportScrollY.Size = new Size(16, 623);
+			viewportScrollY.Size = new Size(16, 537);
 			viewportScrollY.SmallChange = 10;
 			viewportScrollY.TabIndex = 1;
 			viewportScrollY.Scroll += viewportScrollY_Scroll;
@@ -195,7 +193,7 @@ namespace MyGui.net
 			tabControl1.Margin = new Padding(0);
 			tabControl1.Name = "tabControl1";
 			tabControl1.SelectedIndex = 0;
-			tabControl1.Size = new Size(310, 639);
+			tabControl1.Size = new Size(310, 553);
 			tabControl1.TabIndex = 0;
 			// 
 			// tabPage1
@@ -204,7 +202,7 @@ namespace MyGui.net
 			tabPage1.Location = new Point(4, 24);
 			tabPage1.Margin = new Padding(0);
 			tabPage1.Name = "tabPage1";
-			tabPage1.Size = new Size(302, 611);
+			tabPage1.Size = new Size(302, 525);
 			tabPage1.TabIndex = 0;
 			tabPage1.Text = "Properties";
 			tabPage1.UseVisualStyleBackColor = true;
@@ -217,7 +215,7 @@ namespace MyGui.net
 			tabPage1Panel.Location = new Point(0, 0);
 			tabPage1Panel.Margin = new Padding(0);
 			tabPage1Panel.Name = "tabPage1Panel";
-			tabPage1Panel.Size = new Size(302, 611);
+			tabPage1Panel.Size = new Size(302, 525);
 			tabPage1Panel.TabIndex = 0;
 			// 
 			// propertyGrid1
@@ -227,7 +225,7 @@ namespace MyGui.net
 			propertyGrid1.Location = new Point(0, 0);
 			propertyGrid1.Name = "propertyGrid1";
 			propertyGrid1.PropertySort = PropertySort.Categorized;
-			propertyGrid1.Size = new Size(302, 611);
+			propertyGrid1.Size = new Size(302, 525);
 			propertyGrid1.TabIndex = 0;
 			propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
 			// 
@@ -279,7 +277,7 @@ namespace MyGui.net
 			menuStrip1.Location = new Point(0, 0);
 			menuStrip1.Name = "menuStrip1";
 			menuStrip1.RenderMode = ToolStripRenderMode.System;
-			menuStrip1.Size = new Size(1264, 24);
+			menuStrip1.Size = new Size(1097, 24);
 			menuStrip1.TabIndex = 2;
 			menuStrip1.Text = "menuStrip1";
 			// 
@@ -447,7 +445,7 @@ namespace MyGui.net
 			// 
 			sidebarToNewWindowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			sidebarToNewWindowButton.FlatStyle = FlatStyle.System;
-			sidebarToNewWindowButton.Location = new Point(1251, 28);
+			sidebarToNewWindowButton.Location = new Point(1084, 28);
 			sidebarToNewWindowButton.Margin = new Padding(0);
 			sidebarToNewWindowButton.Name = "sidebarToNewWindowButton";
 			sidebarToNewWindowButton.Size = new Size(13, 28);
@@ -459,7 +457,7 @@ namespace MyGui.net
 			// widgetGridSpacingNumericUpDown
 			// 
 			widgetGridSpacingNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-			widgetGridSpacingNumericUpDown.Location = new Point(1213, 0);
+			widgetGridSpacingNumericUpDown.Location = new Point(1046, 0);
 			widgetGridSpacingNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
 			widgetGridSpacingNumericUpDown.Name = "widgetGridSpacingNumericUpDown";
 			widgetGridSpacingNumericUpDown.Size = new Size(49, 23);
@@ -472,7 +470,7 @@ namespace MyGui.net
 			label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			label2.AutoSize = true;
 			label2.BackColor = Color.Transparent;
-			label2.Location = new Point(1110, 4);
+			label2.Location = new Point(943, 4);
 			label2.Name = "label2";
 			label2.Size = new Size(98, 15);
 			label2.TabIndex = 4;
@@ -561,7 +559,7 @@ namespace MyGui.net
 			// 
 			zoomLevelNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			zoomLevelNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 0 });
-			zoomLevelNumericUpDown.Location = new Point(1047, 0);
+			zoomLevelNumericUpDown.Location = new Point(880, 0);
 			zoomLevelNumericUpDown.Maximum = new decimal(new int[] { 400, 0, 0, 0 });
 			zoomLevelNumericUpDown.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
 			zoomLevelNumericUpDown.Name = "zoomLevelNumericUpDown";
@@ -574,7 +572,7 @@ namespace MyGui.net
 			// 
 			label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			label1.BackColor = Color.Transparent;
-			label1.Location = new Point(951, 4);
+			label1.Location = new Point(784, 4);
 			label1.Name = "label1";
 			label1.Size = new Size(93, 15);
 			label1.TabIndex = 6;
@@ -585,7 +583,7 @@ namespace MyGui.net
 			AllowDrop = true;
 			AutoScaleDimensions = new SizeF(96F, 96F);
 			AutoScaleMode = AutoScaleMode.Dpi;
-			ClientSize = new Size(1264, 681);
+			ClientSize = new Size(1097, 595);
 			Controls.Add(zoomLevelNumericUpDown);
 			Controls.Add(label1);
 			Controls.Add(widgetGridSpacingNumericUpDown);

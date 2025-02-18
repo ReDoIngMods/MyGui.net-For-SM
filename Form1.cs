@@ -113,6 +113,16 @@ namespace MyGui.net
 		{
 			InitializeComponent();
 			HandleLoad(_DefaultOpenedDir);
+			/*float scaleFactor = (float)DeviceDpi / 96f; // Get DPI scale
+
+			viewportScrollY.Width = (int)(17 * scaleFactor);  // Scale vertical scrollbar width
+			viewportScrollY.Location = new(viewportScrollY.Parent.Width - (int)(17 * scaleFactor), viewportScrollY.Location.Y);
+
+			viewportScrollX.Height = (int)(17 * scaleFactor); // Scale horizontal scrollbar height
+			viewportScrollX.Location = new(viewportScrollX.Location.X, viewportScrollX.Parent.Height - (int)(17 * scaleFactor));
+
+			viewportScrollX.Invalidate(); // Force repaint
+			viewportScrollY.Invalidate();*/
 		}
 
 		public static void ReloadCache(bool initial = false)

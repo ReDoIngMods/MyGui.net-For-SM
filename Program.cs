@@ -25,10 +25,15 @@ namespace MyGui.net
 			{
 				SetProcessDPIAware();
 			}
+			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			ApplicationConfiguration.Initialize();
             //Application.SetColorMode(SystemColorMode.Dark);
             Application.SetColorMode((SystemColorMode)Settings.Default.Theme);
-            try
+
+			Application.EnableVisualStyles();
+			Application.SetDefaultFont(new Font("Segoe UI", 9f));
+
+			try
             {
                 Application.Run(new Form1(_DefaultOpenedDir));
             }
