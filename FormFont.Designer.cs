@@ -34,7 +34,15 @@
 			searchBox = new TextBox();
 			applyButton = new Button();
 			cancelButton = new Button();
+			splitContainer1 = new SplitContainer();
+			hScrollBar1 = new HScrollBar();
+			previewTextBox = new TextBox();
+			previewViewport = new SkiaSharp.Views.Desktop.SKControl();
 			((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+			((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+			splitContainer1.Panel1.SuspendLayout();
+			splitContainer1.Panel2.SuspendLayout();
+			splitContainer1.SuspendLayout();
 			SuspendLayout();
 			// 
 			// dataGridView1
@@ -42,9 +50,9 @@
 			dataGridView1.AllowUserToAddRows = false;
 			dataGridView1.AllowUserToDeleteRows = false;
 			dataGridView1.AllowUserToResizeRows = false;
-			dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader;
 			dataGridView1.BackgroundColor = SystemColors.ControlLightLight;
+			dataGridView1.BorderStyle = BorderStyle.None;
 			dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
 			dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
 			dataGridViewCellStyle1.BackColor = Color.Transparent;
@@ -55,8 +63,9 @@
 			dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
 			dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
 			dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			dataGridView1.Dock = DockStyle.Fill;
 			dataGridView1.EditMode = DataGridViewEditMode.EditProgrammatically;
-			dataGridView1.Location = new Point(12, 41);
+			dataGridView1.Location = new Point(0, 0);
 			dataGridView1.MultiSelect = false;
 			dataGridView1.Name = "dataGridView1";
 			dataGridView1.ReadOnly = true;
@@ -78,7 +87,7 @@
 			dataGridView1.ShowCellToolTips = false;
 			dataGridView1.ShowEditingIcon = false;
 			dataGridView1.ShowRowErrors = false;
-			dataGridView1.Size = new Size(760, 379);
+			dataGridView1.Size = new Size(758, 298);
 			dataGridView1.StandardTab = true;
 			dataGridView1.TabIndex = 0;
 			dataGridView1.CellMouseDoubleClick += dataGridView1_CellMouseDoubleClick;
@@ -117,15 +126,64 @@
 			cancelButton.Text = "Cancel";
 			cancelButton.UseVisualStyleBackColor = true;
 			// 
+			// splitContainer1
+			// 
+			splitContainer1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			splitContainer1.BorderStyle = BorderStyle.FixedSingle;
+			splitContainer1.FixedPanel = FixedPanel.Panel1;
+			splitContainer1.Location = new Point(12, 41);
+			splitContainer1.Name = "splitContainer1";
+			splitContainer1.Orientation = Orientation.Horizontal;
+			// 
+			// splitContainer1.Panel1
+			// 
+			splitContainer1.Panel1.Controls.Add(hScrollBar1);
+			splitContainer1.Panel1.Controls.Add(previewTextBox);
+			splitContainer1.Panel1.Controls.Add(previewViewport);
+			// 
+			// splitContainer1.Panel2
+			// 
+			splitContainer1.Panel2.Controls.Add(dataGridView1);
+			splitContainer1.Size = new Size(760, 379);
+			splitContainer1.SplitterDistance = 75;
+			splitContainer1.TabIndex = 10;
+			// 
+			// hScrollBar1
+			// 
+			hScrollBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			hScrollBar1.Location = new Point(0, 32);
+			hScrollBar1.Name = "hScrollBar1";
+			hScrollBar1.Size = new Size(758, 13);
+			hScrollBar1.TabIndex = 2;
+			// 
+			// previewTextBox
+			// 
+			previewTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			previewTextBox.Location = new Point(3, 47);
+			previewTextBox.Name = "previewTextBox";
+			previewTextBox.PlaceholderText = "Anything typed in here will show up in the preview using the selected font!";
+			previewTextBox.Size = new Size(752, 23);
+			previewTextBox.TabIndex = 1;
+			// 
+			// previewViewport
+			// 
+			previewViewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			previewViewport.BackColor = Color.Black;
+			previewViewport.Location = new Point(-1, -1);
+			previewViewport.Name = "previewViewport";
+			previewViewport.Size = new Size(760, 32);
+			previewViewport.TabIndex = 0;
+			previewViewport.Text = "skControl1";
+			// 
 			// FormFont
 			// 
 			AutoScaleDimensions = new SizeF(7F, 15F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(784, 461);
+			Controls.Add(splitContainer1);
 			Controls.Add(applyButton);
 			Controls.Add(cancelButton);
 			Controls.Add(searchBox);
-			Controls.Add(dataGridView1);
 			KeyPreview = true;
 			MinimizeBox = false;
 			MinimumSize = new Size(290, 200);
@@ -138,6 +196,11 @@
 			Load += FormFont_Load;
 			KeyDown += FormFont_KeyDown;
 			((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+			splitContainer1.Panel1.ResumeLayout(false);
+			splitContainer1.Panel1.PerformLayout();
+			splitContainer1.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+			splitContainer1.ResumeLayout(false);
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -148,5 +211,9 @@
 		private TextBox searchBox;
 		private Button applyButton;
 		private Button cancelButton;
+		private SplitContainer splitContainer1;
+		private TextBox previewTextBox;
+		private SkiaSharp.Views.Desktop.SKControl previewViewport;
+		private HScrollBar hScrollBar1;
 	}
 }

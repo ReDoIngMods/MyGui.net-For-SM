@@ -31,7 +31,7 @@ namespace MyGui.net
 
 			foreach (var kv in RenderBackend._allFonts)
 			{
-				dataTable.Rows.Add(kv.Key, kv.Value.size, kv.Value.letterSpacing, kv.Value.source, kv.Value.allowedChars);
+				dataTable.Rows.Add(kv.Key, kv.Value.size, kv.Value.letterSpacing ?? 1, kv.Value.source, kv.Value.allowedChars);
 			}
 
 			DataView dataView = new DataView(dataTable);

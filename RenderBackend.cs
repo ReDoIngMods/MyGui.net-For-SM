@@ -49,12 +49,6 @@ namespace MyGui.net
 			}
 		}
 
-		public static void ReloadCache()
-		{
-			_allResources = new();
-			_allFonts = new();
-		}
-
 		/// <summary>
 		/// Repositions and adjsuts Widgets to be rendered by calling RenderWidget.
 		/// </summary>
