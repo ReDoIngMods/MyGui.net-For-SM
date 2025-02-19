@@ -382,11 +382,61 @@ namespace MyGui.net
 							_baseFontPaint.Typeface = _fontCache[fontPath];
 							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 
-							string captionText = Util.ReplaceLanguageTagsInString(widgetTertiaryData.properties["Caption"], Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath);
+							// Apart for styleish reasons.
+							_baseFontPaint.TextSize = (float)_baseFontPaint.TextSize * 1.45f;
 
-							var spacingX = destRect.Left;
-							var spacingY = destRect.Top + _baseFontPaint.TextSize;
-							foreach (var character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
+                            string captionText = Util.ReplaceLanguageTagsInString(widgetTertiaryData.properties["Caption"], Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath);
+
+							float offsetX = 0;
+							float offsetY = 0;
+
+							if(widgetTertiaryData.properties.ContainsKey("TextAlign"))
+							{
+                                // TODO: Write better system for this
+                                float textWidth = 0;
+                                foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
+                                    textWidth += _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0);
+
+                                float widgetWidth = destRect.Right - destRect.Left;
+                                float widgetHeight = destRect.Bottom - destRect.Top;
+
+                                switch (widgetTertiaryData.properties["TextAlign"])
+                                {
+                                    case "HCenter VCenter":
+                                    case "Center":
+                                        offsetX = (widgetWidth / 2) - (textWidth / 2);
+                                        offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+                                        break;
+									case "Left Bottom":
+                                        offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize;
+										break;
+									case "Left VCenter":
+                                        offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+										break;
+									case "Right Top":
+										offsetX = widgetWidth - textWidth;
+										break;
+									case "Right Bottom":
+                                        offsetX = widgetWidth - textWidth;
+										offsetY = widgetHeight - _baseFontPaint.TextSize;
+                                        break;
+                                    case "Right VCenter":
+                                        offsetX = widgetWidth - textWidth;
+                                        offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+                                        break;
+									case "HCenter Top":
+                                        offsetX = (widgetWidth / 2) - (textWidth / 2);
+										break;
+                                    case "HCenter Bottom":
+                                        offsetX = (widgetWidth / 2) - (textWidth / 2);
+                                        offsetY = widgetHeight - _baseFontPaint.TextSize;
+                                        break;
+                                }
+                            }
+
+							float spacingX = destRect.Left + offsetX;
+							float spacingY = destRect.Top + _baseFontPaint.TextSize + offsetY;
+							foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
 							{
 								/*if (!destRect.Contains(new SKPoint(spacingX + _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0), spacingY)))
 								{
