@@ -1418,6 +1418,7 @@ namespace MyGui.net
 
 		private void OpenLayout(string file)
 		{
+			DebugConsole.Log("Opening layout \"" + file + "\"", DebugConsole.LogLevels.Info);
 			ClearStacks();
 
 			string fileName = Path.GetFileNameWithoutExtension(file);
@@ -1425,6 +1426,7 @@ namespace MyGui.net
 			if (Settings.Default.PreferPixelLayouts && !fileName.EndsWith(Settings.Default.PixelLayoutSuffix) && Util.IsValidFile(Util.AppendToFile(file, Settings.Default.PixelLayoutSuffix)))
 			{
 				file = Util.AppendToFile(file, Settings.Default.PixelLayoutSuffix);
+				DebugConsole.Log("Pixels layout found! Opening \"" + file + "\" instead", DebugConsole.LogLevels.Info);
 			}
 
 			AddToRecentFiles(file);
@@ -1442,6 +1444,7 @@ namespace MyGui.net
 
 			LoadTreeView(_currentLayout);
 			UpdateProperties();
+			DebugConsole.Log("Opened layout \"" + file + "\"", DebugConsole.LogLevels.Success);
 			//Refresh ui
 			/*for (int i = mainPanel.Controls.Count - 1; i >= 0; i--)
 			{
@@ -1464,6 +1467,7 @@ namespace MyGui.net
 					return;
 				}
 			}
+			DebugConsole.Log("Saving current layout", DebugConsole.LogLevels.Info);
 			int actualExport = Settings.Default.ExportMode;
 			if (actualExport == 2)
 			{
@@ -1482,10 +1486,12 @@ namespace MyGui.net
 			if (actualExport == 0 || actualExport == 3)
 			{
 
-				using (StreamWriter outputFile = new StreamWriter(actualExport == 3 && !Path.GetFileNameWithoutExtension(_currentLayoutSavePath).EndsWith(Settings.Default.PixelLayoutSuffix) ? Util.AppendToFile(_currentLayoutSavePath, Settings.Default.PixelLayoutSuffix) : _currentLayoutSavePath))
+				string filePath = !Path.GetFileNameWithoutExtension(_currentLayoutSavePath).EndsWith(Settings.Default.PixelLayoutSuffix) ? Util.AppendToFile(_currentLayoutSavePath, Settings.Default.PixelLayoutSuffix) : _currentLayoutSavePath;
+				using (StreamWriter outputFile = new StreamWriter(filePath))
 				{
 					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
 				}
+				DebugConsole.Log("Saved layout \"" + filePath + "\"", DebugConsole.LogLevels.Success);
 			}
 			if (actualExport == 1 || actualExport == 3)
 			{
@@ -1508,6 +1514,7 @@ namespace MyGui.net
 				{
 					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, (Point)ProjectSize));
 				}
+				DebugConsole.Log("Saved layout \"" + actualPath + "\"", DebugConsole.LogLevels.Success);
 			}
 			ClearStacks();
 		}
@@ -1523,6 +1530,8 @@ namespace MyGui.net
 			{
 				_currentLayoutPath = saveLayoutDialog.FileName;
 				_currentLayoutSavePath = saveLayoutDialog.FileName;
+
+				DebugConsole.Log("Saving current layout", DebugConsole.LogLevels.Info);
 
 				string actualPath = Path.GetFileNameWithoutExtension(_currentLayoutSavePath);
 				string suffix = Settings.Default.PixelLayoutSuffix;
@@ -1554,6 +1563,7 @@ namespace MyGui.net
 					{
 						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
 					}
+					DebugConsole.Log("Saved layout \"" + (actualExport == 3 ? Util.AppendToFile(actualPath, suffix) : actualPath) + "\"", DebugConsole.LogLevels.Success);
 				}
 				if (actualExport == 1 || actualExport == 3)
 				{
@@ -1561,6 +1571,7 @@ namespace MyGui.net
 					{
 						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, (Point)ProjectSize));
 					}
+					DebugConsole.Log("Saved layout \"" + actualPath + "\"", DebugConsole.LogLevels.Success);
 				}
 				ClearStacks();
 			}

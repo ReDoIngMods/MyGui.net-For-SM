@@ -545,8 +545,10 @@ namespace MyGui.net
 
 		private void hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
+			if (!_formLoaded)
+				return;
 			CheckBox sender = (CheckBox)senderAny;
-			if (_formLoaded && !sender.Checked && MessageBox.Show("Are you sure you want to show Old MyGui Skins?\nPlease, do not use these skins unless you have a good reason to in order to maintain consistency across Scrap Mechanic Guis.", "Show Old MyGui Skins", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+			if (!sender.Checked && MessageBox.Show("Are you sure you want to show Old MyGui Skins?\nPlease, do not use these skins unless you have a good reason to in order to maintain consistency across Scrap Mechanic Guis.", "Show Old MyGui Skins", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
 			{
 				_needsCacheReload = true;
 				_setDef.HideOldMyGuiWidgetSkins = sender.Checked;
