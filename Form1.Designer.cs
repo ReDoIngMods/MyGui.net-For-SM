@@ -235,7 +235,7 @@ namespace MyGui.net
 			tabPage2.Location = new Point(4, 24);
 			tabPage2.Margin = new Padding(0);
 			tabPage2.Name = "tabPage2";
-			tabPage2.Size = new Size(302, 611);
+			tabPage2.Size = new Size(302, 525);
 			tabPage2.TabIndex = 1;
 			tabPage2.Text = "Widgets";
 			// 
@@ -246,7 +246,7 @@ namespace MyGui.net
 			tabPage3.Location = new Point(4, 24);
 			tabPage3.Margin = new Padding(0);
 			tabPage3.Name = "tabPage3";
-			tabPage3.Size = new Size(302, 611);
+			tabPage3.Size = new Size(302, 525);
 			tabPage3.TabIndex = 2;
 			tabPage3.Text = "Layout";
 			// 
@@ -259,7 +259,7 @@ namespace MyGui.net
 			treeView1.ItemHeight = 23;
 			treeView1.Location = new Point(0, 0);
 			treeView1.Name = "treeView1";
-			treeView1.Size = new Size(302, 611);
+			treeView1.Size = new Size(302, 525);
 			treeView1.TabIndex = 0;
 			treeView1.AfterLabelEdit += treeView1_AfterLabelEdit;
 			treeView1.AfterSelect += treeView1_AfterSelect;
@@ -313,6 +313,7 @@ namespace MyGui.net
 			openRecentToolStripMenuItem.Name = "openRecentToolStripMenuItem";
 			openRecentToolStripMenuItem.Size = new Size(186, 22);
 			openRecentToolStripMenuItem.Text = "Recent";
+			openRecentToolStripMenuItem.DropDownOpening += openRecentToolStripMenuItem_DropDownOpening;
 			// 
 			// refreshToolStripMenuItem
 			// 

@@ -478,7 +478,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == "" || value == "DeJaVuSans")
 				{
 					widget.properties.Remove("FontName");
 				}

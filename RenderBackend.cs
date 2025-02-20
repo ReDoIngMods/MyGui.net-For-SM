@@ -435,7 +435,7 @@ namespace MyGui.net
                             }
 
 							float spacingX = destRect.Left + offsetX;
-							float spacingY = destRect.Top + _baseFontPaint.TextSize + offsetY;
+							float spacingY = destRect.Top + _baseFontPaint.TextSize + offsetY - 3;
 							foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
 							{
 								/*if (!destRect.Contains(new SKPoint(spacingX + _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0), spacingY)))

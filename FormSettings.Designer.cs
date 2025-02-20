@@ -43,6 +43,7 @@
 			workspaceSizeDefaultXNumericUpDown = new CustomNumericUpDown();
 			label4 = new Label();
 			groupBox14 = new GroupBox();
+			forceCacheReloadButton = new Button();
 			referenceLanguageComboBox = new ComboBox();
 			label8 = new Label();
 			referenceResolutionComboBox = new ComboBox();
@@ -118,6 +119,7 @@
 			resetSettingsButton = new Button();
 			autoApplyCheckBox = new CheckBox();
 			editorBackgroundPathDialog = new OpenFileDialog();
+			hideOldMyGuiWidgetSkinsCheckBox = new CheckBox();
 			tabControl1.SuspendLayout();
 			projectTabPage.SuspendLayout();
 			flowLayoutPanel2.SuspendLayout();
@@ -300,16 +302,29 @@
 			// 
 			// groupBox14
 			// 
+			groupBox14.Controls.Add(hideOldMyGuiWidgetSkinsCheckBox);
+			groupBox14.Controls.Add(forceCacheReloadButton);
 			groupBox14.Controls.Add(referenceLanguageComboBox);
 			groupBox14.Controls.Add(label8);
 			groupBox14.Controls.Add(referenceResolutionComboBox);
 			groupBox14.Controls.Add(label7);
 			groupBox14.Location = new Point(304, 3);
 			groupBox14.Name = "groupBox14";
-			groupBox14.Size = new Size(237, 147);
+			groupBox14.Size = new Size(237, 166);
 			groupBox14.TabIndex = 8;
 			groupBox14.TabStop = false;
 			groupBox14.Text = "References";
+			// 
+			// forceCacheReloadButton
+			// 
+			forceCacheReloadButton.FlatStyle = FlatStyle.System;
+			forceCacheReloadButton.Location = new Point(6, 134);
+			forceCacheReloadButton.Name = "forceCacheReloadButton";
+			forceCacheReloadButton.Size = new Size(225, 23);
+			forceCacheReloadButton.TabIndex = 7;
+			forceCacheReloadButton.Text = "Force Cache Reload";
+			forceCacheReloadButton.UseVisualStyleBackColor = true;
+			forceCacheReloadButton.Click += forceCacheReloadButton_Click;
 			// 
 			// referenceLanguageComboBox
 			// 
@@ -1168,6 +1183,16 @@
 			editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
 			editorBackgroundPathDialog.Title = "Choose background image";
 			// 
+			// hideOldMyGuiWidgetSkinsCheckBox
+			// 
+			hideOldMyGuiWidgetSkinsCheckBox.Location = new Point(6, 110);
+			hideOldMyGuiWidgetSkinsCheckBox.Name = "hideOldMyGuiWidgetSkinsCheckBox";
+			hideOldMyGuiWidgetSkinsCheckBox.Size = new Size(225, 18);
+			hideOldMyGuiWidgetSkinsCheckBox.TabIndex = 8;
+			hideOldMyGuiWidgetSkinsCheckBox.Text = "Hide Old MyGui Widget Skins";
+			hideOldMyGuiWidgetSkinsCheckBox.UseVisualStyleBackColor = true;
+			hideOldMyGuiWidgetSkinsCheckBox.CheckedChanged += hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged;
+			// 
 			// FormSettings
 			// 
 			AutoScaleDimensions = new SizeF(96F, 96F);
@@ -1326,5 +1351,7 @@
 		public TabControl tabControl1;
 		private GroupBox groupBox15;
 		private CheckBox hideSplashScreenCheckBox;
+		private Button forceCacheReloadButton;
+		private CheckBox hideOldMyGuiWidgetSkinsCheckBox;
 	}
 }

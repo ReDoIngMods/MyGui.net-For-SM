@@ -141,6 +141,7 @@ namespace MyGui.net
 			if (!initial)
 			{
 				//RenderBackend.ReloadCache();
+				skinForm = new();
 				tagForm.ReloadCache();
 				fontForm.ReloadCache();
 			}
@@ -154,6 +155,8 @@ namespace MyGui.net
 				_recentFiles = Settings.Default.RecentlyOpenedFiles.Split(';').ToList();
 				UpdateRecentFilesMenu();
 			}
+
+			openRecentToolStripMenuItem_DropDownOpening(null, new());
 
 			this.Text = $"{Util.programName} - {(autoloadPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? autoloadPath : Path.GetFileName(autoloadPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
 			Settings.Default.PropertyChanged += Settings_PropertyChanged;
@@ -2064,6 +2067,25 @@ namespace MyGui.net
 			{
 				viewport.Visible = true;
 			}
+		}
+
+		private void openRecentToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+		{
+			List<string> toRemove = new();
+			foreach (var item in _recentFiles)
+			{
+				if (!Util.IsAnyOf(Path.GetExtension(item), [".xml", ".layout"]) || !File.Exists(item))
+				{
+					toRemove.Add(item);
+				}
+			}
+
+			foreach (var item in toRemove)
+			{
+				_recentFiles.Remove(item);
+			}
+
+			UpdateRecentFilesMenu();
 		}
 	}
 }

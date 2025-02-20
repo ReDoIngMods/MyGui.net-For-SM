@@ -10,6 +10,15 @@ namespace MyGui.net
 {
 	public partial class FormSkin : Form
 	{
+		readonly Dictionary<string, string> _catOverrides = new() {
+			{"WhiteSkin", "Neutral"},
+			{"ButtonImage", "Neutral"},
+			{"TextBox", "Neutral"},
+			{"EditBoxEmpty", "Neutral"},
+			{"WordWrapEmpty", "Neutral"},
+			{"ImageBox", "Neutral"}
+		};
+
 		public string outcome = "";
 
 		private BindingSource bindingSource;
@@ -30,15 +39,17 @@ namespace MyGui.net
 			{
 				MyGuiResource res = kv.Value;
 				string texPath = res.path ?? (res.resourceLayout != null ? "Resource Layout" : "Texture-less");
-				//TODO: VERY WIP, categories arent correct
-				string catStr = res.pathSpecial == null ? "Neutral" : 
+				string catStr = _catOverrides.TryGetValue(res.name, out string val) ? val : ((res.pathSpecial == null || (res.path == null && res.resourceLayout == null)) ? "Neutral" : 
 					(
 						Util.IsAnyOf<string>(Path.GetFileName(res.pathSpecial), ["ScrapMekSkin.xml", "ScrapMekTemplate.xml"]) ? "Old Scrap Mechanic" : 
 						(
-							Util.IsAnyOf<string>(Path.GetFileName(res.pathSpecial), ["MyGUI_BlackOrangeSkins.xml", "ScrapMekTemplate.xml"]) ? "Old MyGui" : "Modern Scrap Mechanic"
+							Util.IsAnyOf<string>(Path.GetFileName(res.pathSpecial), ["MyGUI_BlackOrangeSkins.xml", "MyGUI_BlackOrangeTemplates.xml"]) ? "Old MyGui" : "Modern Scrap Mechanic"
 						)
-					);
-				
+					));
+				if (Settings.Default.HideOldMyGuiWidgetSkins && catStr == "Old MyGui")
+				{
+					continue;
+				}
 				dataTable.Rows.Add(kv.Key, catStr, res.correctType == "" ? "Any" : res.correctType, texPath);
 			}
 

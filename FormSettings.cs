@@ -90,6 +90,8 @@ namespace MyGui.net
 			referenceLanguageComboBox.Items.AddRange(Directory.GetDirectories(Path.Combine(Form1.ScrapMechanicPath, "Data/Gui/Language")).Select(path => Path.GetFileName(path)).ToArray());
 
 			referenceLanguageComboBox.Text = _setDef.ReferenceLanguage;
+			hideOldMyGuiWidgetSkinsCheckBox.Checked = _setDef.HideOldMyGuiWidgetSkins;
+
 
 			showTypesForNamedWidgetsCheckBox.Checked = _setDef.ShowTypesForNamedWidgets;
 			widgetGridSpacingNumericUpDown.Value = _setDef.WidgetGridSpacing;
@@ -522,6 +524,33 @@ namespace MyGui.net
 			}
 			_setDef.ReferenceLanguage = sender.Text;
 			OnSettingChange();
+		}
+
+		private void hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			if (_formLoaded && !sender.Checked && MessageBox.Show("Are you sure you want to show Old MyGui Skins?\nPlease, do not use these skins unless you have a good reason to in order to maintain consistency across Scrap Mechanic Guis.", "Show Old MyGui Skins", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+			{
+				_needsCacheReload = true;
+				_setDef.HideOldMyGuiWidgetSkins = sender.Checked;
+				OnSettingChange();
+			}
+			else
+			{
+				if (sender.Checked)
+				{
+					_needsCacheReload = true;
+				}
+				sender.Checked = true;
+				_setDef.HideOldMyGuiWidgetSkins = true;
+				OnSettingChange();
+			}
+		}
+
+		private void forceCacheReloadButton_Click(object sender, EventArgs e)
+		{
+			_needsCacheReload = true;
+			MessageBox.Show("Close the Options to reload the cache.", "Cache Reload", MessageBoxButtons.OK);
 		}
 
 		private void showTypesForNamedWidgetsCheckBox_CheckedChanged(object senderAny, EventArgs e)

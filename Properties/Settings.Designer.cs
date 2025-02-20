@@ -431,5 +431,17 @@ namespace MyGui.net.Properties {
                 this["RecentlyOpenedFiles"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HideOldMyGuiWidgetSkins {
+            get {
+                return ((bool)(this["HideOldMyGuiWidgetSkins"]));
+            }
+            set {
+                this["HideOldMyGuiWidgetSkins"] = value;
+            }
+        }
     }
 }
