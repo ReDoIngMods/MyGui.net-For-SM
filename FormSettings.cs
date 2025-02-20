@@ -76,6 +76,8 @@ namespace MyGui.net
 			saveCustomLayoutCheckBox.Checked = _setDef.SaveWindowLayout;
 			useCustomLayoutCheckBox.Checked = _setDef.UseCustomWindowLayout;
 
+			showDebugConsoleCheckBox.Checked = _setDef.ShowDebugConsole;
+
 			showWarningsCheckBox.Checked = _setDef.ShowWarnings;
 
 			//TAB PROJECT
@@ -109,6 +111,14 @@ namespace MyGui.net
 			if (_autoApply)
 			{
 				_setDef.Save();
+				if (Settings.Default.ShowDebugConsole)
+				{
+					DebugConsole.ShowConsole();
+				}
+				else
+				{
+					DebugConsole.HideConsole();
+				}
 				applySettingsButton.Enabled = false;
 				_hasChanged = false;
 				return;
@@ -440,6 +450,13 @@ namespace MyGui.net
 			OnSettingChange();
 		}
 
+		private void showDebugConsoleCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.ShowDebugConsole = sender.Checked;
+			OnSettingChange();
+		}
+
 		private void showWarningsCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
@@ -592,6 +609,14 @@ namespace MyGui.net
 				MessageBox.Show("Some options require program restart in order to apply.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 			}
 			_setDef.Save();
+			if (Settings.Default.ShowDebugConsole)
+			{
+				DebugConsole.ShowConsole();
+			}
+			else
+			{
+				DebugConsole.HideConsole();
+			}
 			_hasChanged = false;
 			applySettingsButton.Enabled = _hasChanged;
 		}

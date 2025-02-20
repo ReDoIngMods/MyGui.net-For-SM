@@ -443,5 +443,17 @@ namespace MyGui.net.Properties {
                 this["HideOldMyGuiWidgetSkins"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowDebugConsole {
+            get {
+                return ((bool)(this["ShowDebugConsole"]));
+            }
+            set {
+                this["ShowDebugConsole"] = value;
+            }
+        }
     }
 }

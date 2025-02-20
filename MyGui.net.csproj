@@ -57,9 +57,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="FontChars\Bitmap1.bmp">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="FontChars\Font Dumps made by crackx02.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

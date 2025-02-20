@@ -30,7 +30,7 @@ namespace MyGui.net
         {
             if (command.Execute()) //If command succeeded
             {
-                //Debug.WriteLine($"command: {command.ToString()} executed!");
+                DebugConsole.WriteLine($"Executed \"{command.ToString()}\"", DebugConsole.LogLevels.Info);
                 _undoStack.Push(command);
                 _redoStack.Clear();
                 //this.PrintStacks();
@@ -42,7 +42,8 @@ namespace MyGui.net
             if (_undoStack.Count > 0)
             {
                 var command = _undoStack.Pop();
-                command.Undo();
+				DebugConsole.WriteLine($"Undone \"{command.ToString()}\"", DebugConsole.LogLevels.Info);
+				command.Undo();
                 _redoStack.Push(command);
             }
         }
@@ -52,7 +53,8 @@ namespace MyGui.net
             if (_redoStack.Count > 0)
             {
                 var command = _redoStack.Pop();
-                command.Execute();
+				DebugConsole.WriteLine($"Redone \"{command.ToString()}\"", DebugConsole.LogLevels.Info);
+				command.Execute();
                 _undoStack.Push(command);
             }
         }

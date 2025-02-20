@@ -37,7 +37,7 @@
 
         public override string ToString()
         {
-            return $"MoveCommand: {_control.name} from {_oldPosition} to {_newPosition}";
+            return $"MoveCommand: {_control} from {_oldPosition} to {_newPosition}";
         }
     }
 
@@ -77,7 +77,7 @@
 
         public override string ToString()
         {
-            return $"ResizeCommand: {_control.name} from {_oldSize} to {_newSize}";
+            return $"ResizeCommand: {_control} from {_oldSize} to {_newSize}";
         }
     }
 
@@ -128,7 +128,7 @@
 
         public override string ToString()
         {
-            return $"MoveResizeCommand: {_control.name} from {_oldPosition} to {_newPosition}";
+            return $"MoveResizeCommand: {_control} moved from {_oldPosition} to {_newPosition}, resized from {_oldSize} to {_newSize}";
         }
     }
 
@@ -167,7 +167,7 @@
 
         public override string ToString()
         {
-            return $"ChangePropertyCommand: {_control.name} changed property {_property} from {_oldValue} to {_newValue}";
+            return $"ChangePropertyCommand: {_control} changed property {_property} from {_oldValue} to {_newValue}";
         }
     }
 
@@ -224,7 +224,7 @@
 
         public override string ToString()
         {
-            return $"CreateControlCommand: created control {_control} with parent {_parent}";
+            return $"CreateControlCommand: created widget {_control} with parent {_parent}";
         }
     }
 
@@ -281,7 +281,7 @@
 
         public override string ToString()
         {
-            return $"DeleteControlCommand: deleted control {_control} from parent {_parent} at index {_index}";
+            return $"DeleteControlCommand: deleted widget {_control} from within parent {_parent} at index {_index}";
         }
     }
 }

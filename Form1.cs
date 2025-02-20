@@ -8,13 +8,13 @@ using System.Diagnostics;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 using static MyGui.net.RenderBackend;
+using System.Windows.Forms;
 
 namespace MyGui.net
 {
 	//TODO: Add an undo/redo history window
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
-	//TODO: add reload cache, clears it all and does the stuff
 	//TODO: better visualization of paths, like which steam user you are
 	//TODO: make text editor autocomplete tags
 	//TODO: ResourceImage (new gui) and ResourceTexture (just render the image) support
@@ -112,6 +112,7 @@ namespace MyGui.net
 		public Form1(string _DefaultOpenedDir = "")
 		{
 			InitializeComponent();
+			DebugConsole.CloseConsoleOnExit(this);
 			HandleLoad(_DefaultOpenedDir);
 			/*float scaleFactor = (float)DeviceDpi / 96f; // Get DPI scale
 
@@ -127,16 +128,30 @@ namespace MyGui.net
 
 		public static void ReloadCache(bool initial = false)
 		{
+
+			DebugConsole.Log("Starting MyGui.net with " + ((_currentLayoutPath ?? "") != "" ? $"autoload path: \"{_currentLayoutPath}\"" : "an empty project"), DebugConsole.LogLevels.Success);
+
+			DebugConsole.Log((initial ? "Loading" : "Reloading") + " Cache...", DebugConsole.LogLevels.Warning);
+			DebugConsole.Log($"Cache Reference Resolution: {Settings.Default.ReferenceResolution}", DebugConsole.LogLevels.Info);
+			DebugConsole.Log($"Cache Reference Language: {Settings.Default.ReferenceLanguage}", DebugConsole.LogLevels.Info);
 			_allResources = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
-			//Util.PrintAllResources(_allResources);
+			DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
+
 			RenderBackend._allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
 			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 15, letterSpacing = 1.15f });
+
+			var possibleFontRangePath = Path.Combine(Application.ExecutablePath, "..", "FontRanges/FontRanges_" + Settings.Default.ReferenceLanguage + ".xml");
+			DebugConsole.Log($"Font Available Characters loaded using \"{(File.Exists(possibleFontRangePath) ? Path.GetFullPath(possibleFontRangePath) : "cached LimitedFontData.xml")}\"", DebugConsole.LogLevels.Info);
+
+			DebugConsole.Log($"Cache Font Count: {_allFonts.Count}", DebugConsole.LogLevels.Info);
 			_steamUserId = Util.GetLoggedInSteamUserID() ?? "0";
+			DebugConsole.Log($"Currently Logged-in Steam User ID: {_steamUserId}", DebugConsole.LogLevels.Info);
 			string[] modPaths = [
 				Path.GetFullPath(Path.Combine(_scrapMechanicPath, "..", "..", "workshop\\content\\387990")),
 				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_{_steamUserId}\\Mods")
 			];
 			_modUuidPathCache = Util.GetModUuidsAndPaths(modPaths);
+			DebugConsole.Log($"Cache Mod Path Count: {_allFonts.Count}", DebugConsole.LogLevels.Info);
 
 			if (!initial)
 			{
@@ -145,6 +160,8 @@ namespace MyGui.net
 				tagForm.ReloadCache();
 				fontForm.ReloadCache();
 			}
+
+			DebugConsole.Log("Cache " + (initial ? "Loading" : "Reloading") + " Finished!", DebugConsole.LogLevels.Success);
 		}
 
 		void HandleLoad(string autoloadPath = "")
@@ -632,6 +649,13 @@ namespace MyGui.net
 				splash.Owner = this;
 				splash.Show();
 			}
+
+			if (Settings.Default.ShowDebugConsole)
+			{
+				DebugConsole.ShowConsole();
+			}
+
+			this.Activate();
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)

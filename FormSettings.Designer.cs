@@ -43,6 +43,7 @@
 			workspaceSizeDefaultXNumericUpDown = new CustomNumericUpDown();
 			label4 = new Label();
 			groupBox14 = new GroupBox();
+			hideOldMyGuiWidgetSkinsCheckBox = new CheckBox();
 			forceCacheReloadButton = new Button();
 			referenceLanguageComboBox = new ComboBox();
 			label8 = new Label();
@@ -103,6 +104,8 @@
 			flowLayoutPanel4 = new FlowLayoutPanel();
 			groupBox6 = new GroupBox();
 			showTypesForNamedWidgetsCheckBox = new CheckBox();
+			groupBox16 = new GroupBox();
+			showDebugConsoleCheckBox = new CheckBox();
 			groupBox3 = new GroupBox();
 			showWarningsCheckBox = new CheckBox();
 			aboutTabPage = new TabPage();
@@ -119,7 +122,6 @@
 			resetSettingsButton = new Button();
 			autoApplyCheckBox = new CheckBox();
 			editorBackgroundPathDialog = new OpenFileDialog();
-			hideOldMyGuiWidgetSkinsCheckBox = new CheckBox();
 			tabControl1.SuspendLayout();
 			projectTabPage.SuspendLayout();
 			flowLayoutPanel2.SuspendLayout();
@@ -148,6 +150,7 @@
 			debugTabPage.SuspendLayout();
 			flowLayoutPanel4.SuspendLayout();
 			groupBox6.SuspendLayout();
+			groupBox16.SuspendLayout();
 			groupBox3.SuspendLayout();
 			aboutTabPage.SuspendLayout();
 			panel1.SuspendLayout();
@@ -314,6 +317,16 @@
 			groupBox14.TabIndex = 8;
 			groupBox14.TabStop = false;
 			groupBox14.Text = "References";
+			// 
+			// hideOldMyGuiWidgetSkinsCheckBox
+			// 
+			hideOldMyGuiWidgetSkinsCheckBox.Location = new Point(6, 110);
+			hideOldMyGuiWidgetSkinsCheckBox.Name = "hideOldMyGuiWidgetSkinsCheckBox";
+			hideOldMyGuiWidgetSkinsCheckBox.Size = new Size(225, 18);
+			hideOldMyGuiWidgetSkinsCheckBox.TabIndex = 8;
+			hideOldMyGuiWidgetSkinsCheckBox.Text = "Hide Old MyGui Widget Skins";
+			hideOldMyGuiWidgetSkinsCheckBox.UseVisualStyleBackColor = true;
+			hideOldMyGuiWidgetSkinsCheckBox.CheckedChanged += hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged;
 			// 
 			// forceCacheReloadButton
 			// 
@@ -976,6 +989,7 @@
 			flowLayoutPanel4.AutoScroll = true;
 			flowLayoutPanel4.AutoSizeMode = AutoSizeMode.GrowAndShrink;
 			flowLayoutPanel4.Controls.Add(groupBox6);
+			flowLayoutPanel4.Controls.Add(groupBox16);
 			flowLayoutPanel4.Controls.Add(groupBox3);
 			flowLayoutPanel4.Dock = DockStyle.Fill;
 			flowLayoutPanel4.Location = new Point(0, 0);
@@ -1004,10 +1018,31 @@
 			showTypesForNamedWidgetsCheckBox.UseVisualStyleBackColor = true;
 			showTypesForNamedWidgetsCheckBox.CheckedChanged += showTypesForNamedWidgetsCheckBox_CheckedChanged;
 			// 
+			// groupBox16
+			// 
+			groupBox16.Controls.Add(showDebugConsoleCheckBox);
+			groupBox16.Location = new Point(210, 3);
+			groupBox16.Name = "groupBox16";
+			groupBox16.Size = new Size(157, 55);
+			groupBox16.TabIndex = 10;
+			groupBox16.TabStop = false;
+			groupBox16.Text = "Console";
+			// 
+			// showDebugConsoleCheckBox
+			// 
+			showDebugConsoleCheckBox.AutoSize = true;
+			showDebugConsoleCheckBox.Location = new Point(6, 22);
+			showDebugConsoleCheckBox.Name = "showDebugConsoleCheckBox";
+			showDebugConsoleCheckBox.Size = new Size(139, 19);
+			showDebugConsoleCheckBox.TabIndex = 0;
+			showDebugConsoleCheckBox.Text = "Show Debug Console";
+			showDebugConsoleCheckBox.UseVisualStyleBackColor = true;
+			showDebugConsoleCheckBox.CheckedChanged += showDebugConsoleCheckBox_CheckedChanged;
+			// 
 			// groupBox3
 			// 
 			groupBox3.Controls.Add(showWarningsCheckBox);
-			groupBox3.Location = new Point(210, 3);
+			groupBox3.Location = new Point(373, 3);
 			groupBox3.Name = "groupBox3";
 			groupBox3.Size = new Size(124, 55);
 			groupBox3.TabIndex = 9;
@@ -1183,16 +1218,6 @@
 			editorBackgroundPathDialog.Filter = "All|*.bmp;*.jpg;*.jpeg;*.png;*.gif;*.tiff;*.tif;*.ico|BMP (*.bmp)|*.bmp|JPEG (*.jpg, *.jpeg)|*.jpg;*.jpeg|PNG (*.png)|*.png|GIF (*.gif)|*.gif|TIFF (*.tiff, *.tif)|*.tiff;*.tif|ICO (*.ico)|*.ico";
 			editorBackgroundPathDialog.Title = "Choose background image";
 			// 
-			// hideOldMyGuiWidgetSkinsCheckBox
-			// 
-			hideOldMyGuiWidgetSkinsCheckBox.Location = new Point(6, 110);
-			hideOldMyGuiWidgetSkinsCheckBox.Name = "hideOldMyGuiWidgetSkinsCheckBox";
-			hideOldMyGuiWidgetSkinsCheckBox.Size = new Size(225, 18);
-			hideOldMyGuiWidgetSkinsCheckBox.TabIndex = 8;
-			hideOldMyGuiWidgetSkinsCheckBox.Text = "Hide Old MyGui Widget Skins";
-			hideOldMyGuiWidgetSkinsCheckBox.UseVisualStyleBackColor = true;
-			hideOldMyGuiWidgetSkinsCheckBox.CheckedChanged += hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged;
-			// 
 			// FormSettings
 			// 
 			AutoScaleDimensions = new SizeF(96F, 96F);
@@ -1251,6 +1276,8 @@
 			flowLayoutPanel4.ResumeLayout(false);
 			groupBox6.ResumeLayout(false);
 			groupBox6.PerformLayout();
+			groupBox16.ResumeLayout(false);
+			groupBox16.PerformLayout();
 			groupBox3.ResumeLayout(false);
 			groupBox3.PerformLayout();
 			aboutTabPage.ResumeLayout(false);
@@ -1353,5 +1380,7 @@
 		private CheckBox hideSplashScreenCheckBox;
 		private Button forceCacheReloadButton;
 		private CheckBox hideOldMyGuiWidgetSkinsCheckBox;
+		private GroupBox groupBox16;
+		private CheckBox showDebugConsoleCheckBox;
 	}
 }

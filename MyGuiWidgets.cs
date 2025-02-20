@@ -16,6 +16,11 @@ namespace MyGui.net
         public Point size = new(0, 0);
         public Dictionary<string, string> properties = new();
         public List<MyGuiWidgetData> children = new();
+
+		public override string ToString()
+		{
+			return "{ name: " + (name ?? "[DEFAULT]") + ", skin: " + skin + ", position: " + position + ", size: " + size + "}";
+		}
 	}
 
 	public class MyGuiWidgetDataWidget

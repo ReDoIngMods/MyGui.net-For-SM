@@ -875,7 +875,7 @@ namespace MyGui.net
 			{
 				xmlDocument = XDocument.Load(Path.Combine(Application.ExecutablePath, "..", "FontRanges/FontRanges_" + language + ".xml"));
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
 				xmlDocument = null;
 			}
