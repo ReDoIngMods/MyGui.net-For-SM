@@ -49,6 +49,7 @@ namespace MyGui.net
 				AllocConsole();
 
 				Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
+				Console.SetIn(new StreamReader(Console.OpenStandardInput()));
 
 				Console.Title = "MyGui.net Debug Console";
 				Console.CursorVisible = false;
@@ -94,7 +95,7 @@ namespace MyGui.net
 					var key = Console.ReadKey(true);
 					if (key.Key == ConsoleKey.E)
 					{
-						Log("Console Detached!", LogLevels.Info);
+						Log("Console Detached!", LogLevels.Success);
 						Settings.Default.ShowDebugConsole = false;
 						Settings.Default.Save();
 						HideConsole();

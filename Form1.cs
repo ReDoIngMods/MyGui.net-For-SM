@@ -129,7 +129,10 @@ namespace MyGui.net
 		public static void ReloadCache(bool initial = false)
 		{
 
-			DebugConsole.Log("Starting MyGui.net with " + ((_currentLayoutPath ?? "") != "" ? $"autoload path: \"{_currentLayoutPath}\"" : "an empty project"), DebugConsole.LogLevels.Success);
+			if (initial)
+			{
+				DebugConsole.Log("Starting MyGui.net with " + ((_currentLayoutPath ?? "") != "" ? $"autoload path: \"{_currentLayoutPath}\"" : "an empty project"), DebugConsole.LogLevels.Success);
+			}
 
 			DebugConsole.Log((initial ? "Loading" : "Reloading") + " Cache...", DebugConsole.LogLevels.Warning);
 			DebugConsole.Log($"Cache Reference Resolution: {Settings.Default.ReferenceResolution}", DebugConsole.LogLevels.Info);
@@ -141,7 +144,7 @@ namespace MyGui.net
 			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 15, letterSpacing = 1.15f });
 
 			var possibleFontRangePath = Path.Combine(Application.ExecutablePath, "..", "FontRanges/FontRanges_" + Settings.Default.ReferenceLanguage + ".xml");
-			DebugConsole.Log($"Font Available Characters loaded using \"{(File.Exists(possibleFontRangePath) ? Path.GetFullPath(possibleFontRangePath) : "cached LimitedFontData.xml")}\"", DebugConsole.LogLevels.Info);
+			DebugConsole.Log($"Font Available Characters loaded using \"{(File.Exists(possibleFontRangePath) ? Path.GetFullPath(possibleFontRangePath) : "cached LimitedFontData.xml, imprecise - fonts will be missing certain characters!")}\"", (File.Exists(possibleFontRangePath) ? DebugConsole.LogLevels.Info : DebugConsole.LogLevels.Warning));
 
 			DebugConsole.Log($"Cache Font Count: {_allFonts.Count}", DebugConsole.LogLevels.Info);
 			_steamUserId = Util.GetLoggedInSteamUserID() ?? "0";
@@ -151,7 +154,7 @@ namespace MyGui.net
 				Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), $"AppData\\Roaming\\Axolot Games\\Scrap Mechanic\\User\\User_{_steamUserId}\\Mods")
 			];
 			_modUuidPathCache = Util.GetModUuidsAndPaths(modPaths);
-			DebugConsole.Log($"Cache Mod Path Count: {_allFonts.Count}", DebugConsole.LogLevels.Info);
+			DebugConsole.Log($"Cache Mod Path Count: {_modUuidPathCache.Count}", DebugConsole.LogLevels.Info);
 
 			if (!initial)
 			{
@@ -653,9 +656,8 @@ namespace MyGui.net
 			if (Settings.Default.ShowDebugConsole)
 			{
 				DebugConsole.ShowConsole();
+				this.Activate();
 			}
-
-			this.Activate();
 		}
 
 		private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e)
