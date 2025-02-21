@@ -1,14 +1,10 @@
 using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
-using SkiaSharp.Views.Gtk;
-using SkiaSharp.Views.WPF;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 using static MyGui.net.RenderBackend;
-using System.Windows.Forms;
 
 namespace MyGui.net
 {

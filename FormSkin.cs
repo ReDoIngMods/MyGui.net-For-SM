@@ -1,10 +1,6 @@
 ﻿using MyGui.net.Properties;
 using SkiaSharp;
 using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Security.Policy;
 
 namespace MyGui.net
 {

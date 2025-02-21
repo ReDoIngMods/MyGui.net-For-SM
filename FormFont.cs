@@ -1,6 +1,4 @@
-﻿using MyGui.net.Properties;
-using System.Data;
-using System.Diagnostics;
+﻿using System.Data;
 
 namespace MyGui.net
 {

@@ -1,12 +1,7 @@
-﻿using Microsoft.VisualBasic.Logging;
-using MyGui.net.Properties;
-using System;
-using System.Collections.Generic;
+﻿using MyGui.net.Properties;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MyGui.net
 {

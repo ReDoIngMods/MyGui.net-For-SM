@@ -1,6 +1,5 @@
 ﻿using MyGui.net.Properties;
 using System.Data;
-using System.Diagnostics;
 
 namespace MyGui.net
 {

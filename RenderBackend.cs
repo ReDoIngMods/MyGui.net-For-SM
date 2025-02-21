@@ -1,10 +1,5 @@
 ﻿using MyGui.net.Properties;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static MyGui.net.Util;
 
 namespace MyGui.net

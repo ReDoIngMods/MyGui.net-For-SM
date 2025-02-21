@@ -167,7 +167,7 @@
 
         public override string ToString()
         {
-            return $"ChangePropertyCommand: {_control} changed property {_property} from {_oldValue} to {_newValue}";
+            return $"ChangePropertyCommand: {_control} changed property \"{_property}\" from \"{_oldValue}\" to \"{_newValue}\"";
         }
     }
 
@@ -224,7 +224,7 @@
 
         public override string ToString()
         {
-            return $"CreateControlCommand: created widget {_control} with parent {_parent}";
+            return $"CreateControlCommand: created widget {_control} with parent {(_parent == null ? "None" : _parent.ToString())}";
         }
     }
 

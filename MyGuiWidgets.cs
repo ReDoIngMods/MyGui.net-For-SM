@@ -19,7 +19,7 @@ namespace MyGui.net
 
 		public override string ToString()
 		{
-			return "{ name: " + (name ?? "[DEFAULT]") + ", skin: " + skin + ", position: " + position + ", size: " + size + "}";
+			return "{name=\"" + (name ?? "[DEFAULT]") + "\", skin=\"" + skin + "\", position=" + position + ", size=" + size + "}";
 		}
 	}
 
