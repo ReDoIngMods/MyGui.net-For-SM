@@ -74,7 +74,7 @@ namespace MyGui.net
 
 		private void FormInterfaceTag_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Enter)
+			if (e.KeyCode == Keys.Enter && Settings.Default.EnterAccepts)
 			{
 				dataGridView1_CellMouseDoubleClick(null, new DataGridViewCellMouseEventArgs(1, 1, 0, 0, new(MouseButtons.Left, 2, 1, 1, 1)));
 				e.Handled = true;

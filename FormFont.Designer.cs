@@ -87,10 +87,11 @@
 			dataGridView1.ShowCellToolTips = false;
 			dataGridView1.ShowEditingIcon = false;
 			dataGridView1.ShowRowErrors = false;
-			dataGridView1.Size = new Size(758, 298);
+			dataGridView1.Size = new Size(758, 274);
 			dataGridView1.StandardTab = true;
 			dataGridView1.TabIndex = 0;
 			dataGridView1.CellMouseDoubleClick += dataGridView1_CellMouseDoubleClick;
+			dataGridView1.SelectionChanged += dataGridView1_SelectionChanged;
 			// 
 			// searchBox
 			// 
@@ -145,25 +146,28 @@
 			// 
 			splitContainer1.Panel2.Controls.Add(dataGridView1);
 			splitContainer1.Size = new Size(760, 379);
-			splitContainer1.SplitterDistance = 75;
+			splitContainer1.SplitterDistance = 99;
 			splitContainer1.TabIndex = 10;
 			// 
 			// hScrollBar1
 			// 
 			hScrollBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			hScrollBar1.Location = new Point(0, 32);
+			hScrollBar1.Location = new Point(0, 56);
+			hScrollBar1.Maximum = 7509;
 			hScrollBar1.Name = "hScrollBar1";
 			hScrollBar1.Size = new Size(758, 13);
 			hScrollBar1.TabIndex = 2;
+			hScrollBar1.ValueChanged += hScrollBar1_ValueChanged;
 			// 
 			// previewTextBox
 			// 
 			previewTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			previewTextBox.Location = new Point(3, 47);
+			previewTextBox.Location = new Point(3, 71);
 			previewTextBox.Name = "previewTextBox";
 			previewTextBox.PlaceholderText = "Anything typed in here will show up in the preview using the selected font!";
 			previewTextBox.Size = new Size(752, 23);
 			previewTextBox.TabIndex = 1;
+			previewTextBox.TextChanged += previewTextBox_TextChanged;
 			// 
 			// previewViewport
 			// 
@@ -171,9 +175,10 @@
 			previewViewport.BackColor = Color.Black;
 			previewViewport.Location = new Point(-1, -1);
 			previewViewport.Name = "previewViewport";
-			previewViewport.Size = new Size(760, 32);
+			previewViewport.Size = new Size(760, 56);
 			previewViewport.TabIndex = 0;
 			previewViewport.Text = "skControl1";
+			previewViewport.PaintSurface += previewViewport_PaintSurface;
 			// 
 			// FormFont
 			// 

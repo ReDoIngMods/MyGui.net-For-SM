@@ -455,5 +455,17 @@ namespace MyGui.net.Properties {
                 this["ShowDebugConsole"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool EnterAccepts {
+            get {
+                return ((bool)(this["EnterAccepts"]));
+            }
+            set {
+                this["EnterAccepts"] = value;
+            }
+        }
     }
 }

@@ -61,6 +61,7 @@ namespace MyGui.net
 			renderInvisibleWidgetCheckBox.Checked = _setDef.RenderInvisibleWidgets;
 			renderWidgetNamesCheckBox.Checked = _setDef.RenderWidgetNames;
 			hideSplashScreenCheckBox.Checked = _setDef.HideSplashScreen;
+			enterAcceptsCheckBox.Checked = _setDef.EnterAccepts;
 
 			useBackgroundImageColor.Checked = _setDef.EditorBackgroundMode == 0;
 			useBackgroundImageGrid.Checked = _setDef.EditorBackgroundMode == 1;
@@ -375,6 +376,13 @@ namespace MyGui.net
 		{
 			CheckBox sender = (CheckBox)senderAny;
 			_setDef.HideSplashScreen = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void enterAcceptsCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.EnterAccepts = sender.Checked;
 			OnSettingChange();
 		}
 

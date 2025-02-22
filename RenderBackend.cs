@@ -354,6 +354,8 @@ namespace MyGui.net
 					tileOffset.Item1.Y + tileOffset.Item2.Y
 				), new(maxSizePoint.X, maxSizePoint.Y));
 
+				var drawPaint = new SKPaint();
+
 				if (widget != null)
 				{
 					if (skin.type == "SimpleText" || skin.type == "EditText")
@@ -380,54 +382,54 @@ namespace MyGui.net
 							// Apart for styleish reasons.
 							_baseFontPaint.TextSize = (float)_baseFontPaint.TextSize * 1.45f;
 
-                            string captionText = Util.ReplaceLanguageTagsInString(widgetTertiaryData.properties["Caption"], Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath);
+							string captionText = Util.ReplaceLanguageTagsInString(widgetTertiaryData.properties["Caption"], Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath);
 
 							float offsetX = 0;
 							float offsetY = 0;
 
-							if(widgetTertiaryData.properties.ContainsKey("TextAlign"))
+							if (widgetTertiaryData.properties.ContainsKey("TextAlign"))
 							{
-                                // TODO: Write better system for this
-                                float textWidth = 0;
-                                foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
-                                    textWidth += _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0);
+								// TODO: Write better system for this
+								float textWidth = 0;
+								foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
+									textWidth += _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0);
 
-                                float widgetWidth = destRect.Right - destRect.Left;
-                                float widgetHeight = destRect.Bottom - destRect.Top;
+								float widgetWidth = destRect.Right - destRect.Left;
+								float widgetHeight = destRect.Bottom - destRect.Top;
 
-                                switch (widgetTertiaryData.properties["TextAlign"])
-                                {
-                                    case "HCenter VCenter":
-                                    case "Center":
-                                        offsetX = (widgetWidth / 2) - (textWidth / 2);
-                                        offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
-                                        break;
+								switch (widgetTertiaryData.properties["TextAlign"])
+								{
+									case "HCenter VCenter":
+									case "Center":
+										offsetX = (widgetWidth / 2) - (textWidth / 2);
+										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+										break;
 									case "Left Bottom":
-                                        offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize;
+										offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize;
 										break;
 									case "Left VCenter":
-                                        offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
 										break;
 									case "Right Top":
 										offsetX = widgetWidth - textWidth;
 										break;
 									case "Right Bottom":
-                                        offsetX = widgetWidth - textWidth;
+										offsetX = widgetWidth - textWidth;
 										offsetY = widgetHeight - _baseFontPaint.TextSize;
-                                        break;
-                                    case "Right VCenter":
-                                        offsetX = widgetWidth - textWidth;
-                                        offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
-                                        break;
-									case "HCenter Top":
-                                        offsetX = (widgetWidth / 2) - (textWidth / 2);
 										break;
-                                    case "HCenter Bottom":
-                                        offsetX = (widgetWidth / 2) - (textWidth / 2);
-                                        offsetY = widgetHeight - _baseFontPaint.TextSize;
-                                        break;
-                                }
-                            }
+									case "Right VCenter":
+										offsetX = widgetWidth - textWidth;
+										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+										break;
+									case "HCenter Top":
+										offsetX = (widgetWidth / 2) - (textWidth / 2);
+										break;
+									case "HCenter Bottom":
+										offsetX = (widgetWidth / 2) - (textWidth / 2);
+										offsetY = widgetHeight - _baseFontPaint.TextSize;
+										break;
+								}
+							}
 
 							float spacingX = destRect.Left + offsetX;
 							float spacingY = destRect.Top + _baseFontPaint.TextSize + offsetY - 3;
@@ -444,6 +446,52 @@ namespace MyGui.net
 							canvas.RestoreToCount(beforeTextClip);
 						}
 						continue;
+					}
+					else if (skin.type == "MainSkin" && widget.type == "ImageBox")
+					{
+						if (widgetTertiaryData.properties.TryGetValue("ImageTexture", out string imagePathRel) && !string.IsNullOrEmpty(imagePathRel))
+						{
+							string imagePath = Util.ConvertToSystemPath(imagePathRel, Settings.Default.ScrapMechanicPath, Form1.ModUuidPathCache);
+							if (!_skinAtlasCache.ContainsKey("CUSTOMIMAGE_" + imagePath))
+							{
+								SKBitmap? cachedBitmap = SKBitmap.Decode(imagePath);
+								if (cachedBitmap != null)
+								{
+									_skinAtlasCache["CUSTOMIMAGE_" + imagePath] = SKImage.FromBitmap(cachedBitmap);
+								}
+								else
+								{
+									continue;
+								}
+							}
+							var image = _skinAtlasCache["CUSTOMIMAGE_" + imagePath];
+							drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+							drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
+							drawPaint.IsDither = true;
+
+							Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
+							
+							float[] colorMatrix = new float[]
+							{
+								selectedColor.R / 255f, 0, 0, 0, 0,
+								0, selectedColor.G / 255f, 0, 0, 0,
+								0, 0, selectedColor.B / 255f, 0, 0,
+								0, 0, 0, 1, 0
+							};
+
+							// Create a color filter using the color matrix
+							SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
+
+							// Clone the paint object and set the color filter
+							drawPaint.ColorFilter = colorFilter;
+
+							//int beforeClipSave = canvas.Save();
+							//canvas.ClipRect(destRect);
+							//canvas.Clear();
+							canvas.DrawImage(image, clientRect, drawPaint);
+							colorFilter.Dispose();
+							continue;
+						}
 					}
 				}
 
@@ -469,7 +517,6 @@ namespace MyGui.net
 				{
 					continue;
 				}
-				var drawPaint = new SKPaint();
 				if (drawColor != null)
 				{
 					float[] colorMatrix = new float[]

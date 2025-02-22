@@ -1,4 +1,7 @@
-﻿using System.Data;
+﻿using MyGui.net.Properties;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
+using System.Data;
 
 namespace MyGui.net
 {
@@ -74,7 +77,7 @@ namespace MyGui.net
 
 		private void FormFont_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Enter)
+			if (e.KeyCode == Keys.Enter && Settings.Default.EnterAccepts)
 			{
 				dataGridView1_CellMouseDoubleClick(null, new DataGridViewCellMouseEventArgs(1, 1, 0, 0, new(MouseButtons.Left, 2, 1, 1, 1)));
 				e.Handled = true;
@@ -88,6 +91,59 @@ namespace MyGui.net
 				DialogResult = DialogResult.OK;
 				this.Close();
 			}
+		}
+
+		SKMatrix _viewportMatrix = SKMatrix.Identity;
+
+		private void previewViewport_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
+		{
+			SKCanvas canvas = e.Surface.Canvas;
+			canvas.Clear(new SKColor(105, 105, 105));
+
+			if (dataGridView1.SelectedCells.Count < 1)
+			{
+				return;
+			}
+
+			var selectedItem = dataGridView1.SelectedCells[0].Value.ToString();
+
+			// Get the control's size
+			var controlWidth = previewViewport.Width;
+			var controlHeight = previewViewport.Height;
+
+			_viewportMatrix = SKMatrix.CreateTranslation(-hScrollBar1.Value, 0);
+			canvas.SetMatrix(_viewportMatrix);
+
+			//canvas.ClipRect(new SKRect(0, 0, controlWidth / viewportZoom, controlHeight / viewportZoom));
+
+			var widget = new MyGuiWidgetData()
+			{
+				size = new(99999, controlHeight),
+				position = new(0, 0),
+				skin = "TextBox",
+				properties = new()
+				{
+					["Caption"] = previewTextBox.Text == "" ? previewTextBox.PlaceholderText : previewTextBox.Text,
+					["FontName"] = selectedItem
+				}
+			};
+
+			RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0));
+		}
+
+		private void dataGridView1_SelectionChanged(object sender, EventArgs e)
+		{
+			previewViewport.Refresh();
+		}
+
+		private void previewTextBox_TextChanged(object sender, EventArgs e)
+		{
+			previewViewport.Refresh();
+		}
+
+		private void hScrollBar1_ValueChanged(object sender, EventArgs e)
+		{
+			previewViewport.Refresh();
 		}
 	}
 }

@@ -78,6 +78,7 @@
 			useViewportVSyncCheckBox = new CheckBox();
 			renderWidgetNamesCheckBox = new CheckBox();
 			groupBox15 = new GroupBox();
+			enterAcceptsCheckBox = new CheckBox();
 			hideSplashScreenCheckBox = new CheckBox();
 			fileTabPage = new TabPage();
 			flowLayoutPanel3 = new FlowLayoutPanel();
@@ -719,13 +720,26 @@
 			// 
 			// groupBox15
 			// 
+			groupBox15.Controls.Add(enterAcceptsCheckBox);
 			groupBox15.Controls.Add(hideSplashScreenCheckBox);
 			groupBox15.Location = new Point(3, 300);
 			groupBox15.Name = "groupBox15";
-			groupBox15.Size = new Size(178, 52);
+			groupBox15.Size = new Size(178, 77);
 			groupBox15.TabIndex = 11;
 			groupBox15.TabStop = false;
 			groupBox15.Text = "Other";
+			// 
+			// enterAcceptsCheckBox
+			// 
+			enterAcceptsCheckBox.AccessibleDescription = "";
+			enterAcceptsCheckBox.AutoSize = true;
+			enterAcceptsCheckBox.Location = new Point(3, 47);
+			enterAcceptsCheckBox.Name = "enterAcceptsCheckBox";
+			enterAcceptsCheckBox.Size = new Size(149, 19);
+			enterAcceptsCheckBox.TabIndex = 3;
+			enterAcceptsCheckBox.Text = "Enter Accepts Selection";
+			enterAcceptsCheckBox.UseVisualStyleBackColor = true;
+			enterAcceptsCheckBox.CheckedChanged += enterAcceptsCheckBox_CheckedChanged;
 			// 
 			// hideSplashScreenCheckBox
 			// 
@@ -1382,5 +1396,6 @@
 		private CheckBox hideOldMyGuiWidgetSkinsCheckBox;
 		private GroupBox groupBox16;
 		private CheckBox showDebugConsoleCheckBox;
+		private CheckBox enterAcceptsCheckBox;
 	}
 }
