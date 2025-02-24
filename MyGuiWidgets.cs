@@ -1532,6 +1532,7 @@ namespace MyGui.net
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Crop")]
 		[Description("Crops the image. Format your input as \"positionX positionY sizeX sizeY\". [DEFAULT] render whole image and stretches it to the size of the ImageBox.")]
+		[Editor(typeof(SliceSelectorEditor), typeof(UITypeEditor))]
 		public string ImageCoord
 		{
 			get => widget.properties.TryGetValue("ImageCoord", out var value) ? value : "";

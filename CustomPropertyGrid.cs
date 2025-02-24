@@ -233,6 +233,24 @@ namespace MyGui.net
 	}
 	#endregion
 
+	public class SliceSelectorEditor : UITypeEditor
+	{
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+		{
+			// Indicate that the editor supports a dropdown with a button
+			return UITypeEditorEditStyle.DropDown;
+		}
+
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
+		{
+			if (Form1.sliceForm.ShowDialog() == DialogResult.OK)
+			{
+				value = Form1.sliceForm.outcome;
+			}
+			return value;
+		}
+	}
+
 	public class ColorPickerEditor : UITypeEditor
 	{
 		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)

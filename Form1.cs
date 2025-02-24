@@ -99,6 +99,7 @@ namespace MyGui.net
 
 		static FormSideBar? _sidebarForm;
 
+		public static FormSlicer sliceForm;
 		public static FormSkin skinForm;
 		public static FormInterfaceTag tagForm;
 		public static FormTextEditor textEditorForm;
@@ -137,7 +138,7 @@ namespace MyGui.net
 			DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
 
 			RenderBackend._allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
-			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 15, letterSpacing = 1.15f });
+			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 15, letterSpacing = 1.15 });
 
 			var possibleFontRangePath = Path.Combine(Application.ExecutablePath, "..", "FontRanges/FontRanges_" + Settings.Default.ReferenceLanguage + ".xml");
 			DebugConsole.Log($"Font Available Characters loaded using \"{(File.Exists(possibleFontRangePath) ? Path.GetFullPath(possibleFontRangePath) : "cached LimitedFontData.xml, imprecise - fonts will be missing certain characters!")}\"", (File.Exists(possibleFontRangePath) ? DebugConsole.LogLevels.Info : DebugConsole.LogLevels.Warning));
@@ -429,6 +430,7 @@ namespace MyGui.net
 			  ControlStyles.AllPaintingInWmPaint | ControlStyles.CacheText, true);
 			this.UpdateStyles();
 
+			sliceForm = new();
 			skinForm = new();
 			tagForm = new();
 			textEditorForm = new();

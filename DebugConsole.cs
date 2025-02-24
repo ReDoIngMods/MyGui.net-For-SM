@@ -90,10 +90,10 @@ namespace MyGui.net
 					var key = Console.ReadKey(true);
 					if (key.Key == ConsoleKey.E)
 					{
-						Log("Console Detached!", LogLevels.Success);
 						Settings.Default.ShowDebugConsole = false;
 						Settings.Default.Save();
 						HideConsole();
+						Log("Console Detached!", LogLevels.Success);
 						break;
 					}
 				}
