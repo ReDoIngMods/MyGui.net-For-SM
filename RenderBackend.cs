@@ -451,20 +451,20 @@ namespace MyGui.net
 					{
 						if (widgetTertiaryData.properties.TryGetValue("ImageTexture", out string imagePathRel) && !string.IsNullOrEmpty(imagePathRel))
 						{
-							string imagePath = Util.ConvertToSystemPath(imagePathRel, Settings.Default.ScrapMechanicPath, Form1.ModUuidPathCache);
-							if (!_skinAtlasCache.ContainsKey("CUSTOMIMAGE_" + imagePath))
+							if (!_skinAtlasCache.ContainsKey("CUSTOMIMAGE_" + imagePathRel))
 							{
+								string imagePath = Util.ConvertToSystemPath(imagePathRel, Settings.Default.ScrapMechanicPath, Form1.ModUuidPathCache);
 								SKBitmap? cachedBitmap = SKBitmap.Decode(imagePath);
 								if (cachedBitmap != null)
 								{
-									_skinAtlasCache["CUSTOMIMAGE_" + imagePath] = SKImage.FromBitmap(cachedBitmap);
+									_skinAtlasCache["CUSTOMIMAGE_" + imagePathRel] = SKImage.FromBitmap(cachedBitmap);
 								}
 								else
 								{
 									continue;
 								}
 							}
-							var image = _skinAtlasCache["CUSTOMIMAGE_" + imagePath];
+							var image = _skinAtlasCache["CUSTOMIMAGE_" + imagePathRel];
 							drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 							drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
 							drawPaint.IsDither = true;
