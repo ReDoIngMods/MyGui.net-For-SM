@@ -58,7 +58,6 @@ namespace MyGui.net
 		/// <param name="forceDebug">Forces debug drawing of slices and all</param>
 		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null, MyGuiWidgetData? widgetTertiaryData = null, bool forceDebug = false)
 		{
-
 			Point oldSizeParam = new(widget.size.X, widget.size.Y);
 
 			if ((System.Object.ReferenceEquals(parent, widgetSecondaryData) || widget.name == "Root") && widgetSecondaryData != null) //This fixes the scaling issues that i had before, sets the scale 
@@ -374,13 +373,12 @@ namespace MyGui.net
 
 							Color? textColor = widgetTertiaryData.properties.ContainsKey("TextColour") ? ParseColorFromString(widgetTertiaryData.properties["TextColour"]) : Color.White;
 							_baseFontPaint.Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B);
-							_baseFontPaint.TextSize = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) : (float)fontData.size;
+							_baseFontPaint.TextSize = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) : (float)fontData.size * ((Settings.Default.ReferenceResolution + 1) * 1.25f);
 							_baseFontPaint.IsAntialias = Settings.Default.UseViewportFontAntiAliasing;
 							_baseFontPaint.Typeface = _fontCache[fontPath];
 							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 
-							// Apart for styleish reasons.
-							_baseFontPaint.TextSize = (float)_baseFontPaint.TextSize * 1.45f;
+							_baseFontPaint.TextSize = (float)_baseFontPaint.TextSize * 0.8f;
 
 							string captionText = Util.ReplaceLanguageTagsInString(widgetTertiaryData.properties["Caption"], Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath);
 
@@ -392,7 +390,9 @@ namespace MyGui.net
 								// TODO: Write better system for this
 								float textWidth = 0;
 								foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
-									textWidth += _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0);
+								{
+									textWidth += _baseFontPaint.MeasureText(character.ToString()) - (0.025f * _baseFontPaint.TextSize) + ((float)(fontData.letterSpacing ?? 0) / (float)fontData.size * _baseFontPaint.TextSize);
+								}
 
 								float widgetWidth = destRect.Right - destRect.Left;
 								float widgetHeight = destRect.Bottom - destRect.Top;
@@ -402,37 +402,37 @@ namespace MyGui.net
 									case "HCenter VCenter":
 									case "Center":
 										offsetX = (widgetWidth / 2) - (textWidth / 2);
-										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2) - _baseFontPaint.TextSize * 0.15f;
 										break;
 									case "Left Bottom":
-										offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize;
+										offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize * 1.25f;
 										break;
 									case "Left VCenter":
-										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2) - _baseFontPaint.TextSize * 0.15f;
 										break;
 									case "Right Top":
 										offsetX = widgetWidth - textWidth;
 										break;
 									case "Right Bottom":
 										offsetX = widgetWidth - textWidth;
-										offsetY = widgetHeight - _baseFontPaint.TextSize;
+										offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize * 1.25f;
 										break;
 									case "Right VCenter":
 										offsetX = widgetWidth - textWidth;
-										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2);
+										offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2) - _baseFontPaint.TextSize * 0.15f;
 										break;
 									case "HCenter Top":
 										offsetX = (widgetWidth / 2) - (textWidth / 2);
 										break;
 									case "HCenter Bottom":
 										offsetX = (widgetWidth / 2) - (textWidth / 2);
-										offsetY = widgetHeight - _baseFontPaint.TextSize;
+										offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize * 1.25f;
 										break;
 								}
 							}
 
 							float spacingX = destRect.Left + offsetX;
-							float spacingY = destRect.Top + _baseFontPaint.TextSize + offsetY - 3;
+							float spacingY = destRect.Top + _baseFontPaint.TextSize * 1.025f + offsetY;
 							foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
 							{
 								/*if (!destRect.Contains(new SKPoint(spacingX + _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0), spacingY)))
@@ -441,7 +441,7 @@ namespace MyGui.net
 									spacingY += _baseFontPaint.TextSize;
 								}*/
 								canvas.DrawText(character.ToString(), spacingX, spacingY, _baseFontPaint);
-								spacingX += _baseFontPaint.MeasureText(character.ToString()) + (float)(fontData.letterSpacing ?? 0);
+								spacingX += _baseFontPaint.MeasureText(character.ToString()) - (0.025f * _baseFontPaint.TextSize) + ((float)(fontData.letterSpacing ?? 0) / (float)fontData.size * _baseFontPaint.TextSize);
 							}
 							canvas.RestoreToCount(beforeTextClip);
 						}
