@@ -485,7 +485,7 @@ namespace MyGui.net
 			if (provider?.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService editorService)
 			{
 				// Create a panel to hold the checkbox and label
-				var panel = new Panel { Height = 125, Width = 125 };
+				var panel = new Panel { Height = 125, Width = 160 };
 
 				var buttonCenter = new Button
 				{
@@ -601,12 +601,25 @@ namespace MyGui.net
 					TabIndex = 0,
 					Text = "↖",
 					UseVisualStyleBackColor = true,
+					Tag = "Left Top"
+				};
+
+				var buttonDefault = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(127, 3),
+					Name = "buttonBottomRight",
+					Size = new Size(30, 30),
+					TabIndex = 3,
+					Text = "○",
+					UseVisualStyleBackColor = true,
 					Tag = ""
 				};
 
 				Control[] controls = [
 					buttonCenter, buttonBottom, buttonTop, buttonRight, buttonLeft,
-					buttonBottomRight, buttonBottomLeft, buttonTopRight, buttonTopLeft
+					buttonBottomRight, buttonBottomLeft, buttonTopRight, buttonTopLeft, buttonDefault
 				];
 
 				foreach (var item in controls)
@@ -640,7 +653,7 @@ namespace MyGui.net
 			if (provider?.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService editorService)
 			{
 				// Create a panel to hold the checkbox and label
-				var panel = new Panel { Height = 151, Width = 271 };
+				var panel = new Panel { Height = 151, Width = 301 };
 
 				// panel2
 				var panel2 = new Panel
@@ -677,7 +690,7 @@ namespace MyGui.net
 					TabIndex = 0,
 					Text = "↖",
 					UseVisualStyleBackColor = true,
-					Tag = ""
+					Tag = "Left Top"
 				};
 
 				// buttonTop
@@ -899,6 +912,20 @@ namespace MyGui.net
 					Text = "Stretch"
 				};
 
+				var buttonDefault = new Button
+				{
+					FlatStyle = FlatStyle.System,
+					Font = new Font("Segoe UI", 15F),
+					Location = new Point(269, 3),
+					Name = "buttonBottomRight",
+					Size = new Size(30, 30),
+					TabIndex = 3,
+					Text = "○",
+					UseVisualStyleBackColor = true,
+					Tag = ""
+				};
+
+				panel.Controls.Add(buttonDefault);
 				panel.Controls.Add(label9);
 				panel.Controls.Add(label10);
 				panel.Controls.Add(panel4);

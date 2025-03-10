@@ -1484,6 +1484,12 @@ namespace MyGui.net
 
 		public static Color? HexStringToColor(string color)
 		{
+
+			if (!Regex.IsMatch(color, @"^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$"))
+			{
+				return null;
+			}
+
 			// Get the HTML color string from ColorTranslator
 			Color htmlColor = Color.Empty;
 			try

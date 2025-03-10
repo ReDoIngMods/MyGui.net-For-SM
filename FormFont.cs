@@ -32,7 +32,7 @@ namespace MyGui.net
 
 			foreach (var kv in RenderBackend._allFonts)
 			{
-				dataTable.Rows.Add(kv.Key, kv.Value.size, kv.Value.letterSpacing ?? 1, kv.Value.source, kv.Value.allowedChars);
+				dataTable.Rows.Add(kv.Key, (float)kv.Value.size * ((Settings.Default.ReferenceResolution + 1) * 1.25f), kv.Value.letterSpacing ?? 0, kv.Value.source, kv.Value.allowedChars);
 			}
 
 			DataView dataView = new DataView(dataTable);

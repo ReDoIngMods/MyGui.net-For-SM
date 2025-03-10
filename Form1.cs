@@ -13,6 +13,7 @@ namespace MyGui.net
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	//TODO: better visualization of paths, like which steam user you are
 	//TODO: make text editor autocomplete tags
+	//TODO: when moving cursor uin the viewport, if there is a widget under the cursor, highlight it
 	//TODO: ResourceImage (new gui) and ResourceTexture (just render the image) support
 	//TODO: Option to add to start menu
 	//TODO: Saving doesnt add itself to recents
@@ -141,7 +142,7 @@ namespace MyGui.net
 			DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
 
 			RenderBackend._allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
-			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 7.85f, letterSpacing = 0 });
+			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 7.85f });
 
 			var possibleFontRangePath = Path.Combine(Application.ExecutablePath, "..", "FontRanges/FontRanges_" + Settings.Default.ReferenceLanguage + ".xml");
 			DebugConsole.Log($"Font Available Characters loaded using \"{(File.Exists(possibleFontRangePath) ? Path.GetFullPath(possibleFontRangePath) : "cached LimitedFontData.xml, imprecise - fonts will be missing certain characters!")}\"", (File.Exists(possibleFontRangePath) ? DebugConsole.LogLevels.Info : DebugConsole.LogLevels.Warning));
