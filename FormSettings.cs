@@ -38,6 +38,7 @@ namespace MyGui.net
 
 			//TAB FILE
 			smPathLabel.Text = _setDef.ScrapMechanicPath;
+			currSteamUserTextBox.Text = Util.GetLoggedInSteamUserID();
 			pixelLayoutSuffixTextBox.Text = _setDef.PixelLayoutSuffix;
 			showFullFilePathCheckBox.Checked = _setDef.ShowFullFilePathInTitle;
 
@@ -226,6 +227,106 @@ namespace MyGui.net
 			OnSettingChange();
 		}
 
+		private void CreateShortcut(string shortcutPath, string targetPath)
+		{
+
+			if (File.Exists(shortcutPath))
+			{
+				DialogResult result = MessageBox.Show($"The shortcut already exists:\n{shortcutPath}\n\nDo you want to overwrite it?", "Shortcut Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+				if (result == DialogResult.No)
+					return; // Exit without overwriting
+			}
+
+			string psCommand = $@"
+				try {{
+					$WshShell = New-Object -ComObject WScript.Shell;
+					$Shortcut = $WshShell.CreateShortcut('{shortcutPath}');
+					$Shortcut.TargetPath = '{targetPath}';
+					$Shortcut.Save();
+				}} catch {{
+					Write-Error 'Failed to create shortcut: ' + $_.Exception.Message
+				}}
+			";
+
+			ProcessStartInfo psi = new ProcessStartInfo
+			{
+				FileName = "powershell",
+				Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{psCommand}\"",
+				UseShellExecute = false,
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				CreateNoWindow = true
+			};
+
+			try
+			{
+				using (Process process = new Process { StartInfo = psi })
+				{
+					process.Start();
+
+					string output = process.StandardOutput.ReadToEnd();
+					string error = process.StandardError.ReadToEnd();
+
+					process.WaitForExit();
+
+					if (!string.IsNullOrWhiteSpace(error))
+					{
+						MessageBox.Show($"PowerShell error:\n{error}", "Shortcut Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+
+					MessageBox.Show("Shortcut created successfully!", "Shortcut Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"An error occurred:\n{ex.Message}", "Shortcut Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void buttonAddToDesktop_Click(object sender, EventArgs e)
+		{
+			CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "MyGui.net.lnk"), Application.ExecutablePath);
+		}
+
+		private void buttonAddToStart_Click(object sender, EventArgs e)
+		{
+			string startMenuFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "ReDoIng Mods");
+			Directory.CreateDirectory(startMenuFolder);
+			CreateShortcut(Path.Combine(startMenuFolder, "MyGui.net.lnk"), Application.ExecutablePath);
+		}
+
+		private void buttonRestartAdmin_Click(object sender, EventArgs e)
+		{
+			DialogResult resolution = MessageBox.Show("Are you sure you want to restart the app with Administrator Privileges?", "Restart As Administrator", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
+			//Debug.WriteLine(resolution);
+			if (resolution == DialogResult.Yes)
+			{
+				try
+				{
+					var startInfo = new ProcessStartInfo
+					{
+						FileName = Application.ExecutablePath,
+						UseShellExecute = true,
+						Verb = "runas"
+					};
+					Process.Start(startInfo);
+					Application.Exit();
+					return;
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show("Couldn't restart with Admin Privileges.\n" +
+									$"Error: {ex.Message}", "Restart As Administrator",
+									MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
+			}
+
+		}
+
+		[System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+		private static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);
 		private void buttonAssociateWithFiles_Click(object sender, EventArgs e)
 		{
 			try
@@ -290,37 +391,6 @@ namespace MyGui.net
 				MessageBox.Show($"Failed to associate .layout files.\nError: {ex.Message}",
 								"Association Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
-		}
-
-		[System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
-		private static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);
-
-		private void buttonRestartAdmin_Click(object sender, EventArgs e)
-		{
-			DialogResult resolution = MessageBox.Show("Are you sure you want to restart the app with Administrator Privileges?", "Restart As Administrator", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation);
-			//Debug.WriteLine(resolution);
-			if (resolution == DialogResult.Yes)
-			{
-				try
-				{
-					var startInfo = new ProcessStartInfo
-					{
-						FileName = Application.ExecutablePath,
-						UseShellExecute = true,
-						Verb = "runas"
-					};
-					Process.Start(startInfo);
-					Application.Exit();
-					return;
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show("Couldn't restart with Admin Privileges.\n" +
-									$"Error: {ex.Message}", "Restart As Administrator",
-									MessageBoxButtons.OK, MessageBoxIcon.Error);
-				}
-			}
-
 		}
 
 		private void useViewportVSyncCheckBox_CheckedChanged(object senderAny, EventArgs e)

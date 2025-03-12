@@ -13,13 +13,9 @@ namespace MyGui.net
 	//TODO: Add an undo/redo history window
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
-	//TODO: better visualization of paths, like which steam user you are
 	//TODO: make text editor autocomplete tags
-	//TODO: when moving cursor uin the viewport, if there is a widget under the cursor, highlight it
 	//TODO: ResourceImage (new gui) and ResourceTexture (just render the image) support
-	//TODO: Option to add to start menu
-	//TODO: Saving doesnt add itself to recents
-	//TODO: Opening from recents doesnt ask to save and stuff
+	//TODO: fix text alignments
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -811,7 +807,7 @@ namespace MyGui.net
 						pos += item.position.ToSKPoint();
 					}
 				}
-				_renderWidgetHighligths[_currentHoveredWidget] = new(pos + _currentHoveredWidget.position.ToSKPoint(), SKColor.Parse("#ffff00").WithAlpha(75), SKPaintStyle.Fill, 0);
+				_renderWidgetHighligths[_currentHoveredWidget] = new(pos + _currentHoveredWidget.position.ToSKPoint(), SKColor.Parse("#ffff00").WithAlpha(75), SKPaintStyle.Fill, 0, false);
 			}
 
 
@@ -1447,7 +1443,19 @@ namespace MyGui.net
 			foreach (string file in _recentFiles)
 			{
 				var item = new ToolStripMenuItem(file);
-				item.Click += (s, e) => OpenLayout(file);
+				item.Click += (s, e) => {
+					if (_commandManager.getUndoStackCount() != 0)
+					{
+						DialogResult result = MessageBox.Show("Are you sure you want to open another Layout? All your unsaved changes will be lost!", "Open Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+						// Check which button was clicked
+						if (result != DialogResult.Yes)
+						{
+							return;
+						}
+					}
+					OpenLayout(file);
+				};
 				openRecentToolStripMenuItem.DropDownItems.Add(item);
 			}
 		}
@@ -1523,6 +1531,7 @@ namespace MyGui.net
 			}
 			DebugConsole.Log("Saving current layout", DebugConsole.LogLevels.Info);
 			int actualExport = Settings.Default.ExportMode;
+			bool addedToRecents = false;
 			if (actualExport == 2)
 			{
 				FormExport decideForm = new FormExport();
@@ -1544,6 +1553,11 @@ namespace MyGui.net
 				using (StreamWriter outputFile = new StreamWriter(filePath))
 				{
 					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
+				}
+				if (!addedToRecents)
+				{
+					AddToRecentFiles(filePath);
+					addedToRecents = true;
 				}
 				DebugConsole.Log("Saved layout \"" + filePath + "\"", DebugConsole.LogLevels.Success);
 			}
@@ -1567,6 +1581,10 @@ namespace MyGui.net
 				using (StreamWriter outputFile = new StreamWriter(actualPath))
 				{
 					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, (Point)ProjectSize));
+				}
+				if (!addedToRecents)
+				{
+					AddToRecentFiles(actualPath);
 				}
 				DebugConsole.Log("Saved layout \"" + actualPath + "\"", DebugConsole.LogLevels.Success);
 			}
@@ -1605,6 +1623,7 @@ namespace MyGui.net
 
 
 				int actualExport = Settings.Default.ExportMode;
+				bool addedToRecents = false;
 				if (actualExport == 2)
 				{
 					FormExport decideForm = new FormExport();
@@ -1613,17 +1632,27 @@ namespace MyGui.net
 				}
 				if (actualExport == 0 || actualExport == 3)
 				{
-					using (StreamWriter outputFile = new StreamWriter(actualExport == 3 ? Util.AppendToFile(actualPath, suffix) : actualPath))
+					string filePath = actualExport == 3 ? Util.AppendToFile(actualPath, suffix) : actualPath;
+					using (StreamWriter outputFile = new StreamWriter(filePath))
 					{
 						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
 					}
-					DebugConsole.Log("Saved layout \"" + (actualExport == 3 ? Util.AppendToFile(actualPath, suffix) : actualPath) + "\"", DebugConsole.LogLevels.Success);
+					if (!addedToRecents)
+					{
+						AddToRecentFiles(filePath);
+						addedToRecents = true;
+					}
+					DebugConsole.Log("Saved layout \"" + filePath + "\"", DebugConsole.LogLevels.Success);
 				}
 				if (actualExport == 1 || actualExport == 3)
 				{
 					using (StreamWriter outputFile = new StreamWriter(actualPath))
 					{
 						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, (Point)ProjectSize));
+					}
+					if (!addedToRecents)
+					{
+						AddToRecentFiles(actualPath);
 					}
 					DebugConsole.Log("Saved layout \"" + actualPath + "\"", DebugConsole.LogLevels.Success);
 				}

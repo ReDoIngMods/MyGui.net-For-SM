@@ -40,7 +40,7 @@ namespace MyGui.net
 			public SKColor highlightColor;
 			public SKPaintStyle style;
 			public float width;
-			public bool ignoreDrawOrder; //TODO
+			public bool ignoreDrawOrder;
 
 			public WidgetHighlightType(SKPoint position, SKColor highlightColor, SKPaintStyle? style = null, float width = 7, bool ignoreDrawOrder = true)
 			{
@@ -167,6 +167,35 @@ namespace MyGui.net
 			// Draw the widget's name (optional)
 			if (!adjustToParent)
 			{
+
+				var selfHighlights = _renderWidgetHighligths.Where(item => item.Key == widget && !item.Value.ignoreDrawOrder);
+
+				if (selfHighlights != null && selfHighlights.Any())
+				{
+					foreach (var highlight in selfHighlights)
+					{
+						var rect2 = new SKRect(highlight.Value.position.X, highlight.Value.position.Y,
+										  highlight.Value.position.X + highlight.Key.size.X, highlight.Value.position.Y + highlight.Key.size.Y);
+						// Draw selection highlight without any clipping
+						var selectionRect = new SKRect(
+							rect2.Left - highlight.Value.width / 2,  // Expand left
+							rect2.Top - highlight.Value.width / 2,   // Expand top
+							rect2.Right + highlight.Value.width / 2, // Expand right
+							rect2.Bottom + highlight.Value.width / 2 // Expand bottom
+						);
+						var highlightPaint = new SKPaint
+						{
+							Color = highlight.Value.highlightColor, // Semi-transparent green for highlight
+							Style = highlight.Value.style,
+							StrokeWidth = highlight.Value.width,
+							IsAntialias = true
+						};
+						canvas.DrawRect(selectionRect, highlightPaint);
+						_renderWidgetHighligths.Remove(widget);
+					}
+				}
+
+
 				if (Settings.Default.RenderWidgetNames && !string.IsNullOrEmpty(widget.name))
 				{
 					var textPaint = new SKPaint

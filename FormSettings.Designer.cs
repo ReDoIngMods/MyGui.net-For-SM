@@ -83,6 +83,8 @@
 			fileTabPage = new TabPage();
 			flowLayoutPanel3 = new FlowLayoutPanel();
 			groupBox2 = new GroupBox();
+			label9 = new Label();
+			currSteamUserTextBox = new TextBox();
 			label6 = new Label();
 			pixelLayoutSuffixTextBox = new TextBox();
 			inspectInExplorerButton = new Button();
@@ -98,9 +100,11 @@
 			exportAskRadioButton = new RadioButton();
 			exportAsPxRadioButton = new RadioButton();
 			groupBox13 = new GroupBox();
+			buttonAddToDesktop = new Button();
 			buttonAssociateWithFiles = new Button();
 			buttonRestartAdmin = new Button();
 			label5 = new Label();
+			buttonAddToStart = new Button();
 			debugTabPage = new TabPage();
 			flowLayoutPanel4 = new FlowLayoutPanel();
 			groupBox6 = new GroupBox();
@@ -779,6 +783,8 @@
 			// 
 			// groupBox2
 			// 
+			groupBox2.Controls.Add(label9);
+			groupBox2.Controls.Add(currSteamUserTextBox);
 			groupBox2.Controls.Add(label6);
 			groupBox2.Controls.Add(pixelLayoutSuffixTextBox);
 			groupBox2.Controls.Add(inspectInExplorerButton);
@@ -788,14 +794,33 @@
 			groupBox2.Controls.Add(label1);
 			groupBox2.Location = new Point(3, 3);
 			groupBox2.Name = "groupBox2";
-			groupBox2.Size = new Size(348, 125);
+			groupBox2.Size = new Size(348, 152);
 			groupBox2.TabIndex = 5;
 			groupBox2.TabStop = false;
 			groupBox2.Text = "General";
 			// 
+			// label9
+			// 
+			label9.Location = new Point(6, 66);
+			label9.Name = "label9";
+			label9.Size = new Size(128, 23);
+			label9.TabIndex = 9;
+			label9.Text = "Current Steam User ID";
+			label9.TextAlign = ContentAlignment.MiddleLeft;
+			// 
+			// currSteamUserTextBox
+			// 
+			currSteamUserTextBox.BackColor = SystemColors.ControlLightLight;
+			currSteamUserTextBox.Location = new Point(140, 66);
+			currSteamUserTextBox.Name = "currSteamUserTextBox";
+			currSteamUserTextBox.PlaceholderText = "0";
+			currSteamUserTextBox.ReadOnly = true;
+			currSteamUserTextBox.Size = new Size(202, 23);
+			currSteamUserTextBox.TabIndex = 8;
+			// 
 			// label6
 			// 
-			label6.Location = new Point(6, 66);
+			label6.Location = new Point(6, 94);
 			label6.Name = "label6";
 			label6.Size = new Size(110, 23);
 			label6.TabIndex = 7;
@@ -805,7 +830,7 @@
 			// pixelLayoutSuffixTextBox
 			// 
 			pixelLayoutSuffixTextBox.BackColor = SystemColors.ControlLightLight;
-			pixelLayoutSuffixTextBox.Location = new Point(122, 66);
+			pixelLayoutSuffixTextBox.Location = new Point(122, 95);
 			pixelLayoutSuffixTextBox.Name = "pixelLayoutSuffixTextBox";
 			pixelLayoutSuffixTextBox.PlaceholderText = "_pixels";
 			pixelLayoutSuffixTextBox.Size = new Size(220, 23);
@@ -815,7 +840,7 @@
 			// inspectInExplorerButton
 			// 
 			inspectInExplorerButton.FlatStyle = FlatStyle.System;
-			inspectInExplorerButton.Location = new Point(6, 95);
+			inspectInExplorerButton.Location = new Point(6, 124);
 			inspectInExplorerButton.Name = "inspectInExplorerButton";
 			inspectInExplorerButton.Size = new Size(336, 23);
 			inspectInExplorerButton.TabIndex = 5;
@@ -890,7 +915,7 @@
 			groupBox4.Controls.Add(exportAsPercentRadioButton);
 			groupBox4.Controls.Add(exportAskRadioButton);
 			groupBox4.Controls.Add(exportAsPxRadioButton);
-			groupBox4.Location = new Point(3, 134);
+			groupBox4.Location = new Point(3, 161);
 			groupBox4.Name = "groupBox4";
 			groupBox4.Size = new Size(169, 73);
 			groupBox4.TabIndex = 6;
@@ -947,20 +972,33 @@
 			// 
 			// groupBox13
 			// 
+			groupBox13.Controls.Add(buttonAddToDesktop);
 			groupBox13.Controls.Add(buttonAssociateWithFiles);
 			groupBox13.Controls.Add(buttonRestartAdmin);
 			groupBox13.Controls.Add(label5);
-			groupBox13.Location = new Point(178, 134);
+			groupBox13.Controls.Add(buttonAddToStart);
+			groupBox13.Location = new Point(178, 161);
 			groupBox13.Name = "groupBox13";
-			groupBox13.Size = new Size(242, 100);
+			groupBox13.Size = new Size(242, 157);
 			groupBox13.TabIndex = 8;
 			groupBox13.TabStop = false;
-			groupBox13.Text = "Windows File Association";
+			groupBox13.Text = "Windows Integration";
+			// 
+			// buttonAddToDesktop
+			// 
+			buttonAddToDesktop.FlatStyle = FlatStyle.System;
+			buttonAddToDesktop.Location = new Point(6, 22);
+			buttonAddToDesktop.Name = "buttonAddToDesktop";
+			buttonAddToDesktop.Size = new Size(230, 23);
+			buttonAddToDesktop.TabIndex = 8;
+			buttonAddToDesktop.Text = "Add to Desktop";
+			buttonAddToDesktop.UseVisualStyleBackColor = true;
+			buttonAddToDesktop.Click += buttonAddToDesktop_Click;
 			// 
 			// buttonAssociateWithFiles
 			// 
 			buttonAssociateWithFiles.FlatStyle = FlatStyle.System;
-			buttonAssociateWithFiles.Location = new Point(6, 70);
+			buttonAssociateWithFiles.Location = new Point(6, 128);
 			buttonAssociateWithFiles.Name = "buttonAssociateWithFiles";
 			buttonAssociateWithFiles.Size = new Size(230, 23);
 			buttonAssociateWithFiles.TabIndex = 7;
@@ -971,7 +1009,7 @@
 			// buttonRestartAdmin
 			// 
 			buttonRestartAdmin.FlatStyle = FlatStyle.System;
-			buttonRestartAdmin.Location = new Point(6, 41);
+			buttonRestartAdmin.Location = new Point(6, 99);
 			buttonRestartAdmin.Name = "buttonRestartAdmin";
 			buttonRestartAdmin.Size = new Size(230, 23);
 			buttonRestartAdmin.TabIndex = 6;
@@ -981,12 +1019,23 @@
 			// 
 			// label5
 			// 
-			label5.Location = new Point(6, 19);
+			label5.Location = new Point(6, 77);
 			label5.Name = "label5";
 			label5.Size = new Size(157, 19);
 			label5.TabIndex = 5;
 			label5.Text = "Requires Admin Privileges";
 			label5.TextAlign = ContentAlignment.MiddleLeft;
+			// 
+			// buttonAddToStart
+			// 
+			buttonAddToStart.FlatStyle = FlatStyle.System;
+			buttonAddToStart.Location = new Point(6, 51);
+			buttonAddToStart.Name = "buttonAddToStart";
+			buttonAddToStart.Size = new Size(230, 23);
+			buttonAddToStart.TabIndex = 9;
+			buttonAddToStart.Text = "Add to Start Menu";
+			buttonAddToStart.UseVisualStyleBackColor = true;
+			buttonAddToStart.Click += buttonAddToStart_Click;
 			// 
 			// debugTabPage
 			// 
@@ -1397,5 +1446,9 @@
 		private GroupBox groupBox16;
 		private CheckBox showDebugConsoleCheckBox;
 		private CheckBox enterAcceptsCheckBox;
+		private Button buttonAddToStart;
+		private Button buttonAddToDesktop;
+		private Label label9;
+		private TextBox currSteamUserTextBox;
 	}
 }
