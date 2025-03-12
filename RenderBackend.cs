@@ -38,11 +38,17 @@ namespace MyGui.net
 		{
 			public SKPoint position;
 			public SKColor highlightColor;
+			public SKPaintStyle style;
+			public float width;
+			public bool ignoreDrawOrder; //TODO
 
-			public WidgetHighlightType(SKPoint position, SKColor highlightColor)
+			public WidgetHighlightType(SKPoint position, SKColor highlightColor, SKPaintStyle? style = null, float width = 7, bool ignoreDrawOrder = true)
 			{
 				this.position = position;
 				this.highlightColor = highlightColor;
+				this.style = style ?? SKPaintStyle.Stroke;
+				this.width = width;
+				this.ignoreDrawOrder = ignoreDrawOrder;
 			}
 		}
 
@@ -184,7 +190,7 @@ namespace MyGui.net
 				// Temporarily ignore clipping to draw selection box
 				if (widget == Form1._currentSelectedWidget)
 				{
-					_renderWidgetHighligths.Add(widget, new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128)));
+					_renderWidgetHighligths[widget] = new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128));
 				}
 				else
 				{
@@ -386,6 +392,9 @@ namespace MyGui.net
 							{
 								textColor = Color.White;
 							}
+
+							var fontCurrentSizeNoScaling = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) : (float)fontData.size;
+
 							_baseFontPaint.Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B);
 							_baseFontPaint.TextSize = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) : (float)fontData.size * ((Settings.Default.ReferenceResolution + 1) * 1.25f);
 							_baseFontPaint.IsAntialias = Settings.Default.UseViewportFontAntiAliasing;
@@ -399,7 +408,7 @@ namespace MyGui.net
 							float offsetX = 0;
 							float offsetY = 0;
 
-							// TODO: Write better system for this
+							// TODO: Write better system for this, reason: doesnt support /n, uses outdates width calculations
 							float textWidth = 0;
 							foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
 							{
@@ -470,7 +479,7 @@ namespace MyGui.net
 								float charWidth = _baseFontPaint.MeasureText(actualChar);
 
 								// Calculate extra spacing (letter spacing multiplier)
-								float extraSpacing = actualFontLetterSpacing * (Settings.Default.ReferenceResolution + 1);
+								float extraSpacing = actualFontLetterSpacing * (Settings.Default.ReferenceResolution + 1) * (fontCurrentSizeNoScaling / (float)fontData.size) * 0.75f;
 
 								// Compute kerning adjustment between previous char and current char.
 								// This is done by measuring the pair’s width and subtracting the sum of individual widths.
@@ -499,7 +508,7 @@ namespace MyGui.net
 								{
 									_baseFontPaint.GetFontMetrics(out SKFontMetrics metrics);
 									float MAJORSKILLISSUE = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) :
-										metrics.CapHeight + metrics.Descent + 3; //Default size newline stuff
+										metrics.CapHeight + metrics.Descent + 3; //Default size newline stuff, i need a better name for this var, i literally wrote this at 4 AM or something
 									spacingX = destRect.Left + offsetX; // Reset X position
 
 									//spacingY += metrics.Descent - metrics.Ascent; // Move down by line height, works really well

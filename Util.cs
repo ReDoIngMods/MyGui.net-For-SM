@@ -1775,14 +1775,12 @@ namespace MyGui.net
 			// Helper function for recursion
 			void CollectParents(MyGuiWidgetData currentWidget, List<MyGuiWidgetData> currentLayout)
 			{
-				foreach (var potentialParent in currentLayout)
+				var potentialParent = FindParent(currentWidget, currentLayout);
+
+				if (potentialParent != null)
 				{
-					if (potentialParent.children.Contains(currentWidget))
-					{
-						parentTree.Add(potentialParent);
-						CollectParents(potentialParent, layout); // Continue searching upwards
-						break;
-					}
+					parentTree.Add(potentialParent);
+					CollectParents(potentialParent, currentLayout);
 				}
 			}
 

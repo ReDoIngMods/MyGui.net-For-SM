@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 using static MyGui.net.RenderBackend;
+using System.Diagnostics;
+using SkiaSharp.Views.Gtk;
 
 namespace MyGui.net
 {
@@ -24,6 +26,7 @@ namespace MyGui.net
 		static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
 		static string _currentLayoutSavePath = "";
 		public static MyGuiWidgetData? _currentSelectedWidget;
+		public static MyGuiWidgetData? _currentHoveredWidget;
 
 		static SKMatrix _viewportMatrix = SKMatrix.CreateIdentity();
 		static float _viewportScale = 1f;
@@ -639,9 +642,11 @@ namespace MyGui.net
 			UpdateUndoRedo();
 		}
 
-		void UpdateProperties()
+		void UpdateProperties(MyGuiWidgetData widget = null)
 		{
-			propertyGrid1.SelectedObject = _currentSelectedWidget == null ? null : new MyGuiWidgetDataWidget(_currentSelectedWidget).ConvertTo(_widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget));
+			widget ??= _currentSelectedWidget;
+			propertyGrid1.SelectedObject = widget == null ? null : new MyGuiWidgetDataWidget(widget).ConvertTo(_widgetTypeToObjectType.TryGetValue(widget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget));
+			propertyGrid1.Enabled = widget == _currentSelectedWidget;
 			propertyGrid1.Refresh();
 		}
 
@@ -775,6 +780,42 @@ namespace MyGui.net
 		//do NOT tell me performance sucks if you enable ANY Debug.Writeline's in the rendering code - The Red Builder
 		private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
 		{
+
+			_renderWidgetHighligths.Clear();
+
+			if (!_draggingViewport)
+			{
+				Point viewportRelPos = viewport.PointToClient(Cursor.Position);
+				SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+				Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
+				var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+
+				if (topmostWidget != _currentHoveredWidget)
+				{
+					if (_currentSelectedWidget == null)
+					{
+						UpdateProperties(topmostWidget);
+					}
+					_currentHoveredWidget = topmostWidget;
+				}
+			}
+
+			if (_currentHoveredWidget != null && _currentHoveredWidget != _currentSelectedWidget)
+			{
+				SKPoint pos = new();
+				var parents = Util.FindParentTree(_currentHoveredWidget, _currentLayout);
+				if (parents != null)
+				{
+					foreach (var item in parents)
+					{
+						pos += item.position.ToSKPoint();
+					}
+				}
+				_renderWidgetHighligths[_currentHoveredWidget] = new(pos + _currentHoveredWidget.position.ToSKPoint(), SKColor.Parse("#ffff00").WithAlpha(75), SKPaintStyle.Fill, 0);
+			}
+
+
+
 			SKCanvas canvas = e.Surface.Canvas;
 			canvas.Clear(new SKColor(105, 105, 105));
 
@@ -807,7 +848,7 @@ namespace MyGui.net
 					IsAntialias = false
 				});
 			}
-			_renderWidgetHighligths.Clear();
+			//_renderWidgetHighligths.Clear();
 			int beforeProjectClip = canvas.Save();
 			canvas.ClipRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height));
 			/*foreach (var item in _allResources)
@@ -831,16 +872,16 @@ namespace MyGui.net
 								  highlight.Value.position.X + highlight.Key.size.X, highlight.Value.position.Y + highlight.Key.size.Y);
 				// Draw selection highlight without any clipping
 				var selectionRect = new SKRect(
-					rect.Left - 3.5f,  // Expand left
-					rect.Top - 3.5f,   // Expand top
-					rect.Right + 3.5f, // Expand right
-					rect.Bottom + 3.5f // Expand bottom
+					rect.Left - highlight.Value.width / 2,  // Expand left
+					rect.Top - highlight.Value.width / 2,   // Expand top
+					rect.Right + highlight.Value.width / 2, // Expand right
+					rect.Bottom + highlight.Value.width / 2 // Expand bottom
 				);
 				var highlightPaint = new SKPaint
 				{
 					Color = highlight.Value.highlightColor, // Semi-transparent green for highlight
-					Style = SKPaintStyle.Stroke,
-					StrokeWidth = 7,
+					Style = highlight.Value.style,
+					StrokeWidth = highlight.Value.width,
 					IsAntialias = true
 				};
 				canvas.DrawRect(selectionRect, highlightPaint);
@@ -988,6 +1029,13 @@ namespace MyGui.net
 			Point viewportRelPos = e.Location;
 			SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
 			Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
+			var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+
+			if (topmostWidget != _currentHoveredWidget)
+			{
+				viewport.Refresh();
+			}
+
 			if (_draggingViewport)
 			{
 				_movedViewport = true;
@@ -1010,9 +1058,10 @@ namespace MyGui.net
 			{
 				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPosPoint, _currentLayout);
 				//Debug.WriteLine($"BORDER: {border}");
-				if ((border == BorderPosition.Center || border == BorderPosition.None) && (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint) ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
+				if ((border == BorderPosition.Center || border == BorderPosition.None) && (topmostWidget ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
 				{
 					Cursor = Cursors.Hand;
+
 					if (_currentSelectedWidget == null)
 					{
 						return;
@@ -1044,6 +1093,7 @@ namespace MyGui.net
 						break;
 					default:
 						Cursor = Cursors.Default; // Normal cursor
+						viewport.Refresh();
 						break;
 				}
 
@@ -1252,7 +1302,7 @@ namespace MyGui.net
 			}
 			else
 			{
-				if (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint) != null)
+				if (topmostWidget != null)
 				{
 					Cursor = Cursors.Hand;
 				}
