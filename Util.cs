@@ -1300,6 +1300,15 @@ namespace MyGui.net
 			return double.NaN;
 		}
 
+		public static float ProperlyParseFloat(string input)
+		{
+			if (float.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
+			{
+				return result;
+			}
+			return float.NaN;
+		}
+
 		public static string ResolutionIdxToString(int idx)
 		{
 			return idx switch

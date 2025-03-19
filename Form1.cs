@@ -16,6 +16,8 @@ namespace MyGui.net
 	//TODO: make text editor autocomplete tags
 	//TODO: ResourceImage (new gui) and ResourceTexture (just render the image) support
 	//TODO: fix text alignments
+	//TODO: Add text preview to text editor
+	//TODO: Hide old SM skins like old MyGui Skins by default
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -141,7 +143,7 @@ namespace MyGui.net
 			DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
 
 			RenderBackend._allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
-			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 7.85f });
+			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 7.5f });
 
 			var possibleFontRangePath = Path.Combine(Application.ExecutablePath, "..", "FontRanges/FontRanges_" + Settings.Default.ReferenceLanguage + ".xml");
 			DebugConsole.Log($"Font Available Characters loaded using \"{(File.Exists(possibleFontRangePath) ? Path.GetFullPath(possibleFontRangePath) : "cached LimitedFontData.xml, imprecise - fonts will be missing certain characters!")}\"", (File.Exists(possibleFontRangePath) ? DebugConsole.LogLevels.Info : DebugConsole.LogLevels.Warning));
@@ -162,6 +164,8 @@ namespace MyGui.net
 				skinForm = new();
 				tagForm.ReloadCache();
 				fontForm.ReloadCache();
+				_prevBackgroundPath = "";
+				UpdateViewportBackground();
 			}
 
 			DebugConsole.Log("Cache " + (initial ? "Loading" : "Reloading") + " Finished!", DebugConsole.LogLevels.Success);
@@ -698,7 +702,9 @@ namespace MyGui.net
 			viewport.Invalidate();
 		}
 
-		private void UpdateViewportBackground()
+		static string _prevBackgroundPath = "";
+
+		private static void UpdateViewportBackground()
 		{
 			switch (Settings.Default.EditorBackgroundMode)
 			{
@@ -714,7 +720,11 @@ namespace MyGui.net
 						//mainPanel.BackgroundImage = Settings.Default.EditorBackgroundImagePath == "" ? null : Image.FromFile(Settings.Default.EditorBackgroundImagePath);
 						//mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
 						//Debug.WriteLine(Settings.Default.EditorBackgroundImagePath);
-						_viewportBackgroundBitmap = Util.BitmapToSKBitmap((Bitmap)Bitmap.FromFile(Settings.Default.EditorBackgroundImagePath));
+						if (Settings.Default.EditorBackgroundImagePath != _prevBackgroundPath)
+						{
+							_prevBackgroundPath = Settings.Default.EditorBackgroundImagePath;
+							_viewportBackgroundBitmap = Util.BitmapToSKBitmap((Bitmap)Bitmap.FromFile(Settings.Default.EditorBackgroundImagePath));
+						}
 					}
 					else if (Settings.Default.EditorBackgroundImagePath != "")
 					{

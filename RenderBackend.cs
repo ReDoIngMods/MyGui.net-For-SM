@@ -2,6 +2,8 @@
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.Diagnostics;
+using System.Text;
+using System.Web;
 using static MyGui.net.Util;
 
 namespace MyGui.net
@@ -394,6 +396,8 @@ namespace MyGui.net
 
 				if (widget != null)
 				{
+					//LISTEN UP YOU DUMBASS TRB; 720p is 1x, 1080p is 1.5x, 1440p is 2x, !!!!720p IS NOT HALF OF 1080p!!!! - Left this comment here for anyone that checks out the source to find lol - The Red Builder
+					//Ima be honest here; i kinda gave up making it work by myself, so a lot of this code is AI generated, though it does work really well actually.
 					if (skin.type == "SimpleText" || skin.type == "EditText")
 					{
 						if (widgetTertiaryData.properties.ContainsKey("Caption"))
@@ -422,135 +426,73 @@ namespace MyGui.net
 								textColor = Color.White;
 							}
 
-							var fontCurrentSizeNoScaling = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) : (float)fontData.size;
+							float screenSizeMultiplier = 1 + Settings.Default.ReferenceResolution * 0.5f;
+							float defaultFontSize = (float)fontData.size * screenSizeMultiplier * 1.33f;
+							float actualFontSize = widgetTertiaryData.properties.TryGetValue("FontHeight", out string fontSizeVal) ? (ProperlyParseFloat(fontSizeVal) * 0.85f) : defaultFontSize;
 
-							_baseFontPaint.Color = new(textColor.Value.R, textColor.Value.G, textColor.Value.B);
-							_baseFontPaint.TextSize = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) : (float)fontData.size * ((Settings.Default.ReferenceResolution + 1) * 1.25f);
+							_baseFontPaint.TextSize = actualFontSize;
 							_baseFontPaint.IsAntialias = Settings.Default.UseViewportFontAntiAliasing;
 							_baseFontPaint.Typeface = _fontCache[fontPath];
 							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 
-							_baseFontPaint.TextSize = _baseFontPaint.TextSize * 0.8f;
+							SKFontMetrics metrics = _baseFontPaint.FontMetrics;
+							string captionText = Util.ReplaceLanguageTagsInString(
+								widgetTertiaryData.properties["Caption"],
+								Settings.Default.ReferenceLanguage,
+								Form1.ScrapMechanicPath
+							);
 
-							string captionText = Util.ReplaceLanguageTagsInString(widgetTertiaryData.properties["Caption"], Settings.Default.ReferenceLanguage, Form1.ScrapMechanicPath);
+							// Build lines and calculate their widths while incorporating letter spacing.
+							List<string> lines = new List<string>();
+							List<float> lineWidths = new List<float>();
 
-							float offsetX = 0;
-							float offsetY = 0;
 
-							// TODO: Write better system for this, reason: doesnt support /n, uses outdates width calculations
-							float textWidth = 0;
-							foreach (char character in fontData.allowedChars == "ALL CHARACTERS" ? captionText : ReplaceInvalidChars(captionText, fontData.allowedChars))
-							{
-								textWidth += _baseFontPaint.MeasureText(character.ToString()) - (0.025f * _baseFontPaint.TextSize) + ((float)(fontData.letterSpacing ?? 0) / (float)fontData.size * _baseFontPaint.TextSize);
-							}
+							float currentLineWidth = 0;
+							StringBuilder currentLineBuilder = new();
+
+							int skipNext = 0;
+							bool allowsAllChars = fontData.allowedChars == "ALL CHARACTERS";
+							// Get letter spacing value, if available.
+							float actualFontLetterSpacing = (float)(fontData.letterSpacing ?? 0);
 
 							float widgetWidth = destRect.Right - destRect.Left;
 							float widgetHeight = destRect.Bottom - destRect.Top;
 
-							switch (widgetTertiaryData.properties.TryGetValue("TextAlign", out var alignment) ? alignment : (widget.properties.TryGetValue("TextAlign", out var alignmentDefault) ? alignmentDefault : "") )
+							if (widgetTertiaryData.type == "TextBox" || (widgetTertiaryData.type == "EditBox" && widgetTertiaryData.properties.TryGetValue("WordWrap", out string ww) && ww == "true"))
 							{
-								case "HCenter VCenter":
-								case "Center":
-									offsetX = (widgetWidth / 2) - (textWidth / 2);
-									offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2) - _baseFontPaint.TextSize * 0.15f;
-									break;
-								case "Left Bottom":
-									offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize * 1.25f;
-									break;
-								case "Left VCenter":
-									offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2) - _baseFontPaint.TextSize * 0.15f;
-									break;
-								case "Right Top":
-									offsetX = widgetWidth - textWidth;
-									break;
-								case "Right Bottom":
-									offsetX = widgetWidth - textWidth;
-									offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize * 1.25f;
-									break;
-								case "Right VCenter":
-									offsetX = widgetWidth - textWidth;
-									offsetY = (widgetHeight / 2) - (_baseFontPaint.TextSize / 2) - _baseFontPaint.TextSize * 0.15f;
-									break;
-								case "HCenter Top":
-									offsetX = (widgetWidth / 2) - (textWidth / 2);
-									break;
-								case "HCenter Bottom":
-									offsetX = (widgetWidth / 2) - (textWidth / 2);
-									offsetY = destRect.Bottom - destRect.Top - _baseFontPaint.TextSize * 1.25f;
-									break;
-								default:
-								case "Left Top":
-									break;
+								captionText = WordWrap(captionText, destRect.Width, _baseFontPaint, actualFontLetterSpacing, screenSizeMultiplier, defaultFontSize, actualFontSize);
 							}
-							//End of the system improvement thing
 
-							float spacingX = destRect.Left + offsetX;
-							float spacingY = destRect.Top + _baseFontPaint.TextSize + offsetY;
-
-							int skipNext = 0;
-							bool allowsAllChars = fontData.allowedChars == "ALL CHARACTERS";
-							SKColor runningTextColor = textColor.GetValueOrDefault(Color.White).ToSKColor();
+							if (widgetTertiaryData.type == "EditBox" && (!widgetTertiaryData.properties.TryGetValue("MultiLine", out string ml) || ml != "true"))
+							{
+								captionText = captionText.Replace("\\n", " ");
+							}
 
 							char prevChar = '\0';
 
 							for (int j = 0; j < captionText.Length; j++)
 							{
 								char character = captionText[j];
-								float actualFontLetterSpacing = (float)(fontData.letterSpacing ?? 0);
-								float fontDefaultSize = (float)fontData.size * (Settings.Default.ReferenceResolution + 1);
 
-								// Replace or validate the character
-								string actualChar = allowsAllChars
-													  ? character.ToString()
-													  : ReplaceInvalidChars(character.ToString(), fontData.allowedChars);
-
-								// Measure this character
-								float charWidth = _baseFontPaint.MeasureText(actualChar);
-
-								// Calculate extra spacing (letter spacing multiplier)
-								float extraSpacing = actualFontLetterSpacing * (Settings.Default.ReferenceResolution + 1) * (fontCurrentSizeNoScaling / (float)fontData.size) * 0.75f;
-
-								// Compute kerning adjustment between previous char and current char.
-								// This is done by measuring the pair’s width and subtracting the sum of individual widths.
-								float kerningAdjustment = 0;
-								if (prevChar != '\0')
-								{
-									// Note: If your captionText might contain surrogate pairs, you’d want to be careful here.
-									string pair = prevChar.ToString() + actualChar;
-									float pairWidth = _baseFontPaint.MeasureText(pair);
-									float prevWidth = _baseFontPaint.MeasureText(prevChar.ToString());
-									kerningAdjustment = pairWidth - (prevWidth + charWidth);
-								}
-
-								// Total spacing for this glyph: the measured width, plus letter spacing and kerning
-								float fontSpacing = charWidth + extraSpacing + kerningAdjustment;
-
-								// Handle special cases: newline (represented as "\n") and color changes as before.
 								if (skipNext > 0)
 								{
 									skipNext--;
+									if (character != 'n')
+									{
+										currentLineBuilder.Append(character);
+									}
 									prevChar = character;
 									continue;
 								}
 
 								if (character == '\\' && j + 1 < captionText.Length && captionText[j + 1] == 'n')
 								{
-									_baseFontPaint.GetFontMetrics(out SKFontMetrics metrics);
-									float MAJORSKILLISSUE = widgetTertiaryData.properties.ContainsKey("FontHeight") && ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) != double.NaN ? (float)ProperlyParseDouble(widgetTertiaryData.properties["FontHeight"]) :
-										metrics.CapHeight + metrics.Descent + 3; //Default size newline stuff, i need a better name for this var, i literally wrote this at 4 AM or something
-									spacingX = destRect.Left + offsetX; // Reset X position
-
-									//spacingY += metrics.Descent - metrics.Ascent; // Move down by line height, works really well
-									//spacingY += metrics.Descent - metrics.Ascent + (_baseFontPaint.TextSize / fontDefaultSize); //Only works for SM_SearchText for some reason
-
-									spacingY += MAJORSKILLISSUE;
-									/*if (!captionText.EndsWith("cantorada"))
-									{
-										captionText += " :" + _baseFontPaint.TextSize.ToString() +" cantorada";
-									}*/
-
-									skipNext = 1;
-									prevChar = character;
+									lines.Add(currentLineBuilder.ToString());
+									lineWidths.Add(currentLineWidth);
+									currentLineBuilder.Clear();
+									currentLineWidth = 0;
+									prevChar = '\0';
+									skipNext = 1; // Skip the 'n'
 									continue;
 								}
 								else if (character == '#')
@@ -562,29 +504,141 @@ namespace MyGui.net
 									else
 									{
 										skipNext = 6;
-										if (j + 6 < captionText.Length)
-										{
-											runningTextColor = Util.ParseColorFromString(captionText.Substring(j, 7), false)?.ToSKColor() ?? runningTextColor;
-										}
-										prevChar = character;
-										continue;
+									}
+									currentLineBuilder.Append(character);
+									prevChar = character;
+									continue;
+								}
+
+								currentLineBuilder.Append(character);
+								float charWidth = _baseFontPaint.MeasureText(allowsAllChars ? character.ToString() : ReplaceInvalidChars(character.ToString(), fontData.allowedChars));
+								float kerningAdjustment = prevChar != '\0'
+									? _baseFontPaint.MeasureText(prevChar.ToString() + character.ToString()) - (_baseFontPaint.MeasureText(prevChar.ToString()) + charWidth)
+									: 0;
+
+								// Incorporate letter spacing adjustment into the total width.
+								float fontSpacing = charWidth + (actualFontLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kerningAdjustment;
+								currentLineWidth += fontSpacing;
+								prevChar = character;
+							}
+
+							if (currentLineBuilder.Length > 0)
+							{
+								lines.Add(currentLineBuilder.ToString());
+								lineWidths.Add(currentLineWidth);
+							}
+
+							float lineHeight = Math.Abs(metrics.Ascent) + Math.Abs(metrics.Descent);
+							float totalTextHeight = lines.Count * lineHeight;
+
+							float offsetX = 0;
+							float offsetY = 0;
+
+							if (widgetTertiaryData.properties.TryGetValue("TextAlign", out string textAlign))
+							{
+								if (textAlign.Contains("VCenter") || textAlign == "Center")
+								{
+									offsetY = (widgetHeight - totalTextHeight) / 2f;
+								}
+								else if (textAlign.Contains("Bottom"))
+								{
+									offsetY = widgetHeight - totalTextHeight;
+								}
+
+								if (textAlign.Contains("HCenter") || textAlign == "Center")
+								{
+									offsetX = (widgetWidth - lineWidths.Max()) / 2f;
+								}
+								else if (textAlign.Contains("Right"))
+								{
+									offsetX = widgetWidth - lineWidths.Max();
+								}
+							}
+
+							float spacingY = destRect.Top + offsetY - metrics.Top;
+							SKColor runningTextColor = textColor.GetValueOrDefault(Color.White).ToSKColor();
+
+							// Draw each line with letter spacing incorporated.
+							for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
+							{
+								string lineText = lines[lineIndex];
+								float thisLineWidth = lineWidths[lineIndex];
+
+								float spacingX = destRect.Left;
+								if (!string.IsNullOrEmpty(textAlign))
+								{
+									if (textAlign.Contains("HCenter") || textAlign == "Center")
+									{
+										spacingX += (widgetWidth - thisLineWidth) / 2f;
+									}
+									else if (textAlign.Contains("Right"))
+									{
+										spacingX += widgetWidth - thisLineWidth;
 									}
 								}
 
-								if (runningTextColor != _baseFontPaint.Color)
+								skipNext = 0;
+								prevChar = '\0';
+
+								for (int j = 0; j < lineText.Length; j++)
 								{
-									_baseFontPaint.Color = runningTextColor;
+									char character = lineText[j];
+
+									if (skipNext > 0)
+									{
+										skipNext--;
+										prevChar = character;
+										continue;
+									}
+
+									if (character == '\\' && j + 1 < lineText.Length && lineText[j + 1] == 'n')
+									{
+										skipNext = 1;
+										continue;
+									}
+
+									if (character == '#')
+									{
+										if (j + 1 < lineText.Length && lineText[j + 1] == '#')
+										{
+											skipNext = 1;
+										}
+										else
+										{
+											skipNext = 6;
+											if (j + 6 < lineText.Length)
+											{
+												runningTextColor = Util.ParseColorFromString(lineText.Substring(j, 7), false)?.ToSKColor() ?? runningTextColor;
+											}
+											prevChar = character;
+											continue;
+										}
+									}
+
+									if (runningTextColor != _baseFontPaint.Color)
+									{
+										_baseFontPaint.Color = runningTextColor;
+									}
+
+									// Measure current character and compute kerning adjustment.
+									string actualChar = allowsAllChars ? character.ToString() : ReplaceInvalidChars(character.ToString(), fontData.allowedChars);
+									float charWidth = _baseFontPaint.MeasureText(actualChar == " " ? "X" : actualChar);
+									float kerningAdjustment = prevChar != '\0'
+										? _baseFontPaint.MeasureText(prevChar.ToString() + actualChar) - (_baseFontPaint.MeasureText(prevChar.ToString()) + charWidth)
+										: 0;
+
+									// Total spacing: character width + letter spacing adjustment + kerning.
+									float fontSpacing = charWidth + (actualFontLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kerningAdjustment;
+
+									canvas.DrawText(actualChar, spacingX, spacingY, _baseFontPaint);
+									spacingX += fontSpacing;
+
+									prevChar = character;
 								}
 
-								// Draw the character at the current spacing position
-								canvas.DrawText(actualChar, spacingX, spacingY, _baseFontPaint);
-
-								// Advance the x position by the computed spacing
-								spacingX += fontSpacing;
-
-								// Update previous character for the next iteration
-								prevChar = character;
+								spacingY += lineHeight;
 							}
+
 							canvas.RestoreToCount(beforeTextClip);
 						}
 						continue;
@@ -696,6 +750,62 @@ namespace MyGui.net
 				drawPaint.Dispose();
 			}
 		}
+
+		public static string WordWrap(string text, float maxWidth, SKPaint paint, float baseLetterSpacing, float screenSizeMultiplier, float defaultFontSize, float actualFontSize)
+		{
+			StringBuilder wrappedText = new StringBuilder();
+			StringBuilder currentLine = new StringBuilder();
+			string[] words = text.Split(' ');
+
+			foreach (string word in words)
+			{
+				// Prepare candidate line: if there's already content, add a space before the new word.
+				string candidate = currentLine.Length > 0 ? currentLine + " " + word : word;
+				float candidateWidth = 0;
+				char prevChar = '\0';
+
+				// Measure the candidate line character by character.
+				foreach (char c in candidate)
+				{
+					string charStr = c.ToString();
+					float charWidth = paint.MeasureText(charStr);
+					float kerningAdjustment = 0;
+					if (prevChar != '\0')
+					{
+						kerningAdjustment = paint.MeasureText(prevChar.ToString() + charStr) -
+											(paint.MeasureText(prevChar.ToString()) + charWidth);
+					}
+					// Total spacing includes the letter spacing adjustment.
+					float totalSpacing = charWidth + (baseLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kerningAdjustment;
+					candidateWidth += totalSpacing;
+					prevChar = c;
+				}
+
+				// If the candidate exceeds maxWidth and there is already content, wrap.
+				if (candidateWidth > maxWidth && currentLine.Length > 0)
+				{
+					wrappedText.Append(currentLine.ToString());
+					wrappedText.Append("\\n");  // Add newline after current line.
+					currentLine.Clear();
+					currentLine.Append(word);
+				}
+				else
+				{
+					if (currentLine.Length > 0)
+						currentLine.Append(' ');
+					currentLine.Append(word);
+				}
+			}
+
+			// Add the remaining content in currentLine to wrappedText.
+			if (currentLine.Length > 0)
+			{
+				wrappedText.Append(currentLine.ToString());
+			}
+
+			return wrappedText.ToString();
+		}
+
 
 
 		public static SKRect GetAlignedRectangle(string? align, SKRect container, SKSize tileSize, SKRect subskinOffset, SKSize maxSize)

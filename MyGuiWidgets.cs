@@ -452,7 +452,7 @@ namespace MyGui.net
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Font Size")]
-		[Description("The static font size, leave empty for default dynamic sizing. Not recommended as this value applies for all resolutions, as such the font might be too small or too large in certain scenarios.")]
+		[Description("!WARNING: THIS PROPERTY MAKES THE RENDERING INACCURATE, DO NOT USE! The static font size, leave empty for default dynamic sizing. Not recommended as this value applies for all resolutions, as such the font might be too small or too large in certain scenarios.")]
 		public string FontHeight
 		{
 			get => widget.properties.TryGetValue("FontHeight", out var value) ? value : "";
