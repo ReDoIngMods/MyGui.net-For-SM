@@ -458,14 +458,14 @@ namespace MyGui.net
 							float widgetWidth = destRect.Right - destRect.Left;
 							float widgetHeight = destRect.Bottom - destRect.Top;
 
-							if (widgetTertiaryData.type == "TextBox" || (widgetTertiaryData.type == "EditBox" && widgetTertiaryData.properties.TryGetValue("WordWrap", out string ww) && ww == "true"))
-							{
-								captionText = WordWrap(captionText, destRect.Width, _baseFontPaint, actualFontLetterSpacing, screenSizeMultiplier, defaultFontSize, actualFontSize);
-							}
-
 							if (widgetTertiaryData.type == "EditBox" && (!widgetTertiaryData.properties.TryGetValue("MultiLine", out string ml) || ml != "true"))
 							{
 								captionText = captionText.Replace("\\n", " ");
+							}
+
+							if (widgetTertiaryData.type == "TextBox" || (widgetTertiaryData.type == "EditBox" && widgetTertiaryData.properties.TryGetValue("WordWrap", out string ww) && ww == "true"))
+							{
+								captionText = WordWrap(captionText, destRect.Width, _baseFontPaint, actualFontLetterSpacing, screenSizeMultiplier, defaultFontSize, actualFontSize);
 							}
 
 							char prevChar = '\0';

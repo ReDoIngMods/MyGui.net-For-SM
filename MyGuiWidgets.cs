@@ -1,21 +1,110 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Drawing.Design;
 using System.Globalization;
+using System.Text.Json.Serialization;
 
 namespace MyGui.net
 {
+
+	public class ObservableList<T> : ObservableCollection<T>, IList<T>
+	{
+		public ObservableList() : base() { }
+
+		public ObservableList(IEnumerable<T> collection) : base(collection) { }
+
+		// IList<T> implementation
+		public T this[int index]
+		{
+			get => base[index];
+			set => base[index] = value;
+		}
+
+		public int Count => base.Count;
+
+		public bool IsReadOnly => false;
+
+		public void Add(T item) => base.Add(item);
+
+		public void Clear() => base.Clear();
+
+		public bool Contains(T item) => base.Contains(item);
+
+		public void CopyTo(T[] array, int arrayIndex) => base.CopyTo(array, arrayIndex);
+
+		public IEnumerator<T> GetEnumerator() => base.GetEnumerator();
+
+		public int IndexOf(T item) => base.IndexOf(item);
+
+		public void Insert(int index, T item) => base.Insert(index, item);
+
+		public bool Remove(T item) => base.Remove(item);
+
+		public void RemoveAt(int index) => base.RemoveAt(index);
+
+		// Explicitly implement IEnumerable to return the base class enumerator
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => base.GetEnumerator();
+	}
+
 	//to add properties, go to CustomPropertyGrid.cs
 	public class MyGuiWidgetData
-    {
-        public string? layer;
-        public string? align;
-        public string? name;
-        public string? type = "Widget";
-        public string? skin = "PanelEmpty";
-        public Point position = new(0, 0);
-        public Point size = new(0, 0);
-        public Dictionary<string, string> properties = new();
-        public List<MyGuiWidgetData> children = new();
+	{
+		public string? layer;
+		public string? align;
+		public string? name;
+		public string? type = "Widget";
+		public string? skin = "PanelEmpty";
+		public Point position = new(0, 0);
+		public Point size = new(0, 0);
+		public Dictionary<string, string> properties = new();
+
+		[JsonIgnore]
+		public MyGuiWidgetData? Parent { get; set; }
+
+		// Use a custom collection to handle the children list
+		private ObservableList<MyGuiWidgetData> _children;
+		public ObservableList<MyGuiWidgetData> Children
+		{
+			get => _children;
+			set
+			{
+				_children.Clear(); // Clear existing children and their parents
+				foreach (var child in value)
+					_children.Add(child); // Add new children properly
+			}
+		}
+		public ObservableList<MyGuiWidgetData> children //legacy compat
+		{
+			get => _children;
+			set
+			{
+				_children.Clear(); // Clear existing children and their parents
+				foreach (var child in value)
+					_children.Add(child); // Add new children properly
+			}
+		}
+
+		public MyGuiWidgetData()
+		{
+			_children = new();
+			_children.CollectionChanged += OnChildrenChanged;
+		}
+
+		private void OnChildrenChanged(object? sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.Action == NotifyCollectionChangedAction.Add && e.NewItems != null)
+			{
+				foreach (MyGuiWidgetData child in e.NewItems)
+					child.Parent = this;
+			}
+
+			if (e.Action == NotifyCollectionChangedAction.Remove && e.OldItems != null)
+			{
+				foreach (MyGuiWidgetData child in e.OldItems)
+					child.Parent = null;
+			}
+		}
 
 		public override string ToString()
 		{

@@ -484,7 +484,13 @@ namespace MyGui.net
 
 				var children = ReadWidgetElements(widget.Elements("Widget"), widgetData.size);
 				if (children == null) return null; //Error occurred while reading children: stop reading the layout!
-				widgetData.children = children;
+
+				var childOL = new ObservableList<MyGuiWidgetData>();
+				foreach (var item in children)
+				{
+					childOL.Add(item);
+				}
+				widgetData.children = childOL;
 
 				layoutWidgetData.Add(widgetData);
 			}
@@ -565,7 +571,7 @@ namespace MyGui.net
 				}
 
 				// Recursively add child elements
-				AddChildrenToElement(widgetElement, widget.children, exportAsPx ? new Point(1, 1) : widget.size, exportAsPx);
+				AddChildrenToElement(widgetElement, widget.children.ToList(), exportAsPx ? new Point(1, 1) : widget.size, exportAsPx);
 
 				// Add to root or list depending on target type
 				if (target is XElement rootElement)
@@ -591,7 +597,7 @@ namespace MyGui.net
 			foreach (MyGuiWidgetData data in layout)
 			{
 				Debug.WriteLine($"------\n- Type: {data.type}\n- Skin: {data.skin}\n- Name: {data.name}\n- Pos: {data.position}\n- Size: {data.size}\n- Layer: {data.layer}\n- Align: {data.align}\n- Properties#: {data.properties.Count()}\n- Children#: {data.children.Count()}");
-				PrintLayoutStuff(data.children);
+				PrintLayoutStuff(data.children.ToList());
 			}
 		}
 
@@ -1750,12 +1756,12 @@ namespace MyGui.net
 			Point absolutePosition = widget.position;
 
 			// Traverse the hierarchy to accumulate the positions of parent widgets
-			MyGuiWidgetData? current = FindParent(widget, layout);
+			MyGuiWidgetData? current = widget.Parent;
 			while (current != null)
 			{
 				absolutePosition.X += current.position.X;
 				absolutePosition.Y += current.position.Y;
-				current = FindParent(current, layout);
+				current = current.Parent;
 			}
 
 			return absolutePosition;
@@ -1764,16 +1770,15 @@ namespace MyGui.net
 		public static MyGuiWidgetData? FindParent(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
 		{
 			// Find the parent widget in the layout
-			foreach (var potentialParent in layout)
+			/*foreach (var potentialParent in layout)
 			{
 				if (potentialParent.children.Contains(widget))
 					return potentialParent;
 
 				var parent = FindParent(widget, potentialParent.children);
 				if (parent != null) return parent;
-			}
-
-			return null;
+			}*/
+			return widget?.Parent;
 		}
 
 		public static List<MyGuiWidgetData>? FindParentTree(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
@@ -1784,7 +1789,7 @@ namespace MyGui.net
 			// Helper function for recursion
 			void CollectParents(MyGuiWidgetData currentWidget, List<MyGuiWidgetData> currentLayout)
 			{
-				var potentialParent = FindParent(currentWidget, currentLayout);
+				var potentialParent = currentWidget?.Parent;
 
 				if (potentialParent != null)
 				{

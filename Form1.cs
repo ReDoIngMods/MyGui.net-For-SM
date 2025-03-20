@@ -565,7 +565,7 @@ namespace MyGui.net
 				nodeLookup[treeNodeText] = rootNode;
 
 				// Recursively add children
-				AddChildrenToTree(rootNode, customItem.children, nodeLookup);
+				AddChildrenToTree(rootNode, customItem.children.ToList(), nodeLookup);
 			}
 
 			// Restore expanded nodes
@@ -589,7 +589,7 @@ namespace MyGui.net
 				nodeLookup[treeNodeText] = childNode;
 
 				// Recursively add any further children
-				AddChildrenToTree(childNode, child.children, nodeLookup);
+				AddChildrenToTree(childNode, child.children.ToList(), nodeLookup);
 			}
 		}
 
@@ -1924,7 +1924,7 @@ namespace MyGui.net
 							}
 
 							List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc, null);
-							MyGuiWidgetData widgetToPasteInto = e.Shift ? Util.FindParent(_currentSelectedWidget, _currentLayout) : _currentSelectedWidget;
+							MyGuiWidgetData widgetToPasteInto = e.Shift ? _currentSelectedWidget.Parent : _currentSelectedWidget;
 
 
 							// Determine the bounding box top-left corner (minimum x and y positions)

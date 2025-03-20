@@ -239,7 +239,7 @@
         public DeleteControlCommand(MyGuiWidgetData control, List<MyGuiWidgetData> defaultList)
         {
             _control = control;
-            _parent = Util.FindParent(control, defaultList);//control.Parent;
+            _parent = control.Parent;
             _defaultList = defaultList;
             _index = _parent == null ? _defaultList.IndexOf(control) : _parent.children.IndexOf(control); // Store the original position
         }
