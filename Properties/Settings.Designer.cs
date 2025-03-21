@@ -467,5 +467,53 @@ namespace MyGui.net.Properties {
                 this["EnterAccepts"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SidePanelLayoutAttached {
+            get {
+                return ((bool)(this["SidePanelLayoutAttached"]));
+            }
+            set {
+                this["SidePanelLayoutAttached"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point SidePanelLayoutPos {
+            get {
+                return ((global::System.Drawing.Point)(this["SidePanelLayoutPos"]));
+            }
+            set {
+                this["SidePanelLayoutPos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size SidePanelLayoutSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SidePanelLayoutSize"]));
+            }
+            set {
+                this["SidePanelLayoutSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SidePanelLayoutMonitor {
+            get {
+                return ((string)(this["SidePanelLayoutMonitor"]));
+            }
+            set {
+                this["SidePanelLayoutMonitor"] = value;
+            }
+        }
     }
 }

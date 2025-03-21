@@ -43,7 +43,11 @@ namespace MyGui.net
 			propertyGrid1 = new PropertyGrid();
 			tabPage2 = new TabPage();
 			tabPage3 = new TabPage();
+			layoutMainPanel = new Panel();
+			layoutToNewWindowButton = new Button();
 			treeView1 = new TreeView();
+			layoutExpandButton = new Button();
+			layoutCollapseButton = new Button();
 			smPathDialog = new FolderBrowserDialog();
 			menuStrip1 = new MenuStrip();
 			fileToolStripMenuItem = new ToolStripMenuItem();
@@ -91,6 +95,7 @@ namespace MyGui.net
 			tabPage1.SuspendLayout();
 			tabPage1Panel.SuspendLayout();
 			tabPage3.SuspendLayout();
+			layoutMainPanel.SuspendLayout();
 			menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
 			editorMenuStrip.SuspendLayout();
@@ -242,7 +247,7 @@ namespace MyGui.net
 			// tabPage3
 			// 
 			tabPage3.BackColor = SystemColors.ControlLightLight;
-			tabPage3.Controls.Add(treeView1);
+			tabPage3.Controls.Add(layoutMainPanel);
 			tabPage3.Location = new Point(4, 24);
 			tabPage3.Margin = new Padding(0);
 			tabPage3.Name = "tabPage3";
@@ -250,20 +255,68 @@ namespace MyGui.net
 			tabPage3.TabIndex = 2;
 			tabPage3.Text = "Layout";
 			// 
+			// layoutMainPanel
+			// 
+			layoutMainPanel.Controls.Add(layoutToNewWindowButton);
+			layoutMainPanel.Controls.Add(treeView1);
+			layoutMainPanel.Controls.Add(layoutExpandButton);
+			layoutMainPanel.Controls.Add(layoutCollapseButton);
+			layoutMainPanel.Dock = DockStyle.Fill;
+			layoutMainPanel.Location = new Point(0, 0);
+			layoutMainPanel.Margin = new Padding(0);
+			layoutMainPanel.Name = "layoutMainPanel";
+			layoutMainPanel.Size = new Size(302, 525);
+			layoutMainPanel.TabIndex = 5;
+			// 
+			// layoutToNewWindowButton
+			// 
+			layoutToNewWindowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+			layoutToNewWindowButton.FlatStyle = FlatStyle.System;
+			layoutToNewWindowButton.Location = new Point(276, 3);
+			layoutToNewWindowButton.Margin = new Padding(0);
+			layoutToNewWindowButton.Name = "layoutToNewWindowButton";
+			layoutToNewWindowButton.Size = new Size(23, 23);
+			layoutToNewWindowButton.TabIndex = 4;
+			layoutToNewWindowButton.Text = "☰";
+			layoutToNewWindowButton.UseVisualStyleBackColor = true;
+			layoutToNewWindowButton.Click += layoutToNewWindowButton_Click;
+			// 
 			// treeView1
 			// 
+			treeView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			treeView1.BackColor = SystemColors.ControlLightLight;
 			treeView1.BorderStyle = BorderStyle.None;
-			treeView1.Dock = DockStyle.Fill;
 			treeView1.Indent = 20;
 			treeView1.ItemHeight = 23;
-			treeView1.Location = new Point(0, 0);
+			treeView1.Location = new Point(0, 32);
 			treeView1.Name = "treeView1";
-			treeView1.Size = new Size(302, 525);
+			treeView1.Size = new Size(302, 493);
 			treeView1.TabIndex = 0;
 			treeView1.AfterLabelEdit += treeView1_AfterLabelEdit;
 			treeView1.AfterSelect += treeView1_AfterSelect;
 			treeView1.NodeMouseClick += treeView1_NodeMouseClick;
+			// 
+			// layoutExpandButton
+			// 
+			layoutExpandButton.FlatStyle = FlatStyle.System;
+			layoutExpandButton.Location = new Point(102, 3);
+			layoutExpandButton.Name = "layoutExpandButton";
+			layoutExpandButton.Size = new Size(96, 23);
+			layoutExpandButton.TabIndex = 2;
+			layoutExpandButton.Text = "Expand All";
+			layoutExpandButton.UseVisualStyleBackColor = true;
+			layoutExpandButton.Click += layoutExpandButton_Click;
+			// 
+			// layoutCollapseButton
+			// 
+			layoutCollapseButton.FlatStyle = FlatStyle.System;
+			layoutCollapseButton.Location = new Point(3, 3);
+			layoutCollapseButton.Name = "layoutCollapseButton";
+			layoutCollapseButton.Size = new Size(96, 23);
+			layoutCollapseButton.TabIndex = 1;
+			layoutCollapseButton.Text = "Collapse All";
+			layoutCollapseButton.UseVisualStyleBackColor = true;
+			layoutCollapseButton.Click += layoutCollapseButton_Click;
 			// 
 			// smPathDialog
 			// 
@@ -616,6 +669,7 @@ namespace MyGui.net
 			tabPage1.ResumeLayout(false);
 			tabPage1Panel.ResumeLayout(false);
 			tabPage3.ResumeLayout(false);
+			layoutMainPanel.ResumeLayout(false);
 			menuStrip1.ResumeLayout(false);
 			menuStrip1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
@@ -678,5 +732,9 @@ namespace MyGui.net
 		private ToolStripMenuItem newWidgetToolStripMenuItem;
 		private ToolStripMenuItem openRecentToolStripMenuItem;
 		private TreeView treeView1;
+		private Button layoutToNewWindowButton;
+		private Button layoutExpandButton;
+		private Button layoutCollapseButton;
+		private Panel layoutMainPanel;
 	}
 }

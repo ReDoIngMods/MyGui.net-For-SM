@@ -113,5 +113,17 @@
     <Setting Name="EnterAccepts" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="SidePanelLayoutAttached" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SidePanelLayoutPos" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="SidePanelLayoutSize" Type="System.Drawing.Size" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="SidePanelLayoutMonitor" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

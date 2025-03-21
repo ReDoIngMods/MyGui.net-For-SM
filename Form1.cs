@@ -103,6 +103,7 @@ namespace MyGui.net
 		static Point _mouseLoc = new Point(0, 0);
 
 		static FormSideBar? _sidebarForm;
+		static FormSideBar? _sidebarLayoutForm;
 
 		public static FormSlicer sliceForm;
 		public static FormSkin skinForm;
@@ -373,6 +374,19 @@ namespace MyGui.net
 			}*/
 			HandleWidgetSelection();
 
+			this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
+			  ControlStyles.UserPaint |
+			  ControlStyles.AllPaintingInWmPaint | ControlStyles.CacheText, true);
+			this.UpdateStyles();
+
+			sliceForm = new();
+			skinForm = new();
+			tagForm = new();
+			textEditorForm = new();
+			fontForm = new();
+			settingsForm = new();
+			settingsForm.Owner = this;
+
 			if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
 			{
 				SaveFormPosition();
@@ -401,17 +415,9 @@ namespace MyGui.net
 				this.Size = Settings.Default.MainWindowSize;
 				//Debug.WriteLine(Settings.Default.MainWindowSize);
 
-				if (Settings.Default.SidePanelAttached)
+				if (!Settings.Default.SidePanelAttached)
 				{
-					splitContainer1.SplitterDistance = splitContainer1.Width - Settings.Default.SidePanelSize.Width;
-				}
-				else
-				{
-					sidebarToNewWindowButton_Click(this, new EventArgs());
-				}
-
-				if (_sidebarForm != null && !Settings.Default.SidePanelAttached)
-				{
+					_sidebarForm = new();
 					var targetScreenSide = Screen.AllScreens.FirstOrDefault(s => s.DeviceName == Settings.Default.SidePanelMonitor);
 					if (targetScreenSide != null)
 					{
@@ -424,29 +430,43 @@ namespace MyGui.net
 						}
 					}
 					_sidebarForm.Size = Settings.Default.SidePanelSize;
+
+					sidebarToNewWindowButton_Click(this, new EventArgs());
 				}
 				else
 				{
+					splitContainer1.SplitterDistance = splitContainer1.Width - Settings.Default.SidePanelSize.Width;
+
 					Settings.Default.SidePanelPos = new Point(this.Location.X + this.Width, this.Location.Y + 5);
 					Settings.Default.SidePanelSize = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
 					Settings.Default.SidePanelMonitor = Settings.Default.MainWindowMonitor;
 				}
+
+				if (!Settings.Default.SidePanelLayoutAttached)
+				{
+					_sidebarLayoutForm = new();
+					var targetScreenSide = Screen.AllScreens.FirstOrDefault(s => s.DeviceName == Settings.Default.SidePanelLayoutMonitor);
+					if (targetScreenSide != null)
+					{
+						// Ensure position is within the bounds of the saved screen
+						Rectangle bounds = targetScreenSide.Bounds;
+						if (bounds.Contains(Settings.Default.SidePanelLayoutPos) || bounds.Contains(Settings.Default.SidePanelLayoutPos + Settings.Default.SidePanelLayoutSize))
+						{
+							_sidebarLayoutForm.StartPosition = FormStartPosition.Manual;
+							_sidebarLayoutForm.Location = Settings.Default.SidePanelLayoutPos;
+						}
+					}
+					_sidebarLayoutForm.Size = Settings.Default.SidePanelLayoutSize;
+					layoutToNewWindowButton_Click(this, new EventArgs());
+				}
+				else
+				{
+					Settings.Default.SidePanelLayoutPos = new Point(this.Location.X + this.Width, this.Location.Y + 5);
+					Settings.Default.SidePanelLayoutSize = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
+					Settings.Default.SidePanelLayoutMonitor = Settings.Default.MainWindowMonitor;
+				}
 			}
-			this.SetStyle(ControlStyles.OptimizedDoubleBuffer |
-			  ControlStyles.UserPaint |
-			  ControlStyles.AllPaintingInWmPaint | ControlStyles.CacheText, true);
-			this.UpdateStyles();
-
-			sliceForm = new();
-			skinForm = new();
-			tagForm = new();
-			textEditorForm = new();
-			fontForm = new();
-			settingsForm = new();
-			settingsForm.Owner = this;
-
-			AdjustViewportScrollers();
-			centerButton_Click(null, new EventArgs());
+			centerButton_Click(this, new());
 		}
 
 		void HandleWidgetSelection()
@@ -791,18 +811,25 @@ namespace MyGui.net
 
 			if (!_draggingViewport)
 			{
-				Point viewportRelPos = viewport.PointToClient(Cursor.Position);
-				SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
-				Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
-				var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
-
-				if (topmostWidget != _currentHoveredWidget)
+				if (Util.IsKeyPressed(Keys.ShiftKey))
 				{
-					if (_currentSelectedWidget == null)
+					_currentHoveredWidget = null;
+				}
+				else
+				{
+					Point viewportRelPos = viewport.PointToClient(Cursor.Position);
+					SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
+					Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
+					var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+
+					if (topmostWidget != _currentHoveredWidget)
 					{
-						UpdateProperties(topmostWidget);
+						if (_currentSelectedWidget == null)
+						{
+							UpdateProperties(topmostWidget);
+						}
+						_currentHoveredWidget = topmostWidget;
 					}
-					_currentHoveredWidget = topmostWidget;
 				}
 			}
 
@@ -905,8 +932,6 @@ namespace MyGui.net
 
 			//Cursor.Position = sender.PointToScreen(viewportPixelPos);
 
-			BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, _currentLayout);
-
 			if (e.Button == MouseButtons.Right)
 			{
 				_draggingViewport = true;
@@ -917,6 +942,7 @@ namespace MyGui.net
 			}
 			else if (e.Button == MouseButtons.Left)
 			{
+				BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, _currentLayout);
 				MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos);
 
 				bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && currWidgetBorder != BorderPosition.None;
@@ -1035,11 +1061,14 @@ namespace MyGui.net
 			Point viewportRelPos = e.Location;
 			SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
 			Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
-			var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
-
-			if (topmostWidget != _currentHoveredWidget)
+			if (!_draggingViewport && !Util.IsKeyPressed(Keys.ShiftKey))
 			{
-				viewport.Refresh();
+				var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+
+				if (topmostWidget != _currentHoveredWidget)
+				{
+					viewport.Refresh();
+				}
 			}
 
 			if (_draggingViewport)
@@ -1062,6 +1091,7 @@ namespace MyGui.net
 			}
 			else if (_currentSelectedWidget != null)
 			{
+				var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
 				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPosPoint, _currentLayout);
 				//Debug.WriteLine($"BORDER: {border}");
 				if ((border == BorderPosition.Center || border == BorderPosition.None) && (topmostWidget ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
@@ -1308,7 +1338,7 @@ namespace MyGui.net
 			}
 			else
 			{
-				if (topmostWidget != null)
+				if (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint) != null)
 				{
 					Cursor = Cursors.Hand;
 				}
@@ -1453,7 +1483,8 @@ namespace MyGui.net
 			foreach (string file in _recentFiles)
 			{
 				var item = new ToolStripMenuItem(file);
-				item.Click += (s, e) => {
+				item.Click += (s, e) =>
+				{
 					if (_commandManager.getUndoStackCount() != 0)
 					{
 						DialogResult result = MessageBox.Show("Are you sure you want to open another Layout? All your unsaved changes will be lost!", "Open Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -1723,7 +1754,7 @@ namespace MyGui.net
 			this.WindowState = prevState;
 
 			Settings.Default.SidePanelAttached = !splitContainer1.Panel2Collapsed;
-			if (_sidebarForm != null && !_sidebarForm.Disposing && !Settings.Default.SidePanelAttached)
+			if (_sidebarForm != null && !_sidebarForm.Disposing && !_sidebarForm.IsDisposed && !Settings.Default.SidePanelAttached)
 			{
 				var screenSide = Screen.FromControl(_sidebarForm);
 				Settings.Default.SidePanelPos = _sidebarForm.Location;
@@ -1736,6 +1767,20 @@ namespace MyGui.net
 				Settings.Default.SidePanelPos = new Point(this.Location.X + this.Width - Settings.Default.SidePanelSize.Width, this.Location.Y + 5);
 			}
 
+			Settings.Default.SidePanelLayoutAttached = tabControl1.TabPages.Count > 2;
+			if (_sidebarLayoutForm != null && !_sidebarLayoutForm.Disposing && !_sidebarLayoutForm.IsDisposed && !Settings.Default.SidePanelLayoutAttached)
+			{
+				var screenSide = Screen.FromControl(_sidebarLayoutForm);
+				Settings.Default.SidePanelLayoutPos = _sidebarLayoutForm.Location;
+				Settings.Default.SidePanelLayoutSize = _sidebarLayoutForm.Size;
+				Settings.Default.SidePanelLayoutMonitor = screenSide.DeviceName;
+			}
+			else
+			{
+				Settings.Default.SidePanelLayoutSize = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
+				Settings.Default.SidePanelLayoutPos = new Point(this.Location.X + this.Width - Settings.Default.SidePanelSize.Width, this.Location.Y + 5);
+			}
+
 			Settings.Default.Save();
 		}
 
@@ -1745,15 +1790,22 @@ namespace MyGui.net
 			if (splitContainer1.Panel2Collapsed && _sidebarForm != null)
 			{
 				_sidebarForm.Close();
+				_sidebarForm.Dispose();
 			}
 			else
 			{
-				_sidebarForm = new FormSideBar();
+				if (_sidebarForm == null || _sidebarForm.IsDisposed)
+				{
+					_sidebarForm = new();
+				}
 
+				if (sender != this)
+				{
+					_sidebarForm.Size = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
+					Settings.Default.SidePanelSize = _sidebarForm.Size;
+					_sidebarForm.Location = new Point(this.Location.X + this.Width - Settings.Default.SidePanelSize.Width, this.Location.Y + 5);
+				}
 
-				_sidebarForm.Size = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
-				Settings.Default.SidePanelSize = _sidebarForm.Size;
-				_sidebarForm.Location = new Point(this.Location.X + this.Width - Settings.Default.SidePanelSize.Width, this.Location.Y + 5);
 				_sidebarForm.Owner = this;
 
 				_sidebarForm.Controls.Add(tabControl1);
@@ -1776,6 +1828,64 @@ namespace MyGui.net
 			Settings.Default.SidePanelSize = _sidebarForm.Size;
 			Settings.Default.SidePanelMonitor = screenSide.DeviceName;
 			AdjustViewportScrollers();
+		}
+
+		TabPage oldLayoutPage;
+
+		private void layoutToNewWindowButton_Click(object sender, EventArgs e)
+		{
+			if (tabControl1.TabPages.Count < 3 && _sidebarLayoutForm != null)
+			{
+				_sidebarLayoutForm.Close();
+			}
+			else
+			{
+				if (_sidebarLayoutForm == null || _sidebarLayoutForm.IsDisposed)
+				{
+					_sidebarLayoutForm = new();
+				}
+				_sidebarLayoutForm.Text = "Editor Outliner";
+
+				if (sender != this)
+				{
+					_sidebarLayoutForm.Location = new Point(this.Location.X + this.Width - Settings.Default.SidePanelLayoutSize.Width, this.Location.Y + 5);
+					_sidebarLayoutForm.Size = new Size(splitContainer1.Width - splitContainer1.SplitterDistance, this.Height - 10);
+					Settings.Default.SidePanelLayoutSize = _sidebarLayoutForm.Size;
+				}
+
+				_sidebarLayoutForm.Owner = this;
+
+				oldLayoutPage = tabControl1.TabPages[2];
+				tabControl1.TabPages.RemoveAt(2);
+
+				_sidebarLayoutForm.Controls.Add(layoutMainPanel);
+				_sidebarLayoutForm.FormClosing += ReattachLayoutSidebar;
+				_sidebarLayoutForm.Show();
+			}
+			//AdjustViewportScrollers();
+		}
+
+		private void ReattachLayoutSidebar(object sender, FormClosingEventArgs e)
+		{
+			if (e.CloseReason != CloseReason.UserClosing) { return; }
+			tabControl1.TabPages.Add(oldLayoutPage);
+			tabControl1.TabPages[2].Controls.Add(layoutMainPanel);
+
+			var screenSide = Screen.FromControl(_sidebarLayoutForm);
+			Settings.Default.SidePanelLayoutPos = _sidebarLayoutForm.Location;
+			Settings.Default.SidePanelLayoutSize = _sidebarLayoutForm.Size;
+			Settings.Default.SidePanelLayoutMonitor = screenSide.DeviceName;
+			//AdjustViewportScrollers();
+		}
+
+		private void layoutCollapseButton_Click(object sender, EventArgs e)
+		{
+			treeView1.CollapseAll();
+		}
+
+		private void layoutExpandButton_Click(object sender, EventArgs e)
+		{
+			treeView1.ExpandAll();
 		}
 
 		private void undoToolStripMenuItem_Click(object sender, EventArgs e)
