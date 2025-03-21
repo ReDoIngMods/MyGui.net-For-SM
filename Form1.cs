@@ -723,6 +723,7 @@ namespace MyGui.net
 		}
 
 		static string _prevBackgroundPath = "";
+		static int _prevEditorBackgroundMode = 0;
 
 		private static void UpdateViewportBackground()
 		{
@@ -740,7 +741,7 @@ namespace MyGui.net
 						//mainPanel.BackgroundImage = Settings.Default.EditorBackgroundImagePath == "" ? null : Image.FromFile(Settings.Default.EditorBackgroundImagePath);
 						//mainPanel.BackgroundImageLayout = ImageLayout.Stretch;
 						//Debug.WriteLine(Settings.Default.EditorBackgroundImagePath);
-						if (Settings.Default.EditorBackgroundImagePath != _prevBackgroundPath)
+						if (Settings.Default.EditorBackgroundImagePath != _prevBackgroundPath || _prevEditorBackgroundMode != 2)
 						{
 							_prevBackgroundPath = Settings.Default.EditorBackgroundImagePath;
 							_viewportBackgroundBitmap = Util.BitmapToSKBitmap((Bitmap)Bitmap.FromFile(Settings.Default.EditorBackgroundImagePath));
@@ -752,6 +753,7 @@ namespace MyGui.net
 					}
 					break;
 			}
+			_prevEditorBackgroundMode = Settings.Default.EditorBackgroundMode;
 			//viewport.Refresh();
 		}
 
@@ -1418,10 +1420,6 @@ namespace MyGui.net
 			_currentLayout = new List<MyGuiWidgetData>();
 			_draggingWidgetAt = BorderPosition.None;
 			ProjectSize = Settings.Default.DefaultWorkspaceSize;
-			if (Settings.Default.EditorBackgroundMode == 1)
-			{
-				_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
-			}
 			HandleWidgetSelection();
 			AdjustViewportScrollers();
 			viewport.Refresh();
