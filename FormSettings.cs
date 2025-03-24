@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace MyGui.net
 {
@@ -100,8 +101,12 @@ namespace MyGui.net
 			showTypesForNamedWidgetsCheckBox.Checked = _setDef.ShowTypesForNamedWidgets;
 			widgetGridSpacingNumericUpDown.Value = _setDef.WidgetGridSpacing;
 
+			//TAB VERSION
+			autoUpdateCheckCheckBox.Checked = _setDef.AutoCheckUpdate;
+
 			_formLoaded = true;
 
+			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(((bool?)AppContext.GetData("IsSelfContained") ?? false) ? "MyGui.Net-Standalone" : "MyGui.Net-Framework-Dependant")}";
 			//Change about text
 			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
 		}
@@ -721,8 +726,7 @@ namespace MyGui.net
 		{
 			try
 			{
-				Debug.WriteLine(Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath));
-				string userConfigDirectory = Path.GetDirectoryName(ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.PerUserRoamingAndLocal).FilePath);
+				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReDoIng Mods/MyGui.net");
 
 				// Open the folder using Process.Start
 				if (userConfigDirectory != null && Directory.Exists(userConfigDirectory))
@@ -737,6 +741,43 @@ namespace MyGui.net
 			catch (Win32Exception)
 			{
 			}
+		}
+
+		private void autoUpdateCheckCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.AutoCheckUpdate = sender.Checked;
+			OnSettingChange();
+		}
+
+		private async void checkForUpdatesButton_ClickAsync(object sender, EventArgs e)
+		{
+			await CheckAndUpdateAsync(Settings.Default.UpdateBearerToken);
+		}
+
+		private async Task CheckAndUpdateAsync(string bearerToken = "")
+		{
+			checkForUpdatesButton.Enabled = false;
+			string oldText = checkForUpdatesButton.Text;
+			checkForUpdatesButton.Text = "Checking for updates...";
+			try
+			{
+				var updateInfo = await Util.CheckForUpdateAsync(bearerToken);
+				if (updateInfo.UpdateAvailable)
+				{
+					if (MessageBox.Show($"Update {updateInfo.LatestVersion} is available for installation! Do you wish to download and install it?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					{
+						new FormUpdater(updateInfo.DownloadUrl).Show();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				DebugConsole.Log("Error during update check: " + ex.Message, DebugConsole.LogLevels.Error);
+			}
+
+			checkForUpdatesButton.Text = oldText;
+			checkForUpdatesButton.Enabled = true;
 		}
 
 		private void joinDiscordButton_Click(object sender, EventArgs e)

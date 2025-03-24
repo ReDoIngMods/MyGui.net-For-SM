@@ -1,4 +1,5 @@
 ﻿using MyGui.net.Properties;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace MyGui.net
@@ -25,10 +26,20 @@ namespace MyGui.net
 			this.Focus();
 		}
 
+		string[] recentFiles;
+
 		private void FormSplashScreen_Load(object sender, EventArgs e)
 		{
 			this.Deactivate += FormSplashScreen_Deactivate;
 			versionLabel.Text = Util.programVersion;
+
+			recentFiles = Settings.Default.RecentlyOpenedFiles.Split(';');
+			string[] recentFilesVis = new string[recentFiles.Length];
+			for (int i = 0; i < recentFiles.Length; i++)
+			{
+				recentFilesVis[i] = Path.GetFileName(recentFiles[i]);
+			}
+			recentListBox.Items.AddRange(recentFilesVis);
 		}
 
 		private void FormSplashScreen_Deactivate(object sender, EventArgs e)
@@ -96,6 +107,16 @@ namespace MyGui.net
 			CheckBox sender = (CheckBox)senderAny;
 			Settings.Default.HideSplashScreen = sender.Checked;
 			Settings.Default.Save();
+		}
+
+		private void recentListBox_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (recentListBox.SelectedIndex < 0 || !File.Exists(recentFiles[recentListBox.SelectedIndex]))
+			{
+				return;
+			}
+			((Form1)this.Owner).OpenLayout(recentFiles[recentListBox.SelectedIndex]);
+			this.Close();
 		}
 	}
 }

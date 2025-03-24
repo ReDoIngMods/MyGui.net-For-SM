@@ -12,13 +12,22 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Security.Principal;
+using MyGui.net.Properties;
 
 namespace MyGui.net
 {
+
+	public class UpdateInfo
+	{
+		public string LatestVersion { get; set; }
+		public bool UpdateAvailable { get; set; }
+		public string DownloadUrl { get; set; }
+	}
+
 	static class Util
 	{
-		public const string programVersion = "0.0.1 DEV";
-		public const string programName = "MyGui.net " + programVersion;
+		public static string programVersion = Application.ProductVersion.Substring(0, Application.ProductVersion.IndexOf('+'));
+		public static string programName = "MyGui.net " + programVersion;
 		#region Steam Utils
 		public static string? GetSteamInstallPath()
 		{
@@ -1940,6 +1949,47 @@ namespace MyGui.net
 		{
 			short keyState = GetKeyState((int)key);
 			return (keyState & 0x8000) != 0;
+		}
+		#endregion
+
+		#region Updating
+
+		public static HttpClient httpClient = new HttpClient(new HttpClientHandler{ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator});
+
+		public static  async Task<UpdateInfo> CheckForUpdateAsync(string bearerToken = "")
+		{
+			httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.net");
+			httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearerToken);
+			httpClient.DefaultRequestHeaders.Accept.Clear();
+
+			string json = await httpClient.GetStringAsync("https://api.github.com/repos/ReDoIngMods/MyGui.net-For-SM/releases/latest");
+			using (JsonDocument doc = JsonDocument.Parse(json))
+			{
+				// Get the latest version tag
+				string tag = doc.RootElement.GetProperty("tag_name").GetString();
+				Version latestVersion = new Version(tag.TrimStart('v'));
+
+				Version currentVersion = new Version(programVersion);
+
+				// Get the correct download URL
+				bool isSelfContained = (bool?)AppContext.GetData("IsSelfContained") ?? false;
+
+				string downloadUrl = doc.RootElement.GetProperty("assets")
+				.EnumerateArray()
+				.Where(a =>
+					isSelfContained ? a.GetProperty("name").GetString().Contains("MyGui.Net-Standalone") : //Framework independent zip name
+										a.GetProperty("name").GetString().Contains("MyGui.Net-Framework-Dependant") //Framework dependent zip name
+				)
+				.Select(a => a.GetProperty("url").GetString())
+				.FirstOrDefault() ?? string.Empty;
+
+				return new UpdateInfo
+				{
+					LatestVersion = latestVersion.ToString(),
+					UpdateAvailable = latestVersion > currentVersion && !string.IsNullOrEmpty(downloadUrl),
+					DownloadUrl = downloadUrl
+				};
+			}
 		}
 		#endregion
 	}

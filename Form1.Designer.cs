@@ -37,7 +37,7 @@ namespace MyGui.net
 			viewport = new SKGLControl();
 			viewportScrollX = new HScrollBar();
 			viewportScrollY = new VScrollBar();
-			tabControl1 = new TabControl();
+			tabControl1 = new CustomTabControl();
 			tabPage1 = new TabPage();
 			tabPage1Panel = new Panel();
 			propertyGrid1 = new PropertyGrid();
@@ -190,24 +190,26 @@ namespace MyGui.net
 			// 
 			// tabControl1
 			// 
+			tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			tabControl1.Controls.Add(tabPage1);
 			tabControl1.Controls.Add(tabPage2);
 			tabControl1.Controls.Add(tabPage3);
-			tabControl1.Dock = DockStyle.Fill;
-			tabControl1.Location = new Point(0, 0);
+			tabControl1.DrawMode = TabDrawMode.OwnerDrawFixed;
+			tabControl1.ItemSize = new Size(120, 25);
+			tabControl1.Location = new Point(-5, -4);
 			tabControl1.Margin = new Padding(0);
 			tabControl1.Name = "tabControl1";
 			tabControl1.SelectedIndex = 0;
-			tabControl1.Size = new Size(310, 553);
+			tabControl1.Size = new Size(320, 562);
 			tabControl1.TabIndex = 0;
 			// 
 			// tabPage1
 			// 
 			tabPage1.Controls.Add(tabPage1Panel);
-			tabPage1.Location = new Point(4, 24);
+			tabPage1.Location = new Point(4, 29);
 			tabPage1.Margin = new Padding(0);
 			tabPage1.Name = "tabPage1";
-			tabPage1.Size = new Size(302, 525);
+			tabPage1.Size = new Size(312, 529);
 			tabPage1.TabIndex = 0;
 			tabPage1.Text = "Properties";
 			tabPage1.UseVisualStyleBackColor = true;
@@ -220,7 +222,7 @@ namespace MyGui.net
 			tabPage1Panel.Location = new Point(0, 0);
 			tabPage1Panel.Margin = new Padding(0);
 			tabPage1Panel.Name = "tabPage1Panel";
-			tabPage1Panel.Size = new Size(302, 525);
+			tabPage1Panel.Size = new Size(312, 529);
 			tabPage1Panel.TabIndex = 0;
 			// 
 			// propertyGrid1
@@ -228,19 +230,20 @@ namespace MyGui.net
 			propertyGrid1.BackColor = SystemColors.Control;
 			propertyGrid1.Dock = DockStyle.Fill;
 			propertyGrid1.Location = new Point(0, 0);
+			propertyGrid1.Margin = new Padding(0);
 			propertyGrid1.Name = "propertyGrid1";
 			propertyGrid1.PropertySort = PropertySort.Categorized;
-			propertyGrid1.Size = new Size(302, 525);
+			propertyGrid1.Size = new Size(312, 529);
 			propertyGrid1.TabIndex = 0;
 			propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
 			// 
 			// tabPage2
 			// 
 			tabPage2.BackColor = SystemColors.ControlLightLight;
-			tabPage2.Location = new Point(4, 24);
+			tabPage2.Location = new Point(4, 29);
 			tabPage2.Margin = new Padding(0);
 			tabPage2.Name = "tabPage2";
-			tabPage2.Size = new Size(302, 525);
+			tabPage2.Size = new Size(312, 529);
 			tabPage2.TabIndex = 1;
 			tabPage2.Text = "Widgets";
 			// 
@@ -248,10 +251,10 @@ namespace MyGui.net
 			// 
 			tabPage3.BackColor = SystemColors.ControlLightLight;
 			tabPage3.Controls.Add(layoutMainPanel);
-			tabPage3.Location = new Point(4, 24);
+			tabPage3.Location = new Point(4, 29);
 			tabPage3.Margin = new Padding(0);
 			tabPage3.Name = "tabPage3";
-			tabPage3.Size = new Size(302, 525);
+			tabPage3.Size = new Size(312, 529);
 			tabPage3.TabIndex = 2;
 			tabPage3.Text = "Layout";
 			// 
@@ -265,14 +268,14 @@ namespace MyGui.net
 			layoutMainPanel.Location = new Point(0, 0);
 			layoutMainPanel.Margin = new Padding(0);
 			layoutMainPanel.Name = "layoutMainPanel";
-			layoutMainPanel.Size = new Size(302, 525);
+			layoutMainPanel.Size = new Size(312, 529);
 			layoutMainPanel.TabIndex = 5;
 			// 
 			// layoutToNewWindowButton
 			// 
 			layoutToNewWindowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			layoutToNewWindowButton.FlatStyle = FlatStyle.System;
-			layoutToNewWindowButton.Location = new Point(276, 3);
+			layoutToNewWindowButton.Location = new Point(284, 6);
 			layoutToNewWindowButton.Margin = new Padding(0);
 			layoutToNewWindowButton.Name = "layoutToNewWindowButton";
 			layoutToNewWindowButton.Size = new Size(23, 23);
@@ -285,12 +288,13 @@ namespace MyGui.net
 			// 
 			treeView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			treeView1.BackColor = SystemColors.ControlLightLight;
-			treeView1.BorderStyle = BorderStyle.None;
+			treeView1.BorderStyle = BorderStyle.FixedSingle;
+			treeView1.HideSelection = false;
 			treeView1.Indent = 20;
 			treeView1.ItemHeight = 23;
-			treeView1.Location = new Point(0, 32);
+			treeView1.Location = new Point(0, 35);
 			treeView1.Name = "treeView1";
-			treeView1.Size = new Size(302, 493);
+			treeView1.Size = new Size(312, 494);
 			treeView1.TabIndex = 0;
 			treeView1.AfterLabelEdit += treeView1_AfterLabelEdit;
 			treeView1.AfterSelect += treeView1_AfterSelect;
@@ -299,7 +303,7 @@ namespace MyGui.net
 			// layoutExpandButton
 			// 
 			layoutExpandButton.FlatStyle = FlatStyle.System;
-			layoutExpandButton.Location = new Point(102, 3);
+			layoutExpandButton.Location = new Point(104, 6);
 			layoutExpandButton.Name = "layoutExpandButton";
 			layoutExpandButton.Size = new Size(96, 23);
 			layoutExpandButton.TabIndex = 2;
@@ -310,7 +314,7 @@ namespace MyGui.net
 			// layoutCollapseButton
 			// 
 			layoutCollapseButton.FlatStyle = FlatStyle.System;
-			layoutCollapseButton.Location = new Point(3, 3);
+			layoutCollapseButton.Location = new Point(5, 6);
 			layoutCollapseButton.Name = "layoutCollapseButton";
 			layoutCollapseButton.Size = new Size(96, 23);
 			layoutCollapseButton.TabIndex = 1;
@@ -686,7 +690,7 @@ namespace MyGui.net
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem editToolStripMenuItem;
-        private TabControl tabControl1;
+        private CustomTabControl tabControl1;
         private TabPage tabPage1;
         private TabPage tabPage2;
         private TabPage tabPage3;

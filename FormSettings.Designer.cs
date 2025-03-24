@@ -29,7 +29,7 @@
 		private void InitializeComponent()
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSettings));
-			tabControl1 = new TabControl();
+			tabControl1 = new CustomTabControl();
 			projectTabPage = new TabPage();
 			flowLayoutPanel2 = new FlowLayoutPanel();
 			groupBox9 = new GroupBox();
@@ -113,6 +113,13 @@
 			showDebugConsoleCheckBox = new CheckBox();
 			groupBox3 = new GroupBox();
 			showWarningsCheckBox = new CheckBox();
+			versionTabPage = new TabPage();
+			panel2 = new Panel();
+			groupBox18 = new GroupBox();
+			autoUpdateCheckCheckBox = new CheckBox();
+			groupBox17 = new GroupBox();
+			currentVersionLabel = new Label();
+			checkForUpdatesButton = new Button();
 			aboutTabPage = new TabPage();
 			panel1 = new Panel();
 			gitHubOrgButton = new Button();
@@ -157,6 +164,10 @@
 			groupBox6.SuspendLayout();
 			groupBox16.SuspendLayout();
 			groupBox3.SuspendLayout();
+			versionTabPage.SuspendLayout();
+			panel2.SuspendLayout();
+			groupBox18.SuspendLayout();
+			groupBox17.SuspendLayout();
 			aboutTabPage.SuspendLayout();
 			panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
@@ -170,21 +181,24 @@
 			tabControl1.Controls.Add(windowTabPage);
 			tabControl1.Controls.Add(fileTabPage);
 			tabControl1.Controls.Add(debugTabPage);
+			tabControl1.Controls.Add(versionTabPage);
 			tabControl1.Controls.Add(aboutTabPage);
-			tabControl1.Location = new Point(12, 12);
+			tabControl1.DrawMode = TabDrawMode.OwnerDrawFixed;
+			tabControl1.ItemSize = new Size(120, 25);
+			tabControl1.Location = new Point(10, 4);
 			tabControl1.Name = "tabControl1";
 			tabControl1.SelectedIndex = 0;
-			tabControl1.Size = new Size(660, 408);
+			tabControl1.Size = new Size(664, 418);
 			tabControl1.TabIndex = 0;
 			// 
 			// projectTabPage
 			// 
 			projectTabPage.BackColor = SystemColors.ControlLightLight;
 			projectTabPage.Controls.Add(flowLayoutPanel2);
-			projectTabPage.Location = new Point(4, 24);
+			projectTabPage.Location = new Point(4, 29);
 			projectTabPage.Margin = new Padding(0);
 			projectTabPage.Name = "projectTabPage";
-			projectTabPage.Size = new Size(652, 380);
+			projectTabPage.Size = new Size(656, 385);
 			projectTabPage.TabIndex = 2;
 			projectTabPage.Text = "Project";
 			// 
@@ -197,7 +211,7 @@
 			flowLayoutPanel2.Dock = DockStyle.Fill;
 			flowLayoutPanel2.Location = new Point(0, 0);
 			flowLayoutPanel2.Name = "flowLayoutPanel2";
-			flowLayoutPanel2.Size = new Size(652, 380);
+			flowLayoutPanel2.Size = new Size(656, 385);
 			flowLayoutPanel2.TabIndex = 1;
 			// 
 			// groupBox9
@@ -388,10 +402,10 @@
 			// 
 			windowTabPage.BackColor = SystemColors.ControlLightLight;
 			windowTabPage.Controls.Add(flowLayoutPanel1);
-			windowTabPage.Location = new Point(4, 24);
+			windowTabPage.Location = new Point(4, 29);
 			windowTabPage.Margin = new Padding(0);
 			windowTabPage.Name = "windowTabPage";
-			windowTabPage.Size = new Size(652, 380);
+			windowTabPage.Size = new Size(656, 385);
 			windowTabPage.TabIndex = 0;
 			windowTabPage.Text = "Window";
 			// 
@@ -408,7 +422,7 @@
 			flowLayoutPanel1.Location = new Point(0, 0);
 			flowLayoutPanel1.Margin = new Padding(0);
 			flowLayoutPanel1.Name = "flowLayoutPanel1";
-			flowLayoutPanel1.Size = new Size(652, 380);
+			flowLayoutPanel1.Size = new Size(656, 385);
 			flowLayoutPanel1.TabIndex = 0;
 			// 
 			// groupBox5
@@ -760,9 +774,9 @@
 			// fileTabPage
 			// 
 			fileTabPage.Controls.Add(flowLayoutPanel3);
-			fileTabPage.Location = new Point(4, 24);
+			fileTabPage.Location = new Point(4, 29);
 			fileTabPage.Name = "fileTabPage";
-			fileTabPage.Size = new Size(652, 380);
+			fileTabPage.Size = new Size(656, 385);
 			fileTabPage.TabIndex = 3;
 			fileTabPage.Text = "File";
 			fileTabPage.UseVisualStyleBackColor = true;
@@ -778,7 +792,7 @@
 			flowLayoutPanel3.Dock = DockStyle.Fill;
 			flowLayoutPanel3.Location = new Point(0, 0);
 			flowLayoutPanel3.Name = "flowLayoutPanel3";
-			flowLayoutPanel3.Size = new Size(652, 380);
+			flowLayoutPanel3.Size = new Size(656, 385);
 			flowLayoutPanel3.TabIndex = 7;
 			// 
 			// groupBox2
@@ -1040,9 +1054,9 @@
 			// debugTabPage
 			// 
 			debugTabPage.Controls.Add(flowLayoutPanel4);
-			debugTabPage.Location = new Point(4, 24);
+			debugTabPage.Location = new Point(4, 29);
 			debugTabPage.Name = "debugTabPage";
-			debugTabPage.Size = new Size(652, 380);
+			debugTabPage.Size = new Size(656, 385);
 			debugTabPage.TabIndex = 4;
 			debugTabPage.Text = "Debug";
 			debugTabPage.UseVisualStyleBackColor = true;
@@ -1057,7 +1071,7 @@
 			flowLayoutPanel4.Dock = DockStyle.Fill;
 			flowLayoutPanel4.Location = new Point(0, 0);
 			flowLayoutPanel4.Name = "flowLayoutPanel4";
-			flowLayoutPanel4.Size = new Size(652, 380);
+			flowLayoutPanel4.Size = new Size(656, 385);
 			flowLayoutPanel4.TabIndex = 8;
 			// 
 			// groupBox6
@@ -1123,13 +1137,90 @@
 			showWarningsCheckBox.UseVisualStyleBackColor = true;
 			showWarningsCheckBox.CheckedChanged += showWarningsCheckBox_CheckedChanged;
 			// 
+			// versionTabPage
+			// 
+			versionTabPage.BackColor = Color.Transparent;
+			versionTabPage.Controls.Add(panel2);
+			versionTabPage.Location = new Point(4, 29);
+			versionTabPage.Name = "versionTabPage";
+			versionTabPage.Size = new Size(656, 385);
+			versionTabPage.TabIndex = 5;
+			versionTabPage.Text = "Version";
+			// 
+			// panel2
+			// 
+			panel2.AutoScroll = true;
+			panel2.BackColor = SystemColors.ControlLightLight;
+			panel2.Controls.Add(groupBox18);
+			panel2.Controls.Add(groupBox17);
+			panel2.Dock = DockStyle.Fill;
+			panel2.Location = new Point(0, 0);
+			panel2.Name = "panel2";
+			panel2.Size = new Size(656, 385);
+			panel2.TabIndex = 0;
+			// 
+			// groupBox18
+			// 
+			groupBox18.Controls.Add(autoUpdateCheckCheckBox);
+			groupBox18.Controls.Add(checkForUpdatesButton);
+			groupBox18.Dock = DockStyle.Top;
+			groupBox18.Location = new Point(0, 44);
+			groupBox18.Name = "groupBox18";
+			groupBox18.Size = new Size(656, 80);
+			groupBox18.TabIndex = 2;
+			groupBox18.TabStop = false;
+			groupBox18.Text = "Updates";
+			// 
+			// autoUpdateCheckCheckBox
+			// 
+			autoUpdateCheckCheckBox.AutoSize = true;
+			autoUpdateCheckCheckBox.Location = new Point(6, 22);
+			autoUpdateCheckCheckBox.Name = "autoUpdateCheckCheckBox";
+			autoUpdateCheckCheckBox.Size = new Size(176, 19);
+			autoUpdateCheckCheckBox.TabIndex = 0;
+			autoUpdateCheckCheckBox.Text = "Automatic Update Checking";
+			autoUpdateCheckCheckBox.UseVisualStyleBackColor = true;
+			autoUpdateCheckCheckBox.CheckedChanged += autoUpdateCheckCheckBox_CheckedChanged;
+			// 
+			// groupBox17
+			// 
+			groupBox17.Controls.Add(currentVersionLabel);
+			groupBox17.Dock = DockStyle.Top;
+			groupBox17.Location = new Point(0, 0);
+			groupBox17.Name = "groupBox17";
+			groupBox17.Size = new Size(656, 44);
+			groupBox17.TabIndex = 1;
+			groupBox17.TabStop = false;
+			groupBox17.Text = "Current";
+			// 
+			// currentVersionLabel
+			// 
+			currentVersionLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			currentVersionLabel.Location = new Point(6, 19);
+			currentVersionLabel.Name = "currentVersionLabel";
+			currentVersionLabel.Size = new Size(640, 15);
+			currentVersionLabel.TabIndex = 0;
+			currentVersionLabel.Text = "label10";
+			// 
+			// checkForUpdatesButton
+			// 
+			checkForUpdatesButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			checkForUpdatesButton.FlatStyle = FlatStyle.System;
+			checkForUpdatesButton.Location = new Point(6, 47);
+			checkForUpdatesButton.Name = "checkForUpdatesButton";
+			checkForUpdatesButton.Size = new Size(644, 23);
+			checkForUpdatesButton.TabIndex = 0;
+			checkForUpdatesButton.Text = "Check For Updates";
+			checkForUpdatesButton.UseVisualStyleBackColor = true;
+			checkForUpdatesButton.Click += checkForUpdatesButton_ClickAsync;
+			// 
 			// aboutTabPage
 			// 
 			aboutTabPage.Controls.Add(panel1);
-			aboutTabPage.Location = new Point(4, 24);
+			aboutTabPage.Location = new Point(4, 29);
 			aboutTabPage.Margin = new Padding(0);
 			aboutTabPage.Name = "aboutTabPage";
-			aboutTabPage.Size = new Size(652, 380);
+			aboutTabPage.Size = new Size(656, 385);
 			aboutTabPage.TabIndex = 1;
 			aboutTabPage.Text = "About";
 			aboutTabPage.UseVisualStyleBackColor = true;
@@ -1146,14 +1237,14 @@
 			panel1.Dock = DockStyle.Fill;
 			panel1.Location = new Point(0, 0);
 			panel1.Name = "panel1";
-			panel1.Size = new Size(652, 380);
+			panel1.Size = new Size(656, 385);
 			panel1.TabIndex = 3;
 			// 
 			// gitHubOrgButton
 			// 
 			gitHubOrgButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			gitHubOrgButton.FlatStyle = FlatStyle.System;
-			gitHubOrgButton.Location = new Point(96, 322);
+			gitHubOrgButton.Location = new Point(96, 327);
 			gitHubOrgButton.Name = "gitHubOrgButton";
 			gitHubOrgButton.Size = new Size(460, 23);
 			gitHubOrgButton.TabIndex = 5;
@@ -1165,7 +1256,7 @@
 			// 
 			gitHubRepoButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			gitHubRepoButton.FlatStyle = FlatStyle.System;
-			gitHubRepoButton.Location = new Point(96, 293);
+			gitHubRepoButton.Location = new Point(96, 298);
 			gitHubRepoButton.Name = "gitHubRepoButton";
 			gitHubRepoButton.Size = new Size(460, 23);
 			gitHubRepoButton.TabIndex = 4;
@@ -1177,7 +1268,7 @@
 			// 
 			joinDiscordButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			joinDiscordButton.FlatStyle = FlatStyle.System;
-			joinDiscordButton.Location = new Point(96, 351);
+			joinDiscordButton.Location = new Point(96, 356);
 			joinDiscordButton.Name = "joinDiscordButton";
 			joinDiscordButton.Size = new Size(460, 23);
 			joinDiscordButton.TabIndex = 3;
@@ -1195,7 +1286,7 @@
 			aboutTextBox.Name = "aboutTextBox";
 			aboutTextBox.ReadOnly = true;
 			aboutTextBox.ScrollBars = ScrollBars.Vertical;
-			aboutTextBox.Size = new Size(646, 281);
+			aboutTextBox.Size = new Size(646, 286);
 			aboutTextBox.TabIndex = 1;
 			// 
 			// pictureBox2
@@ -1203,7 +1294,7 @@
 			pictureBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
 			pictureBox2.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
-			pictureBox2.Location = new Point(562, 290);
+			pictureBox2.Location = new Point(562, 295);
 			pictureBox2.Name = "pictureBox2";
 			pictureBox2.Size = new Size(90, 90);
 			pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
@@ -1215,7 +1306,7 @@
 			pictureBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
 			pictureBox1.Image = Properties.Resources.MyGUI_net_Icon_1;
 			pictureBox1.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
-			pictureBox1.Location = new Point(0, 290);
+			pictureBox1.Location = new Point(0, 295);
 			pictureBox1.Name = "pictureBox1";
 			pictureBox1.Size = new Size(90, 90);
 			pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
@@ -1343,6 +1434,11 @@
 			groupBox16.PerformLayout();
 			groupBox3.ResumeLayout(false);
 			groupBox3.PerformLayout();
+			versionTabPage.ResumeLayout(false);
+			panel2.ResumeLayout(false);
+			groupBox18.ResumeLayout(false);
+			groupBox18.PerformLayout();
+			groupBox17.ResumeLayout(false);
 			aboutTabPage.ResumeLayout(false);
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
@@ -1438,7 +1534,7 @@
 		private Label label7;
 		private ComboBox referenceLanguageComboBox;
 		private Label label8;
-		public TabControl tabControl1;
+		public CustomTabControl tabControl1;
 		private GroupBox groupBox15;
 		private CheckBox hideSplashScreenCheckBox;
 		private Button forceCacheReloadButton;
@@ -1450,5 +1546,12 @@
 		private Button buttonAddToDesktop;
 		private Label label9;
 		private TextBox currSteamUserTextBox;
+		private TabPage versionTabPage;
+		private Button checkForUpdatesButton;
+		private Panel panel2;
+		private GroupBox groupBox17;
+		private GroupBox groupBox18;
+		private Label currentVersionLabel;
+		private CheckBox autoUpdateCheckCheckBox;
 	}
 }

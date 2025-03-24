@@ -16,6 +16,17 @@
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <AssemblyVersion>0.0.1</AssemblyVersion>
+    <FileVersion>0.0.1</FileVersion>
+    <Version>0.0.1</Version>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,6 +44,9 @@
   <ItemGroup>
     <Compile Update="BasicAlignEditor.cs">
       <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="CustomTabControl.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Update="FormFont.cs">
       <SubType>Form</SubType>

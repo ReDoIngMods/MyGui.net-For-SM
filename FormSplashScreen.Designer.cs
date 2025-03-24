@@ -35,6 +35,8 @@
 			aboutButton = new Button();
 			doNotShowCheckBox = new CheckBox();
 			versionLabel = new Label();
+			recentListBox = new ListBox();
+			label2 = new Label();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
 			SuspendLayout();
 			// 
@@ -42,7 +44,7 @@
 			// 
 			closeButton.DialogResult = DialogResult.OK;
 			closeButton.FlatStyle = FlatStyle.System;
-			closeButton.Location = new Point(288, 415);
+			closeButton.Location = new Point(288, 465);
 			closeButton.Name = "closeButton";
 			closeButton.Size = new Size(100, 23);
 			closeButton.TabIndex = 0;
@@ -75,7 +77,7 @@
 			// 
 			aboutButton.DialogResult = DialogResult.OK;
 			aboutButton.FlatStyle = FlatStyle.System;
-			aboutButton.Location = new Point(288, 386);
+			aboutButton.Location = new Point(288, 436);
 			aboutButton.Name = "aboutButton";
 			aboutButton.Size = new Size(100, 23);
 			aboutButton.TabIndex = 3;
@@ -86,7 +88,7 @@
 			// doNotShowCheckBox
 			// 
 			doNotShowCheckBox.AutoSize = true;
-			doNotShowCheckBox.Location = new Point(157, 418);
+			doNotShowCheckBox.Location = new Point(157, 467);
 			doNotShowCheckBox.Name = "doNotShowCheckBox";
 			doNotShowCheckBox.Size = new Size(125, 19);
 			doNotShowCheckBox.TabIndex = 4;
@@ -100,14 +102,37 @@
 			versionLabel.Name = "versionLabel";
 			versionLabel.Size = new Size(376, 15);
 			versionLabel.TabIndex = 5;
-			versionLabel.Text = "ndasdkadbwddadadaw";
+			versionLabel.Text = "Version: idk";
 			versionLabel.TextAlign = ContentAlignment.MiddleCenter;
+			// 
+			// recentListBox
+			// 
+			recentListBox.Font = new Font("Segoe UI", 9F);
+			recentListBox.IntegralHeight = false;
+			recentListBox.Location = new Point(12, 346);
+			recentListBox.Name = "recentListBox";
+			recentListBox.ScrollAlwaysVisible = true;
+			recentListBox.Size = new Size(376, 84);
+			recentListBox.TabIndex = 6;
+			recentListBox.SelectedIndexChanged += recentListBox_SelectedIndexChanged;
+			// 
+			// label2
+			// 
+			label2.Font = new Font("Segoe UI", 9F);
+			label2.Location = new Point(12, 329);
+			label2.Name = "label2";
+			label2.Size = new Size(160, 14);
+			label2.TabIndex = 7;
+			label2.Text = "Recent";
+			label2.TextAlign = ContentAlignment.MiddleLeft;
 			// 
 			// FormSplashScreen
 			// 
 			AutoScaleDimensions = new SizeF(96F, 96F);
 			AutoScaleMode = AutoScaleMode.Dpi;
-			ClientSize = new Size(400, 450);
+			ClientSize = new Size(400, 500);
+			Controls.Add(label2);
+			Controls.Add(recentListBox);
 			Controls.Add(versionLabel);
 			Controls.Add(doNotShowCheckBox);
 			Controls.Add(aboutButton);
@@ -137,5 +162,7 @@
 		private Button aboutButton;
 		private CheckBox doNotShowCheckBox;
 		private Label versionLabel;
+		private ListBox recentListBox;
+		private Label label2;
 	}
 }

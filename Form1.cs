@@ -114,6 +114,12 @@ namespace MyGui.net
 
 		public Form1(string _DefaultOpenedDir = "")
 		{
+			if (Settings.Default.AutoCheckUpdate)
+			{
+				#pragma warning disable CS4014 // Suppress warning for this line, as this is just an update checker
+				CheckForUpdate(Settings.Default.UpdateBearerToken);
+				#pragma warning restore CS4014
+			}
 			InitializeComponent();
 			DebugConsole.CloseConsoleOnExit(this);
 			HandleLoad(_DefaultOpenedDir);
@@ -127,6 +133,26 @@ namespace MyGui.net
 
 			viewportScrollX.Invalidate(); // Force repaint
 			viewportScrollY.Invalidate();*/
+		}
+
+		public async Task CheckForUpdate(string bearerToken = "")
+		{
+			try
+			{
+				var updateInfo = await Util.CheckForUpdateAsync(bearerToken);
+				if (updateInfo.UpdateAvailable)
+				{
+					if (MessageBox.Show($"Update {updateInfo.LatestVersion} is available for installation! Do you wish to download and install it?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					{
+						Debug.WriteLine(updateInfo.DownloadUrl);
+						new FormUpdater(updateInfo.DownloadUrl).Show();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				DebugConsole.Log("Error during update check: " + ex.Message, DebugConsole.LogLevels.Error);
+			}
 		}
 
 		public static void ReloadCache(bool initial = false)
@@ -1517,7 +1543,7 @@ namespace MyGui.net
 			}
 		}
 
-		private void OpenLayout(string file)
+		public void OpenLayout(string file)
 		{
 			DebugConsole.Log("Opening layout \"" + file + "\"", DebugConsole.LogLevels.Info);
 			ClearStacks();
