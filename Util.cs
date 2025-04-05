@@ -791,16 +791,7 @@ namespace MyGui.net
 					{
 						string resourceType = r.Attribute("type")?.Value;
 						
-						string texPath = null;
-						if (resourceType == "ResourceSkin" || resourceType == "ResourceImageSet")
-						{
-							texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
-							if (texPath == null || texPath == "")
-							{
-								texPath = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), r.Attribute("texture")?.Value);
-							}
-						}
-						//if (texPath == null && resourceType != "ResourceLayout") { continue; }
+						
 
 						if (resourceType == "ResourceImageSet")
 						{
@@ -825,19 +816,36 @@ namespace MyGui.net
 									points.Add(index.Attribute("name").Value, point);
 								}
 								
+								string texture = FindFileInSubDirs(Path.GetDirectoryName(path), group.Attribute("texture")?.Value);
+								if (texture == null || texture == "")
+								{
+									texture = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), group.Attribute("texture")?.Value);
+								}
+
 								MyGuiResourceImageSetGroup newGroup = new()
 								{
 									name = group.Attribute("name").Value,
 									points = points,
 									size = group.Attribute("size").Value,
 									pathSpecial = path,
-									path = texPath,
+									path = texture,
 								};
 								newImageRes.groups.Add(newGroup.name, newGroup);
 							}
 							imageResources.Add(newImageRes);
 							continue;
 						}
+
+						string texPath = null;
+						if (resourceType == "ResourceSkin")
+						{
+							texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
+							if (texPath == null || texPath == "")
+							{
+								texPath = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), r.Attribute("texture")?.Value);
+							}
+						}
+						//if (texPath == null && resourceType != "ResourceLayout") { continue; }
 
 						MyGuiResource newRes = new()
 						{
