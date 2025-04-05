@@ -168,8 +168,9 @@ namespace MyGui.net
 			DebugConsole.Log($"Cache Reference Language: {Settings.Default.ReferenceLanguage}", DebugConsole.LogLevels.Info);
 			var resourcesTuple  = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
 			_allResources = resourcesTuple.Item1;
+			DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
 			_allImageResources = resourcesTuple.Item2;
-            DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
+            DebugConsole.Log($"Cache Image Count: {_allImageResources.Count}", DebugConsole.LogLevels.Info);
 
 			RenderBackend._allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
 			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 7.5f });

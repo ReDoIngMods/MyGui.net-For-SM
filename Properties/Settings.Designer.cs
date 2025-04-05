@@ -539,5 +539,17 @@ namespace MyGui.net.Properties {
                 this["AutoCheckUpdate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HideOldSMWidgetSkins {
+            get {
+                return ((bool)(this["HideOldSMWidgetSkins"]));
+            }
+            set {
+                this["HideOldSMWidgetSkins"] = value;
+            }
+        }
     }
 }

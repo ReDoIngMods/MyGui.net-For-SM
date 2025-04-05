@@ -205,7 +205,7 @@ namespace MyGui.net
 					{
 						Color = SKColors.White,
 						TextSize = 16,
-						IsAntialias = false,
+						IsAntialias = Settings.Default.UseViewportFontAntiAliasing,
 						Style = SKPaintStyle.StrokeAndFill,
 						StrokeWidth = 1
 					};
@@ -214,7 +214,7 @@ namespace MyGui.net
 					{
 						Color = SKColors.Black,
 						TextSize = 16,
-						IsAntialias = true
+						IsAntialias = Settings.Default.UseViewportFontAntiAliasing
 					};
 					canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaintStroke);
 				}
@@ -464,7 +464,7 @@ namespace MyGui.net
 								captionText = captionText.Replace("\\n", " ");
 							}
 
-							if (widgetTertiaryData.type == "TextBox" || (widgetTertiaryData.type == "EditBox" && widgetTertiaryData.properties.TryGetValue("WordWrap", out string ww) && ww == "true"))
+							if (widgetTertiaryData.type == "EditBox" && widgetTertiaryData.properties.TryGetValue("WordWrap", out string ww) && ww == "true")
 							{
 								captionText = WordWrap(captionText, destRect.Width, _baseFontPaint, actualFontLetterSpacing, screenSizeMultiplier, defaultFontSize, actualFontSize);
 							}
@@ -685,7 +685,19 @@ namespace MyGui.net
 							//int beforeClipSave = canvas.Save();
 							//canvas.ClipRect(destRect);
 							//canvas.Clear();
-							canvas.DrawImage(image, clientRect, drawPaint);
+
+							if (widgetTertiaryData.properties.TryGetValue("ImageCoord", out string imgCoord))
+							{
+								var offsets = Util.GetWidgetPosAndSize(true, imgCoord, new(1, 1));
+								var pos = offsets.Item1;
+								var size = offsets.Item2;
+
+								canvas.DrawImage(image, new(pos.X, pos.Y, pos.X + size.X, pos.Y + size.Y), clientRect, drawPaint);
+							}
+							else
+							{
+								canvas.DrawImage(image, clientRect, drawPaint);
+							}
 							colorFilter.Dispose();
 							continue;
 						}

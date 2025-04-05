@@ -1327,31 +1327,31 @@ namespace MyGui.net
 			return (T)memberwiseClone.Invoke(source, null);
 		}
 
+		static JsonSerializerOptions deepCopyJsonSerializerOptions = new JsonSerializerOptions
+		{
+			IncludeFields = true
+		};
+
 		public static T DeepCopy<T>(T source)
 		{
 			if (source == null)
 				throw new ArgumentNullException(nameof(source));
 
 			// Serialize the source object to JSON and deserialize it back into a new object
-			var serialized = JsonSerializer.Serialize(source, new JsonSerializerOptions
-			{
-				IncludeFields = true // Include private fields if required
-			});
-			return JsonSerializer.Deserialize<T>(serialized, new JsonSerializerOptions
-			{
-				IncludeFields = true
-			});
+			var serialized = JsonSerializer.Serialize(source, deepCopyJsonSerializerOptions);
+			return JsonSerializer.Deserialize<T>(serialized, deepCopyJsonSerializerOptions);
 		}
 
-		public static Point GetWidgetPos(bool isReal, string input, Point parentSize)
+		public static Point GetWidgetPos(bool isReal, string input, Point? parentSize = null)
 		{
+			parentSize ??= new(1, 1);
 			string[] numbers = input.Split(' ');
 			double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
 
 			if (isReal)
 			{
-				parsedNumbers[0] *= parentSize.X;
-				parsedNumbers[1] *= parentSize.Y;
+				parsedNumbers[0] *= parentSize.Value.X;
+				parsedNumbers[1] *= parentSize.Value.Y;
 			}
 
 			int x1 = (int)Math.Round(parsedNumbers[0]);
@@ -1359,17 +1359,18 @@ namespace MyGui.net
 			return new(x1, y1);
 		}
 
-		public static Tuple<Point, Point> GetWidgetPosAndSize(bool isReal, string input, Point parentSize)
+		public static Tuple<Point, Point> GetWidgetPosAndSize(bool isReal, string input, Point? parentSize = null)
 		{
+			parentSize ??= new(1, 1);
 			string[] numbers = input.Split(' ');
 			double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
 
 			if (isReal)
 			{
-				parsedNumbers[0] *= parentSize.X;
-				parsedNumbers[1] *= parentSize.Y;
-				parsedNumbers[2] *= parentSize.X;
-				parsedNumbers[3] *= parentSize.Y;
+				parsedNumbers[0] *= parentSize.Value.X;
+				parsedNumbers[1] *= parentSize.Value.Y;
+				parsedNumbers[2] *= parentSize.Value.X;
+				parsedNumbers[3] *= parentSize.Value.Y;
 			}
 
 			int x1 = (int)Math.Round(parsedNumbers[0]);

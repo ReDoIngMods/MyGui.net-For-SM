@@ -1,4 +1,6 @@
 ﻿using Cyotek.Windows.Forms;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms.Design;
@@ -243,6 +245,26 @@ namespace MyGui.net
 
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
+			Form1.sliceForm.currWidget = Form1._currentSelectedWidget;
+			SKSize defaultSize = new(0, 0);
+
+			if (Form1._currentSelectedWidget.properties.TryGetValue("ImageTexture", out string imagePathRel) && !string.IsNullOrEmpty(imagePathRel) && RenderBackend._skinAtlasCache.ContainsKey("CUSTOMIMAGE_" + imagePathRel))
+			{
+				var atlasItem = RenderBackend._skinAtlasCache["CUSTOMIMAGE_" + imagePathRel];
+				defaultSize = new(atlasItem.Width, atlasItem.Height);
+			}
+
+			Form1.sliceForm.defaultSize = defaultSize;
+
+			if (!string.IsNullOrEmpty(value.ToString()))
+			{
+				Tuple<Point, Point> slice = Util.GetWidgetPosAndSize(true, value.ToString(), new(1, 1));
+				Form1.sliceForm.SetResults(slice.Item1.ToSKPoint(), new(slice.Item2.X, slice.Item2.Y));
+			}
+			else
+			{
+				Form1.sliceForm.SetResults(new(0,0), defaultSize);
+			};
 			if (Form1.sliceForm.ShowDialog() == DialogResult.OK)
 			{
 				value = Form1.sliceForm.outcome;
@@ -934,7 +956,7 @@ namespace MyGui.net
 				Control[] controls = [
 					buttonCenter, buttonBottom, buttonTop, buttonRight, buttonLeft,
 					buttonBottomRight, buttonBottomLeft, buttonTopRight, buttonTopLeft,
-					buttonTopScale, buttonStretch, buttonBottomScale, buttonLeftScale, buttonRightScale,
+					buttonTopScale, buttonStretch, buttonBottomScale, buttonLeftScale, buttonRightScale, buttonDefault
 				];
 
 				foreach (var item in controls)

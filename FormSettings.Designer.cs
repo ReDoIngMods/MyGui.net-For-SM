@@ -31,7 +31,15 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormSettings));
 			tabControl1 = new CustomTabControl();
 			projectTabPage = new TabPage();
-			flowLayoutPanel2 = new FlowLayoutPanel();
+			panel3 = new Panel();
+			groupBox14 = new GroupBox();
+			hideOldSMWidgetSkinsCheckBox = new CheckBox();
+			hideOldMyGuiWidgetSkinsCheckBox = new CheckBox();
+			forceCacheReloadButton = new Button();
+			referenceLanguageComboBox = new ComboBox();
+			label8 = new Label();
+			referenceResolutionComboBox = new ComboBox();
+			label7 = new Label();
 			groupBox9 = new GroupBox();
 			widgetGridSpacingNumericUpDown = new CustomNumericUpDown();
 			label2 = new Label();
@@ -42,29 +50,11 @@
 			workspaceSizeDefaultYNumericUpDown = new CustomNumericUpDown();
 			workspaceSizeDefaultXNumericUpDown = new CustomNumericUpDown();
 			label4 = new Label();
-			groupBox14 = new GroupBox();
-			hideOldMyGuiWidgetSkinsCheckBox = new CheckBox();
-			forceCacheReloadButton = new Button();
-			referenceLanguageComboBox = new ComboBox();
-			label8 = new Label();
-			referenceResolutionComboBox = new ComboBox();
-			label7 = new Label();
 			windowTabPage = new TabPage();
-			flowLayoutPanel1 = new FlowLayoutPanel();
-			groupBox5 = new GroupBox();
-			useBackgroundImageGrid = new RadioButton();
-			useBackgroundImageCustom = new RadioButton();
-			useBackgroundImageColor = new RadioButton();
-			backgroundImagePathTextBox = new TextBox();
-			backgroundImageSelectButton = new Button();
-			groupBox8 = new GroupBox();
-			useDarkTheme = new RadioButton();
-			useLightTheme = new RadioButton();
-			useAutoTheme = new RadioButton();
-			groupBox7 = new GroupBox();
-			showFullFilePathCheckBox = new CheckBox();
-			useCustomLayoutCheckBox = new CheckBox();
-			saveCustomLayoutCheckBox = new CheckBox();
+			panel4 = new Panel();
+			groupBox15 = new GroupBox();
+			enterAcceptsCheckBox = new CheckBox();
+			hideSplashScreenCheckBox = new CheckBox();
 			groupBox1 = new GroupBox();
 			redrawViewportOnResizeCheckBox = new CheckBox();
 			useViewportFontAACheckBox = new CheckBox();
@@ -77,11 +67,35 @@
 			useViewportAACheckBox = new CheckBox();
 			useViewportVSyncCheckBox = new CheckBox();
 			renderWidgetNamesCheckBox = new CheckBox();
-			groupBox15 = new GroupBox();
-			enterAcceptsCheckBox = new CheckBox();
-			hideSplashScreenCheckBox = new CheckBox();
+			groupBox7 = new GroupBox();
+			showFullFilePathCheckBox = new CheckBox();
+			useCustomLayoutCheckBox = new CheckBox();
+			saveCustomLayoutCheckBox = new CheckBox();
+			groupBox8 = new GroupBox();
+			useDarkTheme = new RadioButton();
+			useLightTheme = new RadioButton();
+			useAutoTheme = new RadioButton();
+			groupBox5 = new GroupBox();
+			useBackgroundImageGrid = new RadioButton();
+			useBackgroundImageCustom = new RadioButton();
+			useBackgroundImageColor = new RadioButton();
+			backgroundImagePathTextBox = new TextBox();
+			backgroundImageSelectButton = new Button();
 			fileTabPage = new TabPage();
-			flowLayoutPanel3 = new FlowLayoutPanel();
+			panel5 = new Panel();
+			groupBox13 = new GroupBox();
+			buttonAddToDesktop = new Button();
+			buttonAssociateWithFiles = new Button();
+			buttonRestartAdmin = new Button();
+			label5 = new Label();
+			buttonAddToStart = new Button();
+			groupBox4 = new GroupBox();
+			exportAsBothRadioButton = new RadioButton();
+			exportAsPercentRadioButton = new RadioButton();
+			exportAskRadioButton = new RadioButton();
+			exportAsPxRadioButton = new RadioButton();
+			groupBox11 = new GroupBox();
+			preferPixelLayoutsCheckBox = new CheckBox();
 			groupBox2 = new GroupBox();
 			label9 = new Label();
 			currSteamUserTextBox = new TextBox();
@@ -92,34 +106,21 @@
 			smPathLabel = new TextBox();
 			chooseSmPath = new Button();
 			label1 = new Label();
-			groupBox11 = new GroupBox();
-			preferPixelLayoutsCheckBox = new CheckBox();
-			groupBox4 = new GroupBox();
-			exportAsBothRadioButton = new RadioButton();
-			exportAsPercentRadioButton = new RadioButton();
-			exportAskRadioButton = new RadioButton();
-			exportAsPxRadioButton = new RadioButton();
-			groupBox13 = new GroupBox();
-			buttonAddToDesktop = new Button();
-			buttonAssociateWithFiles = new Button();
-			buttonRestartAdmin = new Button();
-			label5 = new Label();
-			buttonAddToStart = new Button();
 			debugTabPage = new TabPage();
-			flowLayoutPanel4 = new FlowLayoutPanel();
-			groupBox6 = new GroupBox();
-			showTypesForNamedWidgetsCheckBox = new CheckBox();
-			groupBox16 = new GroupBox();
-			showDebugConsoleCheckBox = new CheckBox();
+			panel6 = new Panel();
 			groupBox3 = new GroupBox();
 			showWarningsCheckBox = new CheckBox();
+			groupBox16 = new GroupBox();
+			showDebugConsoleCheckBox = new CheckBox();
+			groupBox6 = new GroupBox();
+			showTypesForNamedWidgetsCheckBox = new CheckBox();
 			versionTabPage = new TabPage();
 			panel2 = new Panel();
 			groupBox18 = new GroupBox();
 			autoUpdateCheckCheckBox = new CheckBox();
+			checkForUpdatesButton = new Button();
 			groupBox17 = new GroupBox();
 			currentVersionLabel = new Label();
-			checkForUpdatesButton = new Button();
 			aboutTabPage = new TabPage();
 			panel1 = new Panel();
 			gitHubOrgButton = new Button();
@@ -136,7 +137,8 @@
 			editorBackgroundPathDialog = new OpenFileDialog();
 			tabControl1.SuspendLayout();
 			projectTabPage.SuspendLayout();
-			flowLayoutPanel2.SuspendLayout();
+			panel3.SuspendLayout();
+			groupBox14.SuspendLayout();
 			groupBox9.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).BeginInit();
 			((System.ComponentModel.ISupportInitialize)workspaceSizeYNumericUpDown).BeginInit();
@@ -144,26 +146,25 @@
 			groupBox10.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultYNumericUpDown).BeginInit();
 			((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultXNumericUpDown).BeginInit();
-			groupBox14.SuspendLayout();
 			windowTabPage.SuspendLayout();
-			flowLayoutPanel1.SuspendLayout();
-			groupBox5.SuspendLayout();
-			groupBox8.SuspendLayout();
-			groupBox7.SuspendLayout();
+			panel4.SuspendLayout();
+			groupBox15.SuspendLayout();
 			groupBox1.SuspendLayout();
 			groupBox12.SuspendLayout();
-			groupBox15.SuspendLayout();
+			groupBox7.SuspendLayout();
+			groupBox8.SuspendLayout();
+			groupBox5.SuspendLayout();
 			fileTabPage.SuspendLayout();
-			flowLayoutPanel3.SuspendLayout();
-			groupBox2.SuspendLayout();
-			groupBox11.SuspendLayout();
-			groupBox4.SuspendLayout();
+			panel5.SuspendLayout();
 			groupBox13.SuspendLayout();
+			groupBox4.SuspendLayout();
+			groupBox11.SuspendLayout();
+			groupBox2.SuspendLayout();
 			debugTabPage.SuspendLayout();
-			flowLayoutPanel4.SuspendLayout();
-			groupBox6.SuspendLayout();
-			groupBox16.SuspendLayout();
+			panel6.SuspendLayout();
 			groupBox3.SuspendLayout();
+			groupBox16.SuspendLayout();
+			groupBox6.SuspendLayout();
 			versionTabPage.SuspendLayout();
 			panel2.SuspendLayout();
 			groupBox18.SuspendLayout();
@@ -194,7 +195,7 @@
 			// projectTabPage
 			// 
 			projectTabPage.BackColor = SystemColors.ControlLightLight;
-			projectTabPage.Controls.Add(flowLayoutPanel2);
+			projectTabPage.Controls.Add(panel3);
 			projectTabPage.Location = new Point(4, 29);
 			projectTabPage.Margin = new Padding(0);
 			projectTabPage.Name = "projectTabPage";
@@ -202,17 +203,107 @@
 			projectTabPage.TabIndex = 2;
 			projectTabPage.Text = "Project";
 			// 
-			// flowLayoutPanel2
+			// panel3
 			// 
-			flowLayoutPanel2.AutoScroll = true;
-			flowLayoutPanel2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-			flowLayoutPanel2.Controls.Add(groupBox9);
-			flowLayoutPanel2.Controls.Add(groupBox14);
-			flowLayoutPanel2.Dock = DockStyle.Fill;
-			flowLayoutPanel2.Location = new Point(0, 0);
-			flowLayoutPanel2.Name = "flowLayoutPanel2";
-			flowLayoutPanel2.Size = new Size(656, 385);
-			flowLayoutPanel2.TabIndex = 1;
+			panel3.AutoScroll = true;
+			panel3.Controls.Add(groupBox14);
+			panel3.Controls.Add(groupBox9);
+			panel3.Dock = DockStyle.Fill;
+			panel3.Location = new Point(0, 0);
+			panel3.Name = "panel3";
+			panel3.Size = new Size(656, 385);
+			panel3.TabIndex = 0;
+			// 
+			// groupBox14
+			// 
+			groupBox14.Controls.Add(hideOldSMWidgetSkinsCheckBox);
+			groupBox14.Controls.Add(hideOldMyGuiWidgetSkinsCheckBox);
+			groupBox14.Controls.Add(forceCacheReloadButton);
+			groupBox14.Controls.Add(referenceLanguageComboBox);
+			groupBox14.Controls.Add(label8);
+			groupBox14.Controls.Add(referenceResolutionComboBox);
+			groupBox14.Controls.Add(label7);
+			groupBox14.Dock = DockStyle.Top;
+			groupBox14.ForeColor = SystemColors.ControlText;
+			groupBox14.Location = new Point(0, 147);
+			groupBox14.Name = "groupBox14";
+			groupBox14.Size = new Size(656, 114);
+			groupBox14.TabIndex = 8;
+			groupBox14.TabStop = false;
+			groupBox14.Text = "References";
+			// 
+			// hideOldSMWidgetSkinsCheckBox
+			// 
+			hideOldSMWidgetSkinsCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			hideOldSMWidgetSkinsCheckBox.Location = new Point(194, 51);
+			hideOldSMWidgetSkinsCheckBox.Name = "hideOldSMWidgetSkinsCheckBox";
+			hideOldSMWidgetSkinsCheckBox.Size = new Size(456, 23);
+			hideOldSMWidgetSkinsCheckBox.TabIndex = 9;
+			hideOldSMWidgetSkinsCheckBox.Text = "Hide Old SM Widget Skins";
+			hideOldSMWidgetSkinsCheckBox.UseVisualStyleBackColor = true;
+			hideOldSMWidgetSkinsCheckBox.CheckedChanged += hideOldSMWidgetSkinsCheckBox_CheckedChanged;
+			// 
+			// hideOldMyGuiWidgetSkinsCheckBox
+			// 
+			hideOldMyGuiWidgetSkinsCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			hideOldMyGuiWidgetSkinsCheckBox.Location = new Point(194, 22);
+			hideOldMyGuiWidgetSkinsCheckBox.Name = "hideOldMyGuiWidgetSkinsCheckBox";
+			hideOldMyGuiWidgetSkinsCheckBox.Size = new Size(456, 23);
+			hideOldMyGuiWidgetSkinsCheckBox.TabIndex = 8;
+			hideOldMyGuiWidgetSkinsCheckBox.Text = "Hide Old MyGui Widget Skins";
+			hideOldMyGuiWidgetSkinsCheckBox.UseVisualStyleBackColor = true;
+			hideOldMyGuiWidgetSkinsCheckBox.CheckedChanged += hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged;
+			// 
+			// forceCacheReloadButton
+			// 
+			forceCacheReloadButton.FlatStyle = FlatStyle.System;
+			forceCacheReloadButton.Location = new Point(194, 81);
+			forceCacheReloadButton.Name = "forceCacheReloadButton";
+			forceCacheReloadButton.Size = new Size(182, 23);
+			forceCacheReloadButton.TabIndex = 7;
+			forceCacheReloadButton.Text = "Force Cache Reload";
+			forceCacheReloadButton.UseVisualStyleBackColor = true;
+			forceCacheReloadButton.Click += forceCacheReloadButton_Click;
+			// 
+			// referenceLanguageComboBox
+			// 
+			referenceLanguageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			referenceLanguageComboBox.FormattingEnabled = true;
+			referenceLanguageComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
+			referenceLanguageComboBox.Location = new Point(6, 81);
+			referenceLanguageComboBox.Name = "referenceLanguageComboBox";
+			referenceLanguageComboBox.Size = new Size(182, 23);
+			referenceLanguageComboBox.TabIndex = 6;
+			referenceLanguageComboBox.SelectedValueChanged += referenceLanguageComboBox_SelectedValueChanged;
+			// 
+			// label8
+			// 
+			label8.Location = new Point(6, 63);
+			label8.Name = "label8";
+			label8.Size = new Size(120, 15);
+			label8.TabIndex = 5;
+			label8.Text = "Reference Language";
+			label8.TextAlign = ContentAlignment.MiddleLeft;
+			// 
+			// referenceResolutionComboBox
+			// 
+			referenceResolutionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			referenceResolutionComboBox.FormattingEnabled = true;
+			referenceResolutionComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
+			referenceResolutionComboBox.Location = new Point(6, 37);
+			referenceResolutionComboBox.Name = "referenceResolutionComboBox";
+			referenceResolutionComboBox.Size = new Size(182, 23);
+			referenceResolutionComboBox.TabIndex = 4;
+			referenceResolutionComboBox.SelectedIndexChanged += referenceResolutionComboBox_SelectedIndexChanged;
+			// 
+			// label7
+			// 
+			label7.Location = new Point(6, 19);
+			label7.Name = "label7";
+			label7.Size = new Size(120, 15);
+			label7.TabIndex = 3;
+			label7.Text = "Reference Resolution";
+			label7.TextAlign = ContentAlignment.MiddleLeft;
 			// 
 			// groupBox9
 			// 
@@ -222,9 +313,10 @@
 			groupBox9.Controls.Add(label3);
 			groupBox9.Controls.Add(workspaceSizeXNumericUpDown);
 			groupBox9.Controls.Add(groupBox10);
-			groupBox9.Location = new Point(3, 3);
+			groupBox9.Dock = DockStyle.Top;
+			groupBox9.Location = new Point(0, 0);
 			groupBox9.Name = "groupBox9";
-			groupBox9.Size = new Size(295, 147);
+			groupBox9.Size = new Size(656, 147);
 			groupBox9.TabIndex = 7;
 			groupBox9.TabStop = false;
 			groupBox9.Text = "Workspace";
@@ -241,9 +333,10 @@
 			// 
 			// label2
 			// 
+			label2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			label2.Location = new Point(94, 110);
 			label2.Name = "label2";
-			label2.Size = new Size(106, 23);
+			label2.Size = new Size(467, 23);
 			label2.TabIndex = 2;
 			label2.Text = "Grid Spacing (px)";
 			label2.TextAlign = ContentAlignment.MiddleLeft;
@@ -261,11 +354,12 @@
 			// 
 			// label3
 			// 
+			label3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			label3.Location = new Point(188, 11);
 			label3.Name = "label3";
-			label3.Size = new Size(101, 40);
+			label3.Size = new Size(462, 40);
 			label3.TabIndex = 4;
-			label3.Text = "Project Size (px)\r\n(Autoapplied)";
+			label3.Text = "Project Size (px) (Autoapplied)";
 			label3.TextAlign = ContentAlignment.MiddleLeft;
 			// 
 			// workspaceSizeXNumericUpDown
@@ -281,15 +375,16 @@
 			// 
 			// groupBox10
 			// 
+			groupBox10.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			groupBox10.Controls.Add(workspaceSizeDefaultYNumericUpDown);
 			groupBox10.Controls.Add(workspaceSizeDefaultXNumericUpDown);
 			groupBox10.Controls.Add(label4);
 			groupBox10.Location = new Point(6, 51);
 			groupBox10.Name = "groupBox10";
-			groupBox10.Size = new Size(283, 53);
+			groupBox10.Size = new Size(644, 53);
 			groupBox10.TabIndex = 8;
 			groupBox10.TabStop = false;
-			groupBox10.Text = "Defaults";
+			groupBox10.Text = "Default";
 			// 
 			// workspaceSizeDefaultYNumericUpDown
 			// 
@@ -315,93 +410,18 @@
 			// 
 			// label4
 			// 
+			label4.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			label4.Location = new Point(188, 22);
 			label4.Name = "label4";
-			label4.Size = new Size(94, 23);
+			label4.Size = new Size(455, 23);
 			label4.TabIndex = 10;
 			label4.Text = "Project Size (px)";
 			label4.TextAlign = ContentAlignment.MiddleLeft;
 			// 
-			// groupBox14
-			// 
-			groupBox14.Controls.Add(hideOldMyGuiWidgetSkinsCheckBox);
-			groupBox14.Controls.Add(forceCacheReloadButton);
-			groupBox14.Controls.Add(referenceLanguageComboBox);
-			groupBox14.Controls.Add(label8);
-			groupBox14.Controls.Add(referenceResolutionComboBox);
-			groupBox14.Controls.Add(label7);
-			groupBox14.Location = new Point(304, 3);
-			groupBox14.Name = "groupBox14";
-			groupBox14.Size = new Size(237, 166);
-			groupBox14.TabIndex = 8;
-			groupBox14.TabStop = false;
-			groupBox14.Text = "References";
-			// 
-			// hideOldMyGuiWidgetSkinsCheckBox
-			// 
-			hideOldMyGuiWidgetSkinsCheckBox.Location = new Point(6, 110);
-			hideOldMyGuiWidgetSkinsCheckBox.Name = "hideOldMyGuiWidgetSkinsCheckBox";
-			hideOldMyGuiWidgetSkinsCheckBox.Size = new Size(225, 18);
-			hideOldMyGuiWidgetSkinsCheckBox.TabIndex = 8;
-			hideOldMyGuiWidgetSkinsCheckBox.Text = "Hide Old MyGui Widget Skins";
-			hideOldMyGuiWidgetSkinsCheckBox.UseVisualStyleBackColor = true;
-			hideOldMyGuiWidgetSkinsCheckBox.CheckedChanged += hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged;
-			// 
-			// forceCacheReloadButton
-			// 
-			forceCacheReloadButton.FlatStyle = FlatStyle.System;
-			forceCacheReloadButton.Location = new Point(6, 134);
-			forceCacheReloadButton.Name = "forceCacheReloadButton";
-			forceCacheReloadButton.Size = new Size(225, 23);
-			forceCacheReloadButton.TabIndex = 7;
-			forceCacheReloadButton.Text = "Force Cache Reload";
-			forceCacheReloadButton.UseVisualStyleBackColor = true;
-			forceCacheReloadButton.Click += forceCacheReloadButton_Click;
-			// 
-			// referenceLanguageComboBox
-			// 
-			referenceLanguageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-			referenceLanguageComboBox.FormattingEnabled = true;
-			referenceLanguageComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
-			referenceLanguageComboBox.Location = new Point(6, 81);
-			referenceLanguageComboBox.Name = "referenceLanguageComboBox";
-			referenceLanguageComboBox.Size = new Size(225, 23);
-			referenceLanguageComboBox.TabIndex = 6;
-			referenceLanguageComboBox.SelectedValueChanged += referenceLanguageComboBox_SelectedValueChanged;
-			// 
-			// label8
-			// 
-			label8.Location = new Point(6, 63);
-			label8.Name = "label8";
-			label8.Size = new Size(120, 15);
-			label8.TabIndex = 5;
-			label8.Text = "Reference Language";
-			label8.TextAlign = ContentAlignment.MiddleLeft;
-			// 
-			// referenceResolutionComboBox
-			// 
-			referenceResolutionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-			referenceResolutionComboBox.FormattingEnabled = true;
-			referenceResolutionComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
-			referenceResolutionComboBox.Location = new Point(6, 37);
-			referenceResolutionComboBox.Name = "referenceResolutionComboBox";
-			referenceResolutionComboBox.Size = new Size(225, 23);
-			referenceResolutionComboBox.TabIndex = 4;
-			referenceResolutionComboBox.SelectedIndexChanged += referenceResolutionComboBox_SelectedIndexChanged;
-			// 
-			// label7
-			// 
-			label7.Location = new Point(6, 19);
-			label7.Name = "label7";
-			label7.Size = new Size(120, 15);
-			label7.TabIndex = 3;
-			label7.Text = "Reference Resolution";
-			label7.TextAlign = ContentAlignment.MiddleLeft;
-			// 
 			// windowTabPage
 			// 
 			windowTabPage.BackColor = SystemColors.ControlLightLight;
-			windowTabPage.Controls.Add(flowLayoutPanel1);
+			windowTabPage.Controls.Add(panel4);
 			windowTabPage.Location = new Point(4, 29);
 			windowTabPage.Margin = new Padding(0);
 			windowTabPage.Name = "windowTabPage";
@@ -409,184 +429,55 @@
 			windowTabPage.TabIndex = 0;
 			windowTabPage.Text = "Window";
 			// 
-			// flowLayoutPanel1
+			// panel4
 			// 
-			flowLayoutPanel1.AutoScroll = true;
-			flowLayoutPanel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-			flowLayoutPanel1.Controls.Add(groupBox5);
-			flowLayoutPanel1.Controls.Add(groupBox8);
-			flowLayoutPanel1.Controls.Add(groupBox7);
-			flowLayoutPanel1.Controls.Add(groupBox1);
-			flowLayoutPanel1.Controls.Add(groupBox15);
-			flowLayoutPanel1.Dock = DockStyle.Fill;
-			flowLayoutPanel1.Location = new Point(0, 0);
-			flowLayoutPanel1.Margin = new Padding(0);
-			flowLayoutPanel1.Name = "flowLayoutPanel1";
-			flowLayoutPanel1.Size = new Size(656, 385);
-			flowLayoutPanel1.TabIndex = 0;
+			panel4.AutoScroll = true;
+			panel4.Controls.Add(groupBox15);
+			panel4.Controls.Add(groupBox1);
+			panel4.Controls.Add(groupBox7);
+			panel4.Controls.Add(groupBox8);
+			panel4.Controls.Add(groupBox5);
+			panel4.Dock = DockStyle.Fill;
+			panel4.Location = new Point(0, 0);
+			panel4.Name = "panel4";
+			panel4.Size = new Size(656, 385);
+			panel4.TabIndex = 0;
 			// 
-			// groupBox5
+			// groupBox15
 			// 
-			groupBox5.Controls.Add(useBackgroundImageGrid);
-			groupBox5.Controls.Add(useBackgroundImageCustom);
-			groupBox5.Controls.Add(useBackgroundImageColor);
-			groupBox5.Controls.Add(backgroundImagePathTextBox);
-			groupBox5.Controls.Add(backgroundImageSelectButton);
-			groupBox5.Location = new Point(3, 3);
-			groupBox5.Name = "groupBox5";
-			groupBox5.Size = new Size(348, 79);
-			groupBox5.TabIndex = 8;
-			groupBox5.TabStop = false;
-			groupBox5.Text = "Background";
+			groupBox15.Controls.Add(enterAcceptsCheckBox);
+			groupBox15.Controls.Add(hideSplashScreenCheckBox);
+			groupBox15.Dock = DockStyle.Top;
+			groupBox15.Location = new Point(0, 434);
+			groupBox15.Name = "groupBox15";
+			groupBox15.Size = new Size(639, 77);
+			groupBox15.TabIndex = 11;
+			groupBox15.TabStop = false;
+			groupBox15.Text = "Other";
 			// 
-			// useBackgroundImageGrid
+			// enterAcceptsCheckBox
 			// 
-			useBackgroundImageGrid.AutoSize = true;
-			useBackgroundImageGrid.Location = new Point(66, 22);
-			useBackgroundImageGrid.Name = "useBackgroundImageGrid";
-			useBackgroundImageGrid.Size = new Size(47, 19);
-			useBackgroundImageGrid.TabIndex = 1;
-			useBackgroundImageGrid.TabStop = true;
-			useBackgroundImageGrid.Text = "Grid";
-			useBackgroundImageGrid.UseVisualStyleBackColor = true;
-			useBackgroundImageGrid.CheckedChanged += backgroundImage_CheckedChanged;
+			enterAcceptsCheckBox.AccessibleDescription = "";
+			enterAcceptsCheckBox.AutoSize = true;
+			enterAcceptsCheckBox.Location = new Point(3, 47);
+			enterAcceptsCheckBox.Name = "enterAcceptsCheckBox";
+			enterAcceptsCheckBox.Size = new Size(149, 19);
+			enterAcceptsCheckBox.TabIndex = 3;
+			enterAcceptsCheckBox.Text = "Enter Accepts Selection";
+			enterAcceptsCheckBox.UseVisualStyleBackColor = true;
+			enterAcceptsCheckBox.CheckedChanged += enterAcceptsCheckBox_CheckedChanged;
 			// 
-			// useBackgroundImageCustom
+			// hideSplashScreenCheckBox
 			// 
-			useBackgroundImageCustom.AutoSize = true;
-			useBackgroundImageCustom.Location = new Point(119, 22);
-			useBackgroundImageCustom.Name = "useBackgroundImageCustom";
-			useBackgroundImageCustom.Size = new Size(103, 19);
-			useBackgroundImageCustom.TabIndex = 2;
-			useBackgroundImageCustom.TabStop = true;
-			useBackgroundImageCustom.Text = "Custom Image";
-			useBackgroundImageCustom.UseVisualStyleBackColor = true;
-			useBackgroundImageCustom.CheckedChanged += backgroundImage_CheckedChanged;
-			// 
-			// useBackgroundImageColor
-			// 
-			useBackgroundImageColor.AutoSize = true;
-			useBackgroundImageColor.Location = new Point(6, 22);
-			useBackgroundImageColor.Name = "useBackgroundImageColor";
-			useBackgroundImageColor.Size = new Size(54, 19);
-			useBackgroundImageColor.TabIndex = 0;
-			useBackgroundImageColor.TabStop = true;
-			useBackgroundImageColor.Text = "Color";
-			useBackgroundImageColor.UseVisualStyleBackColor = true;
-			useBackgroundImageColor.CheckedChanged += backgroundImage_CheckedChanged;
-			// 
-			// backgroundImagePathTextBox
-			// 
-			backgroundImagePathTextBox.BackColor = SystemColors.ControlLightLight;
-			backgroundImagePathTextBox.Location = new Point(73, 46);
-			backgroundImagePathTextBox.Name = "backgroundImagePathTextBox";
-			backgroundImagePathTextBox.ReadOnly = true;
-			backgroundImagePathTextBox.Size = new Size(269, 23);
-			backgroundImagePathTextBox.TabIndex = 4;
-			// 
-			// backgroundImageSelectButton
-			// 
-			backgroundImageSelectButton.FlatStyle = FlatStyle.System;
-			backgroundImageSelectButton.Location = new Point(6, 46);
-			backgroundImageSelectButton.Name = "backgroundImageSelectButton";
-			backgroundImageSelectButton.Size = new Size(61, 23);
-			backgroundImageSelectButton.TabIndex = 3;
-			backgroundImageSelectButton.Text = "Select";
-			backgroundImageSelectButton.UseVisualStyleBackColor = true;
-			backgroundImageSelectButton.Click += backgroundImageSelectButton_Click;
-			// 
-			// groupBox8
-			// 
-			groupBox8.Controls.Add(useDarkTheme);
-			groupBox8.Controls.Add(useLightTheme);
-			groupBox8.Controls.Add(useAutoTheme);
-			groupBox8.Location = new Point(357, 3);
-			groupBox8.Name = "groupBox8";
-			groupBox8.Size = new Size(178, 52);
-			groupBox8.TabIndex = 9;
-			groupBox8.TabStop = false;
-			groupBox8.Text = "Theme";
-			// 
-			// useDarkTheme
-			// 
-			useDarkTheme.AutoSize = true;
-			useDarkTheme.Location = new Point(63, 22);
-			useDarkTheme.Name = "useDarkTheme";
-			useDarkTheme.Size = new Size(49, 19);
-			useDarkTheme.TabIndex = 1;
-			useDarkTheme.TabStop = true;
-			useDarkTheme.Text = "Dark";
-			useDarkTheme.UseVisualStyleBackColor = true;
-			useDarkTheme.CheckedChanged += themeRadioButton_CheckedChanged;
-			// 
-			// useLightTheme
-			// 
-			useLightTheme.AutoSize = true;
-			useLightTheme.Location = new Point(118, 22);
-			useLightTheme.Name = "useLightTheme";
-			useLightTheme.Size = new Size(52, 19);
-			useLightTheme.TabIndex = 2;
-			useLightTheme.TabStop = true;
-			useLightTheme.Text = "Light";
-			useLightTheme.UseVisualStyleBackColor = true;
-			useLightTheme.CheckedChanged += themeRadioButton_CheckedChanged;
-			// 
-			// useAutoTheme
-			// 
-			useAutoTheme.AutoSize = true;
-			useAutoTheme.Location = new Point(6, 22);
-			useAutoTheme.Name = "useAutoTheme";
-			useAutoTheme.Size = new Size(51, 19);
-			useAutoTheme.TabIndex = 0;
-			useAutoTheme.TabStop = true;
-			useAutoTheme.Text = "Auto";
-			useAutoTheme.UseVisualStyleBackColor = true;
-			useAutoTheme.CheckedChanged += themeRadioButton_CheckedChanged;
-			// 
-			// groupBox7
-			// 
-			groupBox7.Controls.Add(showFullFilePathCheckBox);
-			groupBox7.Controls.Add(useCustomLayoutCheckBox);
-			groupBox7.Controls.Add(saveCustomLayoutCheckBox);
-			groupBox7.Location = new Point(3, 88);
-			groupBox7.Name = "groupBox7";
-			groupBox7.Size = new Size(263, 97);
-			groupBox7.TabIndex = 10;
-			groupBox7.TabStop = false;
-			groupBox7.Text = "Layout";
-			// 
-			// showFullFilePathCheckBox
-			// 
-			showFullFilePathCheckBox.AutoSize = true;
-			showFullFilePathCheckBox.Location = new Point(6, 22);
-			showFullFilePathCheckBox.Name = "showFullFilePathCheckBox";
-			showFullFilePathCheckBox.Size = new Size(181, 19);
-			showFullFilePathCheckBox.TabIndex = 3;
-			showFullFilePathCheckBox.Text = "Show Full Layout Path in Title";
-			showFullFilePathCheckBox.UseVisualStyleBackColor = true;
-			showFullFilePathCheckBox.CheckedChanged += showFullFilePathCheckBox_CheckedChanged;
-			// 
-			// useCustomLayoutCheckBox
-			// 
-			useCustomLayoutCheckBox.AutoSize = true;
-			useCustomLayoutCheckBox.Location = new Point(6, 71);
-			useCustomLayoutCheckBox.Name = "useCustomLayoutCheckBox";
-			useCustomLayoutCheckBox.Size = new Size(167, 19);
-			useCustomLayoutCheckBox.TabIndex = 1;
-			useCustomLayoutCheckBox.Text = "Use Saved Program Layout";
-			useCustomLayoutCheckBox.UseVisualStyleBackColor = true;
-			useCustomLayoutCheckBox.CheckedChanged += useCustomLayoutCheckBox_CheckedChanged;
-			// 
-			// saveCustomLayoutCheckBox
-			// 
-			saveCustomLayoutCheckBox.AutoSize = true;
-			saveCustomLayoutCheckBox.Location = new Point(6, 46);
-			saveCustomLayoutCheckBox.Name = "saveCustomLayoutCheckBox";
-			saveCustomLayoutCheckBox.Size = new Size(138, 19);
-			saveCustomLayoutCheckBox.TabIndex = 0;
-			saveCustomLayoutCheckBox.Text = "Save Program Layout";
-			saveCustomLayoutCheckBox.UseVisualStyleBackColor = true;
-			saveCustomLayoutCheckBox.CheckedChanged += saveCustomLayoutCheckBox_CheckedChanged;
+			hideSplashScreenCheckBox.AccessibleDescription = "";
+			hideSplashScreenCheckBox.AutoSize = true;
+			hideSplashScreenCheckBox.Location = new Point(3, 22);
+			hideSplashScreenCheckBox.Name = "hideSplashScreenCheckBox";
+			hideSplashScreenCheckBox.Size = new Size(126, 19);
+			hideSplashScreenCheckBox.TabIndex = 2;
+			hideSplashScreenCheckBox.Text = "Hide Splash Screen";
+			hideSplashScreenCheckBox.UseVisualStyleBackColor = true;
+			hideSplashScreenCheckBox.CheckedChanged += hideSplashScreenCheckBox_CheckedChanged;
 			// 
 			// groupBox1
 			// 
@@ -597,9 +488,10 @@
 			groupBox1.Controls.Add(useViewportAACheckBox);
 			groupBox1.Controls.Add(useViewportVSyncCheckBox);
 			groupBox1.Controls.Add(renderWidgetNamesCheckBox);
-			groupBox1.Location = new Point(272, 88);
+			groupBox1.Dock = DockStyle.Top;
+			groupBox1.Location = new Point(0, 228);
 			groupBox1.Name = "groupBox1";
-			groupBox1.Size = new Size(278, 206);
+			groupBox1.Size = new Size(639, 206);
 			groupBox1.TabIndex = 7;
 			groupBox1.TabStop = false;
 			groupBox1.Text = "Rendering";
@@ -630,13 +522,14 @@
 			// 
 			// groupBox12
 			// 
+			groupBox12.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			groupBox12.Controls.Add(spriteFilteringLevel3);
 			groupBox12.Controls.Add(spriteFilteringLevel1);
 			groupBox12.Controls.Add(spriteFilteringLevel2);
 			groupBox12.Controls.Add(spriteFilteringLevel0);
 			groupBox12.Location = new Point(6, 97);
 			groupBox12.Name = "groupBox12";
-			groupBox12.Size = new Size(266, 52);
+			groupBox12.Size = new Size(627, 52);
 			groupBox12.TabIndex = 10;
 			groupBox12.TabStop = false;
 			groupBox12.Text = "Sprite Filtering Level";
@@ -736,44 +629,176 @@
 			renderWidgetNamesCheckBox.UseVisualStyleBackColor = true;
 			renderWidgetNamesCheckBox.CheckedChanged += renderWidgetNamesCheckBox_CheckedChanged;
 			// 
-			// groupBox15
+			// groupBox7
 			// 
-			groupBox15.Controls.Add(enterAcceptsCheckBox);
-			groupBox15.Controls.Add(hideSplashScreenCheckBox);
-			groupBox15.Location = new Point(3, 300);
-			groupBox15.Name = "groupBox15";
-			groupBox15.Size = new Size(178, 77);
-			groupBox15.TabIndex = 11;
-			groupBox15.TabStop = false;
-			groupBox15.Text = "Other";
+			groupBox7.Controls.Add(showFullFilePathCheckBox);
+			groupBox7.Controls.Add(useCustomLayoutCheckBox);
+			groupBox7.Controls.Add(saveCustomLayoutCheckBox);
+			groupBox7.Dock = DockStyle.Top;
+			groupBox7.Location = new Point(0, 131);
+			groupBox7.Name = "groupBox7";
+			groupBox7.Size = new Size(639, 97);
+			groupBox7.TabIndex = 10;
+			groupBox7.TabStop = false;
+			groupBox7.Text = "Layout";
 			// 
-			// enterAcceptsCheckBox
+			// showFullFilePathCheckBox
 			// 
-			enterAcceptsCheckBox.AccessibleDescription = "";
-			enterAcceptsCheckBox.AutoSize = true;
-			enterAcceptsCheckBox.Location = new Point(3, 47);
-			enterAcceptsCheckBox.Name = "enterAcceptsCheckBox";
-			enterAcceptsCheckBox.Size = new Size(149, 19);
-			enterAcceptsCheckBox.TabIndex = 3;
-			enterAcceptsCheckBox.Text = "Enter Accepts Selection";
-			enterAcceptsCheckBox.UseVisualStyleBackColor = true;
-			enterAcceptsCheckBox.CheckedChanged += enterAcceptsCheckBox_CheckedChanged;
+			showFullFilePathCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			showFullFilePathCheckBox.Location = new Point(6, 22);
+			showFullFilePathCheckBox.Name = "showFullFilePathCheckBox";
+			showFullFilePathCheckBox.Size = new Size(627, 19);
+			showFullFilePathCheckBox.TabIndex = 3;
+			showFullFilePathCheckBox.Text = "Show Full Layout Path in Title";
+			showFullFilePathCheckBox.UseVisualStyleBackColor = true;
+			showFullFilePathCheckBox.CheckedChanged += showFullFilePathCheckBox_CheckedChanged;
 			// 
-			// hideSplashScreenCheckBox
+			// useCustomLayoutCheckBox
 			// 
-			hideSplashScreenCheckBox.AccessibleDescription = "";
-			hideSplashScreenCheckBox.AutoSize = true;
-			hideSplashScreenCheckBox.Location = new Point(3, 22);
-			hideSplashScreenCheckBox.Name = "hideSplashScreenCheckBox";
-			hideSplashScreenCheckBox.Size = new Size(126, 19);
-			hideSplashScreenCheckBox.TabIndex = 2;
-			hideSplashScreenCheckBox.Text = "Hide Splash Screen";
-			hideSplashScreenCheckBox.UseVisualStyleBackColor = true;
-			hideSplashScreenCheckBox.CheckedChanged += hideSplashScreenCheckBox_CheckedChanged;
+			useCustomLayoutCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			useCustomLayoutCheckBox.Location = new Point(6, 71);
+			useCustomLayoutCheckBox.Name = "useCustomLayoutCheckBox";
+			useCustomLayoutCheckBox.Size = new Size(627, 19);
+			useCustomLayoutCheckBox.TabIndex = 1;
+			useCustomLayoutCheckBox.Text = "Use Saved Program Layout";
+			useCustomLayoutCheckBox.UseVisualStyleBackColor = true;
+			useCustomLayoutCheckBox.CheckedChanged += useCustomLayoutCheckBox_CheckedChanged;
+			// 
+			// saveCustomLayoutCheckBox
+			// 
+			saveCustomLayoutCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			saveCustomLayoutCheckBox.Location = new Point(6, 46);
+			saveCustomLayoutCheckBox.Name = "saveCustomLayoutCheckBox";
+			saveCustomLayoutCheckBox.Size = new Size(627, 19);
+			saveCustomLayoutCheckBox.TabIndex = 0;
+			saveCustomLayoutCheckBox.Text = "Save Program Layout";
+			saveCustomLayoutCheckBox.UseVisualStyleBackColor = true;
+			saveCustomLayoutCheckBox.CheckedChanged += saveCustomLayoutCheckBox_CheckedChanged;
+			// 
+			// groupBox8
+			// 
+			groupBox8.Controls.Add(useDarkTheme);
+			groupBox8.Controls.Add(useLightTheme);
+			groupBox8.Controls.Add(useAutoTheme);
+			groupBox8.Dock = DockStyle.Top;
+			groupBox8.Location = new Point(0, 79);
+			groupBox8.Name = "groupBox8";
+			groupBox8.Size = new Size(639, 52);
+			groupBox8.TabIndex = 9;
+			groupBox8.TabStop = false;
+			groupBox8.Text = "Theme";
+			// 
+			// useDarkTheme
+			// 
+			useDarkTheme.AutoSize = true;
+			useDarkTheme.Location = new Point(63, 22);
+			useDarkTheme.Name = "useDarkTheme";
+			useDarkTheme.Size = new Size(49, 19);
+			useDarkTheme.TabIndex = 1;
+			useDarkTheme.TabStop = true;
+			useDarkTheme.Text = "Dark";
+			useDarkTheme.UseVisualStyleBackColor = true;
+			useDarkTheme.CheckedChanged += themeRadioButton_CheckedChanged;
+			// 
+			// useLightTheme
+			// 
+			useLightTheme.AutoSize = true;
+			useLightTheme.Location = new Point(118, 22);
+			useLightTheme.Name = "useLightTheme";
+			useLightTheme.Size = new Size(52, 19);
+			useLightTheme.TabIndex = 2;
+			useLightTheme.TabStop = true;
+			useLightTheme.Text = "Light";
+			useLightTheme.UseVisualStyleBackColor = true;
+			useLightTheme.CheckedChanged += themeRadioButton_CheckedChanged;
+			// 
+			// useAutoTheme
+			// 
+			useAutoTheme.AutoSize = true;
+			useAutoTheme.Location = new Point(6, 22);
+			useAutoTheme.Name = "useAutoTheme";
+			useAutoTheme.Size = new Size(51, 19);
+			useAutoTheme.TabIndex = 0;
+			useAutoTheme.TabStop = true;
+			useAutoTheme.Text = "Auto";
+			useAutoTheme.UseVisualStyleBackColor = true;
+			useAutoTheme.CheckedChanged += themeRadioButton_CheckedChanged;
+			// 
+			// groupBox5
+			// 
+			groupBox5.Controls.Add(useBackgroundImageGrid);
+			groupBox5.Controls.Add(useBackgroundImageCustom);
+			groupBox5.Controls.Add(useBackgroundImageColor);
+			groupBox5.Controls.Add(backgroundImagePathTextBox);
+			groupBox5.Controls.Add(backgroundImageSelectButton);
+			groupBox5.Dock = DockStyle.Top;
+			groupBox5.Location = new Point(0, 0);
+			groupBox5.Name = "groupBox5";
+			groupBox5.Size = new Size(639, 79);
+			groupBox5.TabIndex = 8;
+			groupBox5.TabStop = false;
+			groupBox5.Text = "Background";
+			// 
+			// useBackgroundImageGrid
+			// 
+			useBackgroundImageGrid.AutoSize = true;
+			useBackgroundImageGrid.Location = new Point(66, 22);
+			useBackgroundImageGrid.Name = "useBackgroundImageGrid";
+			useBackgroundImageGrid.Size = new Size(47, 19);
+			useBackgroundImageGrid.TabIndex = 1;
+			useBackgroundImageGrid.TabStop = true;
+			useBackgroundImageGrid.Text = "Grid";
+			useBackgroundImageGrid.UseVisualStyleBackColor = true;
+			useBackgroundImageGrid.CheckedChanged += backgroundImage_CheckedChanged;
+			// 
+			// useBackgroundImageCustom
+			// 
+			useBackgroundImageCustom.AutoSize = true;
+			useBackgroundImageCustom.Location = new Point(119, 22);
+			useBackgroundImageCustom.Name = "useBackgroundImageCustom";
+			useBackgroundImageCustom.Size = new Size(103, 19);
+			useBackgroundImageCustom.TabIndex = 2;
+			useBackgroundImageCustom.TabStop = true;
+			useBackgroundImageCustom.Text = "Custom Image";
+			useBackgroundImageCustom.UseVisualStyleBackColor = true;
+			useBackgroundImageCustom.CheckedChanged += backgroundImage_CheckedChanged;
+			// 
+			// useBackgroundImageColor
+			// 
+			useBackgroundImageColor.AutoSize = true;
+			useBackgroundImageColor.Location = new Point(6, 22);
+			useBackgroundImageColor.Name = "useBackgroundImageColor";
+			useBackgroundImageColor.Size = new Size(54, 19);
+			useBackgroundImageColor.TabIndex = 0;
+			useBackgroundImageColor.TabStop = true;
+			useBackgroundImageColor.Text = "Color";
+			useBackgroundImageColor.UseVisualStyleBackColor = true;
+			useBackgroundImageColor.CheckedChanged += backgroundImage_CheckedChanged;
+			// 
+			// backgroundImagePathTextBox
+			// 
+			backgroundImagePathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			backgroundImagePathTextBox.BackColor = SystemColors.ControlLightLight;
+			backgroundImagePathTextBox.Location = new Point(73, 46);
+			backgroundImagePathTextBox.Name = "backgroundImagePathTextBox";
+			backgroundImagePathTextBox.ReadOnly = true;
+			backgroundImagePathTextBox.Size = new Size(560, 23);
+			backgroundImagePathTextBox.TabIndex = 4;
+			// 
+			// backgroundImageSelectButton
+			// 
+			backgroundImageSelectButton.FlatStyle = FlatStyle.System;
+			backgroundImageSelectButton.Location = new Point(6, 46);
+			backgroundImageSelectButton.Name = "backgroundImageSelectButton";
+			backgroundImageSelectButton.Size = new Size(61, 23);
+			backgroundImageSelectButton.TabIndex = 3;
+			backgroundImageSelectButton.Text = "Select";
+			backgroundImageSelectButton.UseVisualStyleBackColor = true;
+			backgroundImageSelectButton.Click += backgroundImageSelectButton_Click;
 			// 
 			// fileTabPage
 			// 
-			fileTabPage.Controls.Add(flowLayoutPanel3);
+			fileTabPage.Controls.Add(panel5);
 			fileTabPage.Location = new Point(4, 29);
 			fileTabPage.Name = "fileTabPage";
 			fileTabPage.Size = new Size(656, 385);
@@ -781,208 +806,19 @@
 			fileTabPage.Text = "File";
 			fileTabPage.UseVisualStyleBackColor = true;
 			// 
-			// flowLayoutPanel3
+			// panel5
 			// 
-			flowLayoutPanel3.AutoScroll = true;
-			flowLayoutPanel3.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-			flowLayoutPanel3.Controls.Add(groupBox2);
-			flowLayoutPanel3.Controls.Add(groupBox11);
-			flowLayoutPanel3.Controls.Add(groupBox4);
-			flowLayoutPanel3.Controls.Add(groupBox13);
-			flowLayoutPanel3.Dock = DockStyle.Fill;
-			flowLayoutPanel3.Location = new Point(0, 0);
-			flowLayoutPanel3.Name = "flowLayoutPanel3";
-			flowLayoutPanel3.Size = new Size(656, 385);
-			flowLayoutPanel3.TabIndex = 7;
-			// 
-			// groupBox2
-			// 
-			groupBox2.Controls.Add(label9);
-			groupBox2.Controls.Add(currSteamUserTextBox);
-			groupBox2.Controls.Add(label6);
-			groupBox2.Controls.Add(pixelLayoutSuffixTextBox);
-			groupBox2.Controls.Add(inspectInExplorerButton);
-			groupBox2.Controls.Add(detectSmPath);
-			groupBox2.Controls.Add(smPathLabel);
-			groupBox2.Controls.Add(chooseSmPath);
-			groupBox2.Controls.Add(label1);
-			groupBox2.Location = new Point(3, 3);
-			groupBox2.Name = "groupBox2";
-			groupBox2.Size = new Size(348, 152);
-			groupBox2.TabIndex = 5;
-			groupBox2.TabStop = false;
-			groupBox2.Text = "General";
-			// 
-			// label9
-			// 
-			label9.Location = new Point(6, 66);
-			label9.Name = "label9";
-			label9.Size = new Size(128, 23);
-			label9.TabIndex = 9;
-			label9.Text = "Current Steam User ID";
-			label9.TextAlign = ContentAlignment.MiddleLeft;
-			// 
-			// currSteamUserTextBox
-			// 
-			currSteamUserTextBox.BackColor = SystemColors.ControlLightLight;
-			currSteamUserTextBox.Location = new Point(140, 66);
-			currSteamUserTextBox.Name = "currSteamUserTextBox";
-			currSteamUserTextBox.PlaceholderText = "0";
-			currSteamUserTextBox.ReadOnly = true;
-			currSteamUserTextBox.Size = new Size(202, 23);
-			currSteamUserTextBox.TabIndex = 8;
-			// 
-			// label6
-			// 
-			label6.Location = new Point(6, 94);
-			label6.Name = "label6";
-			label6.Size = new Size(110, 23);
-			label6.TabIndex = 7;
-			label6.Text = "Pixel Layout Suffix";
-			label6.TextAlign = ContentAlignment.MiddleLeft;
-			// 
-			// pixelLayoutSuffixTextBox
-			// 
-			pixelLayoutSuffixTextBox.BackColor = SystemColors.ControlLightLight;
-			pixelLayoutSuffixTextBox.Location = new Point(122, 95);
-			pixelLayoutSuffixTextBox.Name = "pixelLayoutSuffixTextBox";
-			pixelLayoutSuffixTextBox.PlaceholderText = "_pixels";
-			pixelLayoutSuffixTextBox.Size = new Size(220, 23);
-			pixelLayoutSuffixTextBox.TabIndex = 6;
-			pixelLayoutSuffixTextBox.TextChanged += pixelLayoutSuffixTextBox_TextChanged;
-			// 
-			// inspectInExplorerButton
-			// 
-			inspectInExplorerButton.FlatStyle = FlatStyle.System;
-			inspectInExplorerButton.Location = new Point(6, 124);
-			inspectInExplorerButton.Name = "inspectInExplorerButton";
-			inspectInExplorerButton.Size = new Size(336, 23);
-			inspectInExplorerButton.TabIndex = 5;
-			inspectInExplorerButton.Text = "Inspect Setting Folder";
-			inspectInExplorerButton.UseVisualStyleBackColor = true;
-			inspectInExplorerButton.Click += inspectInExplorerButton_Click;
-			// 
-			// detectSmPath
-			// 
-			detectSmPath.FlatStyle = FlatStyle.System;
-			detectSmPath.Location = new Point(73, 37);
-			detectSmPath.Name = "detectSmPath";
-			detectSmPath.Size = new Size(61, 23);
-			detectSmPath.TabIndex = 1;
-			detectSmPath.Text = "Detect";
-			detectSmPath.UseVisualStyleBackColor = true;
-			detectSmPath.Click += detectSmPath_Click;
-			// 
-			// smPathLabel
-			// 
-			smPathLabel.BackColor = SystemColors.ControlLightLight;
-			smPathLabel.Location = new Point(140, 37);
-			smPathLabel.Name = "smPathLabel";
-			smPathLabel.ReadOnly = true;
-			smPathLabel.Size = new Size(202, 23);
-			smPathLabel.TabIndex = 2;
-			// 
-			// chooseSmPath
-			// 
-			chooseSmPath.FlatStyle = FlatStyle.System;
-			chooseSmPath.Location = new Point(6, 37);
-			chooseSmPath.Name = "chooseSmPath";
-			chooseSmPath.Size = new Size(61, 23);
-			chooseSmPath.TabIndex = 0;
-			chooseSmPath.Text = "Select";
-			chooseSmPath.UseVisualStyleBackColor = true;
-			chooseSmPath.Click += chooseSmPath_Click;
-			// 
-			// label1
-			// 
-			label1.AutoSize = true;
-			label1.Location = new Point(6, 19);
-			label1.Name = "label1";
-			label1.Size = new Size(118, 15);
-			label1.TabIndex = 0;
-			label1.Text = "Scrap Mechanic Path";
-			// 
-			// groupBox11
-			// 
-			groupBox11.Controls.Add(preferPixelLayoutsCheckBox);
-			groupBox11.Location = new Point(357, 3);
-			groupBox11.Name = "groupBox11";
-			groupBox11.Size = new Size(184, 48);
-			groupBox11.TabIndex = 7;
-			groupBox11.TabStop = false;
-			groupBox11.Text = "Import";
-			// 
-			// preferPixelLayoutsCheckBox
-			// 
-			preferPixelLayoutsCheckBox.AutoSize = true;
-			preferPixelLayoutsCheckBox.Location = new Point(6, 22);
-			preferPixelLayoutsCheckBox.Name = "preferPixelLayoutsCheckBox";
-			preferPixelLayoutsCheckBox.Size = new Size(168, 19);
-			preferPixelLayoutsCheckBox.TabIndex = 0;
-			preferPixelLayoutsCheckBox.Text = "Prefer Pixel Layouts over %";
-			preferPixelLayoutsCheckBox.UseVisualStyleBackColor = true;
-			preferPixelLayoutsCheckBox.CheckedChanged += preferPixelLayoutsCheckBox_CheckedChanged;
-			// 
-			// groupBox4
-			// 
-			groupBox4.Controls.Add(exportAsBothRadioButton);
-			groupBox4.Controls.Add(exportAsPercentRadioButton);
-			groupBox4.Controls.Add(exportAskRadioButton);
-			groupBox4.Controls.Add(exportAsPxRadioButton);
-			groupBox4.Location = new Point(3, 161);
-			groupBox4.Name = "groupBox4";
-			groupBox4.Size = new Size(169, 73);
-			groupBox4.TabIndex = 6;
-			groupBox4.TabStop = false;
-			groupBox4.Text = "Export";
-			// 
-			// exportAsBothRadioButton
-			// 
-			exportAsBothRadioButton.AutoSize = true;
-			exportAsBothRadioButton.Location = new Point(83, 48);
-			exportAsBothRadioButton.Name = "exportAsBothRadioButton";
-			exportAsBothRadioButton.Size = new Size(50, 19);
-			exportAsBothRadioButton.TabIndex = 3;
-			exportAsBothRadioButton.TabStop = true;
-			exportAsBothRadioButton.Text = "Both";
-			exportAsBothRadioButton.UseVisualStyleBackColor = true;
-			exportAsBothRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
-			// 
-			// exportAsPercentRadioButton
-			// 
-			exportAsPercentRadioButton.AutoSize = true;
-			exportAsPercentRadioButton.Location = new Point(83, 23);
-			exportAsPercentRadioButton.Name = "exportAsPercentRadioButton";
-			exportAsPercentRadioButton.Size = new Size(81, 19);
-			exportAsPercentRadioButton.TabIndex = 1;
-			exportAsPercentRadioButton.TabStop = true;
-			exportAsPercentRadioButton.Text = "As Percent";
-			exportAsPercentRadioButton.UseVisualStyleBackColor = true;
-			exportAsPercentRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
-			// 
-			// exportAskRadioButton
-			// 
-			exportAskRadioButton.AutoSize = true;
-			exportAskRadioButton.Location = new Point(6, 48);
-			exportAskRadioButton.Name = "exportAskRadioButton";
-			exportAskRadioButton.Size = new Size(44, 19);
-			exportAskRadioButton.TabIndex = 2;
-			exportAskRadioButton.TabStop = true;
-			exportAskRadioButton.Text = "Ask";
-			exportAskRadioButton.UseVisualStyleBackColor = true;
-			exportAskRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
-			// 
-			// exportAsPxRadioButton
-			// 
-			exportAsPxRadioButton.AutoSize = true;
-			exportAsPxRadioButton.Location = new Point(6, 22);
-			exportAsPxRadioButton.Name = "exportAsPxRadioButton";
-			exportAsPxRadioButton.Size = new Size(71, 19);
-			exportAsPxRadioButton.TabIndex = 0;
-			exportAsPxRadioButton.TabStop = true;
-			exportAsPxRadioButton.Text = "As Pixels";
-			exportAsPxRadioButton.UseVisualStyleBackColor = true;
-			exportAsPxRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+			panel5.AutoScroll = true;
+			panel5.AutoSize = true;
+			panel5.Controls.Add(groupBox13);
+			panel5.Controls.Add(groupBox4);
+			panel5.Controls.Add(groupBox11);
+			panel5.Controls.Add(groupBox2);
+			panel5.Dock = DockStyle.Fill;
+			panel5.Location = new Point(0, 0);
+			panel5.Name = "panel5";
+			panel5.Size = new Size(656, 385);
+			panel5.TabIndex = 0;
 			// 
 			// groupBox13
 			// 
@@ -991,9 +827,10 @@
 			groupBox13.Controls.Add(buttonRestartAdmin);
 			groupBox13.Controls.Add(label5);
 			groupBox13.Controls.Add(buttonAddToStart);
-			groupBox13.Location = new Point(178, 161);
+			groupBox13.Dock = DockStyle.Top;
+			groupBox13.Location = new Point(0, 273);
 			groupBox13.Name = "groupBox13";
-			groupBox13.Size = new Size(242, 157);
+			groupBox13.Size = new Size(639, 157);
 			groupBox13.TabIndex = 8;
 			groupBox13.TabStop = false;
 			groupBox13.Text = "Windows Integration";
@@ -1051,9 +888,204 @@
 			buttonAddToStart.UseVisualStyleBackColor = true;
 			buttonAddToStart.Click += buttonAddToStart_Click;
 			// 
+			// groupBox4
+			// 
+			groupBox4.Controls.Add(exportAsBothRadioButton);
+			groupBox4.Controls.Add(exportAsPercentRadioButton);
+			groupBox4.Controls.Add(exportAskRadioButton);
+			groupBox4.Controls.Add(exportAsPxRadioButton);
+			groupBox4.Dock = DockStyle.Top;
+			groupBox4.Location = new Point(0, 200);
+			groupBox4.Name = "groupBox4";
+			groupBox4.Size = new Size(639, 73);
+			groupBox4.TabIndex = 6;
+			groupBox4.TabStop = false;
+			groupBox4.Text = "Export";
+			// 
+			// exportAsBothRadioButton
+			// 
+			exportAsBothRadioButton.AutoSize = true;
+			exportAsBothRadioButton.Location = new Point(83, 48);
+			exportAsBothRadioButton.Name = "exportAsBothRadioButton";
+			exportAsBothRadioButton.Size = new Size(50, 19);
+			exportAsBothRadioButton.TabIndex = 3;
+			exportAsBothRadioButton.TabStop = true;
+			exportAsBothRadioButton.Text = "Both";
+			exportAsBothRadioButton.UseVisualStyleBackColor = true;
+			exportAsBothRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+			// 
+			// exportAsPercentRadioButton
+			// 
+			exportAsPercentRadioButton.AutoSize = true;
+			exportAsPercentRadioButton.Location = new Point(83, 23);
+			exportAsPercentRadioButton.Name = "exportAsPercentRadioButton";
+			exportAsPercentRadioButton.Size = new Size(81, 19);
+			exportAsPercentRadioButton.TabIndex = 1;
+			exportAsPercentRadioButton.TabStop = true;
+			exportAsPercentRadioButton.Text = "As Percent";
+			exportAsPercentRadioButton.UseVisualStyleBackColor = true;
+			exportAsPercentRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+			// 
+			// exportAskRadioButton
+			// 
+			exportAskRadioButton.AutoSize = true;
+			exportAskRadioButton.Location = new Point(6, 48);
+			exportAskRadioButton.Name = "exportAskRadioButton";
+			exportAskRadioButton.Size = new Size(44, 19);
+			exportAskRadioButton.TabIndex = 2;
+			exportAskRadioButton.TabStop = true;
+			exportAskRadioButton.Text = "Ask";
+			exportAskRadioButton.UseVisualStyleBackColor = true;
+			exportAskRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+			// 
+			// exportAsPxRadioButton
+			// 
+			exportAsPxRadioButton.AutoSize = true;
+			exportAsPxRadioButton.Location = new Point(6, 22);
+			exportAsPxRadioButton.Name = "exportAsPxRadioButton";
+			exportAsPxRadioButton.Size = new Size(71, 19);
+			exportAsPxRadioButton.TabIndex = 0;
+			exportAsPxRadioButton.TabStop = true;
+			exportAsPxRadioButton.Text = "As Pixels";
+			exportAsPxRadioButton.UseVisualStyleBackColor = true;
+			exportAsPxRadioButton.CheckedChanged += exportRadioButton_CheckedChanged;
+			// 
+			// groupBox11
+			// 
+			groupBox11.Controls.Add(preferPixelLayoutsCheckBox);
+			groupBox11.Dock = DockStyle.Top;
+			groupBox11.Location = new Point(0, 152);
+			groupBox11.Name = "groupBox11";
+			groupBox11.Size = new Size(639, 48);
+			groupBox11.TabIndex = 7;
+			groupBox11.TabStop = false;
+			groupBox11.Text = "Import";
+			// 
+			// preferPixelLayoutsCheckBox
+			// 
+			preferPixelLayoutsCheckBox.AutoSize = true;
+			preferPixelLayoutsCheckBox.Location = new Point(6, 22);
+			preferPixelLayoutsCheckBox.Name = "preferPixelLayoutsCheckBox";
+			preferPixelLayoutsCheckBox.Size = new Size(168, 19);
+			preferPixelLayoutsCheckBox.TabIndex = 0;
+			preferPixelLayoutsCheckBox.Text = "Prefer Pixel Layouts over %";
+			preferPixelLayoutsCheckBox.UseVisualStyleBackColor = true;
+			preferPixelLayoutsCheckBox.CheckedChanged += preferPixelLayoutsCheckBox_CheckedChanged;
+			// 
+			// groupBox2
+			// 
+			groupBox2.Controls.Add(label9);
+			groupBox2.Controls.Add(currSteamUserTextBox);
+			groupBox2.Controls.Add(label6);
+			groupBox2.Controls.Add(pixelLayoutSuffixTextBox);
+			groupBox2.Controls.Add(inspectInExplorerButton);
+			groupBox2.Controls.Add(detectSmPath);
+			groupBox2.Controls.Add(smPathLabel);
+			groupBox2.Controls.Add(chooseSmPath);
+			groupBox2.Controls.Add(label1);
+			groupBox2.Dock = DockStyle.Top;
+			groupBox2.Location = new Point(0, 0);
+			groupBox2.Name = "groupBox2";
+			groupBox2.Size = new Size(639, 152);
+			groupBox2.TabIndex = 5;
+			groupBox2.TabStop = false;
+			groupBox2.Text = "General";
+			// 
+			// label9
+			// 
+			label9.Location = new Point(6, 66);
+			label9.Name = "label9";
+			label9.Size = new Size(128, 23);
+			label9.TabIndex = 9;
+			label9.Text = "Current Steam User ID";
+			label9.TextAlign = ContentAlignment.MiddleLeft;
+			// 
+			// currSteamUserTextBox
+			// 
+			currSteamUserTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			currSteamUserTextBox.BackColor = SystemColors.ControlLightLight;
+			currSteamUserTextBox.Location = new Point(140, 66);
+			currSteamUserTextBox.Name = "currSteamUserTextBox";
+			currSteamUserTextBox.PlaceholderText = "0";
+			currSteamUserTextBox.ReadOnly = true;
+			currSteamUserTextBox.Size = new Size(493, 23);
+			currSteamUserTextBox.TabIndex = 8;
+			// 
+			// label6
+			// 
+			label6.Location = new Point(6, 94);
+			label6.Name = "label6";
+			label6.Size = new Size(110, 23);
+			label6.TabIndex = 7;
+			label6.Text = "Pixel Layout Suffix";
+			label6.TextAlign = ContentAlignment.MiddleLeft;
+			// 
+			// pixelLayoutSuffixTextBox
+			// 
+			pixelLayoutSuffixTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			pixelLayoutSuffixTextBox.BackColor = SystemColors.ControlLightLight;
+			pixelLayoutSuffixTextBox.Location = new Point(140, 95);
+			pixelLayoutSuffixTextBox.Name = "pixelLayoutSuffixTextBox";
+			pixelLayoutSuffixTextBox.PlaceholderText = "_pixels";
+			pixelLayoutSuffixTextBox.Size = new Size(493, 23);
+			pixelLayoutSuffixTextBox.TabIndex = 6;
+			pixelLayoutSuffixTextBox.TextChanged += pixelLayoutSuffixTextBox_TextChanged;
+			// 
+			// inspectInExplorerButton
+			// 
+			inspectInExplorerButton.FlatStyle = FlatStyle.System;
+			inspectInExplorerButton.Location = new Point(6, 124);
+			inspectInExplorerButton.Name = "inspectInExplorerButton";
+			inspectInExplorerButton.Size = new Size(230, 23);
+			inspectInExplorerButton.TabIndex = 5;
+			inspectInExplorerButton.Text = "Inspect Setting Folder";
+			inspectInExplorerButton.UseVisualStyleBackColor = true;
+			inspectInExplorerButton.Click += inspectInExplorerButton_Click;
+			// 
+			// detectSmPath
+			// 
+			detectSmPath.FlatStyle = FlatStyle.System;
+			detectSmPath.Location = new Point(73, 37);
+			detectSmPath.Name = "detectSmPath";
+			detectSmPath.Size = new Size(61, 23);
+			detectSmPath.TabIndex = 1;
+			detectSmPath.Text = "Detect";
+			detectSmPath.UseVisualStyleBackColor = true;
+			detectSmPath.Click += detectSmPath_Click;
+			// 
+			// smPathLabel
+			// 
+			smPathLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			smPathLabel.BackColor = SystemColors.ControlLightLight;
+			smPathLabel.Location = new Point(140, 37);
+			smPathLabel.Name = "smPathLabel";
+			smPathLabel.ReadOnly = true;
+			smPathLabel.Size = new Size(493, 23);
+			smPathLabel.TabIndex = 2;
+			// 
+			// chooseSmPath
+			// 
+			chooseSmPath.FlatStyle = FlatStyle.System;
+			chooseSmPath.Location = new Point(6, 37);
+			chooseSmPath.Name = "chooseSmPath";
+			chooseSmPath.Size = new Size(61, 23);
+			chooseSmPath.TabIndex = 0;
+			chooseSmPath.Text = "Select";
+			chooseSmPath.UseVisualStyleBackColor = true;
+			chooseSmPath.Click += chooseSmPath_Click;
+			// 
+			// label1
+			// 
+			label1.AutoSize = true;
+			label1.Location = new Point(6, 19);
+			label1.Name = "label1";
+			label1.Size = new Size(118, 15);
+			label1.TabIndex = 0;
+			label1.Text = "Scrap Mechanic Path";
+			// 
 			// debugTabPage
 			// 
-			debugTabPage.Controls.Add(flowLayoutPanel4);
+			debugTabPage.Controls.Add(panel6);
 			debugTabPage.Location = new Point(4, 29);
 			debugTabPage.Name = "debugTabPage";
 			debugTabPage.Size = new Size(656, 385);
@@ -1061,46 +1093,47 @@
 			debugTabPage.Text = "Debug";
 			debugTabPage.UseVisualStyleBackColor = true;
 			// 
-			// flowLayoutPanel4
+			// panel6
 			// 
-			flowLayoutPanel4.AutoScroll = true;
-			flowLayoutPanel4.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-			flowLayoutPanel4.Controls.Add(groupBox6);
-			flowLayoutPanel4.Controls.Add(groupBox16);
-			flowLayoutPanel4.Controls.Add(groupBox3);
-			flowLayoutPanel4.Dock = DockStyle.Fill;
-			flowLayoutPanel4.Location = new Point(0, 0);
-			flowLayoutPanel4.Name = "flowLayoutPanel4";
-			flowLayoutPanel4.Size = new Size(656, 385);
-			flowLayoutPanel4.TabIndex = 8;
+			panel6.AutoScroll = true;
+			panel6.Controls.Add(groupBox3);
+			panel6.Controls.Add(groupBox16);
+			panel6.Controls.Add(groupBox6);
+			panel6.Dock = DockStyle.Fill;
+			panel6.Location = new Point(0, 0);
+			panel6.Name = "panel6";
+			panel6.Size = new Size(656, 385);
+			panel6.TabIndex = 0;
 			// 
-			// groupBox6
+			// groupBox3
 			// 
-			groupBox6.Controls.Add(showTypesForNamedWidgetsCheckBox);
-			groupBox6.Location = new Point(3, 3);
-			groupBox6.Name = "groupBox6";
-			groupBox6.Size = new Size(201, 55);
-			groupBox6.TabIndex = 6;
-			groupBox6.TabStop = false;
-			groupBox6.Text = "Editing";
+			groupBox3.Controls.Add(showWarningsCheckBox);
+			groupBox3.Dock = DockStyle.Top;
+			groupBox3.Location = new Point(0, 110);
+			groupBox3.Name = "groupBox3";
+			groupBox3.Size = new Size(656, 55);
+			groupBox3.TabIndex = 9;
+			groupBox3.TabStop = false;
+			groupBox3.Text = "Popups";
 			// 
-			// showTypesForNamedWidgetsCheckBox
+			// showWarningsCheckBox
 			// 
-			showTypesForNamedWidgetsCheckBox.AutoSize = true;
-			showTypesForNamedWidgetsCheckBox.Location = new Point(6, 22);
-			showTypesForNamedWidgetsCheckBox.Name = "showTypesForNamedWidgetsCheckBox";
-			showTypesForNamedWidgetsCheckBox.Size = new Size(193, 19);
-			showTypesForNamedWidgetsCheckBox.TabIndex = 1;
-			showTypesForNamedWidgetsCheckBox.Text = "Show Types for Named Widgets";
-			showTypesForNamedWidgetsCheckBox.UseVisualStyleBackColor = true;
-			showTypesForNamedWidgetsCheckBox.CheckedChanged += showTypesForNamedWidgetsCheckBox_CheckedChanged;
+			showWarningsCheckBox.AutoSize = true;
+			showWarningsCheckBox.Location = new Point(6, 22);
+			showWarningsCheckBox.Name = "showWarningsCheckBox";
+			showWarningsCheckBox.Size = new Size(108, 19);
+			showWarningsCheckBox.TabIndex = 0;
+			showWarningsCheckBox.Text = "Show Warnings";
+			showWarningsCheckBox.UseVisualStyleBackColor = true;
+			showWarningsCheckBox.CheckedChanged += showWarningsCheckBox_CheckedChanged;
 			// 
 			// groupBox16
 			// 
 			groupBox16.Controls.Add(showDebugConsoleCheckBox);
-			groupBox16.Location = new Point(210, 3);
+			groupBox16.Dock = DockStyle.Top;
+			groupBox16.Location = new Point(0, 55);
 			groupBox16.Name = "groupBox16";
-			groupBox16.Size = new Size(157, 55);
+			groupBox16.Size = new Size(656, 55);
 			groupBox16.TabIndex = 10;
 			groupBox16.TabStop = false;
 			groupBox16.Text = "Console";
@@ -1116,26 +1149,27 @@
 			showDebugConsoleCheckBox.UseVisualStyleBackColor = true;
 			showDebugConsoleCheckBox.CheckedChanged += showDebugConsoleCheckBox_CheckedChanged;
 			// 
-			// groupBox3
+			// groupBox6
 			// 
-			groupBox3.Controls.Add(showWarningsCheckBox);
-			groupBox3.Location = new Point(373, 3);
-			groupBox3.Name = "groupBox3";
-			groupBox3.Size = new Size(124, 55);
-			groupBox3.TabIndex = 9;
-			groupBox3.TabStop = false;
-			groupBox3.Text = "Popups";
+			groupBox6.Controls.Add(showTypesForNamedWidgetsCheckBox);
+			groupBox6.Dock = DockStyle.Top;
+			groupBox6.Location = new Point(0, 0);
+			groupBox6.Name = "groupBox6";
+			groupBox6.Size = new Size(656, 55);
+			groupBox6.TabIndex = 6;
+			groupBox6.TabStop = false;
+			groupBox6.Text = "Editing";
 			// 
-			// showWarningsCheckBox
+			// showTypesForNamedWidgetsCheckBox
 			// 
-			showWarningsCheckBox.AutoSize = true;
-			showWarningsCheckBox.Location = new Point(6, 22);
-			showWarningsCheckBox.Name = "showWarningsCheckBox";
-			showWarningsCheckBox.Size = new Size(108, 19);
-			showWarningsCheckBox.TabIndex = 0;
-			showWarningsCheckBox.Text = "Show Warnings";
-			showWarningsCheckBox.UseVisualStyleBackColor = true;
-			showWarningsCheckBox.CheckedChanged += showWarningsCheckBox_CheckedChanged;
+			showTypesForNamedWidgetsCheckBox.AutoSize = true;
+			showTypesForNamedWidgetsCheckBox.Location = new Point(6, 22);
+			showTypesForNamedWidgetsCheckBox.Name = "showTypesForNamedWidgetsCheckBox";
+			showTypesForNamedWidgetsCheckBox.Size = new Size(193, 19);
+			showTypesForNamedWidgetsCheckBox.TabIndex = 1;
+			showTypesForNamedWidgetsCheckBox.Text = "Show Types for Named Widgets";
+			showTypesForNamedWidgetsCheckBox.UseVisualStyleBackColor = true;
+			showTypesForNamedWidgetsCheckBox.CheckedChanged += showTypesForNamedWidgetsCheckBox_CheckedChanged;
 			// 
 			// versionTabPage
 			// 
@@ -1182,6 +1216,17 @@
 			autoUpdateCheckCheckBox.UseVisualStyleBackColor = true;
 			autoUpdateCheckCheckBox.CheckedChanged += autoUpdateCheckCheckBox_CheckedChanged;
 			// 
+			// checkForUpdatesButton
+			// 
+			checkForUpdatesButton.FlatStyle = FlatStyle.System;
+			checkForUpdatesButton.Location = new Point(6, 47);
+			checkForUpdatesButton.Name = "checkForUpdatesButton";
+			checkForUpdatesButton.Size = new Size(176, 23);
+			checkForUpdatesButton.TabIndex = 0;
+			checkForUpdatesButton.Text = "Check For Updates";
+			checkForUpdatesButton.UseVisualStyleBackColor = true;
+			checkForUpdatesButton.Click += checkForUpdatesButton_ClickAsync;
+			// 
 			// groupBox17
 			// 
 			groupBox17.Controls.Add(currentVersionLabel);
@@ -1200,19 +1245,7 @@
 			currentVersionLabel.Name = "currentVersionLabel";
 			currentVersionLabel.Size = new Size(640, 15);
 			currentVersionLabel.TabIndex = 0;
-			currentVersionLabel.Text = "label10";
-			// 
-			// checkForUpdatesButton
-			// 
-			checkForUpdatesButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-			checkForUpdatesButton.FlatStyle = FlatStyle.System;
-			checkForUpdatesButton.Location = new Point(6, 47);
-			checkForUpdatesButton.Name = "checkForUpdatesButton";
-			checkForUpdatesButton.Size = new Size(644, 23);
-			checkForUpdatesButton.TabIndex = 0;
-			checkForUpdatesButton.Text = "Check For Updates";
-			checkForUpdatesButton.UseVisualStyleBackColor = true;
-			checkForUpdatesButton.Click += checkForUpdatesButton_ClickAsync;
+			currentVersionLabel.Text = "Some version, idk";
 			// 
 			// aboutTabPage
 			// 
@@ -1246,7 +1279,7 @@
 			gitHubOrgButton.FlatStyle = FlatStyle.System;
 			gitHubOrgButton.Location = new Point(96, 327);
 			gitHubOrgButton.Name = "gitHubOrgButton";
-			gitHubOrgButton.Size = new Size(460, 23);
+			gitHubOrgButton.Size = new Size(464, 23);
 			gitHubOrgButton.TabIndex = 5;
 			gitHubOrgButton.Text = "Visit our GitHub Organization";
 			gitHubOrgButton.UseVisualStyleBackColor = true;
@@ -1258,7 +1291,7 @@
 			gitHubRepoButton.FlatStyle = FlatStyle.System;
 			gitHubRepoButton.Location = new Point(96, 298);
 			gitHubRepoButton.Name = "gitHubRepoButton";
-			gitHubRepoButton.Size = new Size(460, 23);
+			gitHubRepoButton.Size = new Size(464, 23);
 			gitHubRepoButton.TabIndex = 4;
 			gitHubRepoButton.Text = "Visit MyGui.net Repository";
 			gitHubRepoButton.UseVisualStyleBackColor = true;
@@ -1270,7 +1303,7 @@
 			joinDiscordButton.FlatStyle = FlatStyle.System;
 			joinDiscordButton.Location = new Point(96, 356);
 			joinDiscordButton.Name = "joinDiscordButton";
-			joinDiscordButton.Size = new Size(460, 23);
+			joinDiscordButton.Size = new Size(464, 23);
 			joinDiscordButton.TabIndex = 3;
 			joinDiscordButton.Text = "Join our Discord Server";
 			joinDiscordButton.UseVisualStyleBackColor = true;
@@ -1281,12 +1314,12 @@
 			aboutTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			aboutTextBox.BackColor = SystemColors.ControlLightLight;
 			aboutTextBox.BorderStyle = BorderStyle.None;
-			aboutTextBox.Location = new Point(3, 3);
+			aboutTextBox.Location = new Point(0, 0);
 			aboutTextBox.Multiline = true;
 			aboutTextBox.Name = "aboutTextBox";
 			aboutTextBox.ReadOnly = true;
 			aboutTextBox.ScrollBars = ScrollBars.Vertical;
-			aboutTextBox.Size = new Size(646, 286);
+			aboutTextBox.Size = new Size(656, 289);
 			aboutTextBox.TabIndex = 1;
 			// 
 			// pictureBox2
@@ -1294,7 +1327,7 @@
 			pictureBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
 			pictureBox2.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
-			pictureBox2.Location = new Point(562, 295);
+			pictureBox2.Location = new Point(566, 295);
 			pictureBox2.Name = "pictureBox2";
 			pictureBox2.Size = new Size(90, 90);
 			pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
@@ -1383,7 +1416,7 @@
 			Controls.Add(cancelButton);
 			Controls.Add(tabControl1);
 			MinimizeBox = false;
-			MinimumSize = new Size(435, 300);
+			MinimumSize = new Size(445, 300);
 			Name = "FormSettings";
 			ShowIcon = false;
 			ShowInTaskbar = false;
@@ -1394,7 +1427,8 @@
 			Load += FormSettings_Load;
 			tabControl1.ResumeLayout(false);
 			projectTabPage.ResumeLayout(false);
-			flowLayoutPanel2.ResumeLayout(false);
+			panel3.ResumeLayout(false);
+			groupBox14.ResumeLayout(false);
 			groupBox9.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)widgetGridSpacingNumericUpDown).EndInit();
 			((System.ComponentModel.ISupportInitialize)workspaceSizeYNumericUpDown).EndInit();
@@ -1402,38 +1436,37 @@
 			groupBox10.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultYNumericUpDown).EndInit();
 			((System.ComponentModel.ISupportInitialize)workspaceSizeDefaultXNumericUpDown).EndInit();
-			groupBox14.ResumeLayout(false);
 			windowTabPage.ResumeLayout(false);
-			flowLayoutPanel1.ResumeLayout(false);
-			groupBox5.ResumeLayout(false);
-			groupBox5.PerformLayout();
-			groupBox8.ResumeLayout(false);
-			groupBox8.PerformLayout();
-			groupBox7.ResumeLayout(false);
-			groupBox7.PerformLayout();
+			panel4.ResumeLayout(false);
+			groupBox15.ResumeLayout(false);
+			groupBox15.PerformLayout();
 			groupBox1.ResumeLayout(false);
 			groupBox1.PerformLayout();
 			groupBox12.ResumeLayout(false);
 			groupBox12.PerformLayout();
-			groupBox15.ResumeLayout(false);
-			groupBox15.PerformLayout();
+			groupBox7.ResumeLayout(false);
+			groupBox8.ResumeLayout(false);
+			groupBox8.PerformLayout();
+			groupBox5.ResumeLayout(false);
+			groupBox5.PerformLayout();
 			fileTabPage.ResumeLayout(false);
-			flowLayoutPanel3.ResumeLayout(false);
-			groupBox2.ResumeLayout(false);
-			groupBox2.PerformLayout();
-			groupBox11.ResumeLayout(false);
-			groupBox11.PerformLayout();
+			fileTabPage.PerformLayout();
+			panel5.ResumeLayout(false);
+			groupBox13.ResumeLayout(false);
 			groupBox4.ResumeLayout(false);
 			groupBox4.PerformLayout();
-			groupBox13.ResumeLayout(false);
+			groupBox11.ResumeLayout(false);
+			groupBox11.PerformLayout();
+			groupBox2.ResumeLayout(false);
+			groupBox2.PerformLayout();
 			debugTabPage.ResumeLayout(false);
-			flowLayoutPanel4.ResumeLayout(false);
-			groupBox6.ResumeLayout(false);
-			groupBox6.PerformLayout();
-			groupBox16.ResumeLayout(false);
-			groupBox16.PerformLayout();
+			panel6.ResumeLayout(false);
 			groupBox3.ResumeLayout(false);
 			groupBox3.PerformLayout();
+			groupBox16.ResumeLayout(false);
+			groupBox16.PerformLayout();
+			groupBox6.ResumeLayout(false);
+			groupBox6.PerformLayout();
 			versionTabPage.ResumeLayout(false);
 			panel2.ResumeLayout(false);
 			groupBox18.ResumeLayout(false);
@@ -1450,7 +1483,6 @@
 		#endregion
 		private TabPage windowTabPage;
         private TabPage aboutTabPage;
-        private FlowLayoutPanel flowLayoutPanel1;
         private CheckBox showWarningsCheckBox;
         private Button cancelButton;
         private PictureBox pictureBox1;
@@ -1471,7 +1503,6 @@
         private RadioButton exportAsPxRadioButton;
         private Button resetSettingsButton;
         private TabPage projectTabPage;
-        private FlowLayoutPanel flowLayoutPanel2;
         private GroupBox groupBox6;
         private CheckBox showTypesForNamedWidgetsCheckBox;
         private Label label2;
@@ -1507,10 +1538,8 @@
         private CheckBox renderInvisibleWidgetCheckBox;
         private CheckBox useViewportAACheckBox;
 		private TabPage fileTabPage;
-		private FlowLayoutPanel flowLayoutPanel3;
 		private GroupBox groupBox11;
 		private TabPage debugTabPage;
-		private FlowLayoutPanel flowLayoutPanel4;
 		private GroupBox groupBox12;
 		private RadioButton spriteFilteringLevel3;
 		private RadioButton spriteFilteringLevel1;
@@ -1553,5 +1582,10 @@
 		private GroupBox groupBox18;
 		private Label currentVersionLabel;
 		private CheckBox autoUpdateCheckCheckBox;
+		private CheckBox hideOldSMWidgetSkinsCheckBox;
+		private Panel panel3;
+		private Panel panel4;
+		private Panel panel5;
+		private Panel panel6;
 	}
 }

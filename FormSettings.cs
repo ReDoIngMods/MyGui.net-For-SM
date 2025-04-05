@@ -37,20 +37,35 @@ namespace MyGui.net
 
 			bool runningAsAdmin = Util.RunningAsAdministrator();
 
-			//TAB FILE
-			smPathLabel.Text = _setDef.ScrapMechanicPath;
-			currSteamUserTextBox.Text = Util.GetLoggedInSteamUserID();
-			pixelLayoutSuffixTextBox.Text = _setDef.PixelLayoutSuffix;
+			#region Tab Project
+			workspaceSizeXNumericUpDown.Value = Form1.ProjectSize.Width;
+			workspaceSizeYNumericUpDown.Value = Form1.ProjectSize.Height;
+			workspaceSizeDefaultXNumericUpDown.Value = _setDef.DefaultWorkspaceSize.Width;
+			workspaceSizeDefaultYNumericUpDown.Value = _setDef.DefaultWorkspaceSize.Height;
+			widgetGridSpacingNumericUpDown.Value = _setDef.WidgetGridSpacing;
+
+			referenceResolutionComboBox.SelectedIndex = _setDef.ReferenceResolution;
+			referenceLanguageComboBox.Items.Clear();
+			referenceLanguageComboBox.Items.AddRange(Directory.GetDirectories(Path.Combine(Form1.ScrapMechanicPath, "Data/Gui/Language")).Select(path => Path.GetFileName(path)).ToArray());
+			referenceLanguageComboBox.Text = _setDef.ReferenceLanguage;
+			hideOldMyGuiWidgetSkinsCheckBox.Checked = _setDef.HideOldMyGuiWidgetSkins;
+			hideOldSMWidgetSkinsCheckBox.Checked = _setDef.HideOldSMWidgetSkins;
+			#endregion
+
+			#region Tab Window
+			useBackgroundImageColor.Checked = _setDef.EditorBackgroundMode == 0;
+			useBackgroundImageGrid.Checked = _setDef.EditorBackgroundMode == 1;
+			useBackgroundImageCustom.Checked = _setDef.EditorBackgroundMode == 2;
+			backgroundImageSelectButton.Enabled = _setDef.EditorBackgroundMode == 0 || _setDef.EditorBackgroundMode == 2;
+			backgroundImagePathTextBox.Text = _setDef.EditorBackgroundMode == 0 ? Util.ColorToHexString(_setDef.EditorBackgroundColor) : (_setDef.EditorBackgroundMode == 2 ? _setDef.EditorBackgroundImagePath : "");
+
+			useLightTheme.Checked = _setDef.Theme == 0;
+			useAutoTheme.Checked = _setDef.Theme == 1;
+			useDarkTheme.Checked = _setDef.Theme == 2;
+
 			showFullFilePathCheckBox.Checked = _setDef.ShowFullFilePathInTitle;
-
-			preferPixelLayoutsCheckBox.Checked = _setDef.PreferPixelLayouts;
-
-			exportAsPxRadioButton.Checked = _setDef.ExportMode == 0;
-			exportAsPercentRadioButton.Checked = _setDef.ExportMode == 1;
-			exportAskRadioButton.Checked = _setDef.ExportMode == 2;
-			exportAsBothRadioButton.Checked = _setDef.ExportMode == 3;
-			buttonRestartAdmin.Enabled = !runningAsAdmin;
-			buttonAssociateWithFiles.Enabled = runningAsAdmin;
+			saveCustomLayoutCheckBox.Checked = _setDef.SaveWindowLayout;
+			useCustomLayoutCheckBox.Checked = _setDef.UseCustomWindowLayout;
 
 			useViewportVSyncCheckBox.Checked = _setDef.UseViewportVSync;
 			redrawViewportOnResizeCheckBox.Checked = _setDef.RedrawViewportOnResize;
@@ -62,83 +77,403 @@ namespace MyGui.net
 			spriteFilteringLevel3.Checked = _setDef.ViewportFilteringLevel == 3;
 			renderInvisibleWidgetCheckBox.Checked = _setDef.RenderInvisibleWidgets;
 			renderWidgetNamesCheckBox.Checked = _setDef.RenderWidgetNames;
+
 			hideSplashScreenCheckBox.Checked = _setDef.HideSplashScreen;
 			enterAcceptsCheckBox.Checked = _setDef.EnterAccepts;
+			#endregion
 
-			useBackgroundImageColor.Checked = _setDef.EditorBackgroundMode == 0;
-			useBackgroundImageGrid.Checked = _setDef.EditorBackgroundMode == 1;
-			useBackgroundImageCustom.Checked = _setDef.EditorBackgroundMode == 2;
-			backgroundImageSelectButton.Enabled = _setDef.EditorBackgroundMode == 0 || _setDef.EditorBackgroundMode == 2;
-			backgroundImagePathTextBox.Text = _setDef.EditorBackgroundMode == 0 ? Util.ColorToHexString(_setDef.EditorBackgroundColor) : (_setDef.EditorBackgroundMode == 2 ? _setDef.EditorBackgroundImagePath : "");
+			#region Tab File
+			smPathLabel.Text = _setDef.ScrapMechanicPath;
+			currSteamUserTextBox.Text = Util.GetLoggedInSteamUserID();
+			pixelLayoutSuffixTextBox.Text = _setDef.PixelLayoutSuffix;
 
+			preferPixelLayoutsCheckBox.Checked = _setDef.PreferPixelLayouts;
 
-			useLightTheme.Checked = _setDef.Theme == 0;
-			useAutoTheme.Checked = _setDef.Theme == 1;
-			useDarkTheme.Checked = _setDef.Theme == 2;
+			exportAsPxRadioButton.Checked = _setDef.ExportMode == 0;
+			exportAsPercentRadioButton.Checked = _setDef.ExportMode == 1;
+			exportAskRadioButton.Checked = _setDef.ExportMode == 2;
+			exportAsBothRadioButton.Checked = _setDef.ExportMode == 3;
 
-			saveCustomLayoutCheckBox.Checked = _setDef.SaveWindowLayout;
-			useCustomLayoutCheckBox.Checked = _setDef.UseCustomWindowLayout;
+			//Add to desktop
+			//Add to start menu
+			buttonRestartAdmin.Enabled = !runningAsAdmin;
+			buttonAssociateWithFiles.Enabled = runningAsAdmin;
+			#endregion
+
+			#region Tab Debug
+			showTypesForNamedWidgetsCheckBox.Checked = _setDef.ShowTypesForNamedWidgets;
 
 			showDebugConsoleCheckBox.Checked = _setDef.ShowDebugConsole;
 
 			showWarningsCheckBox.Checked = _setDef.ShowWarnings;
+			#endregion
 
-			//TAB PROJECT
-			workspaceSizeXNumericUpDown.Value = Form1.ProjectSize.Width;
-			workspaceSizeYNumericUpDown.Value = Form1.ProjectSize.Height;
-			workspaceSizeDefaultXNumericUpDown.Value = _setDef.DefaultWorkspaceSize.Width;
-			workspaceSizeDefaultYNumericUpDown.Value = _setDef.DefaultWorkspaceSize.Height;
-
-			referenceResolutionComboBox.SelectedIndex = _setDef.ReferenceResolution;
-
-			referenceLanguageComboBox.Items.Clear();
-			referenceLanguageComboBox.Items.AddRange(Directory.GetDirectories(Path.Combine(Form1.ScrapMechanicPath, "Data/Gui/Language")).Select(path => Path.GetFileName(path)).ToArray());
-
-			referenceLanguageComboBox.Text = _setDef.ReferenceLanguage;
-			hideOldMyGuiWidgetSkinsCheckBox.Checked = _setDef.HideOldMyGuiWidgetSkins;
-
-
-			showTypesForNamedWidgetsCheckBox.Checked = _setDef.ShowTypesForNamedWidgets;
-			widgetGridSpacingNumericUpDown.Value = _setDef.WidgetGridSpacing;
-
-			//TAB VERSION
+			#region Tab Version
 			autoUpdateCheckCheckBox.Checked = _setDef.AutoCheckUpdate;
+			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(((bool?)AppContext.GetData("IsSelfContained") ?? false) ? "MyGui.Net-Standalone" : "MyGui.Net-Framework-Dependant")}";
+			#endregion
+
+			#region Tab About
+			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
+			#endregion
 
 			_formLoaded = true;
-
-			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(((bool?)AppContext.GetData("IsSelfContained") ?? false) ? "MyGui.Net-Standalone" : "MyGui.Net-Framework-Dependant")}";
-			//Change about text
-			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
 		}
 
-		private void OnSettingChange()
+		#region Utils
+		private void CreateShortcut(string shortcutPath, string targetPath)
 		{
-			backgroundImageSelectButton.Enabled = _setDef.EditorBackgroundMode == 0 || _setDef.EditorBackgroundMode == 2;
-			backgroundImagePathTextBox.Text = _setDef.EditorBackgroundMode == 0 ? Util.ColorToHexString(_setDef.EditorBackgroundColor) : (_setDef.EditorBackgroundMode == 2 ? _setDef.EditorBackgroundImagePath : "");
-			if (_autoApply)
+
+			if (File.Exists(shortcutPath))
 			{
-				_setDef.Save();
-				if (Settings.Default.ShowDebugConsole)
+				DialogResult result = MessageBox.Show($"The shortcut already exists:\n{shortcutPath}\n\nDo you want to overwrite it?", "Shortcut Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+				if (result == DialogResult.No)
+					return; // Exit without overwriting
+			}
+
+			string psCommand = $@"
+				try {{
+					$WshShell = New-Object -ComObject WScript.Shell;
+					$Shortcut = $WshShell.CreateShortcut('{shortcutPath}');
+					$Shortcut.TargetPath = '{targetPath}';
+					$Shortcut.Save();
+				}} catch {{
+					Write-Error 'Failed to create shortcut: ' + $_.Exception.Message
+				}}
+			";
+
+			ProcessStartInfo psi = new ProcessStartInfo
+			{
+				FileName = "powershell",
+				Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{psCommand}\"",
+				UseShellExecute = false,
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				CreateNoWindow = true
+			};
+
+			try
+			{
+				using (Process process = new Process { StartInfo = psi })
 				{
-					DebugConsole.ShowConsole();
+					process.Start();
+
+					string output = process.StandardOutput.ReadToEnd();
+					string error = process.StandardError.ReadToEnd();
+
+					process.WaitForExit();
+
+					if (!string.IsNullOrWhiteSpace(error))
+					{
+						MessageBox.Show($"PowerShell error:\n{error}", "Shortcut Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return;
+					}
+
+					MessageBox.Show("Shortcut created successfully!", "Shortcut Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"An error occurred:\n{ex.Message}", "Shortcut Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+		#endregion
+
+		#region Tab Project
+		private void workspaceSizeXNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+		{
+			NumericUpDown sender = (NumericUpDown)senderAny;
+			if (this.Owner != null) //Multithreading safety
+			{
+				if (this.Owner.InvokeRequired)
+				{
+					this.Owner.Invoke(new Action(() =>
+					{
+						Form1.ProjectSize = new Size((int)sender.Value, Form1.ProjectSize.Height);
+						((Form1)this.Owner).AdjustViewportScrollers();
+					}));
 				}
 				else
 				{
-					DebugConsole.HideConsole();
+					Form1.ProjectSize = new Size((int)sender.Value, Form1.ProjectSize.Height);
+					((Form1)this.Owner).AdjustViewportScrollers();
 				}
-				applySettingsButton.Enabled = false;
-				_hasChanged = false;
-				return;
 			}
-			if (_formLoaded)
-			{
-				_hasChanged = true;
-			}
-			applySettingsButton.Enabled = _hasChanged;
 		}
 
-		//TAB PROGRAM
+		private void workspaceSizeYNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+		{
+			NumericUpDown sender = (NumericUpDown)senderAny;
+			if (this.Owner != null) //Multithreading safety
+			{
+				if (this.Owner.InvokeRequired)
+				{
+					this.Owner.Invoke(new Action(() =>
+					{
+						Form1.ProjectSize = new Size(Form1.ProjectSize.Width, (int)sender.Value);
+						((Form1)this.Owner).AdjustViewportScrollers();
+					}));
+				}
+				else
+				{
+					Form1.ProjectSize = new Size(Form1.ProjectSize.Width, (int)sender.Value);
+					((Form1)this.Owner).AdjustViewportScrollers();
+				}
+			}
+		}
 
+		private void workspaceSizeDefaultXNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+		{
+			NumericUpDown sender = (NumericUpDown)senderAny;
+			_setDef.DefaultWorkspaceSize = new Size((int)sender.Value, _setDef.DefaultWorkspaceSize.Height);
+			OnSettingChange();
+		}
+
+		private void workspaceSizeDefaultYNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+		{
+			NumericUpDown sender = (NumericUpDown)senderAny;
+			_setDef.DefaultWorkspaceSize = new Size(_setDef.DefaultWorkspaceSize.Width, (int)sender.Value);
+			OnSettingChange();
+		}
+
+		private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+		{
+			NumericUpDown sender = (NumericUpDown)senderAny;
+			_setDef.WidgetGridSpacing = (int)sender.Value;
+			OnSettingChange();
+		}
+
+
+
+		private void referenceResolutionComboBox_SelectedIndexChanged(object senderAny, EventArgs e)
+		{
+			ComboBox sender = (ComboBox)senderAny;
+			if (sender.SelectedIndex != _setDef.ReferenceResolution)
+			{
+				_needsCacheReload = true;
+			}
+			_setDef.ReferenceResolution = sender.SelectedIndex;
+			OnSettingChange();
+		}
+
+		private void referenceLanguageComboBox_SelectedValueChanged(object senderAny, EventArgs e)
+		{
+			ComboBox sender = (ComboBox)senderAny;
+			if (sender.Text != _setDef.ReferenceLanguage)
+			{
+				_needsCacheReload = true;
+			}
+			_setDef.ReferenceLanguage = sender.Text;
+			OnSettingChange();
+		}
+
+		private void hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			if (!_formLoaded)
+				return;
+			CheckBox sender = (CheckBox)senderAny;
+			if (!sender.Checked && MessageBox.Show("Are you sure you want to show Old MyGui Skins?\nPlease, do not use these skins unless you have a good reason to in order to maintain consistency across Scrap Mechanic Guis.", "Show Old MyGui Skins", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+			{
+				_needsCacheReload = true;
+				_setDef.HideOldMyGuiWidgetSkins = sender.Checked;
+				OnSettingChange();
+			}
+			else
+			{
+				if (sender.Checked)
+				{
+					_needsCacheReload = true;
+				}
+				sender.Checked = true;
+				_setDef.HideOldMyGuiWidgetSkins = true;
+				OnSettingChange();
+			}
+		}
+
+		private void hideOldSMWidgetSkinsCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			if (!_formLoaded)
+				return;
+			CheckBox sender = (CheckBox)senderAny;
+			if (!sender.Checked && MessageBox.Show("Are you sure you want to show Old Scrap Mechanic Skins?\nPlease, do not use these skins unless you have a good reason to in order to maintain consistency across Scrap Mechanic Guis.", "Show Old Scrap Mechanic Skins", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+			{
+				_needsCacheReload = true;
+				_setDef.HideOldSMWidgetSkins = sender.Checked;
+				OnSettingChange();
+			}
+			else
+			{
+				if (sender.Checked)
+				{
+					_needsCacheReload = true;
+				}
+				sender.Checked = true;
+				_setDef.HideOldSMWidgetSkins = true;
+				OnSettingChange();
+			}
+		}
+
+		private void forceCacheReloadButton_Click(object sender, EventArgs e)
+		{
+			_needsCacheReload = true;
+			MessageBox.Show("Close the Options to reload the cache.", "Cache Reload", MessageBoxButtons.OK);
+		}
+		#endregion
+
+		#region Tab Window
+		public enum BackgroundMode
+		{
+			useBackgroundImageColor,
+			useBackgroundImageGrid,
+			useBackgroundImageCustom
+		}
+
+		private void backgroundImage_CheckedChanged(object senderAny, EventArgs e)
+		{
+			RadioButton sender = (RadioButton)senderAny;
+			_setDef.EditorBackgroundMode = (int)Enum.Parse<BackgroundMode>(sender.Name, true);
+			OnSettingChange();
+		}
+
+		private void backgroundImageSelectButton_Click(object sender, EventArgs e)
+		{
+			if (_setDef.EditorBackgroundMode == 0)
+			{
+				ColorPickerDialog editorBackgroundColorDialog = Util.NewFixedColorPickerDialog();
+				editorBackgroundColorDialog.Color = _setDef.EditorBackgroundColor;
+				if (editorBackgroundColorDialog.ShowDialog(this) == DialogResult.OK)
+				{
+					_setDef.EditorBackgroundColor = editorBackgroundColorDialog.Color;
+					OnSettingChange();
+				}
+			}
+			else
+			{
+				editorBackgroundPathDialog.InitialDirectory = Util.IsValidPath(Path.GetDirectoryName(_setDef.EditorBackgroundImagePath)) ? Path.GetDirectoryName(_setDef.EditorBackgroundImagePath) : "C:\\";
+				if (editorBackgroundPathDialog.ShowDialog(this) == DialogResult.OK)
+				{
+					_setDef.EditorBackgroundImagePath = editorBackgroundPathDialog.FileName;
+					backgroundImagePathTextBox.Text = _setDef.EditorBackgroundImagePath;
+					OnSettingChange();
+				}
+			}
+		}
+
+
+
+		public enum ProgramThemes
+		{
+			useLightTheme,
+			useAutoTheme,
+			useDarkTheme
+		}
+
+		private void themeRadioButton_CheckedChanged(object senderAny, EventArgs e)
+		{
+			RadioButton sender = (RadioButton)senderAny;
+			if (!sender.Checked || !_formLoaded) { return; }
+			_setDef.Theme = (int)Enum.Parse<ProgramThemes>(sender.Name, true);
+			OnSettingChange();
+			if (_autoApply)
+			{
+				MessageBox.Show("Some options require program restart in order to apply.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			}
+			_needsRestartToApply = true;
+		}
+
+
+
+		private void showFullFilePathCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.ShowFullFilePathInTitle = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void saveCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.SaveWindowLayout = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void useCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.UseCustomWindowLayout = sender.Checked;
+			OnSettingChange();
+		}
+
+
+
+		private void useViewportVSyncCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.UseViewportVSync = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void redrawViewportOnResizeCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.RedrawViewportOnResize = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void useViewportAACheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.UseViewportAntiAliasing = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void useViewportFontAACheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.UseViewportFontAntiAliasing = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void viewportFilteringLevel_CheckedChanged(object senderAny, EventArgs e)
+		{
+			RadioButton sender = (RadioButton)senderAny;
+			_setDef.ViewportFilteringLevel = int.Parse(sender.Name.Last().ToString());
+			OnSettingChange();
+		}
+
+		private void renderInvisibleWidgetCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.RenderInvisibleWidgets = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void renderWidgetNamesCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.RenderWidgetNames = sender.Checked;
+			OnSettingChange();
+		}
+
+
+
+		private void hideSplashScreenCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.HideSplashScreen = sender.Checked;
+			OnSettingChange();
+		}
+
+		private void enterAcceptsCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		{
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.EnterAccepts = sender.Checked;
+			OnSettingChange();
+		}
+		#endregion
+
+		#region Tab File
 		private void chooseSmPath_Click(object sender, EventArgs e)
 		{
 			smPathDialog.InitialDirectory = Util.IsValidPath(_setDef.ScrapMechanicPath) ? _setDef.ScrapMechanicPath : "C:\\";
@@ -202,12 +537,27 @@ namespace MyGui.net
 			OnSettingChange();
 		}
 
-		private void showFullFilePathCheckBox_CheckedChanged(object senderAny, EventArgs e)
+		private void inspectInExplorerButton_Click(object sender, EventArgs e)
 		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.ShowFullFilePathInTitle = sender.Checked;
-			OnSettingChange();
+			try
+			{
+				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReDoIng Mods/MyGui.net");
+
+				// Open the folder using Process.Start
+				if (userConfigDirectory != null && Directory.Exists(userConfigDirectory))
+				{
+					Process.Start(new ProcessStartInfo
+					{
+						FileName = userConfigDirectory,
+						UseShellExecute = true // Required for opening folders
+					});
+				}
+			}
+			catch (Win32Exception)
+			{
+			}
 		}
+
 
 		private void preferPixelLayoutsCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
@@ -215,6 +565,8 @@ namespace MyGui.net
 			_setDef.PreferPixelLayouts = sender.Checked;
 			OnSettingChange();
 		}
+
+
 
 		public enum ExportMode
 		{
@@ -232,63 +584,7 @@ namespace MyGui.net
 			OnSettingChange();
 		}
 
-		private void CreateShortcut(string shortcutPath, string targetPath)
-		{
 
-			if (File.Exists(shortcutPath))
-			{
-				DialogResult result = MessageBox.Show($"The shortcut already exists:\n{shortcutPath}\n\nDo you want to overwrite it?", "Shortcut Exists", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-
-				if (result == DialogResult.No)
-					return; // Exit without overwriting
-			}
-
-			string psCommand = $@"
-				try {{
-					$WshShell = New-Object -ComObject WScript.Shell;
-					$Shortcut = $WshShell.CreateShortcut('{shortcutPath}');
-					$Shortcut.TargetPath = '{targetPath}';
-					$Shortcut.Save();
-				}} catch {{
-					Write-Error 'Failed to create shortcut: ' + $_.Exception.Message
-				}}
-			";
-
-			ProcessStartInfo psi = new ProcessStartInfo
-			{
-				FileName = "powershell",
-				Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{psCommand}\"",
-				UseShellExecute = false,
-				RedirectStandardError = true,
-				RedirectStandardOutput = true,
-				CreateNoWindow = true
-			};
-
-			try
-			{
-				using (Process process = new Process { StartInfo = psi })
-				{
-					process.Start();
-
-					string output = process.StandardOutput.ReadToEnd();
-					string error = process.StandardError.ReadToEnd();
-
-					process.WaitForExit();
-
-					if (!string.IsNullOrWhiteSpace(error))
-					{
-						MessageBox.Show($"PowerShell error:\n{error}", "Shortcut Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-						return;
-					}
-
-					MessageBox.Show("Shortcut created successfully!", "Shortcut Created", MessageBoxButtons.OK, MessageBoxIcon.Information);
-				}
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show($"An error occurred:\n{ex.Message}", "Shortcut Creation Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-		}
 
 		private void buttonAddToDesktop_Click(object sender, EventArgs e)
 		{
@@ -397,142 +693,9 @@ namespace MyGui.net
 								"Association Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
+		#endregion
 
-		private void useViewportVSyncCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.UseViewportVSync = sender.Checked;
-			OnSettingChange();
-		}
-
-		private void redrawViewportOnResizeCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.RedrawViewportOnResize = sender.Checked;
-			OnSettingChange();
-		}
-
-		private void useViewportAACheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.UseViewportAntiAliasing = sender.Checked;
-			OnSettingChange();
-		}
-
-		private void useViewportFontAACheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.UseViewportFontAntiAliasing = sender.Checked;
-			OnSettingChange();
-		}
-
-		private void viewportFilteringLevel_CheckedChanged(object senderAny, EventArgs e)
-		{
-			RadioButton sender = (RadioButton)senderAny;
-			_setDef.ViewportFilteringLevel = int.Parse(sender.Name.Last().ToString());
-			OnSettingChange();
-		}
-
-		private void renderInvisibleWidgetCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.RenderInvisibleWidgets = sender.Checked;
-			OnSettingChange();
-		}
-
-		private void renderWidgetNamesCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.RenderWidgetNames = sender.Checked;
-			OnSettingChange();
-		}
-
-		private void hideSplashScreenCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.HideSplashScreen = sender.Checked;
-			OnSettingChange();
-		}
-
-		private void enterAcceptsCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.EnterAccepts = sender.Checked;
-			OnSettingChange();
-		}
-
-		public enum BackgroundMode
-		{
-			useBackgroundImageColor,
-			useBackgroundImageGrid,
-			useBackgroundImageCustom
-		}
-
-		private void backgroundImage_CheckedChanged(object senderAny, EventArgs e)
-		{
-			RadioButton sender = (RadioButton)senderAny;
-			_setDef.EditorBackgroundMode = (int)Enum.Parse<BackgroundMode>(sender.Name, true);
-			OnSettingChange();
-		}
-
-		private void backgroundImageSelectButton_Click(object sender, EventArgs e)
-		{
-			if (_setDef.EditorBackgroundMode == 0)
-			{
-				ColorPickerDialog editorBackgroundColorDialog = Util.NewFixedColorPickerDialog();
-				editorBackgroundColorDialog.Color = _setDef.EditorBackgroundColor;
-				if (editorBackgroundColorDialog.ShowDialog(this) == DialogResult.OK)
-				{
-					_setDef.EditorBackgroundColor = editorBackgroundColorDialog.Color;
-					OnSettingChange();
-				}
-			}
-			else
-			{
-				editorBackgroundPathDialog.InitialDirectory = Util.IsValidPath(Path.GetDirectoryName(_setDef.EditorBackgroundImagePath)) ? Path.GetDirectoryName(_setDef.EditorBackgroundImagePath) : "C:\\";
-				if (editorBackgroundPathDialog.ShowDialog(this) == DialogResult.OK)
-				{
-					_setDef.EditorBackgroundImagePath = editorBackgroundPathDialog.FileName;
-					backgroundImagePathTextBox.Text = _setDef.EditorBackgroundImagePath;
-					OnSettingChange();
-				}
-			}
-		}
-
-		public enum ProgramThemes
-		{
-			useLightTheme,
-			useAutoTheme,
-			useDarkTheme
-		}
-
-		private void themeRadioButton_CheckedChanged(object senderAny, EventArgs e)
-		{
-			RadioButton sender = (RadioButton)senderAny;
-			if (!sender.Checked || !_formLoaded) { return; }
-			_setDef.Theme = (int)Enum.Parse<ProgramThemes>(sender.Name, true);
-			OnSettingChange();
-			if (_autoApply)
-			{
-				MessageBox.Show("Some options require program restart in order to apply.", "Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			}
-			_needsRestartToApply = true;
-		}
-
-		private void saveCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.SaveWindowLayout = sender.Checked;
-			OnSettingChange();
-		}
-
-		private void useCustomLayoutCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.UseCustomWindowLayout = sender.Checked;
-			OnSettingChange();
-		}
-
+		#region Tab Debug
 		private void showDebugConsoleCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
@@ -547,141 +710,71 @@ namespace MyGui.net
 			OnSettingChange();
 		}
 
-		//TAB PROJECT
-		private void workspaceSizeXNumericUpDown_ValueChanged(object senderAny, EventArgs e)
-		{
-			NumericUpDown sender = (NumericUpDown)senderAny;
-			if (this.Owner != null) //Multithreading safety
-			{
-				if (this.Owner.InvokeRequired)
-				{
-					this.Owner.Invoke(new Action(() =>
-					{
-						Form1.ProjectSize = new Size((int)sender.Value, Form1.ProjectSize.Height);
-						((Form1)this.Owner).AdjustViewportScrollers();
-					}));
-				}
-				else
-				{
-					Form1.ProjectSize = new Size((int)sender.Value, Form1.ProjectSize.Height);
-					((Form1)this.Owner).AdjustViewportScrollers();
-				}
-			}
-		}
-
-		private void workspaceSizeYNumericUpDown_ValueChanged(object senderAny, EventArgs e)
-		{
-			NumericUpDown sender = (NumericUpDown)senderAny;
-			if (this.Owner != null) //Multithreading safety
-			{
-				if (this.Owner.InvokeRequired)
-				{
-					this.Owner.Invoke(new Action(() =>
-					{
-						Form1.ProjectSize = new Size(Form1.ProjectSize.Width, (int)sender.Value);
-						((Form1)this.Owner).AdjustViewportScrollers();
-					}));
-				}
-				else
-				{
-					Form1.ProjectSize = new Size(Form1.ProjectSize.Width, (int)sender.Value);
-					((Form1)this.Owner).AdjustViewportScrollers();
-				}
-			}
-		}
-
-		private void workspaceSizeDefaultXNumericUpDown_ValueChanged(object senderAny, EventArgs e)
-		{
-			NumericUpDown sender = (NumericUpDown)senderAny;
-			_setDef.DefaultWorkspaceSize = new Size((int)sender.Value, _setDef.DefaultWorkspaceSize.Height);
-			OnSettingChange();
-		}
-
-		private void workspaceSizeDefaultYNumericUpDown_ValueChanged(object senderAny, EventArgs e)
-		{
-			NumericUpDown sender = (NumericUpDown)senderAny;
-			_setDef.DefaultWorkspaceSize = new Size(_setDef.DefaultWorkspaceSize.Width, (int)sender.Value);
-			OnSettingChange();
-		}
-
-		private void referenceResolutionComboBox_SelectedIndexChanged(object senderAny, EventArgs e)
-		{
-			ComboBox sender = (ComboBox)senderAny;
-			if (sender.SelectedIndex != _setDef.ReferenceResolution)
-			{
-				_needsCacheReload = true;
-			}
-			_setDef.ReferenceResolution = sender.SelectedIndex;
-			OnSettingChange();
-		}
-
-		private void referenceLanguageComboBox_SelectedValueChanged(object senderAny, EventArgs e)
-		{
-			ComboBox sender = (ComboBox)senderAny;
-			if (sender.Text != _setDef.ReferenceLanguage)
-			{
-				_needsCacheReload = true;
-			}
-			_setDef.ReferenceLanguage = sender.Text;
-			OnSettingChange();
-		}
-
-		private void hideOldMyGuiWidgetSkinsCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			if (!_formLoaded)
-				return;
-			CheckBox sender = (CheckBox)senderAny;
-			if (!sender.Checked && MessageBox.Show("Are you sure you want to show Old MyGui Skins?\nPlease, do not use these skins unless you have a good reason to in order to maintain consistency across Scrap Mechanic Guis.", "Show Old MyGui Skins", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
-			{
-				_needsCacheReload = true;
-				_setDef.HideOldMyGuiWidgetSkins = sender.Checked;
-				OnSettingChange();
-			}
-			else
-			{
-				if (sender.Checked)
-				{
-					_needsCacheReload = true;
-				}
-				sender.Checked = true;
-				_setDef.HideOldMyGuiWidgetSkins = true;
-				OnSettingChange();
-			}
-		}
-
-		private void forceCacheReloadButton_Click(object sender, EventArgs e)
-		{
-			_needsCacheReload = true;
-			MessageBox.Show("Close the Options to reload the cache.", "Cache Reload", MessageBoxButtons.OK);
-		}
-
 		private void showTypesForNamedWidgetsCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
 			CheckBox sender = (CheckBox)senderAny;
 			_setDef.ShowTypesForNamedWidgets = sender.Checked;
 			OnSettingChange();
 		}
+		#endregion
 
-		private void widgetGridSpacingNumericUpDown_ValueChanged(object senderAny, EventArgs e)
+		#region Tab Version
+		private void autoUpdateCheckCheckBox_CheckedChanged(object senderAny, EventArgs e)
 		{
-			NumericUpDown sender = (NumericUpDown)senderAny;
-			_setDef.WidgetGridSpacing = (int)sender.Value;
+			CheckBox sender = (CheckBox)senderAny;
+			_setDef.AutoCheckUpdate = sender.Checked;
 			OnSettingChange();
 		}
 
-		//Other
-
-		private void FormSettings_FormClosing(object sender, FormClosingEventArgs e)
+		private async void checkForUpdatesButton_ClickAsync(object sender, EventArgs e)
 		{
-			if (_needsCacheReload)
-			{
-				Form1.ReloadCache();
-				_needsCacheReload = false;
-			}
-			_setDef.Reload();
-			_autoApply = false;
+			await CheckAndUpdateAsync(Settings.Default.UpdateBearerToken);
 		}
 
+		private async Task CheckAndUpdateAsync(string bearerToken = "")
+		{
+			checkForUpdatesButton.Enabled = false;
+			string oldText = checkForUpdatesButton.Text;
+			checkForUpdatesButton.Text = "Checking for updates...";
+			try
+			{
+				var updateInfo = await Util.CheckForUpdateAsync(bearerToken);
+				if (updateInfo.UpdateAvailable)
+				{
+					if (MessageBox.Show($"Update {updateInfo.LatestVersion} is available for installation! Do you wish to download and install it?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					{
+						new FormUpdater(updateInfo.DownloadUrl).Show();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				DebugConsole.Log("Error during update check: " + ex.Message, DebugConsole.LogLevels.Error);
+			}
+
+			checkForUpdatesButton.Text = oldText;
+			checkForUpdatesButton.Enabled = true;
+		}
+		#endregion
+
+		#region Tab About
+		private void joinDiscordButton_Click(object sender, EventArgs e)
+		{
+			Process.Start(new ProcessStartInfo("https://discord.gg/DyUxeyAJRz") { UseShellExecute = true });
+		}
+
+		private void gitHubOrgButton_Click(object sender, EventArgs e)
+		{
+			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods") { UseShellExecute = true });
+		}
+
+		private void gitHubRepoButton_Click(object sender, EventArgs e)
+		{
+			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods/MyGui.net-For-SM") { UseShellExecute = true });
+		}
+		#endregion
+
+		#region Bottom Bar
 		private void cancelButton_Click(object sender, EventArgs e)
 		{
 			this.Close();
@@ -721,78 +814,45 @@ namespace MyGui.net
 			CheckBox sender = (CheckBox)senderAny;
 			_autoApply = sender.Checked;
 		}
+		#endregion
 
-		private void inspectInExplorerButton_Click(object sender, EventArgs e)
+		//Other
+
+		private void OnSettingChange()
 		{
-			try
+			backgroundImageSelectButton.Enabled = _setDef.EditorBackgroundMode == 0 || _setDef.EditorBackgroundMode == 2;
+			backgroundImagePathTextBox.Text = _setDef.EditorBackgroundMode == 0 ? Util.ColorToHexString(_setDef.EditorBackgroundColor) : (_setDef.EditorBackgroundMode == 2 ? _setDef.EditorBackgroundImagePath : "");
+			if (_autoApply)
 			{
-				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReDoIng Mods/MyGui.net");
-
-				// Open the folder using Process.Start
-				if (userConfigDirectory != null && Directory.Exists(userConfigDirectory))
+				_setDef.Save();
+				if (Settings.Default.ShowDebugConsole)
 				{
-					Process.Start(new ProcessStartInfo
-					{
-						FileName = userConfigDirectory,
-						UseShellExecute = true // Required for opening folders
-					});
+					DebugConsole.ShowConsole();
 				}
-			}
-			catch (Win32Exception)
-			{
-			}
-		}
-
-		private void autoUpdateCheckCheckBox_CheckedChanged(object senderAny, EventArgs e)
-		{
-			CheckBox sender = (CheckBox)senderAny;
-			_setDef.AutoCheckUpdate = sender.Checked;
-			OnSettingChange();
-		}
-
-		private async void checkForUpdatesButton_ClickAsync(object sender, EventArgs e)
-		{
-			await CheckAndUpdateAsync(Settings.Default.UpdateBearerToken);
-		}
-
-		private async Task CheckAndUpdateAsync(string bearerToken = "")
-		{
-			checkForUpdatesButton.Enabled = false;
-			string oldText = checkForUpdatesButton.Text;
-			checkForUpdatesButton.Text = "Checking for updates...";
-			try
-			{
-				var updateInfo = await Util.CheckForUpdateAsync(bearerToken);
-				if (updateInfo.UpdateAvailable)
+				else
 				{
-					if (MessageBox.Show($"Update {updateInfo.LatestVersion} is available for installation! Do you wish to download and install it?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-					{
-						new FormUpdater(updateInfo.DownloadUrl).Show();
-					}
+					DebugConsole.HideConsole();
 				}
+				applySettingsButton.Enabled = false;
+				_hasChanged = false;
+				return;
 			}
-			catch (Exception ex)
+			if (_formLoaded)
 			{
-				DebugConsole.Log("Error during update check: " + ex.Message, DebugConsole.LogLevels.Error);
+				_hasChanged = true;
 			}
-
-			checkForUpdatesButton.Text = oldText;
-			checkForUpdatesButton.Enabled = true;
+			applySettingsButton.Enabled = _hasChanged;
 		}
 
-		private void joinDiscordButton_Click(object sender, EventArgs e)
+		private void FormSettings_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			Process.Start(new ProcessStartInfo("https://discord.gg/DyUxeyAJRz") { UseShellExecute = true });
-		}
-
-		private void gitHubOrgButton_Click(object sender, EventArgs e)
-		{
-			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods") { UseShellExecute = true });
-		}
-
-		private void gitHubRepoButton_Click(object sender, EventArgs e)
-		{
-			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods/MyGui.net-For-SM") { UseShellExecute = true });
+			if (_needsCacheReload)
+			{
+				Form1.ReloadCache();
+				_needsCacheReload = false;
+			}
+			_setDef.Reload();
+			_autoApply = false;
 		}
 	}
 }

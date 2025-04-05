@@ -12,7 +12,16 @@ namespace MyGui.net
 			{"TextBox", "Neutral"},
 			{"EditBoxEmpty", "Neutral"},
 			{"WordWrapEmpty", "Neutral"},
-			{"ImageBox", "Neutral"}
+			{"ImageBox", "Neutral"},
+			{"CameraBorder", "Neutral"},
+			{"SelectionFieldBox", "Neutral"},
+			{"SMEditBox", "Neutral"},
+			{"SMWhiteButton", "Neutral"},
+			{"SMTextBox_NoBackground", "Neutral"},
+			{"SMTextBox_Small_NoBackground", "Neutral"},
+			{"SMEmptyScrollView", "Neutral"},
+			{"HyperTextLine", "Neutral"},
+			{"TileEditorHyperTextBox", "Neutral"}
 		};
 
 		public string outcome = "";
@@ -43,6 +52,10 @@ namespace MyGui.net
 						)
 					));
 				if (Settings.Default.HideOldMyGuiWidgetSkins && catStr == "Old MyGui")
+				{
+					continue;
+				}
+				else if (Settings.Default.HideOldSMWidgetSkins && catStr == "Old Scrap Mechanic")
 				{
 					continue;
 				}
