@@ -917,10 +917,14 @@ namespace MyGui.net
 						{
 							resPath = Path.Combine(Path.GetDirectoryName(path), resPath);
 						}
-						var subResources = ReadResourceFile(resPath, smPath).Item1;
-						foreach (var subRes in subResources)
+						var subResources = ReadResourceFile(resPath, smPath);
+						foreach (var subRes in subResources.Item1)
 						{
 							resources.Add(subRes);
+						}
+						foreach (var subRes in subResources.Item2)
+						{
+							imageResources.Add(subRes);
 						}
 					}
 				}
