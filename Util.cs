@@ -707,33 +707,33 @@ namespace MyGui.net
 		{
 			Dictionary<string, MyGuiResource> resourceDict = new();
 			Dictionary<string, MyGuiResourceImageSet> imageResourceDict = new();
-            
+			
 			// Set up the resource lists
 			var resourcesTuple = ReadResourceFile(Path.Combine(smPath, "Data/Gui/GuiConfig.xml"), smPath);
-            List<MyGuiResource> resources = resourcesTuple.Item1;
-            List<MyGuiResourceImageSet> imageResources = resourcesTuple.Item2;
-            
+			List<MyGuiResource> resources = resourcesTuple.Item1;
+			List<MyGuiResourceImageSet> imageResources = resourcesTuple.Item2;
+			
 			// Merge the the resources from jsons into the resource lists
 			var jsonResourcesTuple = ReadResourcesFromJson(Path.Combine(smPath, "Data/Gui/guiResolutions.json"), smPath, resolutionIdx);
-            foreach (var res in jsonResourcesTuple.Item1)
+			foreach (var res in jsonResourcesTuple.Item1)
 			{
 				resources.Add(res);
 			}
-            foreach (var res in jsonResourcesTuple.Item2)
-            {
-                imageResources.Add(res);
-            }
-            
+			foreach (var res in jsonResourcesTuple.Item2)
+			{
+				imageResources.Add(res);
+			}
+			
 			// Put them in dicts based on their names
 			foreach (var currRes in resources)
 			{
 				resourceDict[currRes.name] = currRes;
 			}
-            foreach (var currRes in imageResources)
-            {
-                imageResourceDict[currRes.name] = currRes;
-            }
-            
+			foreach (var currRes in imageResources)
+			{
+				imageResourceDict[currRes.name] = currRes;
+			}
+			
 			// Could this code be more efficient and suck less? Yes. Shut up.
 			return (resourceDict, imageResourceDict);
 		}
@@ -741,8 +741,8 @@ namespace MyGui.net
 		public static (List<MyGuiResource>, List<MyGuiResourceImageSet>) ReadResourcesFromJson(string path, string smPath, int resolutionIdx)
 		{
 			List<MyGuiResource> resources = new();
-            List<MyGuiResourceImageSet> imageResources = new();
-            string jsonString = File.ReadAllText(path);
+			List<MyGuiResourceImageSet> imageResources = new();
+			string jsonString = File.ReadAllText(path);
 			JsonElement jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonString);
 			JsonElement resPathList = jsonElement.GetProperty("resources");
 			string resolutionsPath = Path.Combine(smPath, "Data/Gui/Resolutions", ResolutionIdxToString(resolutionIdx));
@@ -751,19 +751,19 @@ namespace MyGui.net
 				var resourcesInFile = ReadResourceFile(ConvertGameFilesPath(Path.Combine(resolutionsPath, resPathElement.GetString()), smPath), smPath);
 				if (resourcesInFile.Item1 != null)
 				{
-                    foreach (var resourceInFile in resourcesInFile.Item1)
-                    {
-                        resources.Add(resourceInFile);
-                    }
-                }
+					foreach (var resourceInFile in resourcesInFile.Item1)
+					{
+						resources.Add(resourceInFile);
+					}
+				}
 				if (resourcesInFile.Item2 != null)
 				{
-                    foreach (var resourceInFile in resourcesInFile.Item2)
-                    {
-                        imageResources.Add(resourceInFile);
-                    }
-                }
-            }
+					foreach (var resourceInFile in resourcesInFile.Item2)
+					{
+						imageResources.Add(resourceInFile);
+					}
+				}
+			}
 			return (resources, imageResources);
 		}
 
@@ -771,7 +771,7 @@ namespace MyGui.net
 		{
 			List<MyGuiResource> resources = new();
 			List<MyGuiResourceImageSet> imageResources = new();
-            XDocument xmlDocument;
+			XDocument xmlDocument;
 			try
 			{
 				xmlDocument = XDocument.Load(path);
@@ -795,41 +795,41 @@ namespace MyGui.net
 					foreach (var r in res)
 					{
 						string resourceType = r.Attribute("type")?.Value;
-                        
+						
 						string texPath = null;
-                        if (resourceType == "ResourceSkin" || resourceType == "ResourceImageSet")
-                        {
-                            texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
-                            if (texPath == null || texPath == "")
-                            {
-                                texPath = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), r.Attribute("texture")?.Value);
-                            }
-                        }
-                        //if (texPath == null && resourceType != "ResourceLayout") { continue; }
+						if (resourceType == "ResourceSkin" || resourceType == "ResourceImageSet")
+						{
+							texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
+							if (texPath == null || texPath == "")
+							{
+								texPath = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), r.Attribute("texture")?.Value);
+							}
+						}
+						//if (texPath == null && resourceType != "ResourceLayout") { continue; }
 
-                        if (resourceType == "ResourceImageSet")
-                        {
+						if (resourceType == "ResourceImageSet")
+						{
 							MyGuiResourceImageSet newImageRes = new()
 							{
 								name = r.Attribute("name").Value ?? "NO NAME",
 								groups = new(),
 							};
-                            foreach (var group in r.Elements("Group"))
-                            {
+							foreach (var group in r.Elements("Group"))
+							{
 								Dictionary<string, Point> points = new();
-                                foreach (var index in group.Elements("Index"))
-                                {
+								foreach (var index in group.Elements("Index"))
+								{
 									XElement frame = index.Element("Frame");
 
-                                    string[] numbers = frame.Attribute("point").Value.Split(' ');
-                                    double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
-                                    int x = (int)Math.Round(parsedNumbers[0]);
-                                    int y = (int)Math.Round(parsedNumbers[1]);
-                                    Point point = new(x, y);
+									string[] numbers = frame.Attribute("point").Value.Split(' ');
+									double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
+									int x = (int)Math.Round(parsedNumbers[0]);
+									int y = (int)Math.Round(parsedNumbers[1]);
+									Point point = new(x, y);
 
 									points.Add(index.Attribute("name").Value, point);
-                                }
-                                
+								}
+								
 								MyGuiResourceImageSetGroup newGroup = new()
 								{
 									name = group.Attribute("name").Value,
@@ -837,12 +837,12 @@ namespace MyGui.net
 									size = group.Attribute("size").Value,
 									pathSpecial = path,
 									path = texPath,
-                                };
+								};
 								newImageRes.groups.Add(newGroup);
-                            }
-                            imageResources.Add(newImageRes);
-                            continue;
-                        }
+							}
+							imageResources.Add(newImageRes);
+							continue;
+						}
 
 						MyGuiResource newRes = new()
 						{
@@ -853,7 +853,7 @@ namespace MyGui.net
 							correctType = "",
 						};
 
-                        if (resourceType == "ResourceSkin")
+						if (resourceType == "ResourceSkin")
 						{
 							newRes.basisSkins = new();
 							foreach (var basisSkinElement in r.Elements("BasisSkin"))
@@ -935,11 +935,11 @@ namespace MyGui.net
 				Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins?.Count}, ResourceLayout: {resource.Value.resourceLayout != null}, CorrectType: {resource.Value.correctType}");
 			}
 			Debug.WriteLine("IMAGE RESOURCES:");
-            foreach (KeyValuePair<string, MyGuiResourceImageSet> resource in allResources.Item2)
-            {
-                Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, #groups: {resource.Value.groups?.Count}");
-            }
-        }
+			foreach (KeyValuePair<string, MyGuiResourceImageSet> resource in allResources.Item2)
+			{
+				Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, #groups: {resource.Value.groups?.Count}");
+			}
+		}
 
 		public static void PrintAllResources(Dictionary<string, MyGuiResource> allResources)
 		{
@@ -1179,9 +1179,9 @@ namespace MyGui.net
 				Debug.WriteLine($"Name: '{font.name}', Source: '{font.source}', Size: '{font.size}', LetterSpacing: '{font.letterSpacing}', AllowedChars: '{font.allowedChars}'");
 			}
 		}
-        #endregion
+		#endregion
 
-        #region Path Converting
+		#region Path Converting
 
 		/// <summary>
 		/// It might only work with paths with backslashes!
@@ -1190,7 +1190,7 @@ namespace MyGui.net
 		{
 			string dataPath = Path.Combine(smPath, "Data");
 			string guiPath = Path.Combine(dataPath, "Gui");
-            if (path.StartsWith(guiPath))
+			if (path.StartsWith(guiPath))
 			{
 				return Path.GetFileName(path.Replace(guiPath, ""));
 			}
@@ -1204,18 +1204,18 @@ namespace MyGui.net
 				return path.Replace(survivalPath, "$SURVIVAL_DATA").Replace('\\', '/');
 			}
 			string challengePath = Path.Combine(smPath, "ChallengeData");
-            if (path.StartsWith(challengePath))
-            {
-                return path.Replace(challengePath, "$CHALLENGE_DATA").Replace('\\', '/');
-            }
+			if (path.StartsWith(challengePath))
+			{
+				return path.Replace(challengePath, "$CHALLENGE_DATA").Replace('\\', '/');
+			}
 
 			string modWhere = "";
 			if (path.StartsWith(localModsPath)) modWhere = localModsPath;
 			else if (path.StartsWith(workshopModsPath)) modWhere = workshopModsPath;
 			if(modWhere != "")
 			{
-                string modName = path.Replace(modWhere, "").Split(['/', '\\'])[1];
-                string modPath = Path.Combine(modWhere, modName);
+				string modName = path.Replace(modWhere, "").Split(['/', '\\'])[1];
+				string modPath = Path.Combine(modWhere, modName);
 
 				string descPath = Path.Combine(modPath, "description.json");
 				if (!Util.IsValidFile(descPath))
@@ -1223,28 +1223,28 @@ namespace MyGui.net
 					return "";
 				}
 				string descJsonStr = File.ReadAllText(descPath);
-                JsonElement descJson = JsonSerializer.Deserialize<JsonElement>(descJsonStr);
-                string localId = descJson.GetProperty("localId").GetString();
-                return path.Replace(modPath, "$CONTENT_" + localId).Replace('\\', '/');
-            }
+				JsonElement descJson = JsonSerializer.Deserialize<JsonElement>(descJsonStr);
+				string localId = descJson.GetProperty("localId").GetString();
+				return path.Replace(modPath, "$CONTENT_" + localId).Replace('\\', '/');
+			}
 
-            return "";
-        }
+			return "";
+		}
 
-        public static string ConvertToSystemPath(string path, string smPath, Dictionary<string, string> modUuidToPath)
+		public static string ConvertToSystemPath(string path, string smPath, Dictionary<string, string> modUuidToPath)
 		{
 			if (path.StartsWith("$GAME_DATA"))
 			{
 				return path.Replace("$GAME_DATA", Path.Combine(smPath, "Data")).Replace('/', '\\');
 			}
-            if (path.StartsWith("$SURVIVAL_DATA"))
-            {
-                return path.Replace("$SURVIVAL_DATA", Path.Combine(smPath, "Survival")).Replace('/', '\\');
-            }
-            if (path.StartsWith("$CHALLENGE_DATA"))
-            {
-                return path.Replace("$CHALLENGE_DATA", Path.Combine(smPath, "ChallengeData")).Replace('/', '\\');
-            }
+			if (path.StartsWith("$SURVIVAL_DATA"))
+			{
+				return path.Replace("$SURVIVAL_DATA", Path.Combine(smPath, "Survival")).Replace('/', '\\');
+			}
+			if (path.StartsWith("$CHALLENGE_DATA"))
+			{
+				return path.Replace("$CHALLENGE_DATA", Path.Combine(smPath, "ChallengeData")).Replace('/', '\\');
+			}
 			if (path.StartsWith("$CONTENT_"))
 			{
 				string uuid = path.Substring(9, 36);
@@ -1252,21 +1252,21 @@ namespace MyGui.net
 				{
 					return Path.Combine(modPath, path[46..]).Replace('/', '\\');
 				}
-                return "";
-            }
+				return "";
+			}
 			if (path.Contains('.') && !path.Contains('\\') && !path.Contains('/'))
 			{
 				return FindFileInSubDirs(Path.Combine(smPath, "Data", "Gui"), path) ?? "";
 			}
 
-            return "";
-        }
+			return "";
+		}
 
-        /// <summary>
-        /// modFolders should contain the path to the local mods folder and workshop mods folder
+		/// <summary>
+		/// modFolders should contain the path to the local mods folder and workshop mods folder
 		/// The return should also be cached, so this shouldn't be called every time you want to get it
-        /// </summary>
-        public static Dictionary<string, string> GetModUuidsAndPaths(string[] modFolders)
+		/// </summary>
+		public static Dictionary<string, string> GetModUuidsAndPaths(string[] modFolders)
 		{
 			Dictionary<string, string> dict = new();
 			JsonSerializerOptions option = new()
@@ -1282,8 +1282,8 @@ namespace MyGui.net
 				foreach (var modPath in Directory.GetDirectories(path))
 				{
 					string descJsonPath = Path.Combine(modPath, "description.json");
-                    if (!File.Exists(descJsonPath)) continue;
-                    string descJsonStr = File.ReadAllText(descJsonPath).Replace("\r\n", "").Replace("\n", "");
+					if (!File.Exists(descJsonPath)) continue;
+					string descJsonStr = File.ReadAllText(descJsonPath).Replace("\r\n", "").Replace("\n", "");
 					try
 					{
 						JsonElement descJson = JsonSerializer.Deserialize<JsonElement>(descJsonStr, option);
@@ -1294,14 +1294,14 @@ namespace MyGui.net
 							dict[localId] = modPath;
 						}
 					} catch (Exception) { } //Some mods have shit wrong
-                }
+				}
 			}
 			return dict;
-        }
-        #endregion
+		}
+		#endregion
 
-        #region Util Utils
-        public static Random rand = new();
+		#region Util Utils
+		public static Random rand = new();
 
 		public static string SystemToMyGuiString(string input)
 		{
