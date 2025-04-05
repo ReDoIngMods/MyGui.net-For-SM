@@ -16,7 +16,8 @@ namespace MyGui.net
 		public static Dictionary<string, SKTypeface> _fontCache = new();
 
 		public static Dictionary<string, MyGuiResource> _allResources = new();
-		public static Dictionary<string, MyGuiFontData> _allFonts = new();
+		public static Dictionary<string, MyGuiResourceImageSet> _allImageResources = new();
+        public static Dictionary<string, MyGuiFontData> _allFonts = new();
 
 		public static Dictionary<string, MyGuiResource> AllResources => _allResources;
 		public static Dictionary<string, MyGuiFontData> AllFonts => _allFonts;

@@ -1776,6 +1776,20 @@ namespace MyGui.net
         public string correctType = ""; //TODO: This is currently always "" for ResourceSkin resources
     }
 
+    public class MyGuiResourceImageSet
+    {
+        public string name;
+		public List<MyGuiResourceImageSetGroup> groups;
+    }
+    public class MyGuiResourceImageSetGroup
+    {
+        public string? name;
+        public string? path;
+        public string? pathSpecial;
+        public string? size;
+		public Dictionary<string, Point> points;
+    }
+
     public class MyGuiFontData
     {
         public string name;

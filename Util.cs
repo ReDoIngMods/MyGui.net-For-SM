@@ -703,45 +703,75 @@ namespace MyGui.net
 			}
 		}
 
-		public static Dictionary<string, MyGuiResource> ReadAllResources(string smPath, int resolutionIdx)
+		public static (Dictionary<string, MyGuiResource>, Dictionary<string, MyGuiResourceImageSet>) ReadAllResources(string smPath, int resolutionIdx)
 		{
 			Dictionary<string, MyGuiResource> resourceDict = new();
-			List<MyGuiResource> resources = ReadResourceFile(Path.Combine(smPath, "Data/Gui/GuiConfig.xml"), smPath) ?? new();
-			foreach (var res in ReadResourcesFromJson(Path.Combine(smPath, "Data/Gui/guiResolutions.json"), smPath, resolutionIdx))
+			Dictionary<string, MyGuiResourceImageSet> imageResourceDict = new();
+            
+			// Set up the resource lists
+			var resourcesTuple = ReadResourceFile(Path.Combine(smPath, "Data/Gui/GuiConfig.xml"), smPath);
+            List<MyGuiResource> resources = resourcesTuple.Item1;
+            List<MyGuiResourceImageSet> imageResources = resourcesTuple.Item2;
+            
+			// Merge the the resources from jsons into the resource lists
+			var jsonResourcesTuple = ReadResourcesFromJson(Path.Combine(smPath, "Data/Gui/guiResolutions.json"), smPath, resolutionIdx);
+            foreach (var res in jsonResourcesTuple.Item1)
 			{
 				resources.Add(res);
 			}
-
+            foreach (var res in jsonResourcesTuple.Item2)
+            {
+                imageResources.Add(res);
+            }
+            
+			// Put them in dicts based on their names
 			foreach (var currRes in resources)
 			{
 				resourceDict[currRes.name] = currRes;
 			}
-			return resourceDict;
+            foreach (var currRes in imageResources)
+            {
+                imageResourceDict[currRes.name] = currRes;
+            }
+            
+			// Could this code be more efficient and suck less? Yes. Shut up.
+			return (resourceDict, imageResourceDict);
 		}
 
-		public static List<MyGuiResource> ReadResourcesFromJson(string path, string smPath, int resolutionIdx)
+		public static (List<MyGuiResource>, List<MyGuiResourceImageSet>) ReadResourcesFromJson(string path, string smPath, int resolutionIdx)
 		{
 			List<MyGuiResource> resources = new();
-			string jsonString = File.ReadAllText(path);
+            List<MyGuiResourceImageSet> imageResources = new();
+            string jsonString = File.ReadAllText(path);
 			JsonElement jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonString);
 			JsonElement resPathList = jsonElement.GetProperty("resources");
 			string resolutionsPath = Path.Combine(smPath, "Data/Gui/Resolutions", ResolutionIdxToString(resolutionIdx));
 			foreach (JsonElement resPathElement in resPathList.EnumerateArray())
 			{
 				var resourcesInFile = ReadResourceFile(ConvertGameFilesPath(Path.Combine(resolutionsPath, resPathElement.GetString()), smPath), smPath);
-				if (resourcesInFile == null) continue;
-				foreach (var resourceInFile in resourcesInFile)
+				if (resourcesInFile.Item1 != null)
 				{
-					resources.Add(resourceInFile);
-				}
-			}
-			return resources;
+                    foreach (var resourceInFile in resourcesInFile.Item1)
+                    {
+                        resources.Add(resourceInFile);
+                    }
+                }
+				if (resourcesInFile.Item2 != null)
+				{
+                    foreach (var resourceInFile in resourcesInFile.Item2)
+                    {
+                        imageResources.Add(resourceInFile);
+                    }
+                }
+            }
+			return (resources, imageResources);
 		}
 
-		public static List<MyGuiResource>? ReadResourceFile(string path, string smPath)
+		public static (List<MyGuiResource>?, List<MyGuiResourceImageSet>?) ReadResourceFile(string path, string smPath)
 		{
 			List<MyGuiResource> resources = new();
-			XDocument xmlDocument;
+			List<MyGuiResourceImageSet> imageResources = new();
+            XDocument xmlDocument;
 			try
 			{
 				xmlDocument = XDocument.Load(path);
@@ -749,13 +779,13 @@ namespace MyGui.net
 			catch (Exception ex)
 			{
 				MessageBox.Show($"Failed to read resource file!\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return null;
+				return (null, null);
 			}
 			XElement? root = xmlDocument.Root;
 			if(root == null)
 			{
 				MessageBox.Show($"Root element not found in resource file \"{path}\"", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return null;
+				return (null, null);
 			}
 			if (root.Attribute("type")?.Value == "Resource")
 			{
@@ -765,18 +795,54 @@ namespace MyGui.net
 					foreach (var r in res)
 					{
 						string resourceType = r.Attribute("type")?.Value;
-						if (resourceType == "ResourceImageSet") { continue; } //Special cases, "ResourceImageSet" is just set of images (different resources)
-
+                        
 						string texPath = null;
-						if (resourceType == "ResourceSkin")
-						{
-							texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
-							if (texPath == null || texPath == "")
+                        if (resourceType == "ResourceSkin" || resourceType == "ResourceImageSet")
+                        {
+                            texPath = FindFileInSubDirs(Path.GetDirectoryName(path), r.Attribute("texture")?.Value);
+                            if (texPath == null || texPath == "")
+                            {
+                                texPath = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), r.Attribute("texture")?.Value);
+                            }
+                        }
+                        //if (texPath == null && resourceType != "ResourceLayout") { continue; }
+
+                        if (resourceType == "ResourceImageSet")
+                        {
+							MyGuiResourceImageSet newImageRes = new()
 							{
-								texPath = FindFileInSubDirs(Path.Combine(smPath, "Data/Gui"), r.Attribute("texture")?.Value);
-							}
-						}
-						//if (texPath == null && resourceType != "ResourceLayout") { continue; }
+								name = r.Attribute("name").Value ?? "NO NAME",
+								groups = new(),
+							};
+                            foreach (var group in r.Elements("Group"))
+                            {
+								Dictionary<string, Point> points = new();
+                                foreach (var index in group.Elements("Index"))
+                                {
+									XElement frame = index.Element("Frame");
+
+                                    string[] numbers = frame.Attribute("point").Value.Split(' ');
+                                    double[] parsedNumbers = Array.ConvertAll(numbers, ProperlyParseDouble);
+                                    int x = (int)Math.Round(parsedNumbers[0]);
+                                    int y = (int)Math.Round(parsedNumbers[1]);
+                                    Point point = new(x, y);
+
+									points.Add(index.Attribute("name").Value, point);
+                                }
+                                
+								MyGuiResourceImageSetGroup newGroup = new()
+								{
+									name = group.Attribute("name").Value,
+									points = points,
+									size = group.Attribute("size").Value,
+									pathSpecial = path,
+									path = texPath,
+                                };
+								newImageRes.groups.Add(newGroup);
+                            }
+                            imageResources.Add(newImageRes);
+                            continue;
+                        }
 
 						MyGuiResource newRes = new()
 						{
@@ -787,7 +853,7 @@ namespace MyGui.net
 							correctType = "",
 						};
 
-						if (resourceType == "ResourceSkin")
+                        if (resourceType == "ResourceSkin")
 						{
 							newRes.basisSkins = new();
 							foreach (var basisSkinElement in r.Elements("BasisSkin"))
@@ -848,7 +914,7 @@ namespace MyGui.net
 						{
 							resPath = Path.Combine(Path.GetDirectoryName(path), resPath);
 						}
-						var subResources = ReadResourceFile(resPath, smPath);
+						var subResources = ReadResourceFile(resPath, smPath).Item1;
 						foreach (var subRes in subResources)
 						{
 							resources.Add(subRes);
@@ -857,17 +923,23 @@ namespace MyGui.net
 				}
 			}
 
-			return resources;
+			return (resources, imageResources);
 		}
 
 		public static void PrintAllResources(string smPath, int resolutionIdx = 1)
 		{
 			var allResources = ReadAllResources(smPath, resolutionIdx);
-			foreach (KeyValuePair<string, MyGuiResource> resource in allResources)
+			Debug.WriteLine("RESOURCES:");
+			foreach (KeyValuePair<string, MyGuiResource> resource in allResources.Item1)
 			{
 				Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins?.Count}, ResourceLayout: {resource.Value.resourceLayout != null}, CorrectType: {resource.Value.correctType}");
 			}
-		}
+			Debug.WriteLine("IMAGE RESOURCES:");
+            foreach (KeyValuePair<string, MyGuiResourceImageSet> resource in allResources.Item2)
+            {
+                Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, #groups: {resource.Value.groups?.Count}");
+            }
+        }
 
 		public static void PrintAllResources(Dictionary<string, MyGuiResource> allResources)
 		{
