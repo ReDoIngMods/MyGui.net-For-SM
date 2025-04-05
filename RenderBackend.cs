@@ -701,6 +701,10 @@ namespace MyGui.net
 							colorFilter.Dispose();
 							continue;
 						}
+						else if (widgetTertiaryData.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel))
+						{
+							string imageResourceGroup = widgetTertiaryData.properties.TryGetValue("ImageResource", out string iRG) ? iRG : "";
+						}
 					}
 				}
 

@@ -712,7 +712,7 @@ namespace MyGui.net
 			var resourcesTuple = ReadResourceFile(Path.Combine(smPath, "Data/Gui/GuiConfig.xml"), smPath);
 			List<MyGuiResource> resources = resourcesTuple.Item1;
 			List<MyGuiResourceImageSet> imageResources = resourcesTuple.Item2;
-			
+
 			// Merge the the resources from jsons into the resource lists
 			var jsonResourcesTuple = ReadResourcesFromJson(Path.Combine(smPath, "Data/Gui/guiResolutions.json"), smPath, resolutionIdx);
 			foreach (var res in jsonResourcesTuple.Item1)
@@ -723,17 +723,11 @@ namespace MyGui.net
 			{
 				imageResources.Add(res);
 			}
-			
+
 			// Put them in dicts based on their names
-			foreach (var currRes in resources)
-			{
-				resourceDict[currRes.name] = currRes;
-			}
-			foreach (var currRes in imageResources)
-			{
-				imageResourceDict[currRes.name] = currRes;
-			}
-			
+			resourceDict = resources.ToDictionary(res => res.name);
+			imageResourceDict = imageResources.ToDictionary(res => res.name);
+
 			// Could this code be more efficient and suck less? Yes. Shut up.
 			return (resourceDict, imageResourceDict);
 		}
@@ -743,6 +737,7 @@ namespace MyGui.net
 			List<MyGuiResource> resources = new();
 			List<MyGuiResourceImageSet> imageResources = new();
 			string jsonString = File.ReadAllText(path);
+
 			JsonElement jsonElement = JsonSerializer.Deserialize<JsonElement>(jsonString);
 			JsonElement resPathList = jsonElement.GetProperty("resources");
 			string resolutionsPath = Path.Combine(smPath, "Data/Gui/Resolutions", ResolutionIdxToString(resolutionIdx));
@@ -838,7 +833,7 @@ namespace MyGui.net
 									pathSpecial = path,
 									path = texPath,
 								};
-								newImageRes.groups.Add(newGroup);
+								newImageRes.groups.Add(newGroup.name, newGroup);
 							}
 							imageResources.Add(newImageRes);
 							continue;
@@ -940,7 +935,7 @@ namespace MyGui.net
 				Debug.WriteLine($"Name: {resource.Value.name}, #groups: {resource.Value.groups?.Count}");
 				foreach (var group in resource.Value.groups)
 				{
-					Debug.WriteLine($"- GROUP: {group.name}, Path: {group.path}, #points: {group.points.Count}");
+					Debug.WriteLine($"- GROUP: {group.Value.name}, Path: {group.Value.path}, #points: {group.Value.points.Count}");
 				}
 			}
 		}

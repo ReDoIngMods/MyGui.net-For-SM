@@ -167,9 +167,9 @@ namespace MyGui.net
 			DebugConsole.Log($"Cache Reference Resolution: {Settings.Default.ReferenceResolution}", DebugConsole.LogLevels.Info);
 			DebugConsole.Log($"Cache Reference Language: {Settings.Default.ReferenceLanguage}", DebugConsole.LogLevels.Info);
 			var resourcesTuple  = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
-			_allResources = resourcesTuple.Item1;
+			RenderBackend._allResources = resourcesTuple.Item1;
 			DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
-			_allImageResources = resourcesTuple.Item2;
+			RenderBackend._allImageResources = resourcesTuple.Item2;
             DebugConsole.Log($"Cache Image Count: {_allImageResources.Count}", DebugConsole.LogLevels.Info);
 
 			RenderBackend._allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);

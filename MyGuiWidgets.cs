@@ -1706,7 +1706,8 @@ namespace MyGui.net
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Resource")]
-		[Description("Path to the XML from which you may load different images using Image Name and Image Group. Keep empty if using Image Texture!")]
+		[Description("Set from which you may load different images using Image Name and Image Group. Keep empty if using Image Texture!")]
+		[TypeConverter(typeof(StringDropdownConverter))]
 		public string ImageResource
 		{
 			get => widget.properties.TryGetValue("ImageResource", out var value) ? value : "";
@@ -1779,7 +1780,7 @@ namespace MyGui.net
     public class MyGuiResourceImageSet
     {
         public string name;
-		public List<MyGuiResourceImageSetGroup> groups;
+		public Dictionary<string, MyGuiResourceImageSetGroup> groups;
     }
     public class MyGuiResourceImageSetGroup
     {

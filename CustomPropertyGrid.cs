@@ -103,7 +103,8 @@ namespace MyGui.net
 			{ "Type", ["Widget", "Button", "Canvas", "ComboBox", "DDContainer", "EditBox", "ItemBox", "ListBox", "MenuBar", "MultiListBox", "PopupMenu", "ProgressBar", "ScrollBar", "ScrollView", "ImageBox", "TextBox", "TabControl", "Window"] },
 			{ "FlowDirection", ["Default", "LeftToRight", "RightToLeft", "TopToBottom", "BottomToTop"] },
 			{ "TextAlign", ["Default", "Center", "Left Top", "Left Bottom", "Left VCenter", "Right Top", "Right Bottom", "Right VCenter", "HCenter Top", "HCenter Bottom", "HCenter VCenter"] },
-			{ "Align", ["Default", "Stretch", "Center", "Left Top", "Left Bottom", "Left VStretch", "Left VCenter", "Right Top", "Right Bottom", "Right VStretch", "Right VCenter", "HStretch Top", "HCenter Top", "HStretch Bottom", "HStretch VCenter", "HCenter Bottom", "HCenter VCenter", "HCenter VStretch"] }
+			{ "Align", ["Default", "Stretch", "Center", "Left Top", "Left Bottom", "Left VStretch", "Left VCenter", "Right Top", "Right Bottom", "Right VStretch", "Right VCenter", "HStretch Top", "HCenter Top", "HStretch Bottom", "HStretch VCenter", "HCenter Bottom", "HCenter VCenter", "HCenter VStretch"] },
+			{ "ImageResource", RenderBackend._allImageResources.Keys.ToList() }
 		};
 
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
