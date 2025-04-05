@@ -932,12 +932,16 @@ namespace MyGui.net
 			Debug.WriteLine("RESOURCES:");
 			foreach (KeyValuePair<string, MyGuiResource> resource in allResources.Item1)
 			{
-				Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins?.Count}, ResourceLayout: {resource.Value.resourceLayout != null}, CorrectType: {resource.Value.correctType}");
+				Debug.WriteLine($"Name: {resource.Value.name}, Path: {resource.Value.path}, PathSpecial: {resource.Value.pathSpecial}, #basisSkins: {resource.Value.basisSkins?.Count}, ResourceLayout: {resource.Value.resourceLayout != null}, CorrectType: {resource.Value.correctType}");
 			}
 			Debug.WriteLine("IMAGE RESOURCES:");
 			foreach (KeyValuePair<string, MyGuiResourceImageSet> resource in allResources.Item2)
 			{
-				Debug.WriteLine($"Key: {resource.Key} Name: {resource.Value.name}, #groups: {resource.Value.groups?.Count}");
+				Debug.WriteLine($"Name: {resource.Value.name}, #groups: {resource.Value.groups?.Count}");
+				foreach (var group in resource.Value.groups)
+				{
+					Debug.WriteLine($"- GROUP: {group.name}, Path: {group.path}, #points: {group.points.Count}");
+				}
 			}
 		}
 
