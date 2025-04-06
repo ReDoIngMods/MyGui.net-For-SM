@@ -471,7 +471,10 @@ namespace MyGui.net
 				}
 				Tuple<Point, Point> posAndSize = GetWidgetPosAndSize(isPosReal, positionStr, parentSize);
 				widgetData.position = posAndSize.Item1;
-				widgetData.size = posAndSize.Item2;
+				Point size = posAndSize.Item2;
+				size.X = Math.Max(1, size.X);
+				size.Y = Math.Max(1, size.Y);
+				widgetData.size = size;
 
 				foreach (XElement property in widget.Elements("Property"))
 				{

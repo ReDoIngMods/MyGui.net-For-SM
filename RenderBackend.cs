@@ -667,13 +667,15 @@ namespace MyGui.net
 							drawPaint.IsDither = true;
 
 							Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
-							
+
+							float alpha = widgetTertiaryData.properties.TryGetValue("Alpha", out string alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
+
 							float[] colorMatrix = new float[]
 							{
 								selectedColor.R / 255f, 0, 0, 0, 0,
 								0, selectedColor.G / 255f, 0, 0, 0,
 								0, 0, selectedColor.B / 255f, 0, 0,
-								0, 0, 0, 1, 0
+								0, 0, 0, Math.Clamp(alpha, 0f, 1f), 0
 							};
 
 							// Create a color filter using the color matrix
@@ -701,9 +703,69 @@ namespace MyGui.net
 							colorFilter.Dispose();
 							continue;
 						}
-						else if (widgetTertiaryData.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel))
+						else if (widgetTertiaryData.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel) && _allImageResources.ContainsKey(imageResourceRel))
 						{
-							string imageResourceGroup = widgetTertiaryData.properties.TryGetValue("ImageResource", out string iRG) ? iRG : "";
+							string imageResourceGroup = widgetTertiaryData.properties.TryGetValue("ImageGroup", out string iRG) ? iRG : "";
+							var imageResource = _allImageResources[imageResourceRel];
+
+							var currentGroup = imageResource.groups.TryGetValue(imageResourceGroup, out MyGuiResourceImageSetGroup cG) ? cG : (string.IsNullOrEmpty(iRG) ? imageResource.groups.First().Value : null);
+
+							if (currentGroup == null)
+							{
+								continue;
+							}
+
+							if (!_skinAtlasCache.ContainsKey("RESOURCE_" + currentGroup.path))
+							{
+								SKBitmap? cachedBitmap = SKBitmap.Decode(currentGroup.path);
+								if (cachedBitmap != null)
+								{
+									_skinAtlasCache["RESOURCE_" + currentGroup.path] = SKImage.FromBitmap(cachedBitmap);
+								}
+								else
+								{
+									continue;
+								}
+							}
+							var image = _skinAtlasCache["RESOURCE_" + currentGroup.path];
+							drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+							drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
+							drawPaint.IsDither = true;
+
+							Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
+							
+							float alpha = widgetTertiaryData.properties.TryGetValue("Alpha", out string alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
+
+							float[] colorMatrix = new float[]
+							{
+								selectedColor.R / 255f, 0, 0, 0, 0,
+								0, selectedColor.G / 255f, 0, 0, 0,
+								0, 0, selectedColor.B / 255f, 0, 0,
+								0, 0, 0, Math.Clamp(alpha, 0f, 1f), 0
+							};
+
+							// Create a color filter using the color matrix
+							SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
+
+							// Clone the paint object and set the color filter
+							drawPaint.ColorFilter = colorFilter;
+
+
+							string imageResourceName = widgetTertiaryData.properties.TryGetValue("ImageName", out string iI) ? iI : "";
+
+							Point? currPoint = currentGroup.points.TryGetValue(imageResourceName, out Point cP) ? cP : (string.IsNullOrEmpty(imageResourceName) ? currentGroup.points.First().Value : null);
+
+							if (currPoint == null)
+							{
+								continue;
+							}
+
+							var pos = currPoint.Value;
+							var size = Util.GetWidgetPos(true, currentGroup.size);
+
+							canvas.DrawImage(image, new(pos.X, pos.Y, pos.X + size.X, pos.Y + size.Y), clientRect, drawPaint);
+							colorFilter.Dispose();
+							continue;
 						}
 					}
 				}
@@ -730,14 +792,15 @@ namespace MyGui.net
 				{
 					continue;
 				}
+
 				if (drawColor != null)
 				{
 					float[] colorMatrix = new float[]
 					{
-						drawColor.Value.Red / 255f, 0, 0, 0, 0,
-						0, drawColor.Value.Green / 255f, 0, 0, 0,
-						0, 0, drawColor.Value.Blue / 255f, 0, 0,
-						0, 0, 0, 1, 0
+								drawColor.Value.Red / 255f, 0, 0, 0, 0,
+								0, drawColor.Value.Green / 255f, 0, 0, 0,
+								0, 0, drawColor.Value.Blue / 255f, 0, 0,
+								0, 0, 0, 1, 0
 					};
 
 					// Create a color filter using the color matrix
@@ -761,9 +824,33 @@ namespace MyGui.net
 					drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 					drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
 					drawPaint.IsDither = true;
+
+					Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
+
+					float alpha = widgetTertiaryData.properties.TryGetValue("Alpha", out string alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
+
+					float[] colorMatrix = new float[]
+					{
+							selectedColor.R / 255f, 0, 0, 0, 0,
+							0, selectedColor.G / 255f, 0, 0, 0,
+							0, 0, selectedColor.B / 255f, 0, 0,
+							0, 0, 0, Math.Clamp(alpha, 0f, 1f), 0
+					};
+
+					// Create a color filter using the color matrix
+					SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
+
+					// Clone the paint object and set the color filter
+					drawPaint.ColorFilter = colorFilter;
+
+					//int beforeClipSave = canvas.Save();
+					//canvas.ClipRect(destRect);
+					//canvas.Clear();
 					canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
+					colorFilter.Dispose();
 					//canvas.RestoreToCount(beforeClipSave);
 				}
+
 				drawPaint.Dispose();
 			}
 		}

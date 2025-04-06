@@ -3,6 +3,7 @@ using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.ComponentModel;
 using System.Drawing.Design;
+using System.Globalization;
 using System.Windows.Forms.Design;
 
 namespace MyGui.net
@@ -104,7 +105,7 @@ namespace MyGui.net
 			{ "FlowDirection", ["Default", "LeftToRight", "RightToLeft", "TopToBottom", "BottomToTop"] },
 			{ "TextAlign", ["Default", "Center", "Left Top", "Left Bottom", "Left VCenter", "Right Top", "Right Bottom", "Right VCenter", "HCenter Top", "HCenter Bottom", "HCenter VCenter"] },
 			{ "Align", ["Default", "Stretch", "Center", "Left Top", "Left Bottom", "Left VStretch", "Left VCenter", "Right Top", "Right Bottom", "Right VStretch", "Right VCenter", "HStretch Top", "HCenter Top", "HStretch Bottom", "HStretch VCenter", "HCenter Bottom", "HCenter VCenter", "HCenter VStretch"] },
-			{ "ImageResource", RenderBackend._allImageResources.Keys.ToList() }
+			{ "ImageResource", new[] { "Default" }.Concat(RenderBackend._allImageResources.Keys).ToList() }
 		};
 
 		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
@@ -973,6 +974,75 @@ namespace MyGui.net
 			}
 
 			return value;
+		}
+	}
+
+	public class ImageGroupConverter : TypeConverter
+	{
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			// Indicates that this object supports a standard set of values
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
+			return false;
+		}
+
+		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+		{
+			// Provides the standard values for the dropdown
+			var widget = Form1._currentSelectedWidget;
+			if (widget != null)
+			{
+				if (widget.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel) && RenderBackend._allImageResources.ContainsKey(imageResourceRel))
+				{
+					List<string> keys = RenderBackend._allImageResources[imageResourceRel].groups.Keys.ToList();
+					keys.Insert(0, "Default");
+					return new StandardValuesCollection(keys);
+				}
+			}
+			return new StandardValuesCollection(new[] { "Default" });
+		}
+	}
+
+	public class ImageNameConverter : TypeConverter
+	{
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			// Indicates that this object supports a standard set of values
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
+			return false;
+		}
+
+		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+		{
+			// Provides the standard values for the dropdown
+			var widget = Form1._currentSelectedWidget;
+			if (widget != null)
+			{
+				if (widget.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel) && RenderBackend._allImageResources.ContainsKey(imageResourceRel))
+				{
+					string imageResourceGroup = widget.properties.TryGetValue("ImageGroup", out string iRG) ? iRG : "";
+					var imageResource = RenderBackend._allImageResources[imageResourceRel];
+					var currentGroup = imageResource.groups.TryGetValue(imageResourceGroup, out MyGuiResourceImageSetGroup cG) ? cG : (string.IsNullOrEmpty(iRG) ? imageResource.groups.First().Value : null);
+
+					if (currentGroup != null)
+					{
+						List<string> keys = currentGroup.points.Keys.ToList();
+						keys.Insert(0, "Default");
+						return new StandardValuesCollection(keys);
+					}
+				}
+			}
+			return new StandardValuesCollection(new[] { "Default" });
 		}
 	}
 }

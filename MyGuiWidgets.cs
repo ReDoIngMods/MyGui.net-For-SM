@@ -1643,6 +1643,7 @@ namespace MyGui.net
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Group")]
 		[Description("The group of the Image Resource to use for rendering.")]
+		[TypeConverter(typeof(ImageGroupConverter))]
 		public string ImageGroup
 		{
 			get => widget.properties.TryGetValue("ImageGroup", out var value) ? value : "";
@@ -1686,6 +1687,7 @@ namespace MyGui.net
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Name")]
 		[Description("Name of the image to pull from Image Resource.")]
+		[TypeConverter(typeof(ImageNameConverter))]
 		public string ImageName
 		{
 			get => widget.properties.TryGetValue("ImageName", out var value) ? value : "";
