@@ -1160,7 +1160,7 @@ namespace MyGui.net
 						break;
 					default:
 						Cursor = Cursors.Default; // Normal cursor
-						viewport.Refresh();
+						//viewport.Refresh();
 						break;
 				}
 

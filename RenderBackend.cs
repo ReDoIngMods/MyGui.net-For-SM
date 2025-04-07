@@ -226,7 +226,6 @@ namespace MyGui.net
 				}
 				else
 				{
-					//WIP!!!
 					SKRect localRect = new SKRect(widget.position.X, widget.position.Y, widget.position.X + widget.size.X, widget.position.Y + widget.size.Y);
 					SKRect parentRect = parent != null ? new(1, 1, parent.size.X - 2, parent.size.Y - 2) : new(1, 1, Form1.ProjectSize.Width - 2, Form1.ProjectSize.Height - 2);
 					if (!Util.RectsOverlap(localRect, parentRect))
