@@ -1989,7 +1989,7 @@ namespace MyGui.net
 			{
 				if (e.Control && e.KeyCode == Keys.C && _currentSelectedWidget != null)
 				{
-					MyGuiWidgetData widgetToCopy = e.Shift ? ShallowCopy(_currentSelectedWidget) : _currentSelectedWidget;
+					MyGuiWidgetData widgetToCopy = e.Shift ? DeepCopy(_currentSelectedWidget) : _currentSelectedWidget;
 					if (e.Shift)
 					{
 						widgetToCopy.children = new();
@@ -2006,11 +2006,7 @@ namespace MyGui.net
 				}
 				else if (e.Control && e.KeyCode == Keys.X && _currentSelectedWidget != null)
 				{
-					MyGuiWidgetData widgetToCopy = e.Shift ? ShallowCopy(_currentSelectedWidget) : _currentSelectedWidget;
-					if (e.Shift)
-					{
-						widgetToCopy.children = new();
-					}
+					MyGuiWidgetData widgetToCopy = e.Shift ? DeepCopy(_currentSelectedWidget) : _currentSelectedWidget;
 					List<MyGuiWidgetData> myGuiWidgetDatas = [widgetToCopy];
 					if (Clipboard.ContainsText())
 					{
