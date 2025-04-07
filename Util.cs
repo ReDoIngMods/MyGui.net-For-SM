@@ -710,11 +710,28 @@ namespace MyGui.net
 		{
 			Dictionary<string, MyGuiResource> resourceDict = new();
 			Dictionary<string, MyGuiResourceImageSet> imageResourceDict = new();
-			
-			// Set up the resource lists
-			var resourcesTuple = ReadResourceFile(Path.Combine(smPath, "Data/Gui/GuiConfig.xml"), smPath);
-			List<MyGuiResource> resources = resourcesTuple.Item1;
-			List<MyGuiResourceImageSet> imageResources = resourcesTuple.Item2;
+
+            List<MyGuiResource> resources = [];
+			List<MyGuiResourceImageSet> imageResources = [];
+
+			(List<MyGuiResource>, List<MyGuiResourceImageSet>)[] configs = {
+				ReadResourceFile(Path.Combine(smPath, "Data/Gui/GuiConfig.xml"), smPath)!,
+				ReadResourceFile(Path.Combine(smPath, "Survival/Gui/GuiConfigSurvival.xml"), smPath)!,
+				ReadResourceFile(Path.Combine(smPath, "ChallengeData/Gui/GuiConfigChallenge.xml"), smPath)!,
+			};
+
+			foreach (var config in configs)
+			{
+				foreach (MyGuiResource resource in config.Item1)
+				{
+					resources.Add(resource);
+				}
+
+                foreach (MyGuiResourceImageSet imageResource in config.Item2)
+                {
+					imageResources.Add(imageResource);
+                }
+            }
 
 			// Merge the the resources from jsons into the resource lists
 			var jsonResourcesTuple = ReadResourcesFromJson(Path.Combine(smPath, "Data/Gui/guiResolutions.json"), smPath, resolutionIdx);
