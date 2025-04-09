@@ -334,6 +334,7 @@ namespace MyGui.net
 		{
 			widgetSecondaryData ??= widget;
 			widgetTertiaryData ??= widgetSecondaryData;
+			var widgetTertiaryDataSkin = _allResources.TryGetValue(widgetTertiaryData.skin, out var wTDS) ? wTDS : null;
 			if (resource == null || resource.basisSkins == null)
 			{
 				return; // Nothing to render if essential data is missing
@@ -359,7 +360,7 @@ namespace MyGui.net
 				var tileOffset = Util.GetWidgetPosAndSize(false, skin.offset, new(1, 1));
 
 				// Find the normal state of the skin
-				var normalState = widgetTertiaryData.properties.TryGetValue("StateSelected", out var val) && val == "true" && skin.states.FirstOrDefault(state => state.name == "pushed") != null ? skin.states.FirstOrDefault(state => state.name == "pushed") : skin.states.FirstOrDefault(state => state.name == "normal");
+				var normalState = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "StateSelected", out var val) && val == "true" && skin.states.FirstOrDefault(s => s.name == "pushed") is { } pushed ? pushed : skin.states.FirstOrDefault(s => s.name == "normal");
 				if (normalState == null)
 				{
 					normalState = new() { name = "normal", offset = skin.offset };
@@ -405,7 +406,7 @@ namespace MyGui.net
 							int beforeTextClip = canvas.Save();
 							canvas.ClipRect(destRect);
 
-							var fontData = widgetTertiaryData.properties.TryGetValue("FontName", out string value) && _allFonts.ContainsKey(value) ? _allFonts[value] : _allFonts["DeJaVuSans"];
+							var fontData = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "FontName", out string value) && _allFonts.ContainsKey(value) ? _allFonts[value] : _allFonts["DeJaVuSans"];
 							string fontPath = Path.Combine(Settings.Default.ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
 							if (!_fontCache.ContainsKey(fontPath))
 							{
@@ -413,9 +414,9 @@ namespace MyGui.net
 							}
 
 							Color? textColor;
-							if (widgetTertiaryData.properties.ContainsKey("TextColour"))
+							if (Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextColour", out var textColourStr))
 							{
-								textColor = ParseColorFromString(widgetTertiaryData.properties["TextColour"]);
+								textColor = ParseColorFromString(textColourStr);
 							}
 							else if (!string.IsNullOrEmpty(normalState.color))
 							{
@@ -458,12 +459,12 @@ namespace MyGui.net
 							float widgetWidth = destRect.Right - destRect.Left;
 							float widgetHeight = destRect.Bottom - destRect.Top;
 
-							if (widgetTertiaryData.type == "EditBox" && (!widgetTertiaryData.properties.TryGetValue("MultiLine", out string ml) || ml != "true"))
+							if (widgetTertiaryData.type == "EditBox" && (!Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "MultiLine", out var ml) || ml != "true"))
 							{
 								captionText = captionText.Replace("\\n", " ");
 							}
 
-							if (widgetTertiaryData.type == "EditBox" && widgetTertiaryData.properties.TryGetValue("WordWrap", out string ww) && ww == "true")
+							if (widgetTertiaryData.type == "EditBox" && Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "WordWrap", out var ww) && ww == "true")
 							{
 								captionText = WordWrap(captionText, destRect.Width, _baseFontPaint, actualFontLetterSpacing, screenSizeMultiplier, defaultFontSize, actualFontSize);
 							}
@@ -534,7 +535,9 @@ namespace MyGui.net
 							float offsetX = 0;
 							float offsetY = 0;
 
-							if (widgetTertiaryData.properties.TryGetValue("TextAlign", out string textAlign))
+							Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextAlign", out string textAlign);
+
+							if (!string.IsNullOrEmpty(textAlign) && lineWidths.Count > 0)
 							{
 								if (textAlign.Contains("VCenter") || textAlign == "Center")
 								{

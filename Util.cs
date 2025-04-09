@@ -337,6 +337,23 @@ namespace MyGui.net
 			}
 		}
 
+		public static dynamic AutoConvert(object obj)
+		{
+			if (obj == null)
+				return null; // Return null if object is null
+
+			try
+			{
+				// Return the object directly as its dynamic type
+				return Convert.ChangeType(obj, obj.GetType());
+			}
+			catch
+			{
+				// Return null if the conversion fails for any reason
+				return null;
+			}
+		}
+
 		public static bool IsAnyOf<T>(T item, IEnumerable<T> collection)
 		{
 			foreach (var element in collection)
@@ -366,21 +383,16 @@ namespace MyGui.net
 			return false;
 		}
 
-		public static dynamic AutoConvert(object obj)
+		public static bool TryGetValueFromMany<TKey, TValue>(IEnumerable<IDictionary<TKey, TValue>> dictionaries, TKey key, out TValue value)
 		{
-			if (obj == null)
-				return null; // Return null if object is null
+			foreach (var dict in dictionaries)
+			{
+				if (dict != null && dict.Any() && dict.TryGetValue(key, out value))
+					return true;
+			}
 
-			try
-			{
-				// Return the object directly as its dynamic type
-				return Convert.ChangeType(obj, obj.GetType());
-			}
-			catch
-			{
-				// Return null if the conversion fails for any reason
-				return null;
-			}
+			value = default;
+			return false;
 		}
 		#endregion
 
@@ -915,6 +927,23 @@ namespace MyGui.net
 								}
 							}
 							newRes.resourceLayout = ReadWidgetElements(r.Elements("Widget"), new(1920, 1080));
+							
+							//Do defaults
+							var propertyDefaults = r.Element("Widget").Elements("Property");
+							if (propertyDefaults != null)
+							{
+								newRes.defaultProperties = new();
+								foreach (var property in propertyDefaults)
+								{
+									string key = property.Attribute("key")?.Value;
+									string value = property.Attribute("value")?.Value;
+
+									if (value != null)
+									{
+										newRes.defaultProperties.TryAdd(key, value);
+									}
+								}
+							}
 						}
 
 						resources.Add(newRes);

@@ -1776,7 +1776,8 @@ namespace MyGui.net
         public string? tileSize;
         public List<MyGuiBasisSkin>? basisSkins;
         public List<MyGuiWidgetData>? resourceLayout; //good luck, trb
-        public string correctType = ""; //TODO: This is currently always "" for ResourceSkin resources
+		public Dictionary<string, string>? defaultProperties; //only applicable for ResourceLayouts
+		public string correctType = ""; //TODO: This is currently always "" for ResourceSkin resources
     }
 
     public class MyGuiResourceImageSet
