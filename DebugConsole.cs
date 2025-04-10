@@ -203,7 +203,7 @@ namespace MyGui.net
 					Console.ResetColor();
 				}
 
-				Debugger.Log(0, null, message);
+				Debugger.Log(0, null, message + "\n");
 			}
 			catch (Exception ex)
 			{

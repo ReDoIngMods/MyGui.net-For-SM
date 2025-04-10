@@ -6,9 +6,10 @@ namespace MyGui.net
 {
 	public partial class FormUpdater : Form
 	{
+		List<Form> previouslyVisibleForms = new List<Form>();
 		private bool downloadCompleted = false;
 		private CancellationTokenSource cancellationTokenSource;
-		public FormUpdater(string url, Form closeAfter = null)
+		public FormUpdater(string url, Form[] closeAfter = null)
 		{
 			InitializeComponent();
 
@@ -16,10 +17,23 @@ namespace MyGui.net
 
 			if (closeAfter != null)
 			{
-				closeAfter.Close();
+				foreach (var item in closeAfter)
+				{
+					if (item != null && item.Visible)
+					{
+						previouslyVisibleForms.Add(item);
+						item.Hide();
+					}
+				}
 			}
 
-			this.FormClosing += (s, e) => cancellationTokenSource.Cancel();
+			this.FormClosing += (s, e) => {
+				foreach (var item in previouslyVisibleForms)
+				{
+					item?.Show();
+				}
+				cancellationTokenSource.Cancel();
+			};
 
 			DownloadFileAsync(url, Path.Combine(Application.ExecutablePath, "..", "Update.zip"), Settings.Default.UpdateBearerToken, cancellationTokenSource);
 		}
@@ -31,64 +45,71 @@ namespace MyGui.net
 			Util.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
 
 			// Handle redirect (GitHub may redirect to raw content URL)
-			using (HttpResponseMessage response = await Util.httpClient.GetAsync(url, cts.Token))
+			try
 			{
+				using (HttpResponseMessage response = await Util.httpClient.GetAsync(url, cts.Token))
+				{
 
-				try
-				{
 					response.EnsureSuccessStatusCode();
-				}
-				catch (Exception)
-				{
-					if (MessageBox.Show("Error occured during download! Do you wish to retry?", "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
+
+
+					label1.Text = "Updating MyGui.net...";
+					// Get the actual content length from the headers
+					long? totalBytes = response.Content.Headers.ContentLength;
+
+					using (Stream contentStream = await response.Content.ReadAsStreamAsync(),
+									fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
 					{
-						DownloadFileAsync(url, Path.Combine(Application.ExecutablePath, "..", "Update.zip"), Settings.Default.UpdateBearerToken, cancellationTokenSource);
+						var buffer = new byte[8192];
+						long totalRead = 0;
+						int bytesRead;
+
+						while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+						{
+							await fileStream.WriteAsync(buffer, 0, bytesRead);
+							totalRead += bytesRead;
+
+							// If we have the total size, calculate progress
+							if (totalBytes.HasValue)
+							{
+								int progressPercentage = (int)((double)totalRead / totalBytes.Value * 100);
+								progressBar.Value = progressPercentage;
+								labelStatus.Text = $"Downloading: {totalRead / 1024:N0} KB / {totalBytes.Value / 1024:N0} KB ({progressPercentage}%)";
+							}
+							else
+							{
+								labelStatus.Text = $"Downloading: {totalRead / 1024:N0} KB";
+							}
+						}
+
+						// Ensure that everything is written to the file
+						await fileStream.FlushAsync();
 					}
-					else
+
+					downloadCompleted = true;
+					labelStatus.Text = "Download completed!";
+					progressBar.Value = 100;
+					LaunchUpdater(destinationPath);
+					return;
+				}
+			}
+			catch (Exception e)
+			{
+				if (MessageBox.Show($"Error occured during download! Do you wish to retry?\nError: {e.Message}", "Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
+				{
+					DownloadFileAsync(url, Path.Combine(Application.ExecutablePath, "..", "Update.zip"), Settings.Default.UpdateBearerToken, cancellationTokenSource);
+				}
+				else
+				{
+					foreach (var item in previouslyVisibleForms)
+					{
+						item?.Show();
+					}
+					if (!this.IsDisposed && !this.Disposing)
 					{
 						this.Close();
 					}
-					return;
 				}
-
-
-				label1.Text = "Updating MyGui.net...";
-				// Get the actual content length from the headers
-				long? totalBytes = response.Content.Headers.ContentLength;
-
-				using (Stream contentStream = await response.Content.ReadAsStreamAsync(),
-								fileStream = new FileStream(destinationPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
-				{
-					var buffer = new byte[8192];
-					long totalRead = 0;
-					int bytesRead;
-
-					while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-					{
-						await fileStream.WriteAsync(buffer, 0, bytesRead);
-						totalRead += bytesRead;
-
-						// If we have the total size, calculate progress
-						if (totalBytes.HasValue)
-						{
-							int progressPercentage = (int)((double)totalRead / totalBytes.Value * 100);
-							progressBar.Value = progressPercentage;
-							labelStatus.Text = $"Downloading: {totalRead / 1024:N0} KB / {totalBytes.Value / 1024:N0} KB ({progressPercentage}%)";
-						}
-						else
-						{
-							labelStatus.Text = $"Downloading: {totalRead / 1024:N0} KB";
-						}
-					}
-
-					// Ensure that everything is written to the file
-					await fileStream.FlushAsync();
-				}
-
-				downloadCompleted = true;
-				labelStatus.Text = "Download completed!";
-				progressBar.Value = 100;
-				LaunchUpdater(destinationPath);
 				return;
 			}
 		}

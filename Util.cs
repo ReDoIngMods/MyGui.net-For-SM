@@ -13,6 +13,7 @@ using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Security.Principal;
 using MyGui.net.Properties;
+using System.CodeDom.Compiler;
 
 namespace MyGui.net
 {
@@ -2095,7 +2096,15 @@ namespace MyGui.net
 			httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearerToken);
 			httpClient.DefaultRequestHeaders.Accept.Clear();
 
-			string json = await httpClient.GetStringAsync("https://api.github.com/repos/ReDoIngMods/MyGui.net-For-SM/releases/latest");
+			string json = "";
+			try
+			{
+				json = await httpClient.GetStringAsync("https://api.github.com/repos/ReDoIngMods/MyGui.net-For-SM/releases/latest");
+			}
+			catch (Exception)
+			{
+				return new UpdateInfo { UpdateAvailable = false };
+			}
 			using (JsonDocument doc = JsonDocument.Parse(json))
 			{
 				// Get the latest version tag

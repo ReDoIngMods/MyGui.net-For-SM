@@ -144,14 +144,23 @@ namespace MyGui.net
 				{
 					if (MessageBox.Show($"Update {updateInfo.LatestVersion} is available for installation! Do you wish to download and install it?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 					{
-						Debug.WriteLine(updateInfo.DownloadUrl);
-						new FormUpdater(updateInfo.DownloadUrl).Show();
+						var formUpdater = new FormUpdater(updateInfo.DownloadUrl, this.OwnedForms.Concat([this]).ToArray());
+
+						if (!formUpdater.Disposing && !formUpdater.IsDisposed)
+						{
+							formUpdater.Show();
+						}
 					}
 				}
 			}
 			catch (Exception ex)
 			{
 				DebugConsole.Log("Error during update check: " + ex.Message, DebugConsole.LogLevels.Error);
+				if (MessageBox.Show($"Update failed! Error: {ex.Message}", "Update Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
+				{
+					CheckForUpdate(bearerToken);
+					return;
+				}
 			}
 		}
 

@@ -114,7 +114,7 @@ namespace MyGui.net
 			#endregion
 
 			#region Tab About
-			aboutTextBox.Text = $"Version: {Util.programVersion}{Environment.NewLine}MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
+			aboutTextBox.Text = $"MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
 			#endregion
 
 			_formLoaded = true;
@@ -741,19 +741,34 @@ namespace MyGui.net
 				var updateInfo = await Util.CheckForUpdateAsync(bearerToken);
 				if (updateInfo.UpdateAvailable)
 				{
-					if (MessageBox.Show($"Update {updateInfo.LatestVersion} is available for installation! Do you wish to download and install it?", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+					if (MessageBox.Show($"Update {updateInfo.LatestVersion} is available for installation! Do you wish to download and install it? Remember to save all your work before updating!", "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 					{
-						new FormUpdater(updateInfo.DownloadUrl).Show();
+						var formUpdater = new FormUpdater(updateInfo.DownloadUrl, this.Owner.OwnedForms.Concat([this.Owner]).ToArray());
+						if (!formUpdater.Disposing && !formUpdater.IsDisposed)
+						{
+							formUpdater.Show();
+						}
 					}
+				}
+				else
+				{
+					MessageBox.Show($"No new updates were found!", "No New Updates");
 				}
 			}
 			catch (Exception ex)
 			{
 				DebugConsole.Log("Error during update check: " + ex.Message, DebugConsole.LogLevels.Error);
+				if (MessageBox.Show($"Update failed! Error: {ex.Message}", "Update Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
+				{
+					CheckAndUpdateAsync(bearerToken);
+					return;
+				}
 			}
-
-			checkForUpdatesButton.Text = oldText;
-			checkForUpdatesButton.Enabled = true;
+			finally
+			{
+				checkForUpdatesButton.Text = oldText;
+				checkForUpdatesButton.Enabled = true;
+			}
 		}
 		#endregion
 
