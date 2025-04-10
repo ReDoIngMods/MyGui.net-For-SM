@@ -1,5 +1,11 @@
 ﻿namespace MyGui.net
 {
+	public interface IEditorAction
+	{
+		bool Execute(); // Redo
+		bool Undo();    // Undo
+	}
+
 	public class MoveCommand : IEditorAction
     {
         private MyGuiWidgetData _control;
@@ -284,4 +290,38 @@
             return $"DeleteControlCommand: deleted widget {_control} from within parent {_parent} at index {_index}";
         }
     }
+
+	public class CompountCommand : IEditorAction
+	{
+        private List<IEditorAction> _actions;
+
+		public CompountCommand(List<IEditorAction> actions)
+		{
+            _actions = actions;
+		}
+
+		public bool Execute()
+		{
+            foreach (var item in _actions)
+            {
+                item.Execute();
+            }
+			return true;
+		}
+
+		public bool Undo()
+		{
+			for (int i = _actions.Count - 1; i >= 0; i--)
+			{
+				_actions[i].Undo();
+			}
+			return true;
+		}
+
+		public override string ToString()
+		{
+			var actionsStr = string.Join(", ", _actions.Select(a => a.ToString()));
+			return $"CompountCommand: [{actionsStr}]";
+		}
+	}
 }

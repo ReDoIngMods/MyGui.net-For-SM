@@ -2092,11 +2092,14 @@ namespace MyGui.net
 							var diffPos = newPos - new Size(minX, minY);
 
 							// Adjust all widget positions relative to the new position
+							List<IEditorAction> actions = new List<IEditorAction>();
 							foreach (var widget in parsedLayout)
 							{
 								widget.position.Offset(diffPos);
-								ExecuteCommand(new CreateControlCommand(widget, widgetToPasteInto, _currentLayout));
+								actions.Add(new CreateControlCommand(widget, widgetToPasteInto, _currentLayout));
 							}
+
+							ExecuteCommand(new CompountCommand(actions));
 						}
 						catch (Exception)
 						{
