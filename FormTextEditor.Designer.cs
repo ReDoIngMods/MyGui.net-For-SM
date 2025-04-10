@@ -35,7 +35,9 @@
 			colorToolStripMenuItem = new ToolStripMenuItem();
 			mainTextBox = new TextBox();
 			splitContainer1 = new SplitContainer();
-			skControl1 = new SkiaSharp.Views.Desktop.SKControl();
+			previewViewport = new SkiaSharp.Views.Desktop.SKControl();
+			hScrollBar1 = new HScrollBar();
+			vScrollBar1 = new VScrollBar();
 			applyButton = new Button();
 			cancelButton = new Button();
 			menuStrip1.SuspendLayout();
@@ -96,6 +98,7 @@
 			mainTextBox.ScrollBars = ScrollBars.Both;
 			mainTextBox.Size = new Size(658, 283);
 			mainTextBox.TabIndex = 4;
+			mainTextBox.TextChanged += mainTextBox_TextChanged;
 			// 
 			// splitContainer1
 			// 
@@ -108,7 +111,9 @@
 			// 
 			// splitContainer1.Panel1
 			// 
-			splitContainer1.Panel1.Controls.Add(skControl1);
+			splitContainer1.Panel1.Controls.Add(previewViewport);
+			splitContainer1.Panel1.Controls.Add(hScrollBar1);
+			splitContainer1.Panel1.Controls.Add(vScrollBar1);
 			// 
 			// splitContainer1.Panel2
 			// 
@@ -117,15 +122,36 @@
 			splitContainer1.SplitterDistance = 104;
 			splitContainer1.TabIndex = 5;
 			// 
-			// skControl1
+			// previewViewport
 			// 
-			skControl1.BackColor = Color.Black;
-			skControl1.Dock = DockStyle.Fill;
-			skControl1.Location = new Point(0, 0);
-			skControl1.Name = "skControl1";
-			skControl1.Size = new Size(658, 102);
-			skControl1.TabIndex = 0;
-			skControl1.Text = "skControl1";
+			previewViewport.BackColor = Color.Black;
+			previewViewport.Dock = DockStyle.Fill;
+			previewViewport.Location = new Point(0, 0);
+			previewViewport.Name = "previewViewport";
+			previewViewport.Size = new Size(642, 86);
+			previewViewport.TabIndex = 0;
+			previewViewport.Text = "skControl1";
+			previewViewport.PaintSurface += previewViewport_PaintSurface;
+			// 
+			// hScrollBar1
+			// 
+			hScrollBar1.Dock = DockStyle.Bottom;
+			hScrollBar1.Location = new Point(0, 86);
+			hScrollBar1.Maximum = 7509;
+			hScrollBar1.Name = "hScrollBar1";
+			hScrollBar1.Size = new Size(642, 16);
+			hScrollBar1.TabIndex = 2;
+			hScrollBar1.Scroll += hScrollBar1_Scroll;
+			// 
+			// vScrollBar1
+			// 
+			vScrollBar1.Dock = DockStyle.Right;
+			vScrollBar1.Location = new Point(642, 0);
+			vScrollBar1.Maximum = 7509;
+			vScrollBar1.Name = "vScrollBar1";
+			vScrollBar1.Size = new Size(16, 102);
+			vScrollBar1.TabIndex = 1;
+			vScrollBar1.Scroll += vScrollBar1_Scroll;
 			// 
 			// applyButton
 			// 
@@ -190,6 +216,8 @@
 		private ToolStripMenuItem colorToolStripMenuItem;
 		private Button applyButton;
 		private Button cancelButton;
-		private SkiaSharp.Views.Desktop.SKControl skControl1;
+		private SkiaSharp.Views.Desktop.SKControl previewViewport;
+		private HScrollBar hScrollBar1;
+		private VScrollBar vScrollBar1;
 	}
 }

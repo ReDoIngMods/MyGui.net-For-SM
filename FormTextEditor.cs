@@ -1,5 +1,7 @@
 ﻿using Cyotek.Windows.Forms;
+using SkiaSharp;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace MyGui.net
 {
@@ -83,6 +85,52 @@ namespace MyGui.net
 			{
 				mainTextBox.Paste("#" + Util.ColorToHexString(_picker.Color));
 			}
+		}
+
+		SKMatrix _viewportMatrix = SKMatrix.Identity;
+
+		private void previewViewport_PaintSurface(object sender, SkiaSharp.Views.Desktop.SKPaintSurfaceEventArgs e)
+		{
+			SKCanvas canvas = e.Surface.Canvas;
+			canvas.Clear(new SKColor(105, 105, 105));
+
+			// Get the control's size
+			var controlWidth = previewViewport.Width;
+			var controlHeight = previewViewport.Height;
+
+			_viewportMatrix = SKMatrix.CreateTranslation(-hScrollBar1.Value, -vScrollBar1.Value);
+			canvas.SetMatrix(_viewportMatrix);
+
+			//canvas.ClipRect(new SKRect(0, 0, controlWidth / viewportZoom, controlHeight / viewportZoom));
+
+			var widget = new MyGuiWidgetData()
+			{
+				size = new(99999, 99999),
+				position = new(0, 0),
+				skin = "TextBox",
+				properties = new()
+				{
+					["Caption"] = mainTextBox.Text,
+					["FontName"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("FontName", out string fntName) ? fntName : "") : ""
+				}
+			};
+
+			RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0));
+		}
+
+		private void hScrollBar1_Scroll(object sender, ScrollEventArgs e)
+		{
+			previewViewport.Refresh();
+		}
+
+		private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
+		{
+			previewViewport.Refresh();
+		}
+
+		private void mainTextBox_TextChanged(object sender, EventArgs e)
+		{
+			previewViewport.Refresh();
 		}
 	}
 }

@@ -87,6 +87,7 @@ namespace MyGui.net
 			deleteToolStripMenuItem = new ToolStripMenuItem();
 			zoomLevelNumericUpDown = new CustomNumericUpDown();
 			label1 = new Label();
+			label3 = new Label();
 			((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
 			splitContainer1.Panel1.SuspendLayout();
 			splitContainer1.Panel2.SuspendLayout();
@@ -94,6 +95,7 @@ namespace MyGui.net
 			tabControl1.SuspendLayout();
 			tabPage1.SuspendLayout();
 			tabPage1Panel.SuspendLayout();
+			tabPage2.SuspendLayout();
 			tabPage3.SuspendLayout();
 			layoutMainPanel.SuspendLayout();
 			menuStrip1.SuspendLayout();
@@ -240,6 +242,7 @@ namespace MyGui.net
 			// tabPage2
 			// 
 			tabPage2.BackColor = SystemColors.ControlLightLight;
+			tabPage2.Controls.Add(label3);
 			tabPage2.Location = new Point(4, 29);
 			tabPage2.Margin = new Padding(0);
 			tabPage2.Name = "tabPage2";
@@ -636,6 +639,17 @@ namespace MyGui.net
 			label1.TabIndex = 6;
 			label1.Text = "Zoom Level (%)";
 			// 
+			// label3
+			// 
+			label3.Dock = DockStyle.Top;
+			label3.Font = new Font("Segoe UI", 20F);
+			label3.Location = new Point(0, 0);
+			label3.Name = "label3";
+			label3.Size = new Size(312, 53);
+			label3.TabIndex = 0;
+			label3.Text = "Coming Soon!";
+			label3.TextAlign = ContentAlignment.MiddleCenter;
+			// 
 			// Form1
 			// 
 			AllowDrop = true;
@@ -672,6 +686,7 @@ namespace MyGui.net
 			tabControl1.ResumeLayout(false);
 			tabPage1.ResumeLayout(false);
 			tabPage1Panel.ResumeLayout(false);
+			tabPage2.ResumeLayout(false);
 			tabPage3.ResumeLayout(false);
 			layoutMainPanel.ResumeLayout(false);
 			menuStrip1.ResumeLayout(false);
@@ -740,5 +755,6 @@ namespace MyGui.net
 		private Button layoutExpandButton;
 		private Button layoutCollapseButton;
 		private Panel layoutMainPanel;
+		private Label label3;
 	}
 }
