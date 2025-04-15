@@ -110,8 +110,11 @@ namespace MyGui.net
 				skin = "TextBox",
 				properties = new()
 				{
-					["Caption"] = mainTextBox.Text,
-					["FontName"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("FontName", out string fntName) ? fntName : "") : ""
+					["Caption"] = Util.SystemToMyGuiString(mainTextBox.Text),
+					["FontName"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("FontName", out string fntName) ? fntName : "") : "",
+					["TextColour"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("TextColour", out string txtClr) ? txtClr : "") : "",
+					["TextShadow"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("TextShadow", out string txtShd) ? txtShd : "") : "",
+					["TextShadowColour"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("TextShadowColour", out string txtShdClr) ? txtShdClr : "") : ""
 				}
 			};
 

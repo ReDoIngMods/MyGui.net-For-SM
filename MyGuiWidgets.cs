@@ -667,7 +667,7 @@ namespace MyGui.net
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Shadow")]
-		[Description("Whether or not the text renders a shadow.")]
+		[Description("Whether or not the text renders a shadow. You must set a custom Text Shadow Color for it to render.")]
 		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(TriStateConverter))]
 		public string TextShadow

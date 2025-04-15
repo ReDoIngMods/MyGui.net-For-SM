@@ -561,6 +561,14 @@ namespace MyGui.net
 							float spacingY = destRect.Top + offsetY - metrics.Top;
 							SKColor runningTextColor = textColor.GetValueOrDefault(Color.White).ToSKColor();
 
+							bool hasShadow = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextShadow", out string textShadow) ? textShadow == "true" : false;
+							SKColor? shadowColor = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextShadowColour", out string textShadowColor) ? Util.ParseColorFromString(textShadowColor, false)?.ToSKColor() : null;
+
+							if (shadowColor == null)
+							{
+								hasShadow = false;
+							}
+
 							// Draw each line with letter spacing incorporated.
 							for (int lineIndex = 0; lineIndex < lines.Count; lineIndex++)
 							{
@@ -632,6 +640,13 @@ namespace MyGui.net
 
 									// Total spacing: character width + letter spacing adjustment + kerning.
 									float fontSpacing = charWidth + (actualFontLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kerningAdjustment;
+
+									if (hasShadow)
+									{
+										_baseFontPaint.Color = shadowColor.Value;
+										canvas.DrawText(actualChar, spacingX + 1, spacingY + 1, _baseFontPaint);
+										_baseFontPaint.Color = runningTextColor;
+									}
 
 									canvas.DrawText(actualChar, spacingX, spacingY, _baseFontPaint);
 									spacingX += fontSpacing;

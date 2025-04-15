@@ -14,10 +14,6 @@ namespace MyGui.net
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	//TODO: make text editor autocomplete tags
-	//TODO: ResourceImage (new gui) and ResourceTexture (just render the image) support
-	//TODO: fix text alignments
-	//TODO: Add text preview to text editor
-	//TODO: Hide old SM skins like old MyGui Skins by default
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -1333,7 +1329,7 @@ namespace MyGui.net
 
 						// Update only the changed property on the widget
 
-						//Using this code below will screw up the snapping if the opposite end is not aligned to grid, as such ti is not recommended.
+						//Using this code below will screw up the snapping if the opposite end is not aligned to grid, as such it is not recommended.
 						/*_currentSelectedWidget.size = new Point(
 							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Left, BorderPosition.Right, BorderPosition.TopLeft, BorderPosition.TopRight, BorderPosition.BottomLeft, BorderPosition.BottomRight }) ?
 								(int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.X,
