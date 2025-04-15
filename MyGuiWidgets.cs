@@ -173,7 +173,8 @@ namespace MyGui.net
 		public static string NameBoundTo = "name";
 
 		[Category("1 - Main Properties")]
-		[Description("Position of the widget in pixels relative to its parent.")]
+		[Description("Position of the widget in pixels relative to its parent. (Open the dropdown to set position in %)")]
+		[Editor(typeof(PercentSizeEditor), typeof(UITypeEditor))]
 		public Point Position
 		{
 			get => widget.position;
@@ -186,7 +187,8 @@ namespace MyGui.net
 		public static string PositionBoundTo = "position";
 
 		[Category("1 - Main Properties")]
-		[Description("Size of the widget in pixels.")]
+		[Description("Size of the widget in pixels. (Open the dropdown to set size in %)")]
+		[Editor(typeof(PercentSizeEditor), typeof(UITypeEditor))]
 		public Point Size
 		{
 			get => widget.size;

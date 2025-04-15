@@ -235,6 +235,75 @@ namespace MyGui.net
 			return "";
 		}
 	}
+
+	public class ImageGroupConverter : TypeConverter
+	{
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			// Indicates that this object supports a standard set of values
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
+			return false;
+		}
+
+		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+		{
+			// Provides the standard values for the dropdown
+			var widget = Form1._currentSelectedWidget;
+			if (widget != null)
+			{
+				if (widget.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel) && RenderBackend._allImageResources.ContainsKey(imageResourceRel))
+				{
+					List<string> keys = RenderBackend._allImageResources[imageResourceRel].groups.Keys.ToList();
+					keys.Insert(0, "Default");
+					return new StandardValuesCollection(keys);
+				}
+			}
+			return new StandardValuesCollection(new[] { "Default" });
+		}
+	}
+
+	public class ImageNameConverter : TypeConverter
+	{
+		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
+		{
+			// Indicates that this object supports a standard set of values
+			return true;
+		}
+
+		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		{
+			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
+			return false;
+		}
+
+		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
+		{
+			// Provides the standard values for the dropdown
+			var widget = Form1._currentSelectedWidget;
+			if (widget != null)
+			{
+				if (widget.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel) && RenderBackend._allImageResources.ContainsKey(imageResourceRel))
+				{
+					string imageResourceGroup = widget.properties.TryGetValue("ImageGroup", out string iRG) ? iRG : "";
+					var imageResource = RenderBackend._allImageResources[imageResourceRel];
+					var currentGroup = imageResource.groups.TryGetValue(imageResourceGroup, out MyGuiResourceImageSetGroup cG) ? cG : (string.IsNullOrEmpty(iRG) ? imageResource.groups.First().Value : null);
+
+					if (currentGroup != null)
+					{
+						List<string> keys = currentGroup.points.Keys.ToList();
+						keys.Insert(0, "Default");
+						return new StandardValuesCollection(keys);
+					}
+				}
+			}
+			return new StandardValuesCollection(new[] { "Default" });
+		}
+	}
 	#endregion
 
 	public class SliceSelectorEditor : UITypeEditor
@@ -977,72 +1046,71 @@ namespace MyGui.net
 		}
 	}
 
-	public class ImageGroupConverter : TypeConverter
+	public class PercentSizeEditor : UITypeEditor
 	{
-		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-		{
-			// Indicates that this object supports a standard set of values
-			return true;
-		}
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+			=> UITypeEditorEditStyle.DropDown;
 
-		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
+		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
-			return false;
-		}
-
-		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-		{
-			// Provides the standard values for the dropdown
+			var editorService = provider?.GetService(typeof(IWindowsFormsEditorService)) as IWindowsFormsEditorService;
 			var widget = Form1._currentSelectedWidget;
-			if (widget != null)
+			if (editorService == null || widget == null)
+				return value;
+
+			var parent = widget.Parent;
+
+			var panel = new Panel
 			{
-				if (widget.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel) && RenderBackend._allImageResources.ContainsKey(imageResourceRel))
+				Width = 200,
+				Height = 46,
+			};
+
+			var label = new Label
+			{
+				Text = "Enter \"X; Y\" (%)",
+				TextAlign = ContentAlignment.MiddleLeft,
+				Width = 200,
+				Height = 20,
+			};
+
+			var textbox = new TextBox
+			{
+				Location = new Point(0, 23),
+				Width = 200,
+				Height = 23
+			};
+
+			if (value is Point pnt)
+			{
+				var relX = (float)pnt.X / (parent?.size.X ?? Form1.ProjectSize.Width) * 100f;
+				var relY = (float)pnt.Y / (parent?.size.Y ?? Form1.ProjectSize.Height) * 100f;
+				textbox.Text = string.Format(CultureInfo.InvariantCulture, "{0:0.########}; {1:0.########}", relX, relY);
+			}
+
+			panel.Controls.Add(label);
+			panel.Controls.Add(textbox);
+
+			editorService.DropDownControl(panel);
+
+			try
+			{
+				var parts = textbox.Text.Split(';');
+				if (parts.Length == 2 &&
+					float.TryParse(parts[0].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var xPercent) &&
+					float.TryParse(parts[1].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var yPercent))
 				{
-					List<string> keys = RenderBackend._allImageResources[imageResourceRel].groups.Keys.ToList();
-					keys.Insert(0, "Default");
-					return new StandardValuesCollection(keys);
+					var pxX = (int)Math.Round(xPercent * (parent?.size.X ?? Form1.ProjectSize.Width) / 100f);
+					var pxY = (int)Math.Round(yPercent * (parent?.size.Y ?? Form1.ProjectSize.Height) / 100f);
+					return new Point(pxX, pxY);
 				}
 			}
-			return new StandardValuesCollection(new[] { "Default" });
-		}
-	}
-
-	public class ImageNameConverter : TypeConverter
-	{
-		public override bool GetStandardValuesSupported(ITypeDescriptorContext context)
-		{
-			// Indicates that this object supports a standard set of values
-			return true;
-		}
-
-		public override bool GetStandardValuesExclusive(ITypeDescriptorContext context)
-		{
-			// Indicates the dropdown is "drop-down only" (true) or allows custom values (false)
-			return false;
-		}
-
-		public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-		{
-			// Provides the standard values for the dropdown
-			var widget = Form1._currentSelectedWidget;
-			if (widget != null)
+			catch
 			{
-				if (widget.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel) && RenderBackend._allImageResources.ContainsKey(imageResourceRel))
-				{
-					string imageResourceGroup = widget.properties.TryGetValue("ImageGroup", out string iRG) ? iRG : "";
-					var imageResource = RenderBackend._allImageResources[imageResourceRel];
-					var currentGroup = imageResource.groups.TryGetValue(imageResourceGroup, out MyGuiResourceImageSetGroup cG) ? cG : (string.IsNullOrEmpty(iRG) ? imageResource.groups.First().Value : null);
-
-					if (currentGroup != null)
-					{
-						List<string> keys = currentGroup.points.Keys.ToList();
-						keys.Insert(0, "Default");
-						return new StandardValuesCollection(keys);
-					}
-				}
+				// invalid input, return original
 			}
-			return new StandardValuesCollection(new[] { "Default" });
+
+			return value;
 		}
 	}
 }
