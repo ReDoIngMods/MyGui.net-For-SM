@@ -42,6 +42,7 @@ namespace MyGui.net
 			tabPage1Panel = new Panel();
 			propertyGrid1 = new PropertyGrid();
 			tabPage2 = new TabPage();
+			label3 = new Label();
 			tabPage3 = new TabPage();
 			layoutMainPanel = new Panel();
 			layoutToNewWindowButton = new Button();
@@ -87,7 +88,6 @@ namespace MyGui.net
 			deleteToolStripMenuItem = new ToolStripMenuItem();
 			zoomLevelNumericUpDown = new CustomNumericUpDown();
 			label1 = new Label();
-			label3 = new Label();
 			((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
 			splitContainer1.Panel1.SuspendLayout();
 			splitContainer1.Panel2.SuspendLayout();
@@ -192,17 +192,17 @@ namespace MyGui.net
 			// 
 			// tabControl1
 			// 
-			tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			tabControl1.Controls.Add(tabPage1);
 			tabControl1.Controls.Add(tabPage2);
 			tabControl1.Controls.Add(tabPage3);
+			tabControl1.Dock = DockStyle.Fill;
 			tabControl1.DrawMode = TabDrawMode.OwnerDrawFixed;
 			tabControl1.ItemSize = new Size(120, 25);
-			tabControl1.Location = new Point(-5, -4);
+			tabControl1.Location = new Point(0, 0);
 			tabControl1.Margin = new Padding(0);
 			tabControl1.Name = "tabControl1";
 			tabControl1.SelectedIndex = 0;
-			tabControl1.Size = new Size(320, 562);
+			tabControl1.Size = new Size(310, 553);
 			tabControl1.TabIndex = 0;
 			// 
 			// tabPage1
@@ -211,7 +211,7 @@ namespace MyGui.net
 			tabPage1.Location = new Point(4, 29);
 			tabPage1.Margin = new Padding(0);
 			tabPage1.Name = "tabPage1";
-			tabPage1.Size = new Size(312, 529);
+			tabPage1.Size = new Size(302, 520);
 			tabPage1.TabIndex = 0;
 			tabPage1.Text = "Properties";
 			tabPage1.UseVisualStyleBackColor = true;
@@ -224,7 +224,7 @@ namespace MyGui.net
 			tabPage1Panel.Location = new Point(0, 0);
 			tabPage1Panel.Margin = new Padding(0);
 			tabPage1Panel.Name = "tabPage1Panel";
-			tabPage1Panel.Size = new Size(312, 529);
+			tabPage1Panel.Size = new Size(302, 520);
 			tabPage1Panel.TabIndex = 0;
 			// 
 			// propertyGrid1
@@ -235,7 +235,7 @@ namespace MyGui.net
 			propertyGrid1.Margin = new Padding(0);
 			propertyGrid1.Name = "propertyGrid1";
 			propertyGrid1.PropertySort = PropertySort.Categorized;
-			propertyGrid1.Size = new Size(312, 529);
+			propertyGrid1.Size = new Size(302, 520);
 			propertyGrid1.TabIndex = 0;
 			propertyGrid1.PropertyValueChanged += propertyGrid1_PropertyValueChanged;
 			// 
@@ -249,6 +249,17 @@ namespace MyGui.net
 			tabPage2.Size = new Size(312, 529);
 			tabPage2.TabIndex = 1;
 			tabPage2.Text = "Widgets";
+			// 
+			// label3
+			// 
+			label3.Dock = DockStyle.Top;
+			label3.Font = new Font("Segoe UI", 20F);
+			label3.Location = new Point(0, 0);
+			label3.Name = "label3";
+			label3.Size = new Size(312, 53);
+			label3.TabIndex = 0;
+			label3.Text = "Coming Soon!";
+			label3.TextAlign = ContentAlignment.MiddleCenter;
 			// 
 			// tabPage3
 			// 
@@ -638,17 +649,6 @@ namespace MyGui.net
 			label1.Size = new Size(93, 15);
 			label1.TabIndex = 6;
 			label1.Text = "Zoom Level (%)";
-			// 
-			// label3
-			// 
-			label3.Dock = DockStyle.Top;
-			label3.Font = new Font("Segoe UI", 20F);
-			label3.Location = new Point(0, 0);
-			label3.Name = "label3";
-			label3.Size = new Size(312, 53);
-			label3.TabIndex = 0;
-			label3.Text = "Coming Soon!";
-			label3.TextAlign = ContentAlignment.MiddleCenter;
 			// 
 			// Form1
 			// 

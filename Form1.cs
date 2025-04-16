@@ -171,11 +171,11 @@ namespace MyGui.net
 			DebugConsole.Log((initial ? "Loading" : "Reloading") + " Cache...", DebugConsole.LogLevels.Warning);
 			DebugConsole.Log($"Cache Reference Resolution: {Settings.Default.ReferenceResolution}", DebugConsole.LogLevels.Info);
 			DebugConsole.Log($"Cache Reference Language: {Settings.Default.ReferenceLanguage}", DebugConsole.LogLevels.Info);
-			var resourcesTuple  = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
+			var resourcesTuple = Util.ReadAllResources(_scrapMechanicPath, Settings.Default.ReferenceResolution);
 			RenderBackend._allResources = resourcesTuple.Item1;
 			DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
 			RenderBackend._allImageResources = resourcesTuple.Item2;
-            DebugConsole.Log($"Cache Image Count: {_allImageResources.Count}", DebugConsole.LogLevels.Info);
+			DebugConsole.Log($"Cache Image Count: {_allImageResources.Count}", DebugConsole.LogLevels.Info);
 
 			RenderBackend._allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
 			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 7.5f });
@@ -1165,7 +1165,7 @@ namespace MyGui.net
 						break;
 					default:
 						Cursor = Cursors.Default; // Normal cursor
-						//viewport.Refresh();
+						//viewport.Refresh(); //not needed
 						break;
 				}
 

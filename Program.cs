@@ -1,13 +1,9 @@
 using MyGui.net.Properties;
-using System.Runtime.InteropServices;
 
 namespace MyGui.net
 {
     internal static class Program
     {
-
-		[DllImport("user32.dll")]
-		private static extern bool SetProcessDPIAware();
 		/// <summary>
 		///  The main entry point for the application.
 		/// </summary>
@@ -21,10 +17,6 @@ namespace MyGui.net
             {
                 _DefaultOpenedDir = args[0];
             }
-			if (Environment.OSVersion.Version.Major >= 6)
-			{
-				SetProcessDPIAware();
-			}
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 			ApplicationConfiguration.Initialize();
             //Application.SetColorMode(SystemColorMode.Dark);
