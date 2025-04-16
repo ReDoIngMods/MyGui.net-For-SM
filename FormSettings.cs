@@ -541,7 +541,7 @@ namespace MyGui.net
 		{
 			try
 			{
-				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReDoIng Mods/MyGui.net");
+				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ReDoIng Mods/MyGui.net");
 
 				// Open the folder using Process.Start
 				if (userConfigDirectory != null && Directory.Exists(userConfigDirectory))

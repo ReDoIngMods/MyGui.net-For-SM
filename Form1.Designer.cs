@@ -70,6 +70,11 @@ namespace MyGui.net
 			redoToolStripMenuItem1 = new ToolStripMenuItem();
 			actionHistoryToolStripMenuItem = new ToolStripMenuItem();
 			formatToolStripMenuItem = new ToolStripMenuItem();
+			centerToolStripMenuItem = new ToolStripMenuItem();
+			centerInParentToolStripMenuItem = new ToolStripMenuItem();
+			centerInLayoutToolStripMenuItem = new ToolStripMenuItem();
+			toolStripSeparator7 = new ToolStripSeparator();
+			comingSoonToolStripMenuItem = new ToolStripMenuItem();
 			openLayoutDialog = new OpenFileDialog();
 			saveLayoutDialog = new SaveFileDialog();
 			sidebarToNewWindowButton = new Button();
@@ -246,7 +251,7 @@ namespace MyGui.net
 			tabPage2.Location = new Point(4, 29);
 			tabPage2.Margin = new Padding(0);
 			tabPage2.Name = "tabPage2";
-			tabPage2.Size = new Size(312, 529);
+			tabPage2.Size = new Size(302, 520);
 			tabPage2.TabIndex = 1;
 			tabPage2.Text = "Widgets";
 			// 
@@ -256,7 +261,7 @@ namespace MyGui.net
 			label3.Font = new Font("Segoe UI", 20F);
 			label3.Location = new Point(0, 0);
 			label3.Name = "label3";
-			label3.Size = new Size(312, 53);
+			label3.Size = new Size(302, 53);
 			label3.TabIndex = 0;
 			label3.Text = "Coming Soon!";
 			label3.TextAlign = ContentAlignment.MiddleCenter;
@@ -268,7 +273,7 @@ namespace MyGui.net
 			tabPage3.Location = new Point(4, 29);
 			tabPage3.Margin = new Padding(0);
 			tabPage3.Name = "tabPage3";
-			tabPage3.Size = new Size(312, 529);
+			tabPage3.Size = new Size(302, 520);
 			tabPage3.TabIndex = 2;
 			tabPage3.Text = "Layout";
 			// 
@@ -282,14 +287,14 @@ namespace MyGui.net
 			layoutMainPanel.Location = new Point(0, 0);
 			layoutMainPanel.Margin = new Padding(0);
 			layoutMainPanel.Name = "layoutMainPanel";
-			layoutMainPanel.Size = new Size(312, 529);
+			layoutMainPanel.Size = new Size(302, 520);
 			layoutMainPanel.TabIndex = 5;
 			// 
 			// layoutToNewWindowButton
 			// 
 			layoutToNewWindowButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			layoutToNewWindowButton.FlatStyle = FlatStyle.System;
-			layoutToNewWindowButton.Location = new Point(284, 6);
+			layoutToNewWindowButton.Location = new Point(274, 6);
 			layoutToNewWindowButton.Margin = new Padding(0);
 			layoutToNewWindowButton.Name = "layoutToNewWindowButton";
 			layoutToNewWindowButton.Size = new Size(23, 23);
@@ -308,7 +313,7 @@ namespace MyGui.net
 			treeView1.ItemHeight = 23;
 			treeView1.Location = new Point(0, 35);
 			treeView1.Name = "treeView1";
-			treeView1.Size = new Size(312, 494);
+			treeView1.Size = new Size(302, 485);
 			treeView1.TabIndex = 0;
 			treeView1.AfterLabelEdit += treeView1_AfterLabelEdit;
 			treeView1.AfterSelect += treeView1_AfterSelect;
@@ -497,9 +502,43 @@ namespace MyGui.net
 			// 
 			// formatToolStripMenuItem
 			// 
+			formatToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { centerToolStripMenuItem, toolStripSeparator7, comingSoonToolStripMenuItem });
 			formatToolStripMenuItem.Name = "formatToolStripMenuItem";
 			formatToolStripMenuItem.Size = new Size(57, 20);
 			formatToolStripMenuItem.Text = "Format";
+			// 
+			// centerToolStripMenuItem
+			// 
+			centerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { centerInParentToolStripMenuItem, centerInLayoutToolStripMenuItem });
+			centerToolStripMenuItem.Name = "centerToolStripMenuItem";
+			centerToolStripMenuItem.Size = new Size(180, 22);
+			centerToolStripMenuItem.Text = "Center In";
+			// 
+			// centerInParentToolStripMenuItem
+			// 
+			centerInParentToolStripMenuItem.Name = "centerInParentToolStripMenuItem";
+			centerInParentToolStripMenuItem.Size = new Size(180, 22);
+			centerInParentToolStripMenuItem.Text = "Parent";
+			centerInParentToolStripMenuItem.Click += centerInParentToolStripMenuItem_Click;
+			// 
+			// centerInLayoutToolStripMenuItem
+			// 
+			centerInLayoutToolStripMenuItem.Name = "centerInLayoutToolStripMenuItem";
+			centerInLayoutToolStripMenuItem.Size = new Size(180, 22);
+			centerInLayoutToolStripMenuItem.Text = "Layout";
+			centerInLayoutToolStripMenuItem.Click += centerInLayoutToolStripMenuItem_Click;
+			// 
+			// toolStripSeparator7
+			// 
+			toolStripSeparator7.Name = "toolStripSeparator7";
+			toolStripSeparator7.Size = new Size(177, 6);
+			// 
+			// comingSoonToolStripMenuItem
+			// 
+			comingSoonToolStripMenuItem.Enabled = false;
+			comingSoonToolStripMenuItem.Name = "comingSoonToolStripMenuItem";
+			comingSoonToolStripMenuItem.Size = new Size(180, 22);
+			comingSoonToolStripMenuItem.Text = "Coming Soon!";
 			// 
 			// openLayoutDialog
 			// 
@@ -756,5 +795,10 @@ namespace MyGui.net
 		private Button layoutCollapseButton;
 		private Panel layoutMainPanel;
 		private Label label3;
+		private ToolStripMenuItem centerToolStripMenuItem;
+		private ToolStripSeparator toolStripSeparator7;
+		private ToolStripMenuItem comingSoonToolStripMenuItem;
+		private ToolStripMenuItem centerInParentToolStripMenuItem;
+		private ToolStripMenuItem centerInLayoutToolStripMenuItem;
 	}
 }

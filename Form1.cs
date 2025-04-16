@@ -2356,5 +2356,33 @@ namespace MyGui.net
 
 			UpdateRecentFilesMenu();
 		}
+
+		private void centerInParentToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_currentSelectedWidget == null) return;
+
+			var parent = _currentSelectedWidget.Parent;
+			var parentSize = parent == null ? (Point)ProjectSize : parent.size;
+
+			ExecuteCommand(new MoveCommand(_currentSelectedWidget, new Point(parentSize.X / 2, parentSize.Y / 2) - new Size(_currentSelectedWidget.size.X / 2, _currentSelectedWidget.size.Y / 2)));
+		}
+
+		private void centerInLayoutToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (_currentSelectedWidget == null) return;
+
+			var parentTree = Util.FindParentTree(_currentSelectedWidget, _currentLayout);
+			var layoutCenter = new Size(ProjectSize.Width / 2, ProjectSize.Height / 2);
+			Point finalPos = new();
+
+			foreach (var item in parentTree)
+			{
+				finalPos.Offset(-item.position.X, -item.position.Y);
+			}
+
+			finalPos += layoutCenter - new Size(_currentSelectedWidget.size.X / 2, _currentSelectedWidget.size.Y / 2);
+
+			ExecuteCommand(new MoveCommand(_currentSelectedWidget, finalPos));
+		}
 	}
 }
