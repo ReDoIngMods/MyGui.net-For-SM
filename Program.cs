@@ -25,6 +25,7 @@ namespace MyGui.net
 			Application.EnableVisualStyles();
 			//Application.SetDefaultFont(new Font("Segoe UI", 9f)); //Do not enable this, EVER, i thought it would help fix DPI issues, but it instead broke multiple instances...
 
+			Application.AddMessageFilter(new AccessibleDescriptionTooltipFilter());
 			try
             {
                 Application.Run(new Form1(_DefaultOpenedDir));

@@ -47,9 +47,9 @@
 			label3 = new Label();
 			workspaceSizeXNumericUpDown = new CustomNumericUpDown();
 			groupBox10 = new GroupBox();
+			label4 = new Label();
 			workspaceSizeDefaultYNumericUpDown = new CustomNumericUpDown();
 			workspaceSizeDefaultXNumericUpDown = new CustomNumericUpDown();
-			label4 = new Label();
 			windowTabPage = new TabPage();
 			panel4 = new Panel();
 			groupBox15 = new GroupBox();
@@ -234,17 +234,19 @@
 			// 
 			// hideOldSMWidgetSkinsCheckBox
 			// 
+			hideOldSMWidgetSkinsCheckBox.AccessibleDescription = "Prevent skins from the \"Old Scrap Mechanic\" category from showing up in the skin form.";
 			hideOldSMWidgetSkinsCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			hideOldSMWidgetSkinsCheckBox.Location = new Point(194, 51);
 			hideOldSMWidgetSkinsCheckBox.Name = "hideOldSMWidgetSkinsCheckBox";
 			hideOldSMWidgetSkinsCheckBox.Size = new Size(456, 23);
 			hideOldSMWidgetSkinsCheckBox.TabIndex = 9;
-			hideOldSMWidgetSkinsCheckBox.Text = "Hide Old SM Widget Skins";
+			hideOldSMWidgetSkinsCheckBox.Text = "Hide Old Scrap Mechanic Widget Skins";
 			hideOldSMWidgetSkinsCheckBox.UseVisualStyleBackColor = true;
 			hideOldSMWidgetSkinsCheckBox.CheckedChanged += hideOldSMWidgetSkinsCheckBox_CheckedChanged;
 			// 
 			// hideOldMyGuiWidgetSkinsCheckBox
 			// 
+			hideOldMyGuiWidgetSkinsCheckBox.AccessibleDescription = "Prevent skins from the \"Old MyGui\" category from showing up in the skin form.";
 			hideOldMyGuiWidgetSkinsCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			hideOldMyGuiWidgetSkinsCheckBox.Location = new Point(194, 22);
 			hideOldMyGuiWidgetSkinsCheckBox.Name = "hideOldMyGuiWidgetSkinsCheckBox";
@@ -256,6 +258,7 @@
 			// 
 			// forceCacheReloadButton
 			// 
+			forceCacheReloadButton.AccessibleDescription = "Force the rendering cache to be reload after options close.";
 			forceCacheReloadButton.FlatStyle = FlatStyle.System;
 			forceCacheReloadButton.Location = new Point(194, 81);
 			forceCacheReloadButton.Name = "forceCacheReloadButton";
@@ -267,6 +270,7 @@
 			// 
 			// referenceLanguageComboBox
 			// 
+			referenceLanguageComboBox.AccessibleDescription = "Language to be used while parsing interface tags and getting font values.";
 			referenceLanguageComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			referenceLanguageComboBox.FormattingEnabled = true;
 			referenceLanguageComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
@@ -278,6 +282,7 @@
 			// 
 			// label8
 			// 
+			label8.AccessibleDescription = "Language to be used while parsing interface tags and getting font values.";
 			label8.Location = new Point(6, 63);
 			label8.Name = "label8";
 			label8.Size = new Size(120, 15);
@@ -287,6 +292,7 @@
 			// 
 			// referenceResolutionComboBox
 			// 
+			referenceResolutionComboBox.AccessibleDescription = "Resolution to be used for fetching sprites and fonts, always round this one down relative to project size.";
 			referenceResolutionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			referenceResolutionComboBox.FormattingEnabled = true;
 			referenceResolutionComboBox.Items.AddRange(new object[] { "1280x720", "1920x1080", "2560x1440", "3840x2160" });
@@ -298,6 +304,7 @@
 			// 
 			// label7
 			// 
+			label7.AccessibleDescription = "Resolution to be used for fetching sprites and fonts, always round this one down relative to project size.";
 			label7.Location = new Point(6, 19);
 			label7.Name = "label7";
 			label7.Size = new Size(120, 15);
@@ -343,6 +350,7 @@
 			// 
 			// workspaceSizeYNumericUpDown
 			// 
+			workspaceSizeYNumericUpDown.AccessibleDescription = "Workspace height";
 			workspaceSizeYNumericUpDown.Location = new Point(97, 22);
 			workspaceSizeYNumericUpDown.Maximum = new decimal(new int[] { 2160, 0, 0, 0 });
 			workspaceSizeYNumericUpDown.Minimum = new decimal(new int[] { 16, 0, 0, 0 });
@@ -354,7 +362,7 @@
 			// 
 			// label3
 			// 
-			label3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			label3.AccessibleDescription = "Current size of the project, doesn't rescale the widgets automatically.";
 			label3.Location = new Point(188, 11);
 			label3.Name = "label3";
 			label3.Size = new Size(462, 40);
@@ -364,6 +372,7 @@
 			// 
 			// workspaceSizeXNumericUpDown
 			// 
+			workspaceSizeXNumericUpDown.AccessibleDescription = "Workspace width";
 			workspaceSizeXNumericUpDown.Location = new Point(6, 22);
 			workspaceSizeXNumericUpDown.Maximum = new decimal(new int[] { 3840, 0, 0, 0 });
 			workspaceSizeXNumericUpDown.Minimum = new decimal(new int[] { 16, 0, 0, 0 });
@@ -376,9 +385,9 @@
 			// groupBox10
 			// 
 			groupBox10.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			groupBox10.Controls.Add(label4);
 			groupBox10.Controls.Add(workspaceSizeDefaultYNumericUpDown);
 			groupBox10.Controls.Add(workspaceSizeDefaultXNumericUpDown);
-			groupBox10.Controls.Add(label4);
 			groupBox10.Location = new Point(6, 51);
 			groupBox10.Name = "groupBox10";
 			groupBox10.Size = new Size(644, 53);
@@ -386,8 +395,21 @@
 			groupBox10.TabStop = false;
 			groupBox10.Text = "Default";
 			// 
+			// label4
+			// 
+			label4.AccessibleDescription = "Default project size for new or newly opened projects.";
+			label4.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+			label4.BackColor = SystemColors.ControlLightLight;
+			label4.Location = new Point(188, 22);
+			label4.Name = "label4";
+			label4.Size = new Size(450, 23);
+			label4.TabIndex = 13;
+			label4.Text = "Project Size (px)";
+			label4.TextAlign = ContentAlignment.MiddleLeft;
+			// 
 			// workspaceSizeDefaultYNumericUpDown
 			// 
+			workspaceSizeDefaultYNumericUpDown.AccessibleDescription = "Default workspace height";
 			workspaceSizeDefaultYNumericUpDown.Location = new Point(97, 22);
 			workspaceSizeDefaultYNumericUpDown.Maximum = new decimal(new int[] { 2160, 0, 0, 0 });
 			workspaceSizeDefaultYNumericUpDown.Minimum = new decimal(new int[] { 16, 0, 0, 0 });
@@ -399,6 +421,7 @@
 			// 
 			// workspaceSizeDefaultXNumericUpDown
 			// 
+			workspaceSizeDefaultXNumericUpDown.AccessibleDescription = "Default workspace width";
 			workspaceSizeDefaultXNumericUpDown.Location = new Point(6, 22);
 			workspaceSizeDefaultXNumericUpDown.Maximum = new decimal(new int[] { 3840, 0, 0, 0 });
 			workspaceSizeDefaultXNumericUpDown.Minimum = new decimal(new int[] { 16, 0, 0, 0 });
@@ -407,16 +430,6 @@
 			workspaceSizeDefaultXNumericUpDown.TabIndex = 11;
 			workspaceSizeDefaultXNumericUpDown.Value = new decimal(new int[] { 1920, 0, 0, 0 });
 			workspaceSizeDefaultXNumericUpDown.ValueChanged += workspaceSizeDefaultXNumericUpDown_ValueChanged;
-			// 
-			// label4
-			// 
-			label4.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-			label4.Location = new Point(188, 22);
-			label4.Name = "label4";
-			label4.Size = new Size(455, 23);
-			label4.TabIndex = 10;
-			label4.Text = "Project Size (px)";
-			label4.TextAlign = ContentAlignment.MiddleLeft;
 			// 
 			// windowTabPage
 			// 
@@ -457,7 +470,7 @@
 			// 
 			// enterAcceptsCheckBox
 			// 
-			enterAcceptsCheckBox.AccessibleDescription = "";
+			enterAcceptsCheckBox.AccessibleDescription = "Pressing enter will simulate a press on the OK button and submit changes. Applies to property editors.";
 			enterAcceptsCheckBox.AutoSize = true;
 			enterAcceptsCheckBox.Location = new Point(3, 47);
 			enterAcceptsCheckBox.Name = "enterAcceptsCheckBox";
@@ -469,7 +482,7 @@
 			// 
 			// hideSplashScreenCheckBox
 			// 
-			hideSplashScreenCheckBox.AccessibleDescription = "";
+			hideSplashScreenCheckBox.AccessibleDescription = "Prevent the splash screen from showing up after the program loads.";
 			hideSplashScreenCheckBox.AutoSize = true;
 			hideSplashScreenCheckBox.Location = new Point(3, 22);
 			hideSplashScreenCheckBox.Name = "hideSplashScreenCheckBox";
@@ -498,7 +511,7 @@
 			// 
 			// redrawViewportOnResizeCheckBox
 			// 
-			redrawViewportOnResizeCheckBox.AccessibleDescription = "";
+			redrawViewportOnResizeCheckBox.AccessibleDescription = "Allow the viewport to redraw while resizing, has a huge impact on the main window resizing performance.";
 			redrawViewportOnResizeCheckBox.AutoSize = true;
 			redrawViewportOnResizeCheckBox.Location = new Point(6, 46);
 			redrawViewportOnResizeCheckBox.Name = "redrawViewportOnResizeCheckBox";
@@ -510,7 +523,7 @@
 			// 
 			// useViewportFontAACheckBox
 			// 
-			useViewportFontAACheckBox.AccessibleDescription = "";
+			useViewportFontAACheckBox.AccessibleDescription = "Anti-Aliase drawn text to make it look smoother.";
 			useViewportFontAACheckBox.AutoSize = true;
 			useViewportFontAACheckBox.Location = new Point(148, 71);
 			useViewportFontAACheckBox.Name = "useViewportFontAACheckBox";
@@ -536,6 +549,7 @@
 			// 
 			// spriteFilteringLevel3
 			// 
+			spriteFilteringLevel3.AccessibleDescription = "Zooming uses bicubic filtering, expensive and slow.";
 			spriteFilteringLevel3.AutoSize = true;
 			spriteFilteringLevel3.Location = new Point(194, 22);
 			spriteFilteringLevel3.Name = "spriteFilteringLevel3";
@@ -548,6 +562,7 @@
 			// 
 			// spriteFilteringLevel1
 			// 
+			spriteFilteringLevel1.AccessibleDescription = "Zooming uses billinear filtering.";
 			spriteFilteringLevel1.AutoSize = true;
 			spriteFilteringLevel1.Location = new Point(63, 22);
 			spriteFilteringLevel1.Name = "spriteFilteringLevel1";
@@ -560,6 +575,7 @@
 			// 
 			// spriteFilteringLevel2
 			// 
+			spriteFilteringLevel2.AccessibleDescription = "Zooming uses billinear filtering with bitmaps, improved filtering at smaller scales.";
 			spriteFilteringLevel2.AutoSize = true;
 			spriteFilteringLevel2.Location = new Point(118, 22);
 			spriteFilteringLevel2.Name = "spriteFilteringLevel2";
@@ -572,6 +588,7 @@
 			// 
 			// spriteFilteringLevel0
 			// 
+			spriteFilteringLevel0.AccessibleDescription = "No sprite filtering - zooming uses nearest-neighbour like scaling.";
 			spriteFilteringLevel0.AutoSize = true;
 			spriteFilteringLevel0.Location = new Point(6, 22);
 			spriteFilteringLevel0.Name = "spriteFilteringLevel0";
@@ -584,7 +601,7 @@
 			// 
 			// renderInvisibleWidgetCheckBox
 			// 
-			renderInvisibleWidgetCheckBox.AccessibleDescription = "";
+			renderInvisibleWidgetCheckBox.AccessibleDescription = "Render invisible widgets as visible colored rectangles.";
 			renderInvisibleWidgetCheckBox.AutoSize = true;
 			renderInvisibleWidgetCheckBox.Location = new Point(6, 155);
 			renderInvisibleWidgetCheckBox.Name = "renderInvisibleWidgetCheckBox";
@@ -596,7 +613,7 @@
 			// 
 			// useViewportAACheckBox
 			// 
-			useViewportAACheckBox.AccessibleDescription = "";
+			useViewportAACheckBox.AccessibleDescription = "Anti-Aliase drawn sprites to make them look smoother, not recommended as this causes rendering artifacts.";
 			useViewportAACheckBox.AutoSize = true;
 			useViewportAACheckBox.Location = new Point(6, 71);
 			useViewportAACheckBox.Name = "useViewportAACheckBox";
@@ -608,7 +625,7 @@
 			// 
 			// useViewportVSyncCheckBox
 			// 
-			useViewportVSyncCheckBox.AccessibleDescription = "";
+			useViewportVSyncCheckBox.AccessibleDescription = "Sync the maximal update rate of the viewport to user's monitor refresh rate.";
 			useViewportVSyncCheckBox.AutoSize = true;
 			useViewportVSyncCheckBox.Location = new Point(6, 22);
 			useViewportVSyncCheckBox.Name = "useViewportVSyncCheckBox";
@@ -620,6 +637,7 @@
 			// 
 			// renderWidgetNamesCheckBox
 			// 
+			renderWidgetNamesCheckBox.AccessibleDescription = "Render the names of all widgets in their top-left corner.";
 			renderWidgetNamesCheckBox.AutoSize = true;
 			renderWidgetNamesCheckBox.Location = new Point(6, 180);
 			renderWidgetNamesCheckBox.Name = "renderWidgetNamesCheckBox";
@@ -644,6 +662,7 @@
 			// 
 			// showFullFilePathCheckBox
 			// 
+			showFullFilePathCheckBox.AccessibleDescription = "Show the full path to the currently opened layout file, otherwise only show the file name.";
 			showFullFilePathCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			showFullFilePathCheckBox.Location = new Point(6, 22);
 			showFullFilePathCheckBox.Name = "showFullFilePathCheckBox";
@@ -655,6 +674,7 @@
 			// 
 			// useCustomLayoutCheckBox
 			// 
+			useCustomLayoutCheckBox.AccessibleDescription = "Use the saved program layout values.";
 			useCustomLayoutCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			useCustomLayoutCheckBox.Location = new Point(6, 71);
 			useCustomLayoutCheckBox.Name = "useCustomLayoutCheckBox";
@@ -666,6 +686,7 @@
 			// 
 			// saveCustomLayoutCheckBox
 			// 
+			saveCustomLayoutCheckBox.AccessibleDescription = "Save the current program window positions and sizes on program closure.";
 			saveCustomLayoutCheckBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			saveCustomLayoutCheckBox.Location = new Point(6, 46);
 			saveCustomLayoutCheckBox.Name = "saveCustomLayoutCheckBox";
@@ -837,6 +858,7 @@
 			// 
 			// buttonAddToDesktop
 			// 
+			buttonAddToDesktop.AccessibleDescription = "Add a shortcut to MyGui.net to current user's desktop.";
 			buttonAddToDesktop.FlatStyle = FlatStyle.System;
 			buttonAddToDesktop.Location = new Point(6, 22);
 			buttonAddToDesktop.Name = "buttonAddToDesktop";
@@ -848,6 +870,7 @@
 			// 
 			// buttonAssociateWithFiles
 			// 
+			buttonAssociateWithFiles.AccessibleDescription = "Associate .layout files with MyGui.net, won't override user's choice if they already have a program that opens .layout files.";
 			buttonAssociateWithFiles.FlatStyle = FlatStyle.System;
 			buttonAssociateWithFiles.Location = new Point(6, 128);
 			buttonAssociateWithFiles.Name = "buttonAssociateWithFiles";
@@ -859,6 +882,7 @@
 			// 
 			// buttonRestartAdmin
 			// 
+			buttonRestartAdmin.AccessibleDescription = "Restart MyGui.net with admin privileges.";
 			buttonRestartAdmin.FlatStyle = FlatStyle.System;
 			buttonRestartAdmin.Location = new Point(6, 99);
 			buttonRestartAdmin.Name = "buttonRestartAdmin";
@@ -879,6 +903,7 @@
 			// 
 			// buttonAddToStart
 			// 
+			buttonAddToStart.AccessibleDescription = "Add a shortcut to MyGui.net to current user's start menu.";
 			buttonAddToStart.FlatStyle = FlatStyle.System;
 			buttonAddToStart.Location = new Point(6, 51);
 			buttonAddToStart.Name = "buttonAddToStart";
@@ -904,6 +929,7 @@
 			// 
 			// exportAsBothRadioButton
 			// 
+			exportAsBothRadioButton.AccessibleDescription = "Save as both % (normal file name, if the opened file ends in the pixel suffix, it is removed for this file) and px (if the file name doesn't end with the pixel suffix, it is added) as 2 files.";
 			exportAsBothRadioButton.AutoSize = true;
 			exportAsBothRadioButton.Location = new Point(83, 48);
 			exportAsBothRadioButton.Name = "exportAsBothRadioButton";
@@ -916,6 +942,7 @@
 			// 
 			// exportAsPercentRadioButton
 			// 
+			exportAsPercentRadioButton.AccessibleDescription = "Export the layout in % coordinates.";
 			exportAsPercentRadioButton.AutoSize = true;
 			exportAsPercentRadioButton.Location = new Point(83, 23);
 			exportAsPercentRadioButton.Name = "exportAsPercentRadioButton";
@@ -928,6 +955,7 @@
 			// 
 			// exportAskRadioButton
 			// 
+			exportAskRadioButton.AccessibleDescription = "Ask the user each save in which way they want to save the layout.";
 			exportAskRadioButton.AutoSize = true;
 			exportAskRadioButton.Location = new Point(6, 48);
 			exportAskRadioButton.Name = "exportAskRadioButton";
@@ -940,6 +968,7 @@
 			// 
 			// exportAsPxRadioButton
 			// 
+			exportAsPxRadioButton.AccessibleDescription = "Export the layout in px coordinates, don't append the pixel layout suffix.";
 			exportAsPxRadioButton.AutoSize = true;
 			exportAsPxRadioButton.Location = new Point(6, 22);
 			exportAsPxRadioButton.Name = "exportAsPxRadioButton";
@@ -963,6 +992,7 @@
 			// 
 			// preferPixelLayoutsCheckBox
 			// 
+			preferPixelLayoutsCheckBox.AccessibleDescription = "If there is a file with the same file name that has the pixel layout suffix appended, open it instead.";
 			preferPixelLayoutsCheckBox.AutoSize = true;
 			preferPixelLayoutsCheckBox.Location = new Point(6, 22);
 			preferPixelLayoutsCheckBox.Name = "preferPixelLayoutsCheckBox";
@@ -993,6 +1023,7 @@
 			// 
 			// label9
 			// 
+			label9.AccessibleDescription = "Current logged-in steam user id, used to get their Scrap Mechanic user mods folder.";
 			label9.Location = new Point(6, 66);
 			label9.Name = "label9";
 			label9.Size = new Size(128, 23);
@@ -1002,6 +1033,7 @@
 			// 
 			// currSteamUserTextBox
 			// 
+			currSteamUserTextBox.AccessibleDescription = "Current logged-in steam user id, used to get their Scrap Mechanic user mods folder.";
 			currSteamUserTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			currSteamUserTextBox.BackColor = SystemColors.ControlLightLight;
 			currSteamUserTextBox.Location = new Point(140, 66);
@@ -1013,6 +1045,7 @@
 			// 
 			// label6
 			// 
+			label6.AccessibleDescription = "File suffix to be used for px coordinate system layouts.";
 			label6.Location = new Point(6, 94);
 			label6.Name = "label6";
 			label6.Size = new Size(110, 23);
@@ -1022,6 +1055,7 @@
 			// 
 			// pixelLayoutSuffixTextBox
 			// 
+			pixelLayoutSuffixTextBox.AccessibleDescription = "File suffix to be used for px coordinate system layouts.";
 			pixelLayoutSuffixTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			pixelLayoutSuffixTextBox.BackColor = SystemColors.ControlLightLight;
 			pixelLayoutSuffixTextBox.Location = new Point(140, 95);
@@ -1033,6 +1067,7 @@
 			// 
 			// inspectInExplorerButton
 			// 
+			inspectInExplorerButton.AccessibleDescription = "Open the settings file location in explorer";
 			inspectInExplorerButton.FlatStyle = FlatStyle.System;
 			inspectInExplorerButton.Location = new Point(6, 124);
 			inspectInExplorerButton.Name = "inspectInExplorerButton";
@@ -1044,6 +1079,7 @@
 			// 
 			// detectSmPath
 			// 
+			detectSmPath.AccessibleDescription = "Use Steam to get the Scrap Mechanic path.";
 			detectSmPath.FlatStyle = FlatStyle.System;
 			detectSmPath.Location = new Point(73, 37);
 			detectSmPath.Name = "detectSmPath";
@@ -1055,6 +1091,7 @@
 			// 
 			// smPathLabel
 			// 
+			smPathLabel.AccessibleDescription = "Path to the Scrap Mechanic folder.";
 			smPathLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			smPathLabel.BackColor = SystemColors.ControlLightLight;
 			smPathLabel.Location = new Point(140, 37);
@@ -1065,6 +1102,7 @@
 			// 
 			// chooseSmPath
 			// 
+			chooseSmPath.AccessibleDescription = "Manually select the Scrap Mechanic path.";
 			chooseSmPath.FlatStyle = FlatStyle.System;
 			chooseSmPath.Location = new Point(6, 37);
 			chooseSmPath.Name = "chooseSmPath";
@@ -1140,6 +1178,7 @@
 			// 
 			// showDebugConsoleCheckBox
 			// 
+			showDebugConsoleCheckBox.AccessibleDescription = "Show the debug console";
 			showDebugConsoleCheckBox.AutoSize = true;
 			showDebugConsoleCheckBox.Location = new Point(6, 22);
 			showDebugConsoleCheckBox.Name = "showDebugConsoleCheckBox";
@@ -1162,6 +1201,7 @@
 			// 
 			// showTypesForNamedWidgetsCheckBox
 			// 
+			showTypesForNamedWidgetsCheckBox.AccessibleDescription = "Show widget type in parentheses even if it is are named.";
 			showTypesForNamedWidgetsCheckBox.AutoSize = true;
 			showTypesForNamedWidgetsCheckBox.Location = new Point(6, 22);
 			showTypesForNamedWidgetsCheckBox.Name = "showTypesForNamedWidgetsCheckBox";
@@ -1207,6 +1247,7 @@
 			// 
 			// autoUpdateCheckCheckBox
 			// 
+			autoUpdateCheckCheckBox.AccessibleDescription = "Automatically check for updates at each launch, won't automatically install but will prompt the user instead.";
 			autoUpdateCheckCheckBox.AutoSize = true;
 			autoUpdateCheckCheckBox.Location = new Point(6, 22);
 			autoUpdateCheckCheckBox.Name = "autoUpdateCheckCheckBox";
@@ -1218,6 +1259,7 @@
 			// 
 			// checkForUpdatesButton
 			// 
+			checkForUpdatesButton.AccessibleDescription = "Manually check for available updates";
 			checkForUpdatesButton.FlatStyle = FlatStyle.System;
 			checkForUpdatesButton.Location = new Point(6, 47);
 			checkForUpdatesButton.Name = "checkForUpdatesButton";
@@ -1240,6 +1282,7 @@
 			// 
 			// currentVersionLabel
 			// 
+			currentVersionLabel.AccessibleDescription = "Current MyGui.net version";
 			currentVersionLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			currentVersionLabel.Location = new Point(6, 19);
 			currentVersionLabel.Name = "currentVersionLabel";
@@ -1275,6 +1318,7 @@
 			// 
 			// gitHubOrgButton
 			// 
+			gitHubOrgButton.AccessibleDescription = "Open the ReDoIng Mods GitHub organization in a web browser.";
 			gitHubOrgButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			gitHubOrgButton.FlatStyle = FlatStyle.System;
 			gitHubOrgButton.Location = new Point(96, 327);
@@ -1287,6 +1331,7 @@
 			// 
 			// gitHubRepoButton
 			// 
+			gitHubRepoButton.AccessibleDescription = "Open the MyGui.net GitHub repository in a web browser.";
 			gitHubRepoButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			gitHubRepoButton.FlatStyle = FlatStyle.System;
 			gitHubRepoButton.Location = new Point(96, 298);
@@ -1299,6 +1344,7 @@
 			// 
 			// joinDiscordButton
 			// 
+			joinDiscordButton.AccessibleDescription = "Display the invite to the ReDoIng Mods Discord server in Discord.";
 			joinDiscordButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			joinDiscordButton.FlatStyle = FlatStyle.System;
 			joinDiscordButton.Location = new Point(96, 356);
@@ -1533,7 +1579,6 @@
         private GroupBox groupBox10;
         private CustomNumericUpDown workspaceSizeDefaultYNumericUpDown;
         private CustomNumericUpDown workspaceSizeDefaultXNumericUpDown;
-        private Label label4;
         private CheckBox useViewportVSyncCheckBox;
         private CheckBox renderInvisibleWidgetCheckBox;
         private CheckBox useViewportAACheckBox;
@@ -1587,5 +1632,6 @@
 		private Panel panel4;
 		private Panel panel5;
 		private Panel panel6;
+		private Label label4;
 	}
 }

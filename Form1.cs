@@ -112,9 +112,9 @@ namespace MyGui.net
 		{
 			if (Settings.Default.AutoCheckUpdate)
 			{
-				#pragma warning disable CS4014 // Suppress warning for this line, as this is just an update checker
+#pragma warning disable CS4014 // Suppress warning for this line, as this is just an update checker
 				CheckForUpdate(Settings.Default.UpdateBearerToken);
-				#pragma warning restore CS4014
+#pragma warning restore CS4014
 			}
 			InitializeComponent();
 			DebugConsole.CloseConsoleOnExit(this);
@@ -1165,7 +1165,7 @@ namespace MyGui.net
 						break;
 					default:
 						Cursor = Cursors.Default; // Normal cursor
-						//viewport.Refresh(); //not needed
+												  //viewport.Refresh(); //not needed
 						break;
 				}
 
@@ -2357,32 +2357,81 @@ namespace MyGui.net
 			UpdateRecentFilesMenu();
 		}
 
-		private void centerInParentToolStripMenuItem_Click(object sender, EventArgs e)
+		private void CenterWidget(MyGuiWidgetData widget, bool horizontal = true, bool vertical = true, bool inLayout = false)
 		{
-			if (_currentSelectedWidget == null) return;
+			if (widget == null) return;
 
-			var parent = _currentSelectedWidget.Parent;
-			var parentSize = parent == null ? (Point)ProjectSize : parent.size;
+			Point finalPos = widget.position; // Start with current position
 
-			ExecuteCommand(new MoveCommand(_currentSelectedWidget, new Point(parentSize.X / 2, parentSize.Y / 2) - new Size(_currentSelectedWidget.size.X / 2, _currentSelectedWidget.size.Y / 2)));
-		}
-
-		private void centerInLayoutToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (_currentSelectedWidget == null) return;
-
-			var parentTree = Util.FindParentTree(_currentSelectedWidget, _currentLayout);
-			var layoutCenter = new Size(ProjectSize.Width / 2, ProjectSize.Height / 2);
-			Point finalPos = new();
-
-			foreach (var item in parentTree)
+			if (inLayout)
 			{
-				finalPos.Offset(-item.position.X, -item.position.Y);
+				var parentTree = Util.FindParentTree(widget, _currentLayout);
+				var layoutCenter = new Size(ProjectSize.Width / 2, ProjectSize.Height / 2);
+				Point offset = new();
+
+				if (parentTree != null && parentTree.Count > 0)
+				{
+					foreach (var item in parentTree)
+					{
+						offset.Offset(-item.position.X, -item.position.Y);
+					}
+				}
+
+				Point centered = (Point)(layoutCenter - new Size(widget.size.X / 2, widget.size.Y / 2) + (Size)offset);
+
+				if (horizontal)
+					finalPos.X = centered.X;
+				if (vertical)
+					finalPos.Y = centered.Y;
+			}
+			else
+			{
+				var parent = widget.Parent;
+				var parentSize = parent == null ? (Point)ProjectSize : parent.size;
+				Point centered = new Point(parentSize.X / 2, parentSize.Y / 2) - new Size(widget.size.X / 2, widget.size.Y / 2);
+
+				if (horizontal)
+					finalPos.X = centered.X;
+				if (vertical)
+					finalPos.Y = centered.Y;
 			}
 
-			finalPos += layoutCenter - new Size(_currentSelectedWidget.size.X / 2, _currentSelectedWidget.size.Y / 2);
+			ExecuteCommand(new MoveCommand(widget, finalPos));
+		}
 
-			ExecuteCommand(new MoveCommand(_currentSelectedWidget, finalPos));
+		private void centerInParentHorizontallyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			CenterWidget(_currentSelectedWidget, true, false);
+		}
+
+		private void centerInParentVerticallyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			CenterWidget(_currentSelectedWidget, false, true);
+		}
+
+		private void centerInParentBothToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			CenterWidget(_currentSelectedWidget);
+		}
+
+		private void centerInLayoutHorizontallyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			CenterWidget(_currentSelectedWidget, true, false, true);
+		}
+
+		private void centerInLayoutVerticallyToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			CenterWidget(_currentSelectedWidget, false, true, true);
+		}
+
+		private void centerInLayoutBothToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			CenterWidget(_currentSelectedWidget, true, true, true);
+		}
+
+		private void duplicateToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			new FormDuplication().ShowDialog();
 		}
 	}
 }
