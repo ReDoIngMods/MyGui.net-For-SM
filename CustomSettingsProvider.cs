@@ -27,7 +27,7 @@ namespace MyGui.net
 		{
 			get
 			{
-				string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+				string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 				string appFolder = Path.Combine(appData, "ReDoIng Mods/MyGui.net");
 				Directory.CreateDirectory(appFolder);
 

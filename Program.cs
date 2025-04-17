@@ -23,7 +23,7 @@ namespace MyGui.net
             Application.SetColorMode((SystemColorMode)Settings.Default.Theme);
 
 			Application.EnableVisualStyles();
-			Application.SetDefaultFont(new Font("Segoe UI", 9f));
+			//Application.SetDefaultFont(new Font("Segoe UI", 9f)); //Do not enable this, EVER, i thought it would help fix DPI issues, but it instead broke multiple instances...
 
 			try
             {
