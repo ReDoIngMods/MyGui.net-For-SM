@@ -520,87 +520,87 @@ namespace MyGui.net
 			// 
 			centerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { centerInParentToolStripMenuItem, centerInLayoutToolStripMenuItem });
 			centerToolStripMenuItem.Name = "centerToolStripMenuItem";
-			centerToolStripMenuItem.Size = new Size(150, 22);
+			centerToolStripMenuItem.Size = new Size(180, 22);
 			centerToolStripMenuItem.Text = "Center In";
 			// 
 			// centerInParentToolStripMenuItem
 			// 
 			centerInParentToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { centerInParentHorizontallyToolStripMenuItem, centerInParentVerticallyToolStripMenuItem, centerInParentBothToolStripMenuItem });
 			centerInParentToolStripMenuItem.Name = "centerInParentToolStripMenuItem";
-			centerInParentToolStripMenuItem.Size = new Size(110, 22);
+			centerInParentToolStripMenuItem.Size = new Size(180, 22);
 			centerInParentToolStripMenuItem.Text = "Parent";
 			// 
 			// centerInParentHorizontallyToolStripMenuItem
 			// 
 			centerInParentHorizontallyToolStripMenuItem.Name = "centerInParentHorizontallyToolStripMenuItem";
-			centerInParentHorizontallyToolStripMenuItem.Size = new Size(138, 22);
+			centerInParentHorizontallyToolStripMenuItem.Size = new Size(201, 22);
 			centerInParentHorizontallyToolStripMenuItem.Text = "Horizontally";
 			centerInParentHorizontallyToolStripMenuItem.Click += centerInParentHorizontallyToolStripMenuItem_Click;
 			// 
 			// centerInParentVerticallyToolStripMenuItem
 			// 
 			centerInParentVerticallyToolStripMenuItem.Name = "centerInParentVerticallyToolStripMenuItem";
-			centerInParentVerticallyToolStripMenuItem.Size = new Size(138, 22);
+			centerInParentVerticallyToolStripMenuItem.Size = new Size(201, 22);
 			centerInParentVerticallyToolStripMenuItem.Text = "Vertically";
 			centerInParentVerticallyToolStripMenuItem.Click += centerInParentVerticallyToolStripMenuItem_Click;
 			// 
 			// centerInParentBothToolStripMenuItem
 			// 
 			centerInParentBothToolStripMenuItem.Name = "centerInParentBothToolStripMenuItem";
-			centerInParentBothToolStripMenuItem.Size = new Size(138, 22);
-			centerInParentBothToolStripMenuItem.Text = "Both";
+			centerInParentBothToolStripMenuItem.Size = new Size(201, 22);
+			centerInParentBothToolStripMenuItem.Text = "Horizontally && Vertically";
 			centerInParentBothToolStripMenuItem.Click += centerInParentBothToolStripMenuItem_Click;
 			// 
 			// centerInLayoutToolStripMenuItem
 			// 
 			centerInLayoutToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { centerInLayoutHorizontallyToolStripMenuItem, centerInLayoutVerticallyToolStripMenuItem, centerInLayoutBothToolStripMenuItem });
 			centerInLayoutToolStripMenuItem.Name = "centerInLayoutToolStripMenuItem";
-			centerInLayoutToolStripMenuItem.Size = new Size(110, 22);
+			centerInLayoutToolStripMenuItem.Size = new Size(180, 22);
 			centerInLayoutToolStripMenuItem.Text = "Layout";
 			// 
 			// centerInLayoutHorizontallyToolStripMenuItem
 			// 
 			centerInLayoutHorizontallyToolStripMenuItem.Name = "centerInLayoutHorizontallyToolStripMenuItem";
-			centerInLayoutHorizontallyToolStripMenuItem.Size = new Size(138, 22);
+			centerInLayoutHorizontallyToolStripMenuItem.Size = new Size(201, 22);
 			centerInLayoutHorizontallyToolStripMenuItem.Text = "Horizontally";
 			centerInLayoutHorizontallyToolStripMenuItem.Click += centerInLayoutHorizontallyToolStripMenuItem_Click;
 			// 
 			// centerInLayoutVerticallyToolStripMenuItem
 			// 
 			centerInLayoutVerticallyToolStripMenuItem.Name = "centerInLayoutVerticallyToolStripMenuItem";
-			centerInLayoutVerticallyToolStripMenuItem.Size = new Size(138, 22);
+			centerInLayoutVerticallyToolStripMenuItem.Size = new Size(201, 22);
 			centerInLayoutVerticallyToolStripMenuItem.Text = "Vertically";
 			centerInLayoutVerticallyToolStripMenuItem.Click += centerInLayoutVerticallyToolStripMenuItem_Click;
 			// 
 			// centerInLayoutBothToolStripMenuItem
 			// 
 			centerInLayoutBothToolStripMenuItem.Name = "centerInLayoutBothToolStripMenuItem";
-			centerInLayoutBothToolStripMenuItem.Size = new Size(138, 22);
-			centerInLayoutBothToolStripMenuItem.Text = "Both";
+			centerInLayoutBothToolStripMenuItem.Size = new Size(201, 22);
+			centerInLayoutBothToolStripMenuItem.Text = "Horizontally && Vertically";
 			centerInLayoutBothToolStripMenuItem.Click += centerInLayoutBothToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator7
 			// 
 			toolStripSeparator7.Name = "toolStripSeparator7";
-			toolStripSeparator7.Size = new Size(147, 6);
+			toolStripSeparator7.Size = new Size(177, 6);
 			// 
 			// duplicateToolStripMenuItem
 			// 
 			duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
-			duplicateToolStripMenuItem.Size = new Size(150, 22);
+			duplicateToolStripMenuItem.Size = new Size(180, 22);
 			duplicateToolStripMenuItem.Text = "Duplicate";
 			duplicateToolStripMenuItem.Click += duplicateToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator8
 			// 
 			toolStripSeparator8.Name = "toolStripSeparator8";
-			toolStripSeparator8.Size = new Size(147, 6);
+			toolStripSeparator8.Size = new Size(177, 6);
 			// 
 			// comingSoonToolStripMenuItem
 			// 
 			comingSoonToolStripMenuItem.Enabled = false;
 			comingSoonToolStripMenuItem.Name = "comingSoonToolStripMenuItem";
-			comingSoonToolStripMenuItem.Size = new Size(150, 22);
+			comingSoonToolStripMenuItem.Size = new Size(180, 22);
 			comingSoonToolStripMenuItem.Text = "Coming Soon!";
 			// 
 			// openLayoutDialog

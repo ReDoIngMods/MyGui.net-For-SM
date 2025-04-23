@@ -334,6 +334,7 @@ namespace MyGui.net
 		{
 			widgetSecondaryData ??= widget;
 			widgetTertiaryData ??= widgetSecondaryData;
+			var widgetSkin = _allResources.TryGetValue(widget.skin, out var wS) ? wS : null;
 			var widgetTertiaryDataSkin = _allResources.TryGetValue(widgetTertiaryData.skin, out var wTDS) ? wTDS : null;
 			if (resource == null || resource.basisSkins == null)
 			{
@@ -397,6 +398,7 @@ namespace MyGui.net
 
 				if (widget != null)
 				{
+					float alpha = Util.TryGetValueFromMany([widgetTertiaryData.properties, widget.properties, widgetSkin.defaultProperties], "Alpha", out var alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
 					//LISTEN UP YOU DUMBASS TRB; 720p is 1x, 1080p is 1.5x, 1440p is 2x, !!!!720p IS NOT HALF OF 1080p!!!! - Left this comment here for anyone that checks out the source to find lol - The Red Builder
 					//Ima be honest here; i kinda gave up making it work by myself, so a lot of this code is AI generated, though it does work really well actually.
 					if (skin.type == "SimpleText" || skin.type == "EditText")
@@ -559,7 +561,7 @@ namespace MyGui.net
 							}
 
 							float spacingY = destRect.Top + offsetY - metrics.Top;
-							SKColor runningTextColor = textColor.GetValueOrDefault(Color.White).ToSKColor();
+							SKColor runningTextColor = textColor.GetValueOrDefault(Color.White).ToSKColor().WithAlpha((Byte)Math.Clamp(alpha * 255, 0, 255));
 
 							bool hasShadow = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextShadow", out string textShadow) ? textShadow == "true" : false;
 							SKColor? shadowColor = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextShadowColour", out string textShadowColor) ? Util.ParseColorFromString(textShadowColor, false)?.ToSKColor() : null;
@@ -628,7 +630,7 @@ namespace MyGui.net
 
 									if (runningTextColor != _baseFontPaint.Color)
 									{
-										_baseFontPaint.Color = runningTextColor;
+										_baseFontPaint.Color = runningTextColor.WithAlpha((Byte)Math.Clamp(alpha * 255, 0, 255));
 									}
 
 									// Measure current character and compute kerning adjustment.
@@ -645,7 +647,7 @@ namespace MyGui.net
 									{
 										_baseFontPaint.Color = shadowColor.Value;
 										canvas.DrawText(actualChar, spacingX + 1, spacingY + 1, _baseFontPaint);
-										_baseFontPaint.Color = runningTextColor;
+										_baseFontPaint.Color = runningTextColor.WithAlpha((Byte)Math.Clamp(alpha * 255, 0, 255));
 									}
 
 									canvas.DrawText(actualChar, spacingX, spacingY, _baseFontPaint);
@@ -684,8 +686,6 @@ namespace MyGui.net
 							drawPaint.IsDither = true;
 
 							Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
-
-							float alpha = widgetTertiaryData.properties.TryGetValue("Alpha", out string alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
 
 							float[] colorMatrix = new float[]
 							{
@@ -750,8 +750,6 @@ namespace MyGui.net
 							drawPaint.IsDither = true;
 
 							Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
-							
-							float alpha = widgetTertiaryData.properties.TryGetValue("Alpha", out string alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
 
 							float[] colorMatrix = new float[]
 							{
