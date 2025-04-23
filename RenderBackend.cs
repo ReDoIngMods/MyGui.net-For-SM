@@ -398,7 +398,8 @@ namespace MyGui.net
 
 				if (widget != null)
 				{
-					float alpha = Util.TryGetValueFromMany([widgetTertiaryData.properties, widget.properties, widgetSkin.defaultProperties], "Alpha", out var alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
+					float defaultAlpha = widgetTertiaryData.properties.TryGetValue("Alpha", out var alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
+					float alpha = Util.TryGetValueFromMany([widget.properties, widgetSkin.defaultProperties], "Alpha", out var alphaMainVal) ? Util.ProperlyParseFloat(alphaMainVal) * defaultAlpha : defaultAlpha;
 					//LISTEN UP YOU DUMBASS TRB; 720p is 1x, 1080p is 1.5x, 1440p is 2x, !!!!720p IS NOT HALF OF 1080p!!!! - Left this comment here for anyone that checks out the source to find lol - The Red Builder
 					//Ima be honest here; i kinda gave up making it work by myself, so a lot of this code is AI generated, though it does work really well actually.
 					if (skin.type == "SimpleText" || skin.type == "EditText")
