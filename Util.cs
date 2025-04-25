@@ -1449,6 +1449,15 @@ namespace MyGui.net
 			return double.NaN;
 		}
 
+		public static double? ProperlyParseDouble(string input, bool returnNull)
+		{
+			if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double result))
+			{
+				return result;
+			}
+			return returnNull ? null : double.NaN;
+		}
+
 		public static float ProperlyParseFloat(string input)
 		{
 			if (float.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
@@ -1456,6 +1465,15 @@ namespace MyGui.net
 				return result;
 			}
 			return float.NaN;
+		}
+
+		public static float? ProperlyParseFloat(string input, bool returnNull)
+		{
+			if (float.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out float result))
+			{
+				return result;
+			}
+			return returnNull ? null : float.NaN;
 		}
 
 		public static string ResolutionIdxToString(int idx)
@@ -1843,7 +1861,7 @@ namespace MyGui.net
 			Center
 		}
 
-		public static BorderPosition DetectBorder(MyGuiWidgetData widget, Point mousePosition, List<MyGuiWidgetData> layout)
+		public static BorderPosition DetectBorder(MyGuiWidgetData widget, Point mousePosition, List<MyGuiWidgetData> layout, int borderThreshold = 7)
 		{
 			if (widget == null) return BorderPosition.None;
 
@@ -1858,7 +1876,6 @@ namespace MyGui.net
 
 			int widgetWidth = widget.size.X;
 			int widgetHeight = widget.size.Y;
-			int borderThreshold = 7; // Distance from edge within which we consider it "on the border"
 
 			// Check if the mouse is near the widget (including a threshold margin)
 			bool isNearWidget = widgetRelativePosition.X >= -borderThreshold &&

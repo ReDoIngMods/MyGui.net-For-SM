@@ -28,6 +28,9 @@ namespace MyGui.net
 		static SKPoint _viewportOffset = new SKPoint(0, 0);
 		public static Size ProjectSize = Settings.Default.DefaultWorkspaceSize;//new(1920, 1080);
 
+		public static int SelectionBorderSizeDefault = 7;
+		public static int SelectionBorderSize = SelectionBorderSizeDefault;
+
 		#region Caches
 		static Dictionary<string, string> _modUuidPathCache = new();
 		public static Dictionary<string, string> ModUuidPathCache => _modUuidPathCache;
@@ -978,7 +981,7 @@ namespace MyGui.net
 			}
 			else if (e.Button == MouseButtons.Left)
 			{
-				BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, _currentLayout);
+				BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, _currentLayout, SelectionBorderSize);
 				MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos);
 
 				bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && currWidgetBorder != BorderPosition.None;
@@ -1074,6 +1077,9 @@ namespace MyGui.net
 				_viewportOffset.X = Math.Clamp(_viewportOffset.X + (viewportPixelPosNew.X - viewportPixelPos.X), viewportScrollX.Minimum, viewportScrollX.Maximum);
 				_viewportOffset.Y = Math.Clamp(_viewportOffset.Y + (viewportPixelPosNew.Y - viewportPixelPos.Y), viewportScrollY.Minimum, viewportScrollY.Maximum);
 
+				//Enable for fixed size resize border
+				//SelectionBorderSize = (int)Math.Round(((float)SelectionBorderSizeDefault) / _viewportScale);
+
 				viewportScrollX.Value = (int)_viewportOffset.X;
 				viewportScrollY.Value = (int)_viewportOffset.Y;
 				viewport.Refresh();
@@ -1128,7 +1134,7 @@ namespace MyGui.net
 			else if (_currentSelectedWidget != null)
 			{
 				var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
-				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPosPoint, _currentLayout);
+				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPosPoint, _currentLayout, SelectionBorderSize);
 				//Debug.WriteLine($"BORDER: {border}");
 				if ((border == BorderPosition.Center || border == BorderPosition.None) && (topmostWidget ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
 				{

@@ -28,8 +28,8 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
-			DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
+			DataGridViewCellStyle dataGridViewCellStyle3 = new DataGridViewCellStyle();
+			DataGridViewCellStyle dataGridViewCellStyle4 = new DataGridViewCellStyle();
 			dataGridView1 = new DataGridView();
 			searchBox = new TextBox();
 			applyButton = new Button();
@@ -54,14 +54,14 @@
 			dataGridView1.BackgroundColor = SystemColors.ControlLightLight;
 			dataGridView1.BorderStyle = BorderStyle.None;
 			dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
-			dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle1.BackColor = Color.Transparent;
-			dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F);
-			dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
-			dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
-			dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
-			dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-			dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+			dataGridViewCellStyle3.Alignment = DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle3.BackColor = Color.Transparent;
+			dataGridViewCellStyle3.Font = new Font("Segoe UI", 9F);
+			dataGridViewCellStyle3.ForeColor = SystemColors.WindowText;
+			dataGridViewCellStyle3.SelectionBackColor = SystemColors.Highlight;
+			dataGridViewCellStyle3.SelectionForeColor = SystemColors.HighlightText;
+			dataGridViewCellStyle3.WrapMode = DataGridViewTriState.True;
+			dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
 			dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 			dataGridView1.Dock = DockStyle.Fill;
 			dataGridView1.EditMode = DataGridViewEditMode.EditProgrammatically;
@@ -70,14 +70,14 @@
 			dataGridView1.Name = "dataGridView1";
 			dataGridView1.ReadOnly = true;
 			dataGridView1.RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-			dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
-			dataGridViewCellStyle2.BackColor = SystemColors.ControlLightLight;
-			dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F);
-			dataGridViewCellStyle2.ForeColor = SystemColors.WindowText;
-			dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
-			dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
-			dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
-			dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle2;
+			dataGridViewCellStyle4.Alignment = DataGridViewContentAlignment.MiddleLeft;
+			dataGridViewCellStyle4.BackColor = SystemColors.ControlLightLight;
+			dataGridViewCellStyle4.Font = new Font("Segoe UI", 9F);
+			dataGridViewCellStyle4.ForeColor = SystemColors.WindowText;
+			dataGridViewCellStyle4.SelectionBackColor = SystemColors.Highlight;
+			dataGridViewCellStyle4.SelectionForeColor = SystemColors.HighlightText;
+			dataGridViewCellStyle4.WrapMode = DataGridViewTriState.True;
+			dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
 			dataGridView1.RowHeadersVisible = false;
 			dataGridView1.RowHeadersWidth = 4;
 			dataGridView1.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
@@ -138,9 +138,9 @@
 			// 
 			// splitContainer1.Panel1
 			// 
+			splitContainer1.Panel1.Controls.Add(previewViewport);
 			splitContainer1.Panel1.Controls.Add(hScrollBar1);
 			splitContainer1.Panel1.Controls.Add(previewTextBox);
-			splitContainer1.Panel1.Controls.Add(previewViewport);
 			// 
 			// splitContainer1.Panel2
 			// 
@@ -151,8 +151,8 @@
 			// 
 			// hScrollBar1
 			// 
-			hScrollBar1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			hScrollBar1.Location = new Point(0, 56);
+			hScrollBar1.Dock = DockStyle.Bottom;
+			hScrollBar1.Location = new Point(0, 61);
 			hScrollBar1.Maximum = 7509;
 			hScrollBar1.Name = "hScrollBar1";
 			hScrollBar1.Size = new Size(758, 13);
@@ -161,22 +161,22 @@
 			// 
 			// previewTextBox
 			// 
-			previewTextBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-			previewTextBox.Location = new Point(3, 71);
+			previewTextBox.Dock = DockStyle.Bottom;
+			previewTextBox.Location = new Point(0, 74);
 			previewTextBox.Name = "previewTextBox";
 			previewTextBox.PlaceholderText = "Anything typed in here will show up in the preview using the selected font!";
-			previewTextBox.Size = new Size(752, 23);
+			previewTextBox.Size = new Size(758, 23);
 			previewTextBox.TabIndex = 1;
 			previewTextBox.TextChanged += previewTextBox_TextChanged;
 			// 
 			// previewViewport
 			// 
-			previewViewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			previewViewport.BackColor = Color.Black;
-			previewViewport.Location = new Point(-1, -1);
+			previewViewport.Dock = DockStyle.Fill;
+			previewViewport.Location = new Point(0, 0);
 			previewViewport.Name = "previewViewport";
-			previewViewport.Size = new Size(760, 56);
-			previewViewport.TabIndex = 0;
+			previewViewport.Size = new Size(758, 61);
+			previewViewport.TabIndex = 3;
 			previewViewport.Text = "skControl1";
 			previewViewport.PaintSurface += previewViewport_PaintSurface;
 			// 
@@ -218,7 +218,7 @@
 		private Button cancelButton;
 		private SplitContainer splitContainer1;
 		private TextBox previewTextBox;
-		private SkiaSharp.Views.Desktop.SKControl previewViewport;
 		private HScrollBar hScrollBar1;
+		private SkiaSharp.Views.Desktop.SKControl previewViewport;
 	}
 }

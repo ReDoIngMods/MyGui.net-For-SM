@@ -222,7 +222,7 @@ namespace MyGui.net
 				// Temporarily ignore clipping to draw selection box
 				if (widget == Form1._currentSelectedWidget)
 				{
-					_renderWidgetHighligths[widget] = new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128));
+					_renderWidgetHighligths[widget] = new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128), null, Form1.SelectionBorderSize);
 				}
 				else
 				{
@@ -332,6 +332,7 @@ namespace MyGui.net
 
 		public static void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null, MyGuiWidgetData? widgetTertiaryData = null, bool forceDebug = false)
 		{
+			//TODO: Major optimizations, this is really slow atm.
 			widgetSecondaryData ??= widget;
 			widgetTertiaryData ??= widgetSecondaryData;
 			var widgetSkin = _allResources.TryGetValue(widget.skin, out var wS) ? wS : null;
@@ -396,10 +397,11 @@ namespace MyGui.net
 
 				var drawPaint = new SKPaint();
 
+				float defaultAlpha = widgetTertiaryData.properties.TryGetValue("Alpha", out var alphaVal) ? Util.ProperlyParseFloat(alphaVal, true) ?? 1f : 1f;
+				float alpha = Util.TryGetValueFromMany([widget?.properties, widgetSkin.defaultProperties], "Alpha", out var alphaMainVal) ? (Util.ProperlyParseFloat(alphaMainVal, true) ?? 1f) * defaultAlpha : defaultAlpha;
+
 				if (widget != null)
 				{
-					float defaultAlpha = widgetTertiaryData.properties.TryGetValue("Alpha", out var alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
-					float alpha = Util.TryGetValueFromMany([widget.properties, widgetSkin.defaultProperties], "Alpha", out var alphaMainVal) ? Util.ProperlyParseFloat(alphaMainVal) * defaultAlpha : defaultAlpha;
 					//LISTEN UP YOU DUMBASS TRB; 720p is 1x, 1080p is 1.5x, 1440p is 2x, !!!!720p IS NOT HALF OF 1080p!!!! - Left this comment here for anyone that checks out the source to find lol - The Red Builder
 					//Ima be honest here; i kinda gave up making it work by myself, so a lot of this code is AI generated, though it does work really well actually.
 					if (skin.type == "SimpleText" || skin.type == "EditText")
@@ -842,8 +844,6 @@ namespace MyGui.net
 					drawPaint.IsDither = true;
 
 					Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
-
-					float alpha = widgetTertiaryData.properties.TryGetValue("Alpha", out string alphaVal) ? Util.ProperlyParseFloat(alphaVal) : 1f;
 
 					float[] colorMatrix = new float[]
 					{
