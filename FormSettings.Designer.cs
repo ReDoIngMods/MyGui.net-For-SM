@@ -472,7 +472,7 @@
 			// 
 			enterAcceptsCheckBox.AccessibleDescription = "Pressing enter will simulate a press on the OK button and submit changes. Applies to property editors.";
 			enterAcceptsCheckBox.AutoSize = true;
-			enterAcceptsCheckBox.Location = new Point(3, 47);
+			enterAcceptsCheckBox.Location = new Point(6, 47);
 			enterAcceptsCheckBox.Name = "enterAcceptsCheckBox";
 			enterAcceptsCheckBox.Size = new Size(149, 19);
 			enterAcceptsCheckBox.TabIndex = 3;
@@ -484,7 +484,7 @@
 			// 
 			hideSplashScreenCheckBox.AccessibleDescription = "Prevent the splash screen from showing up after the program loads.";
 			hideSplashScreenCheckBox.AutoSize = true;
-			hideSplashScreenCheckBox.Location = new Point(3, 22);
+			hideSplashScreenCheckBox.Location = new Point(6, 22);
 			hideSplashScreenCheckBox.Name = "hideSplashScreenCheckBox";
 			hideSplashScreenCheckBox.Size = new Size(126, 19);
 			hideSplashScreenCheckBox.TabIndex = 2;
