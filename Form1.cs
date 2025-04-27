@@ -14,6 +14,9 @@ namespace MyGui.net
 	//TODO: holding shift while using arrows ignores grid and control scales
 	//TODO: remove invalid properties using type.GetFields() and do stuff with that
 	//TODO: make text editor autocomplete tags
+	//TODO: rudimenary multi-select
+	//TODO: add an option to make a parent for all selected widgets and to remove a widget but move the children to the removed widget's parent
+	//TODO: scaling ratio lock (like when holding Shift in Paint.net, but with customizeable ration, not just 1:1)
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();

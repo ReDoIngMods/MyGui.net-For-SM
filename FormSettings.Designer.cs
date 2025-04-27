@@ -1201,7 +1201,7 @@
 			// 
 			// showTypesForNamedWidgetsCheckBox
 			// 
-			showTypesForNamedWidgetsCheckBox.AccessibleDescription = "Show widget type in parentheses even if it is are named.";
+			showTypesForNamedWidgetsCheckBox.AccessibleDescription = "Show widget type in parentheses even if it is named.";
 			showTypesForNamedWidgetsCheckBox.AutoSize = true;
 			showTypesForNamedWidgetsCheckBox.Location = new Point(6, 22);
 			showTypesForNamedWidgetsCheckBox.Name = "showTypesForNamedWidgetsCheckBox";

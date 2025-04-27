@@ -935,7 +935,7 @@ namespace MyGui.net
 				else
 				{
 					var parsedAsDouble = Util.ProperlyParseDouble(value);
-					widget.properties["MaxTextLength"] = !double.IsNaN(parsedAsDouble) ? Math.Clamp(parsedAsDouble, 0, 1).ToString(CultureInfo.InvariantCulture) : "0";
+					widget.properties["MaxTextLength"] = !double.IsNaN(parsedAsDouble) ? parsedAsDouble.ToString(CultureInfo.InvariantCulture) : "0";
 				}
 			}
 		}
