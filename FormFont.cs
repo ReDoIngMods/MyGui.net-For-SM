@@ -124,7 +124,8 @@ namespace MyGui.net
 				properties = new()
 				{
 					["Caption"] = previewTextBox.Text == "" ? previewTextBox.PlaceholderText : previewTextBox.Text,
-					["FontName"] = selectedItem
+					["FontName"] = selectedItem,
+					["MaxTextLength"] = "99999999999"
 				}
 			};
 

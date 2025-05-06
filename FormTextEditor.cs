@@ -114,7 +114,8 @@ namespace MyGui.net
 					["FontName"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("FontName", out string fntName) ? fntName : "") : "",
 					["TextColour"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("TextColour", out string txtClr) ? txtClr : "") : "",
 					["TextShadow"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("TextShadow", out string txtShd) ? txtShd : "") : "",
-					["TextShadowColour"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("TextShadowColour", out string txtShdClr) ? txtShdClr : "") : ""
+					["TextShadowColour"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("TextShadowColour", out string txtShdClr) ? txtShdClr : "") : "",
+					["MaxTextLength"] = Form1._currentSelectedWidget != null ? (Form1._currentSelectedWidget.properties.TryGetValue("MaxTextLength", out string txtMxLgt) ? txtMxLgt : "") : ""
 				}
 			};
 

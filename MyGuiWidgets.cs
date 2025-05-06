@@ -921,7 +921,7 @@ namespace MyGui.net
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Text Length Limit")]
-		[Description("The maximum number of characters. [DEFAULT] is not infinite!")]
+		[Description("The maximum number of characters. [DEFAULT] is 2048, not infinite!")]
 		public string MaxTextLength
 		{
 			get => widget.properties.TryGetValue("MaxTextLength", out var value) ? value : "";

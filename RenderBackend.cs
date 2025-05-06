@@ -2,7 +2,10 @@
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
+using System.Drawing.Imaging;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using static MyGui.net.Util;
 
@@ -36,7 +39,6 @@ namespace MyGui.net
 			{ "ScrollView", new SKColor(0xFF2F00) }
 		};
 		#endregion
-
 		public struct WidgetHighlightType
 		{
 			public SKPoint position;
@@ -56,7 +58,7 @@ namespace MyGui.net
 		}
 
 		/// <summary>
-		/// Repositions and adjsuts Widgets to be rendered by calling RenderWidget.
+		/// Repositions and adjusts Widgets to be rendered by calling RenderWidget.
 		/// </summary>
 		/// <param name="canvas">Canvas to render onto</param>
 		/// <param name="widget">Witget to render</param>
@@ -69,6 +71,14 @@ namespace MyGui.net
 		/// <param name="forceDebug">Forces debug drawing of slices and all</param>
 		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null, MyGuiWidgetData? widgetTertiaryData = null, bool forceDebug = false)
 		{
+			_renderInvisibleWidgets = Settings.Default.RenderInvisibleWidgets;
+			_useViewportAntiAliasing = Settings.Default.UseViewportAntiAliasing;
+			_useViewportFontAntiAliasing = Settings.Default.UseViewportFontAntiAliasing;
+			_screenSizeMultiplier = 1 + Settings.Default.ReferenceResolution * 0.5f;
+			_filterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+			_scrapMechanicPath = Settings.Default.ScrapMechanicPath;
+			_referenceLanguage = Settings.Default.ReferenceLanguage;
+
 			Point oldSizeParam = new(widget.size.X, widget.size.Y);
 
 			if ((System.Object.ReferenceEquals(parent, widgetSecondaryData) || widget.name == "Root") && widgetSecondaryData != null) //This fixes the scaling issues that i had before, sets the scale 
@@ -112,59 +122,55 @@ namespace MyGui.net
 
 				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, new Point(subWidget.size.X, subWidget.size.Y), widgetSecondaryData != null ? widgetSecondaryData : widget, forceDebug);
 				//}
-				//return;
+
+				// Save canvas state for clipping
+				var saveBeforeAll2 = canvas.Save();
+
+				// Apply clipping for the widget's bounds
+				canvas.ClipRect(rect);
+
+				foreach (var child in widget.children)
+				{
+					var widgetBounds = new SKRect(widgetPosition.X - 1, widgetPosition.Y - 1,
+								  widgetPosition.X + widget.size.X - 2, widgetPosition.Y + widget.size.Y - 2);
+					if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget, widgetSecondaryData, adjustToParent, oldSizeParam, widgetTertiaryData);
+				}
+				canvas.RestoreToCount(saveBeforeAll2);
+				return;
 			}
-			string skinPath = widget.skin != null && _allResources.ContainsKey(widget.skin) ? _allResources[widget.skin]?.path : "";
+			string skinPath = widget.skin != null && _allResources.TryGetValue(widget.skin, out MyGuiResource sPRes) ? sPRes?.path : "";
 			skinPath ??= "";
 
 
 			//Debug.WriteLine(skinPath);
-			if (!_skinAtlasCache.ContainsKey(skinPath))
+			if (!_skinAtlasCache.TryGetValue(skinPath, out SKImage? skinImage))
 			{
-				if (widget.skin != null && skinPath != null && skinPath != "")
+				if (!string.IsNullOrEmpty(skinPath) && widget.skin != null)
 				{
-					//Debug.WriteLine($"caching skin from dir {skinPath}");
 					SKBitmap? cachedBitmap = SKBitmap.Decode(skinPath);
-					if (cachedBitmap != null)
-					{
-						_skinAtlasCache[skinPath] = SKImage.FromBitmap(cachedBitmap);
-					}
-					else
-					{
-						_skinAtlasCache[skinPath] = null;
-					}
+					skinImage = cachedBitmap != null ? SKImage.FromBitmap(cachedBitmap) : null;
+					_skinAtlasCache[skinPath] = skinImage;
 				}
 				else
 				{
-					_skinAtlasCache[""] = SKImage.FromBitmap(LoadBitmap(_nullSkinResource.path));
+					skinImage = SKImage.FromBitmap(LoadBitmap(_nullSkinResource.path));
+					_skinAtlasCache[""] = skinImage;
 				}
 			}
 
-			// Save canvas state for clipping
 			var saveBeforeAll = canvas.Save();
-
-			// Apply clipping for the widget's bounds
 			canvas.ClipRect(rect);
 
-			// Generate a random color
-			//var color = new SKColor((byte)Util.rand.Next(256), (byte)Util.rand.Next(256), (byte)Util.rand.Next(256));
-
-			// Draw rectangle for the widget
-			/*var paint = new SKPaint
+			// Use the cached image we just ensured is available
+			if (!string.IsNullOrEmpty(skinPath) && skinImage != null)
 			{
-				//Color = color,
-				Style = SKPaintStyle.Fill,
-				IsAntialias = false
-			};
-			canvas.DrawRect(rect, paint);*/
-			if (skinPath != null && skinPath != "" && _skinAtlasCache.ContainsKey(skinPath))
-			{
-				RenderWidget(canvas, _skinAtlasCache[skinPath], _allResources[widget.skin], rect, null, widget, widgetSecondaryData, widgetTertiaryData, forceDebug);
+				RenderWidget(canvas, skinImage, _allResources[widget.skin], rect, null, widget, widgetSecondaryData, widgetTertiaryData, forceDebug);
 			}
 			else
 			{
-				RenderWidget(canvas, _skinAtlasCache[""], _allResources.TryGetValue(widget.skin, out val) ? val : _nullSkinResource, rect, _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null, widget, widgetSecondaryData, widgetTertiaryData, forceDebug);
-				//canvas.DrawRect(rect, paint);
+				_allResources.TryGetValue(widget.skin, out var fallbackResource);
+				_widgetTypeColors.TryGetValue(widget.type, out var debugColor);
+				RenderWidget(canvas, _skinAtlasCache[""], fallbackResource ?? _nullSkinResource, rect, debugColor, widget, widgetSecondaryData, widgetTertiaryData, forceDebug);
 			}
 
 			// Draw the widget's name (optional)
@@ -205,18 +211,14 @@ namespace MyGui.net
 					{
 						Color = SKColors.White,
 						TextSize = 16,
-						IsAntialias = Settings.Default.UseViewportFontAntiAliasing,
+						IsAntialias = _useViewportFontAntiAliasing,
 						Style = SKPaintStyle.StrokeAndFill,
 						StrokeWidth = 1
 					};
 					canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
-					var textPaintStroke = new SKPaint
-					{
-						Color = SKColors.Black,
-						TextSize = 16,
-						IsAntialias = Settings.Default.UseViewportFontAntiAliasing
-					};
-					canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaintStroke);
+					textPaint.Color = SKColors.Black;
+					textPaint.Style = SKPaintStyle.Fill;
+					canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
 				}
 
 				// Temporarily ignore clipping to draw selection box
@@ -328,7 +330,15 @@ namespace MyGui.net
 			return new SKRect(x, y, x + width, y + height);
 		}
 
-		static SKPaint _baseFontPaint = new SKPaint { };
+		static SKPaint _baseFontPaint = new SKPaint { SubpixelText = false, HintingLevel = SKPaintHinting.NoHinting, IsAutohinted = false };
+		static bool _renderInvisibleWidgets;
+		static bool _useViewportAntiAliasing;
+		static bool _useViewportFontAntiAliasing;
+		static float _screenSizeMultiplier;
+		static SKFilterQuality _filterQuality;
+		static string _scrapMechanicPath;
+		static string _referenceLanguage;
+		static SKPaint drawPaint = new SKPaint() { IsDither = true };
 
 		public static void RenderWidget(SKCanvas canvas, SKImage atlasImage, MyGuiResource resource, SKRect clientRect, SKColor? drawColor = null, MyGuiWidgetData? widget = null, MyGuiWidgetData? widgetSecondaryData = null, MyGuiWidgetData? widgetTertiaryData = null, bool forceDebug = false)
 		{
@@ -344,12 +354,53 @@ namespace MyGui.net
 
 			//Debug.WriteLine($"Rendering widget with skin {resource.name}.");
 
+			float defaultAlpha = widgetTertiaryData.properties.TryGetValue("Alpha", out var alphaVal) ? Util.ProperlyParseFloat(alphaVal, true) ?? 1f : 1f;
+			float alpha = Util.TryGetValueFromMany([widget?.properties, widgetSkin.defaultProperties], "Alpha", out var alphaMainVal) ? (Util.ProperlyParseFloat(alphaMainVal, true) ?? 1f) * defaultAlpha : defaultAlpha;
+			Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
+
+			widgetTertiaryData.properties.TryGetValue("ImageTexture", out string imagePathRel);
+			widgetTertiaryData.properties.TryGetValue("ImageResource", out string imageResourceRel);
+
+			SKColorFilter colorFilter = null;
+
+			if (drawColor == null || imagePathRel != null || imageResourceRel != null)
+			{
+				float[] colorMatrix = new float[]
+				{
+					selectedColor.R / 255f, 0, 0, 0, 0,
+					0, selectedColor.G / 255f, 0, 0, 0,
+					0, 0, selectedColor.B / 255f, 0, 0,
+					0, 0, 0, Math.Clamp(alpha, 0f, 1f), 0
+				};
+				colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
+			}
+			else
+			{
+				float[] colorMatrix = new float[]
+				{
+					drawColor.Value.Red / 255f, 0, 0, 0, 0,
+					0, drawColor.Value.Green / 255f, 0, 0, 0,
+					0, 0, drawColor.Value.Blue / 255f, 0, 0,
+					0, 0, 0, 1, 0
+				};
+
+				colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
+			}
+
+			drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : _filterQuality;
+			drawPaint.IsAntialias = _useViewportAntiAliasing;
+
+			// Clone the paint object and set the color filter
+			drawPaint.ColorFilter = colorFilter;
+
+
 			// Iterate through skins in reverse order
 			var renderedBasisSkins = resource.basisSkins ?? new();
-			if (Settings.Default.RenderInvisibleWidgets && (resource.path ?? "") == "" && (_allResources[widgetSecondaryData.skin].resourceLayout == null || widget == _allResources[widgetSecondaryData.skin].resourceLayout[0]))
+			if (imagePathRel == null && imageResourceRel == null && _renderInvisibleWidgets && (resource.path ?? "") == "" && (_allResources[widgetSecondaryData.skin].resourceLayout == null || widget == _allResources[widgetSecondaryData.skin].resourceLayout[0]))
 			{
 				RenderWidget(canvas, _skinAtlasCache[""], _nullSkinResource, clientRect, _widgetTypeColors.ContainsKey(widgetSecondaryData.type) ? _widgetTypeColors[widgetSecondaryData.type] : null, widget, widgetSecondaryData, null, forceDebug); //Ik, it is kinda terrible but it works, k?
 			}
+
 			for (int i = 0; i < renderedBasisSkins.Count; i++)
 			{
 				var skin = renderedBasisSkins[i];
@@ -395,24 +446,17 @@ namespace MyGui.net
 					tileOffset.Item1.Y + tileOffset.Item2.Y
 				), new(maxSizePoint.X, maxSizePoint.Y));
 
-				var drawPaint = new SKPaint();
-
-				float defaultAlpha = widgetTertiaryData.properties.TryGetValue("Alpha", out var alphaVal) ? Util.ProperlyParseFloat(alphaVal, true) ?? 1f : 1f;
-				float alpha = Util.TryGetValueFromMany([widget?.properties, widgetSkin.defaultProperties], "Alpha", out var alphaMainVal) ? (Util.ProperlyParseFloat(alphaMainVal, true) ?? 1f) * defaultAlpha : defaultAlpha;
-
 				if (widget != null)
 				{
-					//LISTEN UP YOU DUMBASS TRB; 720p is 1x, 1080p is 1.5x, 1440p is 2x, !!!!720p IS NOT HALF OF 1080p!!!! - Left this comment here for anyone that checks out the source to find lol - The Red Builder
-					//Ima be honest here; i kinda gave up making it work by myself, so a lot of this code is AI generated, though it does work really well actually.
 					if (skin.type == "SimpleText" || skin.type == "EditText")
 					{
-						if (widgetTertiaryData.properties.ContainsKey("Caption"))
+						if (widgetTertiaryData.properties.TryGetValue("Caption", out string caption))
 						{
 							int beforeTextClip = canvas.Save();
 							canvas.ClipRect(destRect);
 
 							var fontData = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "FontName", out string value) && _allFonts.ContainsKey(value) ? _allFonts[value] : _allFonts["DeJaVuSans"];
-							string fontPath = Path.Combine(Settings.Default.ScrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
+							string fontPath = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
 							if (!_fontCache.ContainsKey(fontPath))
 							{
 								_fontCache[fontPath] = SKTypeface.FromFile(fontPath);
@@ -431,21 +475,22 @@ namespace MyGui.net
 							{
 								textColor = Color.White;
 							}
-
-							float screenSizeMultiplier = 1 + Settings.Default.ReferenceResolution * 0.5f;
-							float defaultFontSize = (float)fontData.size * screenSizeMultiplier * 1.33f;
+							float defaultFontSize = (float)fontData.size * _screenSizeMultiplier * 1.33f;
 							float actualFontSize = widgetTertiaryData.properties.TryGetValue("FontHeight", out string fontSizeVal) ? (ProperlyParseFloat(fontSizeVal) * 0.85f) : defaultFontSize;
 
 							_baseFontPaint.TextSize = actualFontSize;
-							_baseFontPaint.IsAntialias = Settings.Default.UseViewportFontAntiAliasing;
+							_baseFontPaint.IsAntialias = _useViewportFontAntiAliasing;
 							_baseFontPaint.Typeface = _fontCache[fontPath];
-							_baseFontPaint.FilterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+							_baseFontPaint.FilterQuality = _filterQuality;
 
 							SKFontMetrics metrics = _baseFontPaint.FontMetrics;
+
+							int textMaxLength = widgetTertiaryData.properties.TryGetValue("MaxTextLength", out string maxTextLengthVal) ? int.Parse(maxTextLengthVal) : 2048;
+							string actualCaption = caption.Substring(0, Math.Min(textMaxLength, caption.Length));
 							string captionText = Util.ReplaceLanguageTagsInString(
-								widgetTertiaryData.properties["Caption"],
-								Settings.Default.ReferenceLanguage,
-								Form1.ScrapMechanicPath
+								actualCaption,
+								_referenceLanguage,
+								_scrapMechanicPath
 							);
 
 							// Build lines and calculate their widths while incorporating letter spacing.
@@ -471,7 +516,7 @@ namespace MyGui.net
 
 							if (widgetTertiaryData.type == "EditBox" && Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "WordWrap", out var ww) && ww == "true")
 							{
-								captionText = WordWrap(captionText, destRect.Width, _baseFontPaint, actualFontLetterSpacing, screenSizeMultiplier, defaultFontSize, actualFontSize);
+								captionText = WordWrap(captionText, destRect.Width, _baseFontPaint, actualFontLetterSpacing, _screenSizeMultiplier, defaultFontSize, actualFontSize);
 							}
 
 							char prevChar = '\0';
@@ -523,7 +568,7 @@ namespace MyGui.net
 									: 0;
 
 								// Incorporate letter spacing adjustment into the total width.
-								float fontSpacing = charWidth + (actualFontLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kerningAdjustment;
+								float fontSpacing = charWidth + (actualFontLetterSpacing * (actualFontSize / defaultFontSize) * _screenSizeMultiplier) + kerningAdjustment;
 								currentLineWidth += fontSpacing;
 								prevChar = character;
 							}
@@ -631,11 +676,6 @@ namespace MyGui.net
 										}
 									}
 
-									if (runningTextColor != _baseFontPaint.Color)
-									{
-										_baseFontPaint.Color = runningTextColor.WithAlpha((Byte)Math.Clamp(alpha * 255, 0, 255));
-									}
-
 									// Measure current character and compute kerning adjustment.
 									string actualChar = allowsAllChars ? character.ToString() : ReplaceInvalidChars(character.ToString(), fontData.allowedChars);
 									float charWidth = _baseFontPaint.MeasureText(actualChar == " " ? "X" : actualChar);
@@ -644,12 +684,16 @@ namespace MyGui.net
 										: 0;
 
 									// Total spacing: character width + letter spacing adjustment + kerning.
-									float fontSpacing = charWidth + (actualFontLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kerningAdjustment;
+									float fontSpacing = charWidth + (actualFontLetterSpacing * (actualFontSize / defaultFontSize) * _screenSizeMultiplier) + kerningAdjustment;
 
 									if (hasShadow)
 									{
 										_baseFontPaint.Color = shadowColor.Value;
 										canvas.DrawText(actualChar, spacingX + 1, spacingY + 1, _baseFontPaint);
+									}
+
+									if (runningTextColor != _baseFontPaint.Color)
+									{
 										_baseFontPaint.Color = runningTextColor.WithAlpha((Byte)Math.Clamp(alpha * 255, 0, 255));
 									}
 
@@ -668,11 +712,11 @@ namespace MyGui.net
 					}
 					else if (skin.type == "MainSkin" && widget.type == "ImageBox")
 					{
-						if (widgetTertiaryData.properties.TryGetValue("ImageTexture", out string imagePathRel) && !string.IsNullOrEmpty(imagePathRel))
+						if (!string.IsNullOrEmpty(imagePathRel))
 						{
 							if (!_skinAtlasCache.ContainsKey("CUSTOMIMAGE_" + imagePathRel))
 							{
-								string imagePath = Util.ConvertToSystemPath(imagePathRel, Settings.Default.ScrapMechanicPath, Form1.ModUuidPathCache);
+								string imagePath = Util.ConvertToSystemPath(imagePathRel, _scrapMechanicPath, Form1.ModUuidPathCache);
 								SKBitmap? cachedBitmap = SKBitmap.Decode(imagePath);
 								if (cachedBitmap != null)
 								{
@@ -684,29 +728,6 @@ namespace MyGui.net
 								}
 							}
 							var image = _skinAtlasCache["CUSTOMIMAGE_" + imagePathRel];
-							drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
-							drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
-							drawPaint.IsDither = true;
-
-							Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
-
-							float[] colorMatrix = new float[]
-							{
-								selectedColor.R / 255f, 0, 0, 0, 0,
-								0, selectedColor.G / 255f, 0, 0, 0,
-								0, 0, selectedColor.B / 255f, 0, 0,
-								0, 0, 0, Math.Clamp(alpha, 0f, 1f), 0
-							};
-
-							// Create a color filter using the color matrix
-							SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
-
-							// Clone the paint object and set the color filter
-							drawPaint.ColorFilter = colorFilter;
-
-							//int beforeClipSave = canvas.Save();
-							//canvas.ClipRect(destRect);
-							//canvas.Clear();
 
 							if (widgetTertiaryData.properties.TryGetValue("ImageCoord", out string imgCoord))
 							{
@@ -720,10 +741,9 @@ namespace MyGui.net
 							{
 								canvas.DrawImage(image, clientRect, drawPaint);
 							}
-							colorFilter.Dispose();
 							continue;
 						}
-						else if (widgetTertiaryData.properties.TryGetValue("ImageResource", out string imageResourceRel) && !string.IsNullOrEmpty(imageResourceRel) && _allImageResources.ContainsKey(imageResourceRel))
+						else if (!string.IsNullOrEmpty(imageResourceRel) && _allImageResources.ContainsKey(imageResourceRel))
 						{
 							string imageResourceGroup = widgetTertiaryData.properties.TryGetValue("ImageGroup", out string iRG) ? iRG : "";
 							var imageResource = _allImageResources[imageResourceRel];
@@ -748,25 +768,6 @@ namespace MyGui.net
 								}
 							}
 							var image = _skinAtlasCache["RESOURCE_" + currentGroup.path];
-							drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
-							drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
-							drawPaint.IsDither = true;
-
-							Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
-
-							float[] colorMatrix = new float[]
-							{
-								selectedColor.R / 255f, 0, 0, 0, 0,
-								0, selectedColor.G / 255f, 0, 0, 0,
-								0, 0, selectedColor.B / 255f, 0, 0,
-								0, 0, 0, Math.Clamp(alpha, 0f, 1f), 0
-							};
-
-							// Create a color filter using the color matrix
-							SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
-
-							// Clone the paint object and set the color filter
-							drawPaint.ColorFilter = colorFilter;
 
 
 							string imageResourceName = widgetTertiaryData.properties.TryGetValue("ImageName", out string iI) ? iI : "";
@@ -782,13 +783,10 @@ namespace MyGui.net
 							var size = Util.GetWidgetPos(true, currentGroup.size);
 
 							canvas.DrawImage(image, new(pos.X, pos.Y, pos.X + size.X, pos.Y + size.Y), clientRect, drawPaint);
-							colorFilter.Dispose();
 							continue;
 						}
 					}
 				}
-
-
 				//DEBUG
 				if (forceDebug)
 				{
@@ -802,129 +800,105 @@ namespace MyGui.net
 				}
 				//Debug.WriteLine(tileRect);
 				// Draw the atlas texture
-				if (resource == _nullSkinResource && !Settings.Default.RenderInvisibleWidgets)
-				{
-					continue;
-				}
-				if (atlasImage == null)
+				if ((resource == _nullSkinResource && !_renderInvisibleWidgets) || atlasImage == null)
 				{
 					continue;
 				}
 
-				if (drawColor != null)
-				{
-					float[] colorMatrix = new float[]
-					{
-								drawColor.Value.Red / 255f, 0, 0, 0, 0,
-								0, drawColor.Value.Green / 255f, 0, 0, 0,
-								0, 0, drawColor.Value.Blue / 255f, 0, 0,
-								0, 0, 0, 1, 0
-					};
+				canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
 
-					// Create a color filter using the color matrix
-					SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
-
-					// Clone the paint object and set the color filter
-					drawPaint.ColorFilter = colorFilter;
-
-					//int beforeClipSave = canvas.Save();
-					//canvas.ClipRect(destRect);
-					//canvas.Clear();
-					canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
-					colorFilter.Dispose();
-					//canvas.RestoreToCount(beforeClipSave);
-				}
-				else
-				{
-					//int beforeClipSave = canvas.Save();
-					//canvas.ClipRect(destRect);
-					//canvas.Clear();
-					drawPaint.FilterQuality = resource == _nullSkinResource ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
-					drawPaint.IsAntialias = Settings.Default.UseViewportAntiAliasing;
-					drawPaint.IsDither = true;
-
-					Color selectedColor = widgetTertiaryData.properties.TryGetValue("Colour", out string colorVal) ? (Util.ParseColorFromString(colorVal) ?? Color.White) : Color.White;
-
-					float[] colorMatrix = new float[]
-					{
-							selectedColor.R / 255f, 0, 0, 0, 0,
-							0, selectedColor.G / 255f, 0, 0, 0,
-							0, 0, selectedColor.B / 255f, 0, 0,
-							0, 0, 0, Math.Clamp(alpha, 0f, 1f), 0
-					};
-
-					// Create a color filter using the color matrix
-					SKColorFilter colorFilter = SKColorFilter.CreateColorMatrix(colorMatrix);
-
-					// Clone the paint object and set the color filter
-					drawPaint.ColorFilter = colorFilter;
-
-					//int beforeClipSave = canvas.Save();
-					//canvas.ClipRect(destRect);
-					//canvas.Clear();
-					canvas.DrawImage(atlasImage, tileRect, destRect, drawPaint);
-					colorFilter.Dispose();
-					//canvas.RestoreToCount(beforeClipSave);
-				}
-
-				drawPaint.Dispose();
 			}
+
+			colorFilter.Dispose();
 		}
 
 		public static string WordWrap(string text, float maxWidth, SKPaint paint, float baseLetterSpacing, float screenSizeMultiplier, float defaultFontSize, float actualFontSize)
 		{
-			StringBuilder wrappedText = new StringBuilder();
-			StringBuilder currentLine = new StringBuilder();
-			string[] words = text.Split(' ');
+			string wrappedText = "";
+			string currentLine = "";
 
-			foreach (string word in words)
+			var paragraphs = text.Split(new[] { "\\n" }, StringSplitOptions.None);
+			for (int p = 0; p < paragraphs.Length; p++)
 			{
-				// Prepare candidate line: if there's already content, add a space before the new word.
-				string candidate = currentLine.Length > 0 ? currentLine + " " + word : word;
-				float candidateWidth = 0;
-				char prevChar = '\0';
+				var para = paragraphs[p];
 
-				// Measure the candidate line character by character.
-				foreach (char c in candidate)
-				{
-					string charStr = c.ToString();
-					float charWidth = paint.MeasureText(charStr);
-					float kerningAdjustment = 0;
-					if (prevChar != '\0')
-					{
-						kerningAdjustment = paint.MeasureText(prevChar.ToString() + charStr) -
-											(paint.MeasureText(prevChar.ToString()) + charWidth);
-					}
-					// Total spacing includes the letter spacing adjustment.
-					float totalSpacing = charWidth + (baseLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kerningAdjustment;
-					candidateWidth += totalSpacing;
-					prevChar = c;
-				}
-
-				// If the candidate exceeds maxWidth and there is already content, wrap.
-				if (candidateWidth > maxWidth && currentLine.Length > 0)
-				{
-					wrappedText.Append(currentLine.ToString());
-					wrappedText.Append("\\n");  // Add newline after current line.
-					currentLine.Clear();
-					currentLine.Append(word);
-				}
-				else
+				if (para.Length == 0)
 				{
 					if (currentLine.Length > 0)
-						currentLine.Append(' ');
-					currentLine.Append(word);
+					{
+						wrappedText += currentLine + "\\n";
+						currentLine = "";
+					}
+					wrappedText += "\\n";
+					continue;
 				}
-			}
 
-			// Add the remaining content in currentLine to wrappedText.
-			if (currentLine.Length > 0)
-			{
-				wrappedText.Append(currentLine.ToString());
+				// Split into tokens of spaces or non-spaces to preserve all spaces
+				var matches = Regex.Matches(para, "(\\s+)|(\\S+)");
+				foreach (Match match in matches)
+				{
+					var token = match.Value;
+					// Measure token width
+					float tokenWidth = 0;
+					char prevChar = '\0';
+					foreach (char c in token)
+					{
+						string cs = c.ToString();
+						float cw = paint.MeasureText(cs);
+						float kern = prevChar != '\0'
+							? paint.MeasureText(prevChar + cs) - (paint.MeasureText(prevChar.ToString()) + cw)
+							: 0;
+						tokenWidth += cw + (baseLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kern;
+						prevChar = c;
+					}
+
+					// Determine if we need to wrap before adding token
+					if (currentLine.Length > 0)
+					{
+						var candidate = currentLine.ToString() + token;
+						float candWidth = 0;
+						prevChar = '\0';
+						foreach (char c in candidate)
+						{
+							string cs = c.ToString();
+							float cw = paint.MeasureText(cs);
+							float kern = prevChar != '\0'
+								? paint.MeasureText(prevChar + cs) - (paint.MeasureText(prevChar.ToString()) + cw)
+								: 0;
+							candWidth += cw + (baseLetterSpacing * (actualFontSize / defaultFontSize) * screenSizeMultiplier) + kern;
+							prevChar = c;
+						}
+
+						if (candWidth > maxWidth)
+						{
+							wrappedText += currentLine + "\\n";
+							currentLine = "";
+						}
+					}
+
+					// If token itself is wider than line width, we still place it alone
+					if (currentLine.Length == 0 && tokenWidth > maxWidth)
+					{
+						wrappedText += token + "\\n";
+						continue;
+					}
+
+					currentLine += token;
+				}
+
+				if (currentLine.Length > 0)
+				{
+					wrappedText += currentLine;
+					if (p < paragraphs.Length - 1)
+						wrappedText += "\\n";
+					currentLine = "";
+				}
 			}
 
 			return wrappedText.ToString();
 		}
+
+
 
 
 

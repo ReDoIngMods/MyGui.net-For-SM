@@ -160,7 +160,9 @@ namespace MyGui.net
 				DebugConsole.Log("Error during update check: " + ex.Message, DebugConsole.LogLevels.Error);
 				if (MessageBox.Show($"Update failed! Error: {ex.Message}", "Update Error", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error) == DialogResult.Retry)
 				{
+#pragma warning disable CS4014 // Suppress warning for this line, as this is just an update checker
 					CheckForUpdate(bearerToken);
+#pragma warning restore CS4014
 					return;
 				}
 			}
@@ -844,11 +846,13 @@ namespace MyGui.net
 			IsAntialias = true
 		};
 
+		private SKPaint highlightPaint = new SKPaint() { IsAntialias = true };
 
 		//do NOT tell me performance sucks if you enable ANY Debug.Writeline's in the rendering code - The Red Builder
 		private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
 		{
-
+			//DEBUG STOPWATCH HERE!!
+			//Stopwatch stopwatch = Stopwatch.StartNew();
 			_renderWidgetHighligths.Clear();
 
 			if (!_draggingViewport)
@@ -895,33 +899,25 @@ namespace MyGui.net
 			canvas.Clear(new SKColor(105, 105, 105));
 
 			// Get the control's size
-			var controlWidth = e.BackendRenderTarget.Width;
-			var controlHeight = e.BackendRenderTarget.Height;
+			//var controlWidth = e.BackendRenderTarget.Width;
+			//var controlHeight = e.BackendRenderTarget.Height;
 
 			// Set the clip region to the control's size
-			canvas.ClipRect(new SKRect(0, 0, controlWidth, controlHeight));
+			canvas.ClipRect(new SKRect(0, 0, viewport.Width, viewport.Height));
 
 			// Apply viewport transformations
-			_viewportMatrix = SKMatrix.CreateScale(_viewportScale, _viewportScale)
-	.PreConcat(SKMatrix.CreateTranslation(_viewportOffset.X, _viewportOffset.Y));
+			_viewportMatrix = SKMatrix.CreateScale(_viewportScale, _viewportScale).PreConcat(SKMatrix.CreateTranslation(_viewportOffset.X, _viewportOffset.Y));
 			canvas.SetMatrix(_viewportMatrix);
+
 			canvas.DrawText(ProjectSize.Width + "x" + ProjectSize.Height, 0, -30, _projectSizeTextPaint);
 			if (_viewportBackgroundBitmap != null)
 			{
-				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint
-				{
-					Color = SKColors.Black,
-					IsAntialias = false
-				});
 				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel, IsAntialias = true, IsDither = true, });
 			}
 			else
 			{
-				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint
-				{
-					Color = new SKColor(Settings.Default.EditorBackgroundColor.R, Settings.Default.EditorBackgroundColor.G, Settings.Default.EditorBackgroundColor.B),
-					IsAntialias = false
-				});
+				highlightPaint.Color = new SKColor(Settings.Default.EditorBackgroundColor.R, Settings.Default.EditorBackgroundColor.G, Settings.Default.EditorBackgroundColor.B);
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), highlightPaint);
 			}
 			//_renderWidgetHighligths.Clear();
 			int beforeProjectClip = canvas.Save();
@@ -952,15 +948,13 @@ namespace MyGui.net
 					rect.Right + highlight.Value.width / 2, // Expand right
 					rect.Bottom + highlight.Value.width / 2 // Expand bottom
 				);
-				var highlightPaint = new SKPaint
-				{
-					Color = highlight.Value.highlightColor, // Semi-transparent green for highlight
-					Style = highlight.Value.style,
-					StrokeWidth = highlight.Value.width,
-					IsAntialias = true
-				};
+				highlightPaint.Color = highlight.Value.highlightColor;
+				highlightPaint.Style = highlight.Value.style;
+				highlightPaint.StrokeWidth = highlight.Value.width;
 				canvas.DrawRect(selectionRect, highlightPaint);
 			}
+			//stopwatch.Stop();
+			//Debug.WriteLine($"Frame render time: {stopwatch.ElapsedMilliseconds} ms");
 		}
 
 
