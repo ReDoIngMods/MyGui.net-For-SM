@@ -122,21 +122,6 @@ namespace MyGui.net
 
 				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, new Point(subWidget.size.X, subWidget.size.Y), widgetSecondaryData != null ? widgetSecondaryData : widget, forceDebug);
 				//}
-
-				// Save canvas state for clipping
-				var saveBeforeAll2 = canvas.Save();
-
-				// Apply clipping for the widget's bounds
-				canvas.ClipRect(rect);
-
-				foreach (var child in widget.children)
-				{
-					var widgetBounds = new SKRect(widgetPosition.X - 1, widgetPosition.Y - 1,
-								  widgetPosition.X + widget.size.X - 2, widgetPosition.Y + widget.size.Y - 2);
-					if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget, widgetSecondaryData, adjustToParent, oldSizeParam, widgetTertiaryData);
-				}
-				canvas.RestoreToCount(saveBeforeAll2);
-				return;
 			}
 			string skinPath = widget.skin != null && _allResources.TryGetValue(widget.skin, out MyGuiResource sPRes) ? sPRes?.path : "";
 			skinPath ??= "";
