@@ -470,8 +470,8 @@ namespace MyGui.net
 
 							SKFontMetrics metrics = _baseFontPaint.FontMetrics;
 
-							int textMaxLength = widgetTertiaryData.properties.TryGetValue("MaxTextLength", out string maxTextLengthVal) ? int.Parse(maxTextLengthVal) : 2048;
-							string actualCaption = caption.Substring(0, Math.Min(textMaxLength, caption.Length));
+							string actualCaption = widgetTertiaryData.properties.TryGetValue("MaxTextLength", out val) && !string.IsNullOrWhiteSpace(val) ? (int.TryParse(val, out int max) ? caption.Substring(0, Math.Min(max, caption.Length)) : caption) : caption.Substring(0, Math.Min(2048, caption.Length));
+
 							string captionText = Util.ReplaceLanguageTagsInString(
 								actualCaption,
 								_referenceLanguage,
