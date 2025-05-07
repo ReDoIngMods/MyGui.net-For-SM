@@ -844,7 +844,7 @@ namespace MyGui.net
 			IsAntialias = true
 		};
 
-		private SKPaint highlightPaint = new SKPaint() { IsAntialias = true };
+		private SKPaint _surfacePaint = new SKPaint() { IsAntialias = true };
 		private Color _editorBackgroundColor = Settings.Default.EditorBackgroundColor;
 		private int _editorBackgroundMode = Settings.Default.EditorBackgroundMode;
 
@@ -913,19 +913,19 @@ namespace MyGui.net
 
 			canvas.DrawText(ProjectSize.Width + "x" + ProjectSize.Height, 0, -30, _projectSizeTextPaint);
 
-			highlightPaint.Color = _editorBackgroundMode != 0 ? SKColors.Black : new SKColor(_editorBackgroundColor.R, _editorBackgroundColor.G, _editorBackgroundColor.B);
-
+			_surfacePaint.Color = _editorBackgroundMode != 0 ? SKColors.Black : new SKColor(_editorBackgroundColor.R, _editorBackgroundColor.G, _editorBackgroundColor.B);
+			_surfacePaint.Style = SKPaintStyle.Fill;
 			if (_viewportBackgroundBitmap != null)
 			{
-				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), highlightPaint);
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), _surfacePaint);
 
-				highlightPaint.FilterQuality = _editorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+				_surfacePaint.FilterQuality = _editorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 
-				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), highlightPaint);
+				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), _surfacePaint);
 			}
 			else
 			{
-				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), highlightPaint);
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), _surfacePaint);
 			}
 			//_renderWidgetHighligths.Clear();
 			int beforeProjectClip = canvas.Save();
@@ -956,10 +956,10 @@ namespace MyGui.net
 					rect.Right + highlight.Value.width / 2, // Expand right
 					rect.Bottom + highlight.Value.width / 2 // Expand bottom
 				);
-				highlightPaint.Color = highlight.Value.highlightColor;
-				highlightPaint.Style = highlight.Value.style;
-				highlightPaint.StrokeWidth = highlight.Value.width;
-				canvas.DrawRect(selectionRect, highlightPaint);
+				_surfacePaint.Color = highlight.Value.highlightColor;
+				_surfacePaint.Style = highlight.Value.style;
+				_surfacePaint.StrokeWidth = highlight.Value.width;
+				canvas.DrawRect(selectionRect, _surfacePaint);
 			}
 			//stopwatch.Stop();
 			//Debug.WriteLine($"Frame render time: {stopwatch.ElapsedMilliseconds} ms");
