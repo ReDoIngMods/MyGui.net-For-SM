@@ -5,8 +5,6 @@ using System.ComponentModel;
 using System.Xml.Linq;
 using static MyGui.net.Util;
 using static MyGui.net.RenderBackend;
-using System.Diagnostics;
-using SkiaSharp.Views.Gtk;
 
 namespace MyGui.net
 {
@@ -16,7 +14,7 @@ namespace MyGui.net
 	//TODO: make text editor autocomplete tags
 	//TODO: rudimenary multi-select
 	//TODO: add an option to make a parent for all selected widgets and to remove a widget but move the children to the removed widget's parent
-	//TODO: scaling ratio lock (like when holding Shift in Paint.net, but with customizeable ration, not just 1:1)
+	//TODO: scaling ratio lock (like when holding Shift in Paint.net, but with customizable ratio, not just 1:1)
 	public partial class Form1 : Form
 	{
 		static List<MyGuiWidgetData> _currentLayout = new();
@@ -847,6 +845,8 @@ namespace MyGui.net
 		};
 
 		private SKPaint highlightPaint = new SKPaint() { IsAntialias = true };
+		private Color _editorBackgroundColor = Settings.Default.EditorBackgroundColor;
+		private int _editorBackgroundMode = Settings.Default.EditorBackgroundMode;
 
 		//do NOT tell me performance sucks if you enable ANY Debug.Writeline's in the rendering code - The Red Builder
 		private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
@@ -854,6 +854,8 @@ namespace MyGui.net
 			//DEBUG STOPWATCH HERE!!
 			//Stopwatch stopwatch = Stopwatch.StartNew();
 			_renderWidgetHighligths.Clear();
+			_editorBackgroundColor = Settings.Default.EditorBackgroundColor;
+			_editorBackgroundMode = Settings.Default.EditorBackgroundMode;
 
 			if (!_draggingViewport)
 			{
@@ -910,13 +912,19 @@ namespace MyGui.net
 			canvas.SetMatrix(_viewportMatrix);
 
 			canvas.DrawText(ProjectSize.Width + "x" + ProjectSize.Height, 0, -30, _projectSizeTextPaint);
+
+			highlightPaint.Color = _editorBackgroundMode != 0 ? SKColors.Black : new SKColor(_editorBackgroundColor.R, _editorBackgroundColor.G, _editorBackgroundColor.B);
+
 			if (_viewportBackgroundBitmap != null)
 			{
-				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), new SKPaint { FilterQuality = Settings.Default.EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel, IsAntialias = true, IsDither = true, });
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), highlightPaint);
+
+				highlightPaint.FilterQuality = _editorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+
+				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), highlightPaint);
 			}
 			else
 			{
-				highlightPaint.Color = new SKColor(Settings.Default.EditorBackgroundColor.R, Settings.Default.EditorBackgroundColor.G, Settings.Default.EditorBackgroundColor.B);
 				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), highlightPaint);
 			}
 			//_renderWidgetHighligths.Clear();
