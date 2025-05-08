@@ -1103,8 +1103,6 @@ namespace MyGui.net
 			viewportScrollY.Minimum = -ProjectSize.Height;
 		}
 
-		bool didThing = false;
-
 		void Viewport_MouseMove(object senderAny, MouseEventArgs e)
 		{
 			Control sender = (Control)senderAny;
@@ -1116,26 +1114,13 @@ namespace MyGui.net
 			bool holdingShift = Util.IsKeyPressed(Keys.ShiftKey);
 			MyGuiWidgetData topmostWidget = null;
 
-			if (!_draggingViewport)
+			if (!_draggingViewport && !holdingShift)
 			{
-				if (holdingShift)
+				topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+				topmostWidgetRan = true;
+				if (topmostWidget != _currentHoveredWidget)
 				{
-					_currentHoveredWidget = null;
-					if (!didThing)
-					{
-						viewport.Refresh();
-						didThing = true;
-					}
-				}
-				else
-				{
-					topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
-					topmostWidgetRan = true;
-					if (topmostWidget != _currentHoveredWidget)
-					{
-						viewport.Refresh();
-					}
-					didThing = false;
+					viewport.Refresh();
 				}
 			}
 
