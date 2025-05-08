@@ -1752,8 +1752,10 @@ namespace MyGui.net
 		// Helper to check if a widget contains a point (with absolute positioning)
 		private static bool ContainsPoint(MyGuiWidgetData widget, Point absolutePosition, Point screenPoint)
 		{
-			var rect = new Rectangle(absolutePosition, (Size)widget.size);
-			return rect.Contains(screenPoint);
+			return screenPoint.X >= absolutePosition.X &&
+				   screenPoint.X < absolutePosition.X + widget.size.X &&
+				   screenPoint.Y >= absolutePosition.Y &&
+				   screenPoint.Y < absolutePosition.Y + widget.size.Y;
 		}
 
 		// Public function to get the topmost widget for a single root widget
@@ -1771,19 +1773,38 @@ namespace MyGui.net
 		}
 
 		// Public function to get the topmost widget for a list of widgets
-		public static MyGuiWidgetData? GetTopmostControlAtPoint(
-			List<MyGuiWidgetData> parents,
-			Point screenPoint,
-			MyGuiWidgetData[]? excludeWidgets = null)
+		public static MyGuiWidgetData? GetTopmostControlAtPoint(List<MyGuiWidgetData> parents, Point screenPoint, MyGuiWidgetData[]? excludeWidgets = null)
 		{
-			var found = GetAllControlsAtPoint(parents, screenPoint, excludeWidgets);
-			if (found.Count > 0)
+			for (int i = parents.Count - 1; i >= 0; i--)
 			{
-				return found[0];
+				var result = GetTopmostControlAtPointRecursive(parents[i], Point.Empty, screenPoint, excludeWidgets);
+				if (result != null)
+					return result;
 			}
 			return null;
 		}
 
+		private static MyGuiWidgetData? GetTopmostControlAtPointRecursive(MyGuiWidgetData root, Point parentPos, Point screenPoint, MyGuiWidgetData[]? excludeWidgets)
+		{
+			Point absolute = new(parentPos.X + root.position.X, parentPos.Y + root.position.Y);
+
+			if (excludeWidgets?.Contains(root) == true ||
+				!ContainsPoint(root, absolute, screenPoint))
+			{
+				return null;
+			}
+
+			for (int i = root.children.Count - 1; i >= 0; i--)
+			{
+				var match = GetTopmostControlAtPointRecursive(root.children[i], absolute, screenPoint, excludeWidgets);
+				if (match != null)
+					return match;
+			}
+
+			return root;
+		}
+
+		[Obsolete("Use GetTopmostControlAtPoint instead.")]
 		public static MyGuiWidgetData? GetTopmostControlAtMousePosition(MyGuiWidgetData? originControl, Point relativePoint, MyGuiWidgetData[] excludeParent = null)
 		{
 			MessageBox.Show("GetTopmostControlAtMousePosition is deprecated!", "Deprecated Function", MessageBoxButtons.OK, MessageBoxIcon.Error);

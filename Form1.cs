@@ -114,12 +114,6 @@ namespace MyGui.net
 
 		public Form1(string _DefaultOpenedDir = "")
 		{
-			if (Settings.Default.AutoCheckUpdate)
-			{
-#pragma warning disable CS4014 // Suppress warning for this line, as this is just an update checker
-				CheckForUpdate(Settings.Default.UpdateBearerToken);
-#pragma warning restore CS4014
-			}
 			InitializeComponent();
 			DebugConsole.CloseConsoleOnExit(this);
 			HandleLoad(_DefaultOpenedDir);
@@ -212,7 +206,7 @@ namespace MyGui.net
 			DebugConsole.Log("Cache " + (initial ? "Loading" : "Reloading") + " Finished!", DebugConsole.LogLevels.Success);
 		}
 
-		void HandleLoad(string autoloadPath = "")
+		async void HandleLoad(string autoloadPath = "")
 		{
 
 			if (!string.IsNullOrEmpty(Settings.Default.RecentlyOpenedFiles))
@@ -507,6 +501,13 @@ namespace MyGui.net
 				}
 			}
 			centerButton_Click(this, new());
+
+			if (Settings.Default.AutoCheckUpdate)
+			{
+#pragma warning disable CS4014 // Suppress warning for this line, as this is just an update checker
+				await CheckForUpdate(Settings.Default.UpdateBearerToken);
+#pragma warning restore CS4014
+			}
 		}
 
 		void HandleWidgetSelection()
@@ -1102,19 +1103,39 @@ namespace MyGui.net
 			viewportScrollY.Minimum = -ProjectSize.Height;
 		}
 
+		bool didThing = false;
+
 		void Viewport_MouseMove(object senderAny, MouseEventArgs e)
 		{
 			Control sender = (Control)senderAny;
 			Point viewportRelPos = e.Location;
 			SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
 			Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
-			if (!_draggingViewport && !Util.IsKeyPressed(Keys.ShiftKey))
-			{
-				var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
 
-				if (topmostWidget != _currentHoveredWidget)
+			bool topmostWidgetRan = false;
+			bool holdingShift = Util.IsKeyPressed(Keys.ShiftKey);
+			MyGuiWidgetData topmostWidget = null;
+
+			if (!_draggingViewport)
+			{
+				if (holdingShift)
 				{
-					viewport.Refresh();
+					_currentHoveredWidget = null;
+					if (!didThing)
+					{
+						viewport.Refresh();
+						didThing = true;
+					}
+				}
+				else
+				{
+					topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+					topmostWidgetRan = true;
+					if (topmostWidget != _currentHoveredWidget)
+					{
+						viewport.Refresh();
+					}
+					didThing = false;
 				}
 			}
 
@@ -1138,10 +1159,14 @@ namespace MyGui.net
 			}
 			else if (_currentSelectedWidget != null)
 			{
-				var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+				if (!topmostWidgetRan)
+				{
+					topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+					topmostWidgetRan = true;
+				}
 				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPosPoint, _currentLayout, SelectionBorderSize);
 				//Debug.WriteLine($"BORDER: {border}");
-				if ((border == BorderPosition.Center || border == BorderPosition.None) && (topmostWidget ?? _currentSelectedWidget) != _currentSelectedWidget && !Util.IsKeyPressed(Keys.ShiftKey))
+				if ((border == BorderPosition.Center || border == BorderPosition.None) && (topmostWidget ?? _currentSelectedWidget) != _currentSelectedWidget && !holdingShift)
 				{
 					Cursor = Cursors.Hand;
 
@@ -1385,7 +1410,13 @@ namespace MyGui.net
 			}
 			else
 			{
-				if (Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint) != null)
+				if (!topmostWidgetRan)
+				{
+					topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+					topmostWidgetRan = true;
+				}
+
+				if (topmostWidget != null)
 				{
 					Cursor = Cursors.Hand;
 				}
@@ -2072,7 +2103,7 @@ namespace MyGui.net
 								));
 							}
 
-							List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc, null);
+							List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc, _currentSelectedWidget?.size);
 							MyGuiWidgetData widgetToPasteInto = e.Shift ? _currentSelectedWidget.Parent : _currentSelectedWidget;
 
 
