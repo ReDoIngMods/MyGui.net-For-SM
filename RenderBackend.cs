@@ -15,12 +15,12 @@ namespace MyGui.net
 	{
 
 		#region Caches
-		public static Dictionary<string, SKImage> _skinAtlasCache = new();
-		public static Dictionary<string, SKTypeface> _fontCache = new();
+		public static Dictionary<string, SKImage> _skinAtlasCache = new(StringComparer.Ordinal);
+		public static Dictionary<string, SKTypeface> _fontCache = new(StringComparer.Ordinal);
 
-		public static Dictionary<string, MyGuiResource> _allResources = new();
-		public static Dictionary<string, MyGuiResourceImageSet> _allImageResources = new();
-        public static Dictionary<string, MyGuiFontData> _allFonts = new();
+		public static Dictionary<string, MyGuiResource> _allResources = new(StringComparer.Ordinal);
+		public static Dictionary<string, MyGuiResourceImageSet> _allImageResources = new(StringComparer.Ordinal);
+        public static Dictionary<string, MyGuiFontData> _allFonts = new(StringComparer.Ordinal);
 
 		public static Dictionary<string, MyGuiResource> AllResources => _allResources;
 		public static Dictionary<string, MyGuiFontData> AllFonts => _allFonts;
@@ -29,7 +29,7 @@ namespace MyGui.net
 		public static MyGuiResource NullSkinResource => _nullSkinResource;
 
 		public static Dictionary<MyGuiWidgetData, WidgetHighlightType> _renderWidgetHighligths = new();
-		public static Dictionary<string, SKColor> _widgetTypeColors = new(){
+		public static Dictionary<string, SKColor> _widgetTypeColors = new(7, StringComparer.Ordinal){
 			{ "Button", new SKColor(0xDF7F00) },
 			{ "EditBox", new SKColor(0xEFEF00) },
 			{ "TextBox", new SKColor(0xFFFF00) },

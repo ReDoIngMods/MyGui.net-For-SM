@@ -57,7 +57,7 @@ namespace MyGui.net
 		public string? skin = "PanelEmpty";
 		public Point position = new(0, 0);
 		public Point size = new(0, 0);
-		public Dictionary<string, string> properties = new();
+		public Dictionary<string, string> properties = new(20, StringComparer.Ordinal); //20 starting properties should be enough
 
 		[JsonIgnore]
 		public MyGuiWidgetData? Parent { get; set; }
@@ -69,19 +69,26 @@ namespace MyGui.net
 			get => _children;
 			set
 			{
-				_children.Clear(); // Clear existing children and their parents
-				foreach (var child in value)
-					_children.Add(child); // Add new children properly
+				_children.CollectionChanged -= OnChildrenChanged;
+				_children = new ObservableList<MyGuiWidgetData>(value);
+				_children.CollectionChanged += OnChildrenChanged;
+
+				foreach (var child in _children)
+					child.Parent = this;
 			}
 		}
-		public ObservableList<MyGuiWidgetData> children //legacy compat
+
+		public ObservableList<MyGuiWidgetData> children
 		{
 			get => _children;
 			set
 			{
-				_children.Clear(); // Clear existing children and their parents
-				foreach (var child in value)
-					_children.Add(child); // Add new children properly
+				_children.CollectionChanged -= OnChildrenChanged;
+				_children = new ObservableList<MyGuiWidgetData>(value);
+				_children.CollectionChanged += OnChildrenChanged;
+
+				foreach (var child in _children)
+					child.Parent = this;
 			}
 		}
 

@@ -33,10 +33,10 @@ namespace MyGui.net
 		public static int SelectionBorderSize = SelectionBorderSizeDefault;
 
 		#region Caches
-		static Dictionary<string, string> _modUuidPathCache = new();
+		static Dictionary<string, string> _modUuidPathCache = new(StringComparer.Ordinal);
 		public static Dictionary<string, string> ModUuidPathCache => _modUuidPathCache;
 
-		public static Dictionary<string, Type> _widgetTypeToObjectType = new()
+		public static Dictionary<string, Type> _widgetTypeToObjectType = new(8, StringComparer.Ordinal)
 		{
 			{ "TextBox", typeof(MyGuiWidgetDataTextBox) },
 			{ "Button", typeof(MyGuiWidgetDataButton) },
