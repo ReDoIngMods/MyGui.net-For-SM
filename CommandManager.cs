@@ -7,28 +7,38 @@ namespace MyGui.net
         private Stack<IEditorAction> _undoStack = new Stack<IEditorAction>();
         private Stack<IEditorAction> _redoStack = new Stack<IEditorAction>();
 
-        public void clearUndoStack()
+        public void ClearUndoStack()
         {
             _undoStack.Clear();
         }
 
-        public void clearRedoStack()
+        public void ClearRedoStack()
         {
             _redoStack.Clear();
         }
 
-        public int getUndoStackCount() {
+        public int GetUndoStackCount() {
             return _undoStack.Count;
         }
 
-        public int getRedoStackCount()
+        public int GetRedoStackCount()
         {
             return _redoStack.Count;
         }
 
-        public void ExecuteCommand(IEditorAction command)
+		public IEditorAction[] GetUndoStackItems()
+		{
+			return _undoStack.ToArray();
+		}
+
+		public IEditorAction[] GetRedoStackItems()
+		{
+			return _redoStack.ToArray();
+		}
+
+		public void ExecuteCommand(IEditorAction command, string reason = null)
         {
-            if (command.Execute()) //If command succeeded
+            if (command.Execute(reason)) //If command succeeded
             {
                 DebugConsole.WriteLine($"Executed \"{command.ToString()}\"", DebugConsole.LogLevels.Info);
                 _undoStack.Push(command);

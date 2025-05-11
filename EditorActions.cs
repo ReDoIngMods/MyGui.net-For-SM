@@ -1,14 +1,18 @@
-﻿namespace MyGui.net
+﻿using System.Drawing;
+
+namespace MyGui.net
 {
 	public interface IEditorAction
 	{
-		bool Execute(); // Redo
-		bool Undo();    // Undo
+		bool Execute(string? reason = null); // Redo
+		bool Undo(); // Undo
+        string[] ToHumanReadable();
 	}
 
 	public class MoveCommand : IEditorAction
     {
-        private MyGuiWidgetData _control;
+		private string _reason = null;
+		private MyGuiWidgetData _control;
         private Point _oldPosition;
         private Point _newPosition;
 
@@ -26,11 +30,12 @@
             _newPosition = newPosition;
         }
 
-        public bool Execute()
+        public bool Execute(string? reason = null)
         {
             if (_oldPosition == _newPosition) { return false; }
-            //_control.Location = _newPosition; // Move to the new position
-            _control.position = _newPosition;
+            _reason = reason;
+			//_control.Location = _newPosition; // Move to the new position
+			_control.position = _newPosition;
             return true;
         }
 
@@ -41,7 +46,12 @@
             return true;
         }
 
-        public override string ToString()
+        public string[] ToHumanReadable()
+        {
+            return [$"{(_reason != null ? $"({_reason}) " : "")}Widget Moved", $"From {_oldPosition} to {_newPosition}"];
+        }
+
+		public override string ToString()
         {
             return $"MoveCommand: {_control} from {_oldPosition} to {_newPosition}";
         }
@@ -49,7 +59,8 @@
 
     public class ResizeCommand : IEditorAction
     {
-        private MyGuiWidgetData _control;
+		private string _reason = null;
+		private MyGuiWidgetData _control;
         private Size _oldSize;
         private Size _newSize;
 
@@ -67,13 +78,15 @@
             _newSize = newSize;
         }
 
-        public bool Execute()
+        public bool Execute(string? reason = null)
         {
             if (_oldSize == _newSize) { return false; }
-            //_control.Size = _newSize;
-            _control.size = (Point)_newSize;
+			_reason = reason;
+			//_control.Size = _newSize;
+			_control.size = (Point)_newSize;
             return true;
         }
+
         public bool Undo() 
         { 
             //_control.size = _oldSize;
@@ -81,7 +94,12 @@
             return true;
         }
 
-        public override string ToString()
+		public string[] ToHumanReadable()
+		{
+			return [$"{(_reason != null ? $"({_reason}) " : "")}Widget Resized", $"From {_oldSize} to {_newSize}"];
+		}
+
+		public override string ToString()
         {
             return $"ResizeCommand: {_control} from {_oldSize} to {_newSize}";
         }
@@ -89,7 +107,8 @@
 
     public class MoveResizeCommand : IEditorAction
     {
-        private MyGuiWidgetData _control;
+		private string _reason = null;
+		private MyGuiWidgetData _control;
         private Point _oldPosition;
         private Point _newPosition;
         private Size _oldSize;
@@ -113,11 +132,12 @@
             _newSize = newSize;
         }
 
-        public bool Execute()
+        public bool Execute(string? reason = null)
         {
             if (_oldPosition == _newPosition && _oldSize == _newSize) { return false; }
-            //_control.Location = _newPosition; // Move to the new position
-            _control.position = _newPosition;
+			_reason = reason;
+			//_control.Location = _newPosition; // Move to the new position
+			_control.position = _newPosition;
             //_control.Size = _newSize;
             _control.size = (Point)_newSize;
             return true;
@@ -132,7 +152,13 @@
             return true;
         }
 
-        public override string ToString()
+		public string[] ToHumanReadable()
+		{
+			return [$"{(_reason != null ? $"({_reason}) " : "")}Widget Moved & Resized", $"Moved from {_oldPosition} to {_newPosition}, resized from {_oldSize} to {_newSize}"];
+
+        }
+
+		public override string ToString()
         {
             return $"MoveResizeCommand: {_control} moved from {_oldPosition} to {_newPosition}, resized from {_oldSize} to {_newSize}";
         }
@@ -140,7 +166,8 @@
 
     public class ChangePropertyCommand : IEditorAction
     {
-        private MyGuiWidgetData _control;
+		private string _reason = null;
+		private MyGuiWidgetData _control;
         private object _oldValue;
         private object _newValue;
         private string _property;
@@ -161,17 +188,23 @@
             _newValue = newValue;
         }
 
-        public bool Execute() 
+        public bool Execute(string? reason = null) 
         {
             if (_oldValue == _newValue) { return false; }
-            return Util.SetPropertyValue(_control, _property, _newValue);
+			_reason = reason;
+			return Util.SetPropertyValue(_control, _property, _newValue);
         }
         public bool Undo() 
         { 
             return Util.SetPropertyValue(_control, _property, _oldValue);
         }
 
-        public override string ToString()
+		public string[] ToHumanReadable()
+		{
+			return [$"{(_reason != null ? $"({_reason}) " : "")}Widget Property Changed", $"Property \"{_property}\" changed from \"{_oldValue}\" to \"{_newValue}\""];
+		}
+
+		public override string ToString()
         {
             return $"ChangePropertyCommand: {_control} changed property \"{_property}\" from \"{_oldValue}\" to \"{_newValue}\"";
         }
@@ -179,7 +212,8 @@
 
     public class CreateControlCommand : IEditorAction
     {
-        private MyGuiWidgetData _control;
+		private string _reason = null;
+		private MyGuiWidgetData _control;
         private MyGuiWidgetData _parent;
         private int _index;
         private List<MyGuiWidgetData> _defaultList;
@@ -191,9 +225,10 @@
             _defaultList = defaultList;
         }
 
-        public bool Execute()
+        public bool Execute(string? reason = null)
         {
-            if (_parent == null)
+			_reason = reason;
+			if (_parent == null)
             {
                 if (_defaultList != null)
                 {
@@ -228,7 +263,12 @@
             return true;
         }
 
-        public override string ToString()
+		public string[] ToHumanReadable()
+		{
+			return [$"{(_reason != null ? $"({_reason}) " : "")}Widget Created", $"Created widget {_control} with parent {(_parent == null ? "None" : _parent.ToString())}"];
+		}
+
+		public override string ToString()
         {
             return $"CreateControlCommand: created widget {_control} with parent {(_parent == null ? "None" : _parent.ToString())}";
         }
@@ -236,7 +276,8 @@
 
     public class DeleteControlCommand : IEditorAction
     {
-        private MyGuiWidgetData _control;
+		private string _reason = null;
+		private MyGuiWidgetData _control;
         private MyGuiWidgetData _parent;
         private List<MyGuiWidgetData> _defaultList;
         private int _index; // Store the index to restore control in the correct position
@@ -258,10 +299,10 @@
             _index = _parent == null ? _defaultList.IndexOf(control) : _parent.children.IndexOf(control); // Store the original position
         }
 
-        public bool Execute()
+        public bool Execute(string? reason = null)
         {
-            //TODO: figure out structure
-            if (_parent != null)
+			_reason = reason;
+			if (_parent != null)
             {
                 _parent.children.RemoveAt(_index);
             }
@@ -285,24 +326,31 @@
             return true;
         }
 
-        public override string ToString()
+		public string[] ToHumanReadable()
+		{
+			return [$"{(_reason != null ? $"({_reason}) " : "")}Widget Deleted", $"Deleted widget {_control} from within parent {(_parent == null ? "None" : _parent.ToString())} at index {_index}"];
+		}
+
+		public override string ToString()
         {
             return $"DeleteControlCommand: deleted widget {_control} from within parent {_parent} at index {_index}";
         }
     }
 
-	public class CompountCommand : IEditorAction
+	public class CompoundCommand : IEditorAction
 	{
+        private string _reason = null;
         private List<IEditorAction> _actions;
 
-		public CompountCommand(List<IEditorAction> actions)
+		public CompoundCommand(List<IEditorAction> actions)
 		{
             _actions = actions;
 		}
 
-		public bool Execute()
+		public bool Execute(string? reason = null)
 		{
-            foreach (var item in _actions)
+            _reason = reason;
+			foreach (var item in _actions)
             {
                 item.Execute();
             }
@@ -316,6 +364,13 @@
 				_actions[i].Undo();
 			}
 			return true;
+		}
+
+		public string[] ToHumanReadable()
+		{
+			var serialized = string.Join( "|&|", _actions.Select(a => string.Join("|-|", a.ToHumanReadable())));
+
+			return [$"{(_reason != null ? $"({_reason}) " : "")}Multiple Actions", serialized];
 		}
 
 		public override string ToString()

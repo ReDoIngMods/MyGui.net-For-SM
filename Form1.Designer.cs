@@ -164,7 +164,7 @@ namespace MyGui.net
 			// 
 			viewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			viewport.BackColor = SystemColors.ControlDark;
-			viewport.Location = new Point(0, 0);
+			viewport.Location = new Point(505, 359);
 			viewport.Margin = new Padding(0);
 			viewport.Name = "viewport";
 			viewport.Size = new Size(739, 537);
@@ -318,6 +318,7 @@ namespace MyGui.net
 			treeView1.BackColor = SystemColors.ControlLightLight;
 			treeView1.BorderStyle = BorderStyle.FixedSingle;
 			treeView1.HideSelection = false;
+			treeView1.HotTracking = true;
 			treeView1.Indent = 20;
 			treeView1.ItemHeight = 23;
 			treeView1.Location = new Point(0, 35);
@@ -508,6 +509,7 @@ namespace MyGui.net
 			actionHistoryToolStripMenuItem.Name = "actionHistoryToolStripMenuItem";
 			actionHistoryToolStripMenuItem.Size = new Size(200, 22);
 			actionHistoryToolStripMenuItem.Text = "Action History";
+			actionHistoryToolStripMenuItem.Click += actionHistoryToolStripMenuItem_Click;
 			// 
 			// formatToolStripMenuItem
 			// 
@@ -520,14 +522,14 @@ namespace MyGui.net
 			// 
 			centerToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { centerInParentToolStripMenuItem, centerInLayoutToolStripMenuItem });
 			centerToolStripMenuItem.Name = "centerToolStripMenuItem";
-			centerToolStripMenuItem.Size = new Size(180, 22);
+			centerToolStripMenuItem.Size = new Size(150, 22);
 			centerToolStripMenuItem.Text = "Center In";
 			// 
 			// centerInParentToolStripMenuItem
 			// 
 			centerInParentToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { centerInParentHorizontallyToolStripMenuItem, centerInParentVerticallyToolStripMenuItem, centerInParentBothToolStripMenuItem });
 			centerInParentToolStripMenuItem.Name = "centerInParentToolStripMenuItem";
-			centerInParentToolStripMenuItem.Size = new Size(180, 22);
+			centerInParentToolStripMenuItem.Size = new Size(110, 22);
 			centerInParentToolStripMenuItem.Text = "Parent";
 			// 
 			// centerInParentHorizontallyToolStripMenuItem
@@ -555,7 +557,7 @@ namespace MyGui.net
 			// 
 			centerInLayoutToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { centerInLayoutHorizontallyToolStripMenuItem, centerInLayoutVerticallyToolStripMenuItem, centerInLayoutBothToolStripMenuItem });
 			centerInLayoutToolStripMenuItem.Name = "centerInLayoutToolStripMenuItem";
-			centerInLayoutToolStripMenuItem.Size = new Size(180, 22);
+			centerInLayoutToolStripMenuItem.Size = new Size(110, 22);
 			centerInLayoutToolStripMenuItem.Text = "Layout";
 			// 
 			// centerInLayoutHorizontallyToolStripMenuItem
@@ -582,25 +584,26 @@ namespace MyGui.net
 			// toolStripSeparator7
 			// 
 			toolStripSeparator7.Name = "toolStripSeparator7";
-			toolStripSeparator7.Size = new Size(177, 6);
+			toolStripSeparator7.Size = new Size(147, 6);
 			// 
 			// duplicateToolStripMenuItem
 			// 
+			duplicateToolStripMenuItem.Enabled = false;
 			duplicateToolStripMenuItem.Name = "duplicateToolStripMenuItem";
-			duplicateToolStripMenuItem.Size = new Size(180, 22);
+			duplicateToolStripMenuItem.Size = new Size(150, 22);
 			duplicateToolStripMenuItem.Text = "Duplicate";
 			duplicateToolStripMenuItem.Click += duplicateToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator8
 			// 
 			toolStripSeparator8.Name = "toolStripSeparator8";
-			toolStripSeparator8.Size = new Size(177, 6);
+			toolStripSeparator8.Size = new Size(147, 6);
 			// 
 			// comingSoonToolStripMenuItem
 			// 
 			comingSoonToolStripMenuItem.Enabled = false;
 			comingSoonToolStripMenuItem.Name = "comingSoonToolStripMenuItem";
-			comingSoonToolStripMenuItem.Size = new Size(180, 22);
+			comingSoonToolStripMenuItem.Size = new Size(150, 22);
 			comingSoonToolStripMenuItem.Text = "Coming Soon!";
 			// 
 			// openLayoutDialog

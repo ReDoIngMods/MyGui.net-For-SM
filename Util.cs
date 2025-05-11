@@ -1176,7 +1176,7 @@ namespace MyGui.net
 			return fontData;
 		}
 
-		public static Dictionary<string, string> languageTags = [];
+		public static Dictionary<string, string> languageTags = new(50,StringComparer.Ordinal);
 		static string lastLang = "";
 		public static string? GetLanguageTagString(string tagName, string language, string smPath)
 		{
@@ -1219,15 +1219,14 @@ namespace MyGui.net
 			return languageTags[tagName];
 		}
 
+		static readonly Regex _tagRegex = new(@"#\{(.*?)\}", RegexOptions.Compiled);
 		public static string ReplaceLanguageTagsInString(string str, string language, string smPath)
 		{
-			string pattern = @"#\{(.*?)\}";  // Matches #{ANYTHING}
-
-			str = Regex.Replace(str, pattern, match =>
+			return _tagRegex.Replace(str, match =>
 			{
-				return GetLanguageTagString(match.Groups[0].Value.Replace("#{", "").Replace("}", ""), language, smPath);  // Replace match
+				string tagName = match.Groups[1].Value;
+				return GetLanguageTagString(tagName, language, smPath) ?? "";
 			});
-			return str;
 		}
 
 		public static void PrintFontData(string language, string smPath)
@@ -1948,6 +1947,7 @@ namespace MyGui.net
 			return absolutePosition;
 		}
 
+		[Obsolete("Access widget.Parent directly!")]
 		public static MyGuiWidgetData? FindParent(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
 		{
 			// Find the parent widget in the layout

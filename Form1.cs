@@ -54,7 +54,7 @@ namespace MyGui.net
 		public static string SteamUserId => _steamUserId;
 		#endregion
 
-		CommandManager _commandManager = new CommandManager();
+		public static CommandManager CommandManager = new CommandManager();
 		List<string> _recentFiles = new();
 
 		static string _scrapMechanicPath => Settings.Default.ScrapMechanicPath;
@@ -105,18 +105,20 @@ namespace MyGui.net
 		static FormSideBar? _sidebarForm;
 		static FormSideBar? _sidebarLayoutForm;
 
-		public static FormSlicer sliceForm;
-		public static FormSkin skinForm;
-		public static FormInterfaceTag tagForm;
-		public static FormTextEditor textEditorForm;
-		public static FormSettings settingsForm;
-		public static FormFont fontForm;
+		public static FormSlicer SliceForm;
+		public static FormSkin SkinForm;
+		public static FormInterfaceTag TagForm;
+		public static FormTextEditor TextEditorForm;
+		public static FormSettings SettingsForm;
+		public static FormFont FontForm;
+		public static FormActionHistory ActionHistoryForm;
 
 		public Form1(string _DefaultOpenedDir = "")
 		{
 			InitializeComponent();
 			DebugConsole.CloseConsoleOnExit(this);
 			HandleLoad(_DefaultOpenedDir);
+			viewport.Location = new();
 			/*float scaleFactor = (float)DeviceDpi / 96f; // Get DPI scale
 
 			viewportScrollY.Width = (int)(17 * scaleFactor);  // Scale vertical scrollbar width
@@ -196,9 +198,9 @@ namespace MyGui.net
 			if (!initial)
 			{
 				//RenderBackend.ReloadCache();
-				skinForm = new();
-				tagForm.ReloadCache();
-				fontForm.ReloadCache();
+				SkinForm = new();
+				TagForm.ReloadCache();
+				FontForm.ReloadCache();
 				_prevBackgroundPath = "";
 				UpdateViewportBackground();
 			}
@@ -217,7 +219,7 @@ namespace MyGui.net
 
 			openRecentToolStripMenuItem_DropDownOpening(null, new());
 
-			this.Text = $"{Util.programName} - {(autoloadPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? autoloadPath : Path.GetFileName(autoloadPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
+			this.Text = $"{Util.programName} - {(autoloadPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? autoloadPath : Path.GetFileName(autoloadPath)))}{(CommandManager.GetUndoStackCount() > 0 ? "*" : "")}";
 			Settings.Default.PropertyChanged += Settings_PropertyChanged;
 			widgetGridSpacingNumericUpDown.Value = _gridSpacing;
 			if (autoloadPath != "")
@@ -413,13 +415,15 @@ namespace MyGui.net
 			  ControlStyles.AllPaintingInWmPaint | ControlStyles.CacheText, true);
 			this.UpdateStyles();
 
-			sliceForm = new();
-			skinForm = new();
-			tagForm = new();
-			textEditorForm = new();
-			fontForm = new();
-			settingsForm = new();
-			settingsForm.Owner = this;
+			SliceForm = new();
+			SkinForm = new();
+			TagForm = new();
+			TextEditorForm = new();
+			FontForm = new();
+			ActionHistoryForm = new();
+			ActionHistoryForm.Owner = this;
+			SettingsForm = new();
+			SettingsForm.Owner = this;
 
 			if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
 			{
@@ -688,9 +692,9 @@ namespace MyGui.net
 			}
 		}
 
-		void ExecuteCommand(IEditorAction command)
+		void ExecuteCommand(IEditorAction command, string reason = null)
 		{
-			_commandManager.ExecuteCommand(command);
+			CommandManager.ExecuteCommand(command, reason);
 
 			viewport.Refresh();
 			UpdateUndoRedo();
@@ -698,8 +702,8 @@ namespace MyGui.net
 
 		void ClearStacks()
 		{
-			_commandManager.clearUndoStack();
-			_commandManager.clearRedoStack();
+			CommandManager.ClearUndoStack();
+			CommandManager.ClearRedoStack();
 			UpdateUndoRedo();
 		}
 
@@ -1461,7 +1465,7 @@ namespace MyGui.net
 
 		private void newToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_commandManager.getUndoStackCount() != 0)
+			if (CommandManager.GetUndoStackCount() != 0)
 			{
 				DialogResult result = MessageBox.Show("Are you sure you want to clear the Workspace? This cannot be undone!", "New Workspace", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -1490,7 +1494,7 @@ namespace MyGui.net
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (_commandManager.getUndoStackCount() != 0)
+			if (CommandManager.GetUndoStackCount() != 0)
 			{
 				DialogResult result = MessageBox.Show("Are you sure you want to open another Layout? All your unsaved changes will be lost!", "Open Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -1544,7 +1548,7 @@ namespace MyGui.net
 				var item = new ToolStripMenuItem(file);
 				item.Click += (s, e) =>
 				{
-					if (_commandManager.getUndoStackCount() != 0)
+					if (CommandManager.GetUndoStackCount() != 0)
 					{
 						DialogResult result = MessageBox.Show("Are you sure you want to open another Layout? All your unsaved changes will be lost!", "Open Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -1564,7 +1568,7 @@ namespace MyGui.net
 		{
 			if (Util.IsValidFile(_currentLayoutPath))
 			{
-				if (_commandManager.getUndoStackCount() != 0)
+				if (CommandManager.GetUndoStackCount() != 0)
 				{
 					DialogResult result = MessageBox.Show("Are you sure you want to reload this Layout? All your unsaved changes will be lost!", "Reload Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -1762,9 +1766,9 @@ namespace MyGui.net
 
 		private void optionsToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			settingsForm = new();
-			settingsForm.Owner = this;
-			settingsForm.Show();
+			SettingsForm = new();
+			SettingsForm.Owner = this;
+			SettingsForm.Show();
 		}
 
 		private void testToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1779,7 +1783,7 @@ namespace MyGui.net
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (_commandManager.getUndoStackCount() != 0)
+			if (CommandManager.GetUndoStackCount() != 0)
 			{
 				DialogResult result = MessageBox.Show("Are you sure you want to Exit? All your unsaved changes will be lost!", "Exit", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
@@ -1950,7 +1954,7 @@ namespace MyGui.net
 		private void undoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (_draggingWidgetAt != BorderPosition.None) { return; }
-			_commandManager.Undo();
+			CommandManager.Undo();
 
 			UpdateUndoRedo();
 		}
@@ -1958,23 +1962,98 @@ namespace MyGui.net
 		private void redoToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			if (_draggingWidgetAt != BorderPosition.None) { return; }
-			_commandManager.Redo();
+			CommandManager.Redo();
 
 			UpdateUndoRedo();
 		}
 
-		private void UpdateUndoRedo()
+		private void actionHistoryToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}{(_commandManager.getUndoStackCount() > 0 ? "*" : "")}";
+			ActionHistoryForm = new();
+			ActionHistoryForm.Owner = this;
+			ActionHistoryForm.Show();
+			UpdateUndoRedo(true);
+		}
+
+		public void UpdateUndoRedo(bool updateOnlyActionHistory = false)
+		{
+			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}{(CommandManager.GetUndoStackCount() > 0 ? "*" : "")}";
+
+			if (ActionHistoryForm.Visible)
+			{
+				ActionHistoryForm.undoTreeView.SuspendLayout();
+				ActionHistoryForm.redoTreeView.SuspendLayout();
+				ActionHistoryForm.undoTreeView.Nodes.Clear();
+				foreach (var item in CommandManager.GetUndoStackItems())
+				{
+					var lines = item.ToHumanReadable();
+					if (lines.Length == 0) continue;
+
+					var parentNode = new TreeNode(lines[0]) { ToolTipText = "Double Click to Undo this Action and all preceding ones." };
+
+					if (lines.Length > 1)
+					{
+						var serialized = lines[1]; // the combined string
+						var actions = serialized.Split(["|&|"], StringSplitOptions.None);
+
+						foreach (var action in actions)
+						{
+							var childLines = action.Split(["|-|"], StringSplitOptions.None);
+							var actionNode = new TreeNode(childLines[0]);
+
+							for (int i = 1; i < childLines.Length; i++)
+							{
+								actionNode.Nodes.Add(new TreeNode(childLines[i]));
+							}
+							parentNode.Nodes.Add(actionNode);
+						}
+					}
+					ActionHistoryForm.undoTreeView.Nodes.Add(parentNode);
+				}
+				ActionHistoryForm.redoTreeView.Nodes.Clear();
+				foreach (var item in CommandManager.GetRedoStackItems())
+				{
+					var lines = item.ToHumanReadable();
+					if (lines.Length == 0) continue;
+
+					var parentNode = new TreeNode(lines[0]) { ToolTipText = "Double Click to Redo this Action and all preceding ones." };
+
+					if (lines.Length > 1)
+					{
+						var serialized = lines[1]; // the combined string
+						var actions = serialized.Split(["|&|"], StringSplitOptions.None);
+
+						foreach (var action in actions)
+						{
+							var childLines = action.Split(["|-|"], StringSplitOptions.None);
+							var actionNode = new TreeNode(childLines[0]);
+
+							for (int i = 1; i < childLines.Length; i++)
+							{
+								actionNode.Nodes.Add(new TreeNode(childLines[i]));
+							}
+							parentNode.Nodes.Add(actionNode);
+						}
+					}
+					ActionHistoryForm.redoTreeView.Nodes.Add(parentNode);
+				}
+
+				ActionHistoryForm.undoTreeView.ResumeLayout();
+				ActionHistoryForm.redoTreeView.ResumeLayout();
+			}
+			if (updateOnlyActionHistory)
+			{
+				return;
+			}
 
 			LoadTreeView(_currentLayout);
 
-			undoToolStripMenuItem.Enabled = _commandManager.getUndoStackCount() > 0;
-			redoToolStripMenuItem.Enabled = _commandManager.getRedoStackCount() > 0;
-			redoToolStripMenuItem1.Enabled = _commandManager.getRedoStackCount() > 0;
+			undoToolStripMenuItem.Enabled = CommandManager.GetUndoStackCount() > 0;
+			redoToolStripMenuItem.Enabled = CommandManager.GetRedoStackCount() > 0;
+			redoToolStripMenuItem1.Enabled = CommandManager.GetRedoStackCount() > 0;
 
-			undoToolStripMenuItem.Text = $"Undo{(undoToolStripMenuItem.Enabled ? $" ({_commandManager.getUndoStackCount()})" : "")}";
-			redoToolStripMenuItem.Text = $"Redo{(redoToolStripMenuItem.Enabled ? $" ({_commandManager.getRedoStackCount()})" : "")}";
+			undoToolStripMenuItem.Text = $"Undo{(undoToolStripMenuItem.Enabled ? $" ({CommandManager.GetUndoStackCount()})" : "")}";
+			redoToolStripMenuItem.Text = $"Redo{(redoToolStripMenuItem.Enabled ? $" ({CommandManager.GetRedoStackCount()})" : "")}";
 			viewport.Refresh();
 			UpdateProperties();
 		}
@@ -2122,7 +2201,7 @@ namespace MyGui.net
 								actions.Add(new CreateControlCommand(widget, widgetToPasteInto, _currentLayout));
 							}
 
-							ExecuteCommand(new CompountCommand(actions));
+							ExecuteCommand(new CompoundCommand(actions), "Paste");
 						}
 						catch (Exception)
 						{
@@ -2317,7 +2396,7 @@ namespace MyGui.net
 			if (e.Data.GetDataPresent(DataFormats.FileDrop))
 			{
 				string file = ((string[])e.Data.GetData(DataFormats.FileDrop))[0];
-				if (_commandManager.getUndoStackCount() != 0)
+				if (CommandManager.GetUndoStackCount() != 0)
 				{
 					DialogResult result = MessageBox.Show("Are you sure you want to open another Layout? All your unsaved changes will be lost!", "Open Layout", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 

@@ -316,7 +316,7 @@ namespace MyGui.net
 
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			Form1.sliceForm.currWidget = Form1._currentSelectedWidget;
+			Form1.SliceForm.currWidget = Form1._currentSelectedWidget;
 			SKSize defaultSize = new(0, 0);
 
 			if (Form1._currentSelectedWidget.properties.TryGetValue("ImageTexture", out string imagePathRel) && !string.IsNullOrEmpty(imagePathRel) && RenderBackend._skinAtlasCache.ContainsKey("CUSTOMIMAGE_" + imagePathRel))
@@ -325,20 +325,20 @@ namespace MyGui.net
 				defaultSize = new(atlasItem.Width, atlasItem.Height);
 			}
 
-			Form1.sliceForm.defaultSize = defaultSize;
+			Form1.SliceForm.defaultSize = defaultSize;
 
 			if (!string.IsNullOrEmpty(value.ToString()))
 			{
 				Tuple<Point, Point> slice = Util.GetWidgetPosAndSize(true, value.ToString(), new(1, 1));
-				Form1.sliceForm.SetResults(slice.Item1.ToSKPoint(), new(slice.Item2.X, slice.Item2.Y));
+				Form1.SliceForm.SetResults(slice.Item1.ToSKPoint(), new(slice.Item2.X, slice.Item2.Y));
 			}
 			else
 			{
-				Form1.sliceForm.SetResults(new(0,0), defaultSize);
+				Form1.SliceForm.SetResults(new(0,0), defaultSize);
 			};
-			if (Form1.sliceForm.ShowDialog() == DialogResult.OK)
+			if (Form1.SliceForm.ShowDialog() == DialogResult.OK)
 			{
-				value = Form1.sliceForm.outcome;
+				value = Form1.SliceForm.outcome;
 			}
 			return value;
 		}
@@ -375,7 +375,7 @@ namespace MyGui.net
 
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			FormTextEditor editorForm = Form1.textEditorForm;
+			FormTextEditor editorForm = Form1.TextEditorForm;
 			editorForm.mainTextBox.Text = Util.MyGuiToSystemString(value?.ToString()) ?? "";
 
 			if (editorForm.ShowDialog() == DialogResult.OK)
@@ -397,9 +397,9 @@ namespace MyGui.net
 
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			if (Form1.skinForm.ShowDialog() == DialogResult.OK)
+			if (Form1.SkinForm.ShowDialog() == DialogResult.OK)
 			{
-				value = Form1.skinForm.outcome;
+				value = Form1.SkinForm.outcome;
 			}
 			return value;
 		}
@@ -415,9 +415,9 @@ namespace MyGui.net
 
 		public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
 		{
-			if (Form1.fontForm.ShowDialog() == DialogResult.OK)
+			if (Form1.FontForm.ShowDialog() == DialogResult.OK)
 			{
-				value = Form1.fontForm.outcome;
+				value = Form1.FontForm.outcome;
 			}
 			return value;
 		}

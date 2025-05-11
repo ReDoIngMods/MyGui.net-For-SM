@@ -73,9 +73,9 @@ namespace MyGui.net
 
 		private void interfaceTagToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			if (Form1.tagForm.ShowDialog() == DialogResult.OK)
+			if (Form1.TagForm.ShowDialog() == DialogResult.OK)
 			{
-				mainTextBox.Paste("#{" + Form1.tagForm.outcome + "}");
+				mainTextBox.Paste("#{" + Form1.TagForm.outcome + "}");
 			}
 		}
 

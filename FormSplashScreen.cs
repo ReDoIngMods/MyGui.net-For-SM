@@ -92,8 +92,8 @@ namespace MyGui.net
 
 		private void aboutButton_Click(object sender, EventArgs e)
 		{
-			Form1.settingsForm.tabControl1.SelectedTab = Form1.settingsForm.tabControl1.TabPages["aboutTabPage"];
-			Form1.settingsForm.Show();
+			Form1.SettingsForm.tabControl1.SelectedTab = Form1.SettingsForm.tabControl1.TabPages["aboutTabPage"];
+			Form1.SettingsForm.Show();
 			//this.Close();
 		}
 
