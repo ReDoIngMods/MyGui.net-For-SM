@@ -577,7 +577,7 @@ namespace MyGui.net
 				return;
 			}
 			e.Node.EndEdit(false);
-			ExecuteCommand(new ChangePropertyCommand((MyGuiWidgetData)e.Node.Tag, "name", e.Label ?? ""));
+			ExecuteCommand(new ChangePropertyCommand((MyGuiWidgetData)e.Node.Tag, "Name", e.Label ?? ""));
 			LoadTreeView(_currentLayout);
 		}
 
