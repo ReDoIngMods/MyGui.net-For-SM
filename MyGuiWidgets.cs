@@ -58,6 +58,7 @@ namespace MyGui.net
 		public Point position = new(0, 0);
 		public Point size = new(0, 0);
 		public Dictionary<string, string> properties = new(20, StringComparer.Ordinal); //20 starting properties should be enough
+		public Dictionary<string, string> precomputedProperties = new(5, StringComparer.Ordinal);
 
 		[JsonIgnore]
 		public MyGuiWidgetData? Parent { get; set; }
@@ -147,10 +148,10 @@ namespace MyGui.net
 
 			set
 			{
-				widget.align = value == "" ? null : value;
+				widget.align = value == null || value == "" ? null : value;
 			}
 		}
-		public static string AlignBoundTo = "align";
+		
 
 		[Category("1 - Main Properties")]
 		[Description("Unknown behaviour.")]
@@ -161,10 +162,10 @@ namespace MyGui.net
 
 			set
 			{
-				widget.layer = value == "[DEFAULT]" || value == "" ? null : value;
+				widget.layer = value == "[DEFAULT]" || value == null || value == "" ? null : value;
 			}
 		}
-		public static string LayerBoundTo = "layer";
+		
 
 		[Category("1 - Main Properties")]
 		[Description("String which refers to this exact widget in Lua code. Using non-unique names will target all widgets of the same name.")]
@@ -174,10 +175,10 @@ namespace MyGui.net
 
 			set
 			{
-				widget.name = value == "" ? null : value;
+				widget.name = value == null || value == "" ? null : value;
 			}
 		}
-		public static string NameBoundTo = "name";
+		
 
 		[Category("1 - Main Properties")]
 		[Description("Position of the widget in pixels relative to its parent. (Open the dropdown to set position in %)")]
@@ -191,7 +192,7 @@ namespace MyGui.net
 				widget.position = value;
 			}
 		}
-		public static string PositionBoundTo = "position";
+		
 
 		[Category("1 - Main Properties")]
 		[Description("Size of the widget in pixels. (Open the dropdown to set size in %)")]
@@ -203,22 +204,24 @@ namespace MyGui.net
 			set
 			{
 				widget.size = value;
+				//Recache Caption
+				widget.precomputedProperties.Remove("Caption");
 			}
 		}
-		public static string SizeBoundTo = "size";
+		
 
 		[Category("1 - Main Properties")]
 		[Description("Visual look of the widget. Only certain skins support certain features, such as text rendering. (Try to keep the looks of your guis as close to original Scrap Mechanic looks. Refrain from using stock MyGui widget skins if possible.)")]
 		[Editor(typeof(SkinSelectorEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(SkinSelectorConverter))]
 		public string Skin { get => widget.skin; set { widget.skin = value; } }
-		public static string SkinBoundTo = "skin";
+		
 
 		[Category("1 - Main Properties")]
 		[Description("Type of the widget, each type has a specific use and set of properties you may change.")]
 		[TypeConverter(typeof(StringDropdownConverter))]
 		public string Type { get => widget.type; set { widget.type = value; } }
-		public static string TypeBoundTo = "type";
+		
 
 		//Widget Properties
 
@@ -230,7 +233,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("Alpha");
 				}
@@ -241,7 +244,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string AlphaBoundTo = "properties.Alpha";
+		
 
 		[Category("2 - Widget Properties")]
 		[Description("Color of the widget. Supports 2 formats: \"#rrggbb\" (Hexadecimal, # can be ommited) and \"r g b\" where each color float is in range of 0 to 1 (inclusive). Recolors already exisiting pixels instead of coloring transparent ones.")]
@@ -252,7 +255,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("Colour");
 				}
@@ -298,7 +301,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ColorBoundTo = "properties.Colour";
+		
 
 		[Category("2 - Widget Properties")]
 		[Description("Whether or not the widget is enabled. Applies mainly to Buttons, where it makes them uninteractable.")]
@@ -310,7 +313,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("Enabled");
 				}
@@ -320,7 +323,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string EnabledBoundTo = "properties.Enabled";
+		
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Inherits Alpha")]
@@ -333,7 +336,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("InheritsAlpha");
 				}
@@ -343,7 +346,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string InheritsAlphaBoundTo = "properties.InheritsAlpha";
+		
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Inherits Pick")]
@@ -356,7 +359,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("InheritsPick");
 				}
@@ -366,7 +369,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string InheritsPickBoundTo = "properties.InheritsPick";
+		
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Mask Pick")]
@@ -378,7 +381,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("MaskPick");
 				}
@@ -388,7 +391,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string MaskPickBoundTo = "properties.MaskPick";
+		
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Capture Keyboard")]
@@ -401,7 +404,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("NeedKey");
 				}
@@ -411,7 +414,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string NeedKeyBoundTo = "properties.NeedKey";
+		
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Capture Mouse")]
@@ -424,7 +427,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("NeedMouse");
 				}
@@ -434,7 +437,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string NeedMouseBoundTo = "properties.NeedMouse";
+		
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Show Tool Tip")]
@@ -447,7 +450,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("NeedToolTip");
 				}
@@ -457,7 +460,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string NeedToolTipBoundTo = "properties.NeedToolTip";
+		
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Cursor")]
@@ -468,7 +471,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("Pointer");
 				}
@@ -478,7 +481,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string PointerBoundTo = "properties.Pointer";
+		
 
 		[Category("2 - Widget Properties")]
 		[Description("If the widget and its children are rendered.")]
@@ -490,7 +493,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("Visible");
 				}
@@ -500,7 +503,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string VisibleBoundTo = "properties.Visible";
+		
 		#endregion
 
 		#region Backend Functions
@@ -536,7 +539,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("Caption");
 				}
@@ -544,9 +547,11 @@ namespace MyGui.net
 				{
 					widget.properties["Caption"] = value;
 				}
+				//Recache Caption
+				widget.precomputedProperties.Remove("Caption");
 			}
 		}
-		public static string CaptionBoundTo = "properties.Caption";
+		
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Font Size")]
@@ -557,7 +562,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("FontHeight");
 				}
@@ -568,7 +573,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string FontHeightBoundTo = "properties.FontHeight";
+		
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Font")]
@@ -581,7 +586,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "DeJaVuSans")
+				if (value == null || value == "" || value == "DeJaVuSans")
 				{
 					widget.properties.Remove("FontName");
 				}
@@ -589,9 +594,11 @@ namespace MyGui.net
 				{
 					widget.properties["FontName"] = value;
 				}
+				//Recache Caption
+				widget.precomputedProperties.Remove("Caption");
 			}
 		}
-		public static string FontNameBoundTo = "properties.FontName";
+		
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Align")]
@@ -604,7 +611,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("TextAlign");
 				}
@@ -612,9 +619,11 @@ namespace MyGui.net
 				{
 					widget.properties["TextAlign"] = value;
 				}
+				//Recache Caption
+				widget.precomputedProperties.Remove("Caption");
 			}
 		}
-		public static string TextAlignBoundTo = "properties.TextAlign";
+		
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Color")]
@@ -626,7 +635,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("TextColour");
 				}
@@ -672,7 +681,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string TextColorBoundTo = "properties.TextColour";
+		
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Shadow")]
@@ -685,7 +694,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("TextShadow");
 				}
@@ -695,7 +704,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string TextShadowBoundTo = "properties.TextShadow";
+		
 
 		[Category("3 - TextBox Properties")]
 		[DisplayName("Text Shadow Color")]
@@ -707,7 +716,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("TextShadowColour");
 				}
@@ -753,7 +762,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string TextShadowColorBoundTo = "properties.TextShadowColour";
+		
 
 		#endregion
 	}
@@ -773,7 +782,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageGroup");
 				}
@@ -783,7 +792,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageGroupBoundTo = "properties.ImageGroup";
+		
 
 		[Category("4 - Button Properties")]
 		[DisplayName("Image Name")]
@@ -794,7 +803,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageName");
 				}
@@ -804,7 +813,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageNameBoundTo = "properties.ImageName";
+		
 
 		[Category("4 - Button Properties")]
 		[DisplayName("Image Resource")]
@@ -815,7 +824,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageResource");
 				}
@@ -825,7 +834,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageResourceBoundTo = "properties.ImageResource";
+		
 
 		[Category("4 - Button Properties")]
 		[Description("Unknown behaviour.")]
@@ -838,7 +847,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("ModeImage");
 				}
@@ -848,7 +857,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ModeImageBoundTo = "properties.ModeImage";
+		
 
 		[Category("4 - Button Properties")]
 		[DisplayName("Force Selected")]
@@ -861,7 +870,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("StateSelected");
 				}
@@ -871,7 +880,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string StateSelectedBoundTo = "properties.StateSelected";
+		
 		#endregion
 	}
 
@@ -890,7 +899,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("CursorPosition");
 				}
@@ -901,7 +910,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string CursorPositionBoundTo = "properties.CursorPosition";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Invert Selection")]
@@ -914,7 +923,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("InvertSelected");
 				}
@@ -924,7 +933,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string InvertSelectedBoundTo = "properties.InvertSelected";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Text Length Limit")]
@@ -935,7 +944,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("MaxTextLength");
 				}
@@ -944,9 +953,11 @@ namespace MyGui.net
 					var parsedAsDouble = Util.ProperlyParseDouble(value);
 					widget.properties["MaxTextLength"] = !double.IsNaN(parsedAsDouble) ? parsedAsDouble.ToString(CultureInfo.InvariantCulture) : "0";
 				}
+				//Recache Caption
+				widget.precomputedProperties.Remove("Caption");
 			}
 		}
-		public static string MaxTextLengthBoundTo = "properties.MaxTextLength";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Multi-Line")]
@@ -959,7 +970,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("MultiLine");
 				}
@@ -967,9 +978,11 @@ namespace MyGui.net
 				{
 					widget.properties["MultiLine"] = value;
 				}
+				//Recache Caption
+				widget.precomputedProperties.Remove("Caption");
 			}
 		}
-		public static string MultiLineBoundTo = "properties.MultiLine";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Overflow To The Left")]
@@ -982,7 +995,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("OverflowToTheLeft");
 				}
@@ -992,7 +1005,9 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string OverflowToTheLeftBoundTo = "properties.OverflowToTheLeft";
+		
+
+
 
 		[Category("4 - EditBox Properties")]
 		[Description("Forces each character of the string to be rendered as Password Character (by default a \"*\").")]
@@ -1004,7 +1019,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("Password");
 				}
@@ -1014,7 +1029,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string PasswordBoundTo = "properties.Password";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Password Character")]
@@ -1025,7 +1040,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("PasswordChar");
 				}
@@ -1035,7 +1050,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string PasswordCharBoundTo = "properties.PasswordChar";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Read Only")]
@@ -1048,7 +1063,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("ReadOnly");
 				}
@@ -1058,7 +1073,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ReadOnlyBoundTo = "properties.ReadOnly";
+		
 
 		[Category("4 - EditBox Properties")]
 		[Description("Makes the user unable to select the text in the EditBox.")]
@@ -1070,7 +1085,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("Static");
 				}
@@ -1080,7 +1095,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string StaticBoundTo = "properties.Static";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Selection Range")]
@@ -1091,7 +1106,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value.Split(' ').Length != 2)
+				if (value == null || value == "" || value.Split(' ').Length != 2)
 				{
 					widget.properties.Remove("TextSelect");
 				}
@@ -1113,7 +1128,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string TextSelectBoundTo = "properties.TextSelect";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Visible Horizontal Scrollbar")]
@@ -1126,7 +1141,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("VisibleHScroll");
 				}
@@ -1136,7 +1151,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string VisibleHScrollBoundTo = "properties.VisibleHScroll";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Visible Vertical Scrollbar")]
@@ -1149,7 +1164,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("VisibleVScroll");
 				}
@@ -1159,7 +1174,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string VisibleVScrollBoundTo = "properties.VisibleVScroll";
+		
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Word Wrapping")]
@@ -1172,7 +1187,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("WordWrap");
 				}
@@ -1182,7 +1197,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string WordWrapBoundTo = "properties.WordWrap";
+		
 
 		#endregion
 	}
@@ -1204,7 +1219,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("NeedDragDrop");
 				}
@@ -1214,7 +1229,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string NeedDragDropBoundTo = "properties.NeedDragDrop";
+		
 		#endregion
 	}
 
@@ -1235,7 +1250,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("VerticalAlignment");
 				}
@@ -1245,7 +1260,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string VerticalAlignmentBoundTo = "properties.VerticalAlignment";
+		
 
 		[Category("4 - ItemBox Properties")]
 		[DisplayName("Visible Horizontal Scrollbar")]
@@ -1258,7 +1273,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("VisibleHScroll");
 				}
@@ -1268,7 +1283,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string VisibleHScrollBoundTo = "properties.VisibleHScroll";
+		
 
 		[Category("4 - ItemBox Properties")]
 		[DisplayName("Visible Vertical Scrollbar")]
@@ -1281,7 +1296,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("VisibleVScroll");
 				}
@@ -1291,7 +1306,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string VisibleVScrollBoundTo = "properties.VisibleVScroll";
+		
 		#endregion
 	}
 
@@ -1312,7 +1327,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("AutoTrack");
 				}
@@ -1322,7 +1337,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string AutoTrackBoundTo = "properties.AutoTrack";
+		
 
 		[Category("3 - ProgressBar Properties")]
 		[DisplayName("Flow Direction")]
@@ -1334,7 +1349,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("FlowDirection");
 				}
@@ -1344,7 +1359,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string FlowDirectionBoundTo = "properties.FlowDirection";
+		
 
 		[Category("3 - ProgressBar Properties")]
 		[DisplayName("Maximum")]
@@ -1355,7 +1370,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("Range");
 				}
@@ -1366,7 +1381,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string RangeBoundTo = "properties.Range";
+		
 
 		[Category("3 - ProgressBar Properties")]
 		[DisplayName("Current Value")]
@@ -1377,7 +1392,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("RangePosition");
 				}
@@ -1388,7 +1403,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string RangePositionBoundTo = "properties.RangePosition";
+		
 		#endregion
 	}
 
@@ -1409,7 +1424,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("MoveToClick");
 				}
@@ -1419,7 +1434,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string MoveToClickBoundTo = "properties.MoveToClick";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[Description("Unknown behaviour.")]
@@ -1429,7 +1444,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("Page");
 				}
@@ -1440,7 +1455,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string PageBoundTo = "properties.Page";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Maximum")]
@@ -1451,7 +1466,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("Range");
 				}
@@ -1462,7 +1477,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string RangeBoundTo = "properties.Range";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Default Position")]
@@ -1473,7 +1488,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("RangePosition");
 				}
@@ -1484,7 +1499,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string RangePositionBoundTo = "properties.RangePosition";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[Description("Unknown behaviour.")]
@@ -1496,7 +1511,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("Repeat");
 				}
@@ -1506,7 +1521,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string RepeatBoundTo = "properties.Repeat";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Repeat Step Time")]
@@ -1517,7 +1532,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("RepeatStepTime");
 				}
@@ -1528,7 +1543,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string RepeatStepTimeBoundTo = "properties.RepeatStepTime";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Repeat Trigger Time")]
@@ -1539,7 +1554,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("RepeatTriggerTime");
 				}
@@ -1550,7 +1565,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string RepeatTriggerTimeBoundTo = "properties.RepeatTriggerTime";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Vertical Alignment")]
@@ -1563,7 +1578,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "" || value == "Default" || value == "[DEFAULT]")
+				if (value == null || value == "" || value == "Default" || value == "[DEFAULT]")
 				{
 					widget.properties.Remove("VerticalAlignment");
 				}
@@ -1573,7 +1588,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string VerticalAlignmentBoundTo = "properties.VerticalAlignment";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("View Page")]
@@ -1584,7 +1599,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ViewPage");
 				}
@@ -1595,7 +1610,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ViewPageBoundTo = "properties.ViewPage";
+		
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Scroll Wheel Step")]
@@ -1606,7 +1621,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("WheelPage");
 				}
@@ -1617,7 +1632,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string WheelPageBoundTo = "properties.WheelPage";
+		
 		#endregion
 	}
 
@@ -1637,7 +1652,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageCoord");
 				}
@@ -1647,7 +1662,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageCoordBoundTo = "properties.ImageCoord";
+		
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Group")]
@@ -1659,7 +1674,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageGroup");
 				}
@@ -1669,7 +1684,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageGroupBoundTo = "properties.ImageGroup";
+		
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Index")]
@@ -1680,7 +1695,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageIndex");
 				}
@@ -1691,7 +1706,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageIndexBoundTo = "properties.ImageIndex";
+		
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Name")]
@@ -1703,7 +1718,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageName");
 				}
@@ -1713,7 +1728,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageNameBoundTo = "properties.ImageName";
+		
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Resource")]
@@ -1725,7 +1740,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageResource");
 				}
@@ -1735,7 +1750,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageResourceBoundTo = "properties.ImageResource";
+		
 
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Texture")]
@@ -1747,7 +1762,7 @@ namespace MyGui.net
 
 			set
 			{
-				if (value == "")
+				if (value == null || value == "")
 				{
 					widget.properties.Remove("ImageTexture");
 				}
@@ -1757,7 +1772,7 @@ namespace MyGui.net
 				}
 			}
 		}
-		public static string ImageTextureBoundTo = "properties.ImageTexture";
+		
 		#endregion
 	}
 

@@ -435,17 +435,119 @@ namespace MyGui.net
 				{
 					if (skin.type == "SimpleText" || skin.type == "EditText")
 					{
-						if (widgetTertiaryData.properties.TryGetValue("Caption", out string caption))
+						// Precompute text
+						string caption = widgetTertiaryData.precomputedProperties.TryGetValue("Caption", out string precomputedCaption) ? precomputedCaption : "";
+						var fontData = Util.TryGetValueFromMany( [widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "FontName", out string fontName) && _allFonts.ContainsKey(fontName) ? _allFonts[fontName] : _allFonts["DeJaVuSans"];
+
+						float actualFontLetterSpacing = (float)(fontData.letterSpacing ?? 0);
+						float defaultFontSize = (float)fontData.size * _screenSizeMultiplier * 1.33f;
+						float actualFontSize = widgetTertiaryData.properties.TryGetValue("FontHeight", out string fontSizeVal) ? (ProperlyParseFloat(fontSizeVal) * 0.85f) : defaultFontSize;
+
+						if (!widgetTertiaryData.precomputedProperties.ContainsKey("Caption"))
+						{
+							if (widgetTertiaryData.properties.TryGetValue("Caption", out string captionForPrecompute))
+							{
+								//trim by max length
+								string actualCaption = widgetTertiaryData.properties.TryGetValue("MaxTextLength", out var maxVal) && int.TryParse(maxVal, out int maxLen) ? captionForPrecompute.Substring(0, Math.Min(maxLen, captionForPrecompute.Length)) : captionForPrecompute.Substring(0, Math.Min(2048, captionForPrecompute.Length));
+
+								caption = Util.ReplaceLanguageTagsInString(actualCaption, _referenceLanguage, _scrapMechanicPath);
+
+								if (fontData.allowedChars != "ALL CHARACTERS")
+									caption = Util.ReplaceInvalidChars(caption, fontData.allowedChars);
+
+								bool isEditBox = widgetTertiaryData.type == "EditBox";
+								Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "MultiLine", out var ml);
+								if (isEditBox && ml != "true")
+									caption = caption.Replace("\\n", " ");
+
+								Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "WordWrap", out var ww);
+								if (isEditBox && ww == "true")
+									caption = WordWrap(caption, destRect.Width, _baseFontPaint, actualFontLetterSpacing, _screenSizeMultiplier, defaultFontSize, actualFontSize);
+
+								//clipping preprocess
+								//prepare paint
+								string fontPath = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
+								if (!_fontCache.ContainsKey(fontPath))
+								{
+									_fontCache[fontPath] = SKTypeface.FromFile(fontPath);
+								}
+								_baseFontPaint.TextSize = actualFontSize;
+								_baseFontPaint.Typeface = _fontCache[fontPath];
+
+								var metrics = _baseFontPaint.FontMetrics;
+								float lineHeight = Math.Abs(metrics.Ascent) + Math.Abs(metrics.Descent);
+								float maxWidth = destRect.Width;
+								float maxHeight = destRect.Height;
+
+								//split into lines on '\n'
+								var rawLines = caption.Split("\\n");
+								var clippedLines = new List<string>();
+
+								//vertical alignment info
+								Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextAlign", out string textAlign);
+								int totalLines = rawLines.Length;
+								int maxVisible = (int)Math.Ceiling(maxHeight / lineHeight);
+								int startIndex = 0;
+
+								if (maxVisible < totalLines)
+								{
+									if (!string.IsNullOrEmpty(textAlign))
+									{
+										if (textAlign.Contains("VCenter") || textAlign == "Center")
+											startIndex = (totalLines - maxVisible) / 2;
+										else if (textAlign.Contains("Bottom"))
+											startIndex = totalLines - maxVisible;
+									}
+									startIndex = Math.Clamp(startIndex, 0, totalLines - maxVisible);
+								}
+
+								for (int j = startIndex; j < totalLines && clippedLines.Count < maxVisible; j++)
+								{
+									string line = rawLines[j];
+									var sb = new StringBuilder();
+									float w = 0;
+									char prev = '\0';
+
+									foreach (char ch in line)
+									{
+										float cw = _baseFontPaint.MeasureText(ch.ToString());
+										float kern = prev != '\0'
+											? _baseFontPaint.MeasureText(prev.ToString() + ch)
+											  - (_baseFontPaint.MeasureText(prev.ToString()) + cw)
+											: 0;
+										float add = cw
+												  + (actualFontLetterSpacing * (actualFontSize / defaultFontSize) * _screenSizeMultiplier)
+												  + kern;
+
+										if (w + add > maxWidth)
+											break;
+
+										sb.Append(ch);
+										w += add;
+										prev = ch;
+									}
+
+									clippedLines.Add(sb.ToString());
+								}
+
+								// rebuild caption
+								caption = string.Join("\\n", clippedLines);
+								//end clipping preprocess
+
+								widgetTertiaryData.precomputedProperties["Caption"] = caption;
+							}
+							else
+							{
+								caption = null;
+								widgetTertiaryData.precomputedProperties["Caption"] = null;
+							}
+						}
+
+						//Render text if valid
+						if (!string.IsNullOrEmpty(caption))
 						{
 							int beforeTextClip = canvas.Save();
 							canvas.ClipRect(destRect);
-
-							var fontData = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "FontName", out string value) && _allFonts.ContainsKey(value) ? _allFonts[value] : _allFonts["DeJaVuSans"];
-							string fontPath = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
-							if (!_fontCache.ContainsKey(fontPath))
-							{
-								_fontCache[fontPath] = SKTypeface.FromFile(fontPath);
-							}
 
 							Color? textColor;
 							if (Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextColour", out var textColourStr))
@@ -460,55 +562,36 @@ namespace MyGui.net
 							{
 								textColor = Color.White;
 							}
-							float defaultFontSize = (float)fontData.size * _screenSizeMultiplier * 1.33f;
-							float actualFontSize = widgetTertiaryData.properties.TryGetValue("FontHeight", out string fontSizeVal) ? (ProperlyParseFloat(fontSizeVal) * 0.85f) : defaultFontSize;
 
+							string fontPath = Path.Combine(_scrapMechanicPath, "Data\\Gui\\Fonts", fontData.source);
+							if (!_fontCache.ContainsKey(fontPath))
+							{
+								_fontCache[fontPath] = SKTypeface.FromFile(fontPath);
+							}
 							_baseFontPaint.TextSize = actualFontSize;
-							_baseFontPaint.IsAntialias = _useViewportFontAntiAliasing;
 							_baseFontPaint.Typeface = _fontCache[fontPath];
+							_baseFontPaint.IsAntialias = _useViewportFontAntiAliasing;
 							_baseFontPaint.FilterQuality = _filterQuality;
 
 							SKFontMetrics metrics = _baseFontPaint.FontMetrics;
-
-							string actualCaption = widgetTertiaryData.properties.TryGetValue("MaxTextLength", out val) && !string.IsNullOrWhiteSpace(val) ? (int.TryParse(val, out int max) ? caption.Substring(0, Math.Min(max, caption.Length)) : caption) : caption.Substring(0, Math.Min(2048, caption.Length));
-
-							string captionText = Util.ReplaceLanguageTagsInString(
-								actualCaption,
-								_referenceLanguage,
-								_scrapMechanicPath
-							);
-
 							// Build lines and calculate their widths while incorporating letter spacing.
-							List<string> lines = new List<string>();
-							List<float> lineWidths = new List<float>();
+							List<string> lines = new();
+							List<float> lineWidths = new();
 
 
 							float currentLineWidth = 0;
 							StringBuilder currentLineBuilder = new();
 
 							int skipNext = 0;
-							bool allowsAllChars = fontData.allowedChars == "ALL CHARACTERS";
-							// Get letter spacing value, if available.
-							float actualFontLetterSpacing = (float)(fontData.letterSpacing ?? 0);
 
 							float widgetWidth = destRect.Right - destRect.Left;
 							float widgetHeight = destRect.Bottom - destRect.Top;
 
-							if (widgetTertiaryData.type == "EditBox" && (!Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "MultiLine", out var ml) || ml != "true"))
-							{
-								captionText = captionText.Replace("\\n", " ");
-							}
-
-							if (widgetTertiaryData.type == "EditBox" && Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "WordWrap", out var ww) && ww == "true")
-							{
-								captionText = WordWrap(captionText, destRect.Width, _baseFontPaint, actualFontLetterSpacing, _screenSizeMultiplier, defaultFontSize, actualFontSize);
-							}
-
 							char prevChar = '\0';
 
-							for (int j = 0; j < captionText.Length; j++)
+							for (int j = 0; j < caption.Length; j++)
 							{
-								char character = captionText[j];
+								char character = caption[j];
 
 								if (skipNext > 0)
 								{
@@ -521,7 +604,7 @@ namespace MyGui.net
 									continue;
 								}
 
-								if (character == '\\' && j + 1 < captionText.Length && captionText[j + 1] == 'n')
+								if (character == '\\' && j + 1 < caption.Length && caption[j + 1] == 'n')
 								{
 									lines.Add(currentLineBuilder.ToString());
 									lineWidths.Add(currentLineWidth);
@@ -533,7 +616,7 @@ namespace MyGui.net
 								}
 								else if (character == '#')
 								{
-									if (j + 1 < captionText.Length && captionText[j + 1] == '#')
+									if (j + 1 < caption.Length && caption[j + 1] == '#')
 									{
 										skipNext = 1;
 									}
@@ -547,7 +630,7 @@ namespace MyGui.net
 								}
 
 								currentLineBuilder.Append(character);
-								float charWidth = _baseFontPaint.MeasureText(allowsAllChars ? character.ToString() : ReplaceInvalidChars(character.ToString(), fontData.allowedChars));
+								float charWidth = _baseFontPaint.MeasureText(character.ToString());
 								float kerningAdjustment = prevChar != '\0'
 									? _baseFontPaint.MeasureText(prevChar.ToString() + character.ToString()) - (_baseFontPaint.MeasureText(prevChar.ToString()) + charWidth)
 									: 0;
@@ -596,7 +679,7 @@ namespace MyGui.net
 							float spacingY = destRect.Top + offsetY - metrics.Top;
 							SKColor runningTextColor = textColor.GetValueOrDefault(Color.White).ToSKColor().WithAlpha((Byte)Math.Clamp(alpha * 255, 0, 255));
 
-							bool hasShadow = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextShadow", out string textShadow) ? textShadow == "true" : false;
+							bool hasShadow = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextShadow", out string textShadow) && textShadow == "true";
 							SKColor? shadowColor = Util.TryGetValueFromMany([widgetTertiaryData.properties, widgetTertiaryDataSkin.defaultProperties], "TextShadowColour", out string textShadowColor) ? Util.ParseColorFromString(textShadowColor, false)?.ToSKColor() : null;
 
 							if (shadowColor == null)
@@ -662,7 +745,7 @@ namespace MyGui.net
 									}
 
 									// Measure current character and compute kerning adjustment.
-									string actualChar = allowsAllChars ? character.ToString() : ReplaceInvalidChars(character.ToString(), fontData.allowedChars);
+									string actualChar = character.ToString();
 									float charWidth = _baseFontPaint.MeasureText(actualChar == " " ? "X" : actualChar);
 									float kerningAdjustment = prevChar != '\0'
 										? _baseFontPaint.MeasureText(prevChar.ToString() + actualChar) - (_baseFontPaint.MeasureText(prevChar.ToString()) + charWidth)

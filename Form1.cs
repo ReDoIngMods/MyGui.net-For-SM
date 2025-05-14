@@ -36,7 +36,7 @@ namespace MyGui.net
 		static Dictionary<string, string> _modUuidPathCache = new(StringComparer.Ordinal);
 		public static Dictionary<string, string> ModUuidPathCache => _modUuidPathCache;
 
-		public static Dictionary<string, Type> _widgetTypeToObjectType = new(8, StringComparer.Ordinal)
+		public static Dictionary<string, Type> WidgetTypeToObjectType = new(8, StringComparer.Ordinal)
 		{
 			{ "TextBox", typeof(MyGuiWidgetDataTextBox) },
 			{ "Button", typeof(MyGuiWidgetDataButton) },
@@ -710,7 +710,7 @@ namespace MyGui.net
 		void UpdateProperties(MyGuiWidgetData widget = null)
 		{
 			widget ??= _currentSelectedWidget;
-			propertyGrid1.SelectedObject = widget == null ? null : new MyGuiWidgetDataWidget(widget).ConvertTo(_widgetTypeToObjectType.TryGetValue(widget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget));
+			propertyGrid1.SelectedObject = widget == null ? null : new MyGuiWidgetDataWidget(widget).ConvertTo(WidgetTypeToObjectType.TryGetValue(widget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget));
 			propertyGrid1.Enabled = widget == _currentSelectedWidget;
 			propertyGrid1.Refresh();
 		}
@@ -2425,8 +2425,7 @@ namespace MyGui.net
 			var property = e.ChangedItem.Parent?.PropertyDescriptor != null ? e.ChangedItem.Parent : e.ChangedItem;
 
 			var value = Util.IsAnyOf<string>(property.Value?.ToString() ?? "", ["[DEFAULT]", "Default", ""]) ? null : property.Value;
-			Type currentWidgetPropertyType = _widgetTypeToObjectType.TryGetValue(_currentSelectedWidget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget);
-			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, (string)Util.GetInheritedFieldValue(currentWidgetPropertyType, property.PropertyDescriptor.Name + "BoundTo"), value, e.OldValue));
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, property.PropertyDescriptor.Name, value, e.OldValue));
 		}
 		private void Form1_ResizeBegin(object sender, EventArgs e)
 		{
