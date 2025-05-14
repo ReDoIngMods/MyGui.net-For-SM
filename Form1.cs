@@ -857,7 +857,7 @@ namespace MyGui.net
 		private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
 		{
 			//DEBUG STOPWATCH HERE!!
-			//Stopwatch stopwatch = Stopwatch.StartNew();
+			//System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
 			_renderWidgetHighligths.Clear();
 			_editorBackgroundColor = Settings.Default.EditorBackgroundColor;
 			_editorBackgroundMode = Settings.Default.EditorBackgroundMode;
@@ -967,7 +967,7 @@ namespace MyGui.net
 				canvas.DrawRect(selectionRect, _surfacePaint);
 			}
 			//stopwatch.Stop();
-			//Debug.WriteLine($"Frame render time: {stopwatch.ElapsedMilliseconds} ms");
+			//System.Diagnostics.Debug.WriteLine($"Frame render time: {stopwatch.ElapsedMilliseconds} ms");
 		}
 
 
@@ -1979,7 +1979,7 @@ namespace MyGui.net
 		{
 			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}{(CommandManager.GetUndoStackCount() > 0 ? "*" : "")}";
 
-			if (ActionHistoryForm.Visible)
+			if (ActionHistoryForm != null && ActionHistoryForm.Visible)
 			{
 				ActionHistoryForm.undoTreeView.SuspendLayout();
 				ActionHistoryForm.redoTreeView.SuspendLayout();
