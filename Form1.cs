@@ -227,10 +227,12 @@ namespace MyGui.net
 				if (!Util.IsValidFile(autoloadPath))
 				{
 					MessageBox.Show("Invalid layout file!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-					return;
 				}
-				_currentLayoutPath = autoloadPath;
-				OpenLayout(_currentLayoutPath);
+				else
+				{
+					_currentLayoutPath = autoloadPath;
+					OpenLayout(_currentLayoutPath);
+				}
 			}
 
 			UpdateViewportBackground();
