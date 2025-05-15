@@ -476,7 +476,7 @@ namespace MyGui.net
 
 								var metrics = _baseFontPaint.FontMetrics;
 								float lineHeight = Math.Abs(metrics.Ascent) + Math.Abs(metrics.Descent);
-								float maxWidth = destRect.Width;
+								float maxWidth = destRect.Width + _baseFontPaint.MeasureText("X");
 								float maxHeight = destRect.Height;
 
 								//split into lines on '\n'
