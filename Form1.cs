@@ -116,7 +116,6 @@ namespace MyGui.net
 		public Form1(string _DefaultOpenedDir = "")
 		{
 			InitializeComponent();
-			viewport.Location = new();
 			DebugConsole.CloseConsoleOnExit(this);
 			HandleLoad(_DefaultOpenedDir);
 			/*float scaleFactor = (float)DeviceDpi / 96f; // Get DPI scale

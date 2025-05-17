@@ -164,7 +164,7 @@ namespace MyGui.net
 			// 
 			viewport.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			viewport.BackColor = SystemColors.ControlDark;
-			viewport.Location = new Point(505, 359);
+			viewport.Location = new Point(0, 0);
 			viewport.Margin = new Padding(0);
 			viewport.Name = "viewport";
 			viewport.Size = new Size(739, 537);
