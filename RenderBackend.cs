@@ -336,6 +336,14 @@ namespace MyGui.net
 			{
 				return; // Nothing to render if essential data is missing
 			}
+			if (widgetSkin == null)
+			{
+				atlasImage = _skinAtlasCache[""];
+				resource = _nullSkinResource;
+				widgetSkin = resource;
+				widgetTertiaryDataSkin = resource;
+				drawColor = _widgetTypeColors.ContainsKey(widget.type) ? _widgetTypeColors[widget.type] : null;
+			}
 
 			//Debug.WriteLine($"Rendering widget with skin {resource.name}.");
 
