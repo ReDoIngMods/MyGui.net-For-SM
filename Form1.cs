@@ -177,6 +177,7 @@ namespace MyGui.net
 			DebugConsole.Log($"Cache Skin Count: {_allResources.Count}", DebugConsole.LogLevels.Info);
 			RenderBackend._allImageResources = resourcesTuple.Item2;
 			DebugConsole.Log($"Cache Image Count: {_allImageResources.Count}", DebugConsole.LogLevels.Info);
+			RenderBackend._skinAtlasCache = new();
 
 			RenderBackend._allFonts = Util.ReadFontData(Settings.Default.ReferenceLanguage, _scrapMechanicPath);
 			RenderBackend._allFonts.Add("DeJaVuSans", new() { allowedChars = "ALL CHARACTERS", name = "DeJaVuSans", source = "DejaVuSans.ttf", size = 7.5f });
