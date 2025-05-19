@@ -437,7 +437,8 @@ namespace MyGui.net
 			{
 				InitialDirectory = Util.ConvertToSystemPath(value.ToString(), Form1.ScrapMechanicPath, Form1.ModUuidPathCache),
 				ShowHiddenFiles = true,
-				DereferenceLinks = false,
+				DereferenceLinks = true,
+				AddToRecent = false
 			};
 
 			string path = "";
