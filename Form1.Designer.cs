@@ -42,6 +42,7 @@ namespace MyGui.net
 			tabPage1Panel = new Panel();
 			propertyGrid1 = new PropertyGrid();
 			tabPage2 = new TabPage();
+			label4 = new Label();
 			label3 = new Label();
 			tabPage3 = new TabPage();
 			layoutMainPanel = new Panel();
@@ -255,6 +256,7 @@ namespace MyGui.net
 			// tabPage2
 			// 
 			tabPage2.BackColor = SystemColors.ControlLightLight;
+			tabPage2.Controls.Add(label4);
 			tabPage2.Controls.Add(label3);
 			tabPage2.Location = new Point(4, 29);
 			tabPage2.Margin = new Padding(0);
@@ -262,6 +264,17 @@ namespace MyGui.net
 			tabPage2.Size = new Size(302, 520);
 			tabPage2.TabIndex = 1;
 			tabPage2.Text = "Widgets";
+			// 
+			// label4
+			// 
+			label4.Dock = DockStyle.Top;
+			label4.Font = new Font("Segoe UI", 9F);
+			label4.Location = new Point(0, 53);
+			label4.Name = "label4";
+			label4.Size = new Size(302, 53);
+			label4.TabIndex = 1;
+			label4.Text = "To create a widget use the CTRL+N shortcut, alternatively right click without moving your cursor and then let go, after that press the New Widget button.";
+			label4.TextAlign = ContentAlignment.MiddleCenter;
 			// 
 			// label3
 			// 
@@ -451,7 +464,7 @@ namespace MyGui.net
 			testToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
 			testToolStripMenuItem.Name = "testToolStripMenuItem";
 			testToolStripMenuItem.Size = new Size(186, 22);
-			testToolStripMenuItem.Text = "Test";
+			testToolStripMenuItem.Text = "Preview";
 			testToolStripMenuItem.Click += testToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator2
@@ -875,5 +888,6 @@ namespace MyGui.net
 		private ToolStripMenuItem centerInLayoutBothToolStripMenuItem;
 		private ToolStripMenuItem duplicateToolStripMenuItem;
 		private ToolStripSeparator toolStripSeparator8;
+		private Label label4;
 	}
 }

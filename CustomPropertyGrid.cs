@@ -335,7 +335,7 @@ namespace MyGui.net
 			else
 			{
 				Form1.SliceForm.SetResults(new(0,0), defaultSize);
-			};
+			}
 			if (Form1.SliceForm.ShowDialog() == DialogResult.OK)
 			{
 				value = Form1.SliceForm.outcome;

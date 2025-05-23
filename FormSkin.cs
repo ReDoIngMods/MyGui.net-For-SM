@@ -167,7 +167,7 @@ namespace MyGui.net
 				skin = selectedItem
 			};
 
-			RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0), forceDebug: showDebugCheckBox.Checked);
+			RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0), null, new(true) { useDebugDraw = showDebugCheckBox.Checked });
 		}
 
 		private void dataGridView1_SelectionChanged(object sender, EventArgs e)

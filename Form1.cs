@@ -17,7 +17,7 @@ namespace MyGui.net
 	//TODO: scaling ratio lock (like when holding Shift in Paint.net, but with customizable ratio, not just 1:1)
 	public partial class Form1 : Form
 	{
-		static List<MyGuiWidgetData> _currentLayout = new();
+		public static List<MyGuiWidgetData> CurrentLayout = new();
 		static string _currentLayoutPath = "";//_ScrapMechanicPath + "\\Data\\Gui\\Layouts\\Inventory\\Inventory.layout";
 		static string _currentLayoutSavePath = "";
 		public static MyGuiWidgetData? _currentSelectedWidget;
@@ -49,7 +49,7 @@ namespace MyGui.net
 			//the rest uses default "Widget" handling
 		};
 
-		static SKBitmap _viewportBackgroundBitmap;
+		public static SKBitmap ViewportBackgroundBitmap;
 		static string _steamUserId;
 		public static string SteamUserId => _steamUserId;
 		#endregion
@@ -112,6 +112,7 @@ namespace MyGui.net
 		public static FormSettings SettingsForm;
 		public static FormFont FontForm;
 		public static FormActionHistory ActionHistoryForm;
+		public static FormTest TestForm;
 
 		public Form1(string _DefaultOpenedDir = "")
 		{
@@ -426,6 +427,8 @@ namespace MyGui.net
 			ActionHistoryForm.Owner = this;
 			SettingsForm = new();
 			SettingsForm.Owner = this;
+			TestForm = new();
+			TestForm.Owner = this;
 
 			if (Settings.Default.MainWindowPos.X == -69420) //Done on first load / settings reset
 			{
@@ -580,7 +583,7 @@ namespace MyGui.net
 			}
 			e.Node.EndEdit(false);
 			ExecuteCommand(new ChangePropertyCommand((MyGuiWidgetData)e.Node.Tag, "Name", e.Label ?? ""));
-			LoadTreeView(_currentLayout);
+			LoadTreeView(CurrentLayout);
 		}
 
 		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -745,7 +748,7 @@ namespace MyGui.net
 				widgetGridSpacingNumericUpDown.Tag = false;
 				if (Settings.Default.EditorBackgroundMode == 1)
 				{
-					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
+					ViewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
 					//mainPanel.BackgroundImage = MakeImageGrid(Properties.Resources.gridPx, _gridSpacing, _gridSpacing);
 				}
 				/*if (_editorProperties.ContainsKey("Position_X"))
@@ -777,10 +780,10 @@ namespace MyGui.net
 			switch (Settings.Default.EditorBackgroundMode)
 			{
 				case 0:
-					_viewportBackgroundBitmap = null;
+					ViewportBackgroundBitmap = null;
 					break;
 				case 1:
-					_viewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
+					ViewportBackgroundBitmap = Util.GenerateGridBitmap(ProjectSize.Width, ProjectSize.Height, _gridSpacing, new(35, 35, 35));
 					break;
 				case 2:
 					if (Util.IsValidFile(Settings.Default.EditorBackgroundImagePath))
@@ -791,7 +794,7 @@ namespace MyGui.net
 						if (Settings.Default.EditorBackgroundImagePath != _prevBackgroundPath || _prevEditorBackgroundMode != 2)
 						{
 							_prevBackgroundPath = Settings.Default.EditorBackgroundImagePath;
-							_viewportBackgroundBitmap = Util.BitmapToSKBitmap((Bitmap)Bitmap.FromFile(Settings.Default.EditorBackgroundImagePath));
+							ViewportBackgroundBitmap = Util.BitmapToSKBitmap((Bitmap)Bitmap.FromFile(Settings.Default.EditorBackgroundImagePath));
 						}
 					}
 					else if (Settings.Default.EditorBackgroundImagePath != "")
@@ -851,9 +854,9 @@ namespace MyGui.net
 			IsAntialias = true
 		};
 
-		private SKPaint _surfacePaint = new SKPaint() { IsAntialias = true };
-		private Color _editorBackgroundColor = Settings.Default.EditorBackgroundColor;
-		private int _editorBackgroundMode = Settings.Default.EditorBackgroundMode;
+		public static SKPaint SurfacePaint = new SKPaint() { IsAntialias = true };
+		public static Color EditorBackgroundColor = Settings.Default.EditorBackgroundColor;
+		public static int EditorBackgroundMode = Settings.Default.EditorBackgroundMode;
 
 		//do NOT tell me performance sucks if you enable ANY Debug.Writeline's in the rendering code - The Red Builder
 		private void viewport_PaintSurface(object sender, SKPaintGLSurfaceEventArgs e)
@@ -861,8 +864,8 @@ namespace MyGui.net
 			//DEBUG STOPWATCH HERE!!
 			//System.Diagnostics.Stopwatch stopwatch = System.Diagnostics.Stopwatch.StartNew();
 			_renderWidgetHighligths.Clear();
-			_editorBackgroundColor = Settings.Default.EditorBackgroundColor;
-			_editorBackgroundMode = Settings.Default.EditorBackgroundMode;
+			EditorBackgroundColor = Settings.Default.EditorBackgroundColor;
+			EditorBackgroundMode = Settings.Default.EditorBackgroundMode;
 
 			if (!_draggingViewport)
 			{
@@ -875,7 +878,7 @@ namespace MyGui.net
 					Point viewportRelPos = viewport.PointToClient(Cursor.Position);
 					SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
 					Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
-					var topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+					var topmostWidget = Util.GetTopmostControlAtPoint(CurrentLayout, viewportPixelPosPoint);
 
 					if (topmostWidget != _currentHoveredWidget)
 					{
@@ -891,7 +894,7 @@ namespace MyGui.net
 			if (_currentHoveredWidget != null && _currentHoveredWidget != _currentSelectedWidget)
 			{
 				SKPoint pos = new();
-				var parents = Util.FindParentTree(_currentHoveredWidget, _currentLayout);
+				var parents = Util.FindParentTree(_currentHoveredWidget, CurrentLayout);
 				if (parents != null)
 				{
 					foreach (var item in parents)
@@ -920,19 +923,19 @@ namespace MyGui.net
 
 			canvas.DrawText(ProjectSize.Width + "x" + ProjectSize.Height, 0, -30, _projectSizeTextPaint);
 
-			_surfacePaint.Color = _editorBackgroundMode != 0 ? SKColors.Black : new SKColor(_editorBackgroundColor.R, _editorBackgroundColor.G, _editorBackgroundColor.B);
-			_surfacePaint.Style = SKPaintStyle.Fill;
-			if (_viewportBackgroundBitmap != null)
+			SurfacePaint.Color = EditorBackgroundMode != 0 ? SKColors.Black : new SKColor(EditorBackgroundColor.R, EditorBackgroundColor.G, EditorBackgroundColor.B);
+			SurfacePaint.Style = SKPaintStyle.Fill;
+			if (ViewportBackgroundBitmap != null)
 			{
-				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), _surfacePaint);
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), SurfacePaint);
 
-				_surfacePaint.FilterQuality = _editorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+				SurfacePaint.FilterQuality = EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 
-				canvas.DrawBitmap(_viewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), _surfacePaint);
+				canvas.DrawBitmap(ViewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), SurfacePaint);
 			}
 			else
 			{
-				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), _surfacePaint);
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), SurfacePaint);
 			}
 			//_renderWidgetHighligths.Clear();
 			int beforeProjectClip = canvas.Save();
@@ -941,7 +944,7 @@ namespace MyGui.net
 			{
 				Debug.WriteLine($"{item.Key}: {item.Value}");
 			}*/
-			foreach (var widget in _currentLayout)
+			foreach (var widget in CurrentLayout)
 			{
 				/*Debug.WriteLine(widget.skin);
 				if (_allResources.TryGetValue(widget.skin, out var valz))
@@ -963,10 +966,10 @@ namespace MyGui.net
 					rect.Right + highlight.Value.width / 2, // Expand right
 					rect.Bottom + highlight.Value.width / 2 // Expand bottom
 				);
-				_surfacePaint.Color = highlight.Value.highlightColor;
-				_surfacePaint.Style = highlight.Value.style;
-				_surfacePaint.StrokeWidth = highlight.Value.width;
-				canvas.DrawRect(selectionRect, _surfacePaint);
+				SurfacePaint.Color = highlight.Value.highlightColor;
+				SurfacePaint.Style = highlight.Value.style;
+				SurfacePaint.StrokeWidth = highlight.Value.width;
+				canvas.DrawRect(selectionRect, SurfacePaint);
 			}
 			//stopwatch.Stop();
 			//System.Diagnostics.Debug.WriteLine($"Frame render time: {stopwatch.ElapsedMilliseconds} ms");
@@ -993,8 +996,8 @@ namespace MyGui.net
 			}
 			else if (e.Button == MouseButtons.Left)
 			{
-				BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, _currentLayout, SelectionBorderSize);
-				MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos);
+				BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, CurrentLayout, SelectionBorderSize);
+				MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(CurrentLayout, viewportPixelPos);
 
 				bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && currWidgetBorder != BorderPosition.None;
 
@@ -1026,7 +1029,7 @@ namespace MyGui.net
 					}
 					else if (e.Clicks > 1)
 					{
-						List<MyGuiWidgetData> controlsAtPoint = Util.GetAllControlsAtPoint(_currentLayout, viewportPixelPos);
+						List<MyGuiWidgetData> controlsAtPoint = Util.GetAllControlsAtPoint(CurrentLayout, viewportPixelPos);
 
 						if (controlsAtPoint.Count > 0)
 						{
@@ -1122,7 +1125,7 @@ namespace MyGui.net
 
 			if (!_draggingViewport && !holdingShift)
 			{
-				topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+				topmostWidget = Util.GetTopmostControlAtPoint(CurrentLayout, viewportPixelPosPoint);
 				topmostWidgetRan = true;
 				if (topmostWidget != _currentHoveredWidget)
 				{
@@ -1152,10 +1155,10 @@ namespace MyGui.net
 			{
 				if (!topmostWidgetRan)
 				{
-					topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+					topmostWidget = Util.GetTopmostControlAtPoint(CurrentLayout, viewportPixelPosPoint);
 					topmostWidgetRan = true;
 				}
-				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPosPoint, _currentLayout, SelectionBorderSize);
+				BorderPosition border = _draggingWidgetAt != BorderPosition.None ? _draggingWidgetAt : Util.DetectBorder(_currentSelectedWidget, viewportPixelPosPoint, CurrentLayout, SelectionBorderSize);
 				//Debug.WriteLine($"BORDER: {border}");
 				if ((border == BorderPosition.Center || border == BorderPosition.None) && (topmostWidget ?? _currentSelectedWidget) != _currentSelectedWidget && !holdingShift)
 				{
@@ -1403,7 +1406,7 @@ namespace MyGui.net
 			{
 				if (!topmostWidgetRan)
 				{
-					topmostWidget = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPosPoint);
+					topmostWidget = Util.GetTopmostControlAtPoint(CurrentLayout, viewportPixelPosPoint);
 					topmostWidgetRan = true;
 				}
 
@@ -1428,7 +1431,7 @@ namespace MyGui.net
 					Point viewportRelPos = e.Location;
 					//Debug.WriteLine($"default: X: {e.Location.X} Y: {e.Location.Y}");
 					Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
-					MyGuiWidgetData? thing = Util.GetTopmostControlAtPoint(_currentLayout, viewportPixelPos);
+					MyGuiWidgetData? thing = Util.GetTopmostControlAtPoint(CurrentLayout, viewportPixelPos);
 					if (_currentSelectedWidget != thing)
 					{
 						_currentSelectedWidget = thing;
@@ -1484,14 +1487,14 @@ namespace MyGui.net
 			_currentSelectedWidget = null;
 			_currentLayoutPath = "";
 			_currentLayoutSavePath = "";
-			_currentLayout = new List<MyGuiWidgetData>();
+			CurrentLayout = new List<MyGuiWidgetData>();
 			_draggingWidgetAt = BorderPosition.None;
 			ProjectSize = Settings.Default.DefaultWorkspaceSize;
 			HandleWidgetSelection();
 			AdjustViewportScrollers();
 			viewport.Refresh();
 
-			LoadTreeView(_currentLayout);
+			LoadTreeView(CurrentLayout);
 		}
 
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1601,7 +1604,7 @@ namespace MyGui.net
 
 			_currentLayoutPath = file;
 			_currentLayoutSavePath = _currentLayoutPath;
-			_currentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize) ?? new();
+			CurrentLayout = Util.ReadLayoutFile(_currentLayoutPath, (Point)ProjectSize) ?? new();
 
 			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}";
 
@@ -1610,7 +1613,7 @@ namespace MyGui.net
 			refreshToolStripMenuItem.Enabled = true;
 			viewport.Refresh();
 
-			LoadTreeView(_currentLayout);
+			LoadTreeView(CurrentLayout);
 			UpdateProperties();
 			DebugConsole.Log("Opened layout \"" + file + "\"", DebugConsole.LogLevels.Success);
 			//Refresh ui
@@ -1658,7 +1661,7 @@ namespace MyGui.net
 				string filePath = !Path.GetFileNameWithoutExtension(_currentLayoutSavePath).EndsWith(Settings.Default.PixelLayoutSuffix) ? Util.AppendToFile(_currentLayoutSavePath, Settings.Default.PixelLayoutSuffix) : _currentLayoutSavePath;
 				using (StreamWriter outputFile = new StreamWriter(filePath))
 				{
-					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
+					outputFile.WriteLine(Util.ExportLayoutToXmlString(CurrentLayout, new Point(1, 1), true));
 				}
 				if (!addedToRecents)
 				{
@@ -1686,7 +1689,7 @@ namespace MyGui.net
 				}
 				using (StreamWriter outputFile = new StreamWriter(actualPath))
 				{
-					outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, (Point)ProjectSize));
+					outputFile.WriteLine(Util.ExportLayoutToXmlString(CurrentLayout, (Point)ProjectSize));
 				}
 				if (!addedToRecents)
 				{
@@ -1741,7 +1744,7 @@ namespace MyGui.net
 					string filePath = actualExport == 3 ? Util.AppendToFile(actualPath, suffix) : actualPath;
 					using (StreamWriter outputFile = new StreamWriter(filePath))
 					{
-						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, new Point(1, 1), true));
+						outputFile.WriteLine(Util.ExportLayoutToXmlString(CurrentLayout, new Point(1, 1), true));
 					}
 					if (!addedToRecents)
 					{
@@ -1754,7 +1757,7 @@ namespace MyGui.net
 				{
 					using (StreamWriter outputFile = new StreamWriter(actualPath))
 					{
-						outputFile.WriteLine(Util.ExportLayoutToXmlString(_currentLayout, (Point)ProjectSize));
+						outputFile.WriteLine(Util.ExportLayoutToXmlString(CurrentLayout, (Point)ProjectSize));
 					}
 					if (!addedToRecents)
 					{
@@ -1775,7 +1778,7 @@ namespace MyGui.net
 
 		private void testToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-
+			TestForm.Show();
 		}
 
 		private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2048,7 +2051,7 @@ namespace MyGui.net
 				return;
 			}
 
-			LoadTreeView(_currentLayout);
+			LoadTreeView(CurrentLayout);
 
 			undoToolStripMenuItem.Enabled = CommandManager.GetUndoStackCount() > 0;
 			redoToolStripMenuItem.Enabled = CommandManager.GetRedoStackCount() > 0;
@@ -2127,7 +2130,7 @@ namespace MyGui.net
 					}
 					Clipboard.SetText(Util.ExportLayoutToXmlString(myGuiWidgetDatas, new Point(1, 1), true, false), TextDataFormat.Text);
 
-					ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, _currentLayout));
+					ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, CurrentLayout));
 					_currentSelectedWidget = null;
 					HandleWidgetSelection();
 
@@ -2184,7 +2187,7 @@ namespace MyGui.net
 							// Convert cursor position to local coordinates
 							Point viewportRelPos = viewport.PointToClient(Cursor.Position);
 							var newPos = Util.TransformPointToLocal(
-								_currentLayout,
+								CurrentLayout,
 								widgetToPasteInto,
 								new Point(
 									(int)(viewportRelPos.X / _viewportScale - _viewportOffset.X),
@@ -2200,7 +2203,7 @@ namespace MyGui.net
 							foreach (var widget in parsedLayout)
 							{
 								widget.position.Offset(diffPos);
-								actions.Add(new CreateControlCommand(widget, widgetToPasteInto, _currentLayout));
+								actions.Add(new CreateControlCommand(widget, widgetToPasteInto, CurrentLayout));
 							}
 
 							ExecuteCommand(new CompoundCommand(actions), "Paste");
@@ -2235,7 +2238,7 @@ namespace MyGui.net
 					// Convert cursor position to local coordinates
 					Point viewportRelPos = viewport.PointToClient(Cursor.Position);
 					var newPos = Util.TransformPointToLocal(
-						_currentLayout,
+						CurrentLayout,
 						widgetToPasteInto,
 						new Point(
 							(int)(viewportRelPos.X / _viewportScale - _viewportOffset.X),
@@ -2245,7 +2248,7 @@ namespace MyGui.net
 
 					parsedLayout[0].position = newPos;
 
-					ExecuteCommand(new CreateControlCommand(parsedLayout[0], widgetToPasteInto, _currentLayout));
+					ExecuteCommand(new CreateControlCommand(parsedLayout[0], widgetToPasteInto, CurrentLayout));
 				}
 
 
@@ -2277,7 +2280,7 @@ namespace MyGui.net
 					}
 					if (e.KeyCode == Keys.Delete)
 					{
-						ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, _currentLayout));
+						ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, CurrentLayout));
 						_currentSelectedWidget = null;
 						HandleWidgetSelection();
 						this.ActiveControl = null;
@@ -2472,7 +2475,7 @@ namespace MyGui.net
 
 			if (inLayout)
 			{
-				var parentTree = Util.FindParentTree(widget, _currentLayout);
+				var parentTree = Util.FindParentTree(widget, CurrentLayout);
 				var layoutCenter = new Size(ProjectSize.Width / 2, ProjectSize.Height / 2);
 				Point offset = new();
 

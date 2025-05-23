@@ -1,12 +1,8 @@
 ﻿using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
-using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
-using System.Drawing.Imaging;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Web;
 using static MyGui.net.Util;
 
 namespace MyGui.net
@@ -57,6 +53,41 @@ namespace MyGui.net
 			}
 		}
 
+		public class RenderOptions
+		{
+			public MyGuiWidgetData? widgetSecondaryData = null;
+			public MyGuiWidgetData? widgetTertiaryData = null;
+
+			public bool adjustToParent = false;
+			public Point? oldSize = null;
+
+			public bool useDebugDraw = false;
+			public bool renderInvisibleSkinWidgets = false;
+			public bool applyVisibilityProperty = false;
+			public bool renderWidgetNames = false;
+
+			public bool useViewportAntiAliasing;
+			public bool useViewportFontAntiAliasing;
+			public float screenSizeMultiplier;
+			public SKFilterQuality filterQuality;
+
+			public bool doHighlights = true;
+
+			public RenderOptions(bool useDefaults = false)
+			{
+				if (useDefaults)
+				{
+					renderWidgetNames = Settings.Default.RenderWidgetNames;
+					renderInvisibleSkinWidgets = Settings.Default.RenderInvisibleWidgets;
+
+					useViewportAntiAliasing = Settings.Default.UseViewportAntiAliasing;
+					useViewportFontAntiAliasing = Settings.Default.UseViewportFontAntiAliasing;
+					screenSizeMultiplier = 1 + Settings.Default.ReferenceResolution * 0.5f;
+					filterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+				}
+			}
+		}
+
 		/// <summary>
 		/// Repositions and adjusts Widgets to be rendered by calling RenderWidget.
 		/// </summary>
@@ -64,20 +95,31 @@ namespace MyGui.net
 		/// <param name="widget">Witget to render</param>
 		/// <param name="parentOffset">Parent tree offset</param>
 		/// <param name="parent">Parent Widget</param>
-		/// <param name="widgetSecondaryData">Widget, from which other data should be pulled</param>
-		/// <param name="adjustToParent">Enabled automatically when rendering a ResourceLayout</param>
-		/// <param name="oldSize">Original size, used to render ResourceLayout skins</param>
-		/// <param name="widgetTertiaryData">Widget, from which other, less important, data should be pulled</param>
-		/// <param name="forceDebug">Forces debug drawing of slices and all</param>
-		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, MyGuiWidgetData? widgetSecondaryData = null, bool adjustToParent = false, Point? oldSize = null, MyGuiWidgetData? widgetTertiaryData = null, bool forceDebug = false)
+		/// <param name="renderOptionsIn">Render options</param>
+		public static void DrawWidget(SKCanvas canvas, MyGuiWidgetData widget, SKPoint parentOffset, MyGuiWidgetData? parent = null, RenderOptions? renderOptionsIn = null)
 		{
-			_renderInvisibleWidgets = Settings.Default.RenderInvisibleWidgets;
-			_useViewportAntiAliasing = Settings.Default.UseViewportAntiAliasing;
-			_useViewportFontAntiAliasing = Settings.Default.UseViewportFontAntiAliasing;
-			_screenSizeMultiplier = 1 + Settings.Default.ReferenceResolution * 0.5f;
-			_filterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
+			RenderOptions renderOptions = renderOptionsIn ?? new(true);
+
+			MyGuiWidgetData widgetSecondaryData = renderOptions.widgetSecondaryData ?? widget;
+			MyGuiWidgetData widgetTertiaryData = renderOptions.widgetTertiaryData ?? widgetSecondaryData;
+
+			if (renderOptions.applyVisibilityProperty && widgetTertiaryData.properties.TryGetValue("Visible", out string visVal) && visVal == "false")
+			{
+				return;
+			}
+
+			_renderInvisibleWidgets = renderOptions.renderInvisibleSkinWidgets;
+			_useViewportAntiAliasing = renderOptions.useViewportAntiAliasing;
+			_useViewportFontAntiAliasing = renderOptions.useViewportFontAntiAliasing;
+			_screenSizeMultiplier = renderOptions.screenSizeMultiplier;
+			_filterQuality = renderOptions.filterQuality;
 			_scrapMechanicPath = Settings.Default.ScrapMechanicPath;
 			_referenceLanguage = Settings.Default.ReferenceLanguage;
+
+			Point? oldSize = renderOptions.oldSize != null ? new(renderOptions.oldSize.Value.X, renderOptions.oldSize.Value.Y) : null;
+
+			bool adjustToParent = renderOptions.adjustToParent;
+			bool forceDebug = renderOptions.useDebugDraw;
 
 			Point oldSizeParam = new(widget.size.X, widget.size.Y);
 
@@ -120,7 +162,14 @@ namespace MyGui.net
 				var subWidget = layoutCopy[0];
 				subWidget.position = new(0, 0);
 
-				DrawWidget(canvas, subWidget, widgetPosition, widget, widget, true, new Point(subWidget.size.X, subWidget.size.Y), widgetSecondaryData != null ? widgetSecondaryData : widget, forceDebug);
+				var resourceRenderOptions = ShallowCopy(renderOptions);
+
+				resourceRenderOptions.widgetSecondaryData = widget;
+				resourceRenderOptions.widgetTertiaryData = widgetSecondaryData != null ? widgetSecondaryData : widget;
+				resourceRenderOptions.adjustToParent = true;
+				resourceRenderOptions.oldSize = new Point(subWidget.size.X, subWidget.size.Y);
+
+				DrawWidget(canvas, subWidget, widgetPosition, widget, resourceRenderOptions);
 				//}
 			}
 			string skinPath = widget.skin != null && _allResources.TryGetValue(widget.skin, out MyGuiResource sPRes) ? sPRes?.path : "";
@@ -158,39 +207,40 @@ namespace MyGui.net
 				RenderWidget(canvas, _skinAtlasCache[""], fallbackResource ?? _nullSkinResource, rect, debugColor, widget, widgetSecondaryData, widgetTertiaryData, forceDebug);
 			}
 
-			// Draw the widget's name (optional)
+			
 			if (!adjustToParent)
 			{
+				if (renderOptions.doHighlights) {
+					var selfHighlights = _renderWidgetHighligths.Where(item => item.Key == widget && !item.Value.ignoreDrawOrder);
 
-				var selfHighlights = _renderWidgetHighligths.Where(item => item.Key == widget && !item.Value.ignoreDrawOrder);
-
-				if (selfHighlights != null && selfHighlights.Any())
-				{
-					foreach (var highlight in selfHighlights)
+					if (selfHighlights != null && selfHighlights.Any())
 					{
-						var rect2 = new SKRect(highlight.Value.position.X, highlight.Value.position.Y,
-										  highlight.Value.position.X + highlight.Key.size.X, highlight.Value.position.Y + highlight.Key.size.Y);
-						// Draw selection highlight without any clipping
-						var selectionRect = new SKRect(
-							rect2.Left - highlight.Value.width / 2,  // Expand left
-							rect2.Top - highlight.Value.width / 2,   // Expand top
-							rect2.Right + highlight.Value.width / 2, // Expand right
-							rect2.Bottom + highlight.Value.width / 2 // Expand bottom
-						);
-						var highlightPaint = new SKPaint
+						foreach (var highlight in selfHighlights)
 						{
-							Color = highlight.Value.highlightColor, // Semi-transparent green for highlight
-							Style = highlight.Value.style,
-							StrokeWidth = highlight.Value.width,
-							IsAntialias = true
-						};
-						canvas.DrawRect(selectionRect, highlightPaint);
-						_renderWidgetHighligths.Remove(widget);
+							var rect2 = new SKRect(highlight.Value.position.X, highlight.Value.position.Y,
+											  highlight.Value.position.X + highlight.Key.size.X, highlight.Value.position.Y + highlight.Key.size.Y);
+							// Draw selection highlight without any clipping
+							var selectionRect = new SKRect(
+								rect2.Left - highlight.Value.width / 2,  // Expand left
+								rect2.Top - highlight.Value.width / 2,   // Expand top
+								rect2.Right + highlight.Value.width / 2, // Expand right
+								rect2.Bottom + highlight.Value.width / 2 // Expand bottom
+							);
+							var highlightPaint = new SKPaint
+							{
+								Color = highlight.Value.highlightColor, // Semi-transparent green for highlight
+								Style = highlight.Value.style,
+								StrokeWidth = highlight.Value.width,
+								IsAntialias = true
+							};
+							canvas.DrawRect(selectionRect, highlightPaint);
+							_renderWidgetHighligths.Remove(widget);
+						}
 					}
 				}
 
-
-				if (Settings.Default.RenderWidgetNames && !string.IsNullOrEmpty(widget.name))
+				// Draw the widget's name (optional)
+				if (renderOptions.renderWidgetNames && !string.IsNullOrEmpty(widget.name))
 				{
 					var textPaint = new SKPaint
 					{
@@ -206,7 +256,7 @@ namespace MyGui.net
 					canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
 				}
 
-				// Temporarily ignore clipping to draw selection box
+				//selection box
 				if (widget == Form1._currentSelectedWidget)
 				{
 					_renderWidgetHighligths[widget] = new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128), null, Form1.SelectionBorderSize);
@@ -227,7 +277,8 @@ namespace MyGui.net
 			{
 				var widgetBounds = new SKRect(widgetPosition.X - 1, widgetPosition.Y - 1,
 							  widgetPosition.X + widget.size.X - 2, widgetPosition.Y + widget.size.Y - 2);
-				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget, widgetSecondaryData, adjustToParent, oldSizeParam, widgetTertiaryData);
+				renderOptions.oldSize = oldSizeParam;
+				if (canvas.LocalClipBounds.IntersectsWith(widgetBounds)) DrawWidget(canvas, child, widgetPosition, widget, renderOptions);
 			}
 
 			// Restore the canvas to its previous state (removes clipping for this widget)
