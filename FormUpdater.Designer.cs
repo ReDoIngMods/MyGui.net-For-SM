@@ -1,6 +1,6 @@
-﻿using MyGui.NET.Properties;
+﻿using MyGui.net.Properties;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	partial class FormUpdater
 	{

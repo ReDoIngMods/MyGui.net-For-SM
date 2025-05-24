@@ -1,7 +1,7 @@
-﻿using MyGui.NET.Properties;
+﻿using MyGui.net.Properties;
 using System.Data;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public partial class FormInterfaceTag : Form
 	{

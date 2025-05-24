@@ -1,9 +1,9 @@
-﻿using MyGui.NET.Properties;
+﻿using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.Data;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public partial class FormFont : Form
 	{

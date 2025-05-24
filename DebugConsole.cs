@@ -1,9 +1,9 @@
-﻿using MyGui.NET.Properties;
+﻿using MyGui.net.Properties;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	internal class DebugConsole
 	{
@@ -46,7 +46,7 @@ namespace MyGui.NET
 				Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
 				Console.SetIn(new StreamReader(Console.OpenStandardInput()));
 
-				Console.Title = "MyGui.NET Debug Console";
+				Console.Title = "MyGui.net Debug Console";
 				Console.CursorVisible = false;
 
 				// Redirect Debug and Trace output

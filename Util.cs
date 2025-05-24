@@ -12,10 +12,10 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Security.Principal;
-using MyGui.NET.Properties;
+using MyGui.net.Properties;
 using System.CodeDom.Compiler;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 
 	public class UpdateInfo
@@ -28,7 +28,7 @@ namespace MyGui.NET
 	static class Util
 	{
 		public static string programVersion = Application.ProductVersion.Substring(0, Application.ProductVersion.IndexOf('+'));
-		public static string programName = "MyGui.NET " + programVersion;
+		public static string programName = "MyGui.net " + programVersion;
 		#region Steam Utils
 		public static string? GetSteamInstallPath()
 		{
@@ -696,7 +696,7 @@ namespace MyGui.NET
 		{
 			if (path.StartsWith("res:")) // Check for the resource prefix
 			{
-				string resourceName = "MyGui.NET." + path.Substring(4);
+				string resourceName = "MyGui.net." + path.Substring(4);
 				return LoadBitmapFromResource(resourceName);
 			}
 			else
@@ -1708,7 +1708,7 @@ namespace MyGui.NET
 		}
 		#endregion
 
-		#region MyGui.NET-ified WinForms Utils
+		#region MyGui.Net-ified WinForms Utils
 
 		public static ColorPickerDialog NewFixedColorPickerDialog(bool doAlpha = false)
 		{
@@ -2130,14 +2130,14 @@ namespace MyGui.NET
 
 		public static  async Task<UpdateInfo> CheckForUpdateAsync(string bearerToken = "")
 		{
-			httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.NET");
+			httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.net");
 			httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearerToken);
 			httpClient.DefaultRequestHeaders.Accept.Clear();
 
 			string json = "";
 			try
 			{
-				json = await httpClient.GetStringAsync("https://api.github.com/repos/ReDoIngMods/MyGui.NET-For-SM/releases/latest");
+				json = await httpClient.GetStringAsync("https://api.github.com/repos/ReDoIngMods/MyGui.net-For-SM/releases/latest");
 			}
 			catch (Exception)
 			{
@@ -2157,8 +2157,8 @@ namespace MyGui.NET
 				string downloadUrl = doc.RootElement.GetProperty("assets")
 				.EnumerateArray()
 				.Where(a =>
-					isSelfContained ? a.GetProperty("name").GetString().Contains("MyGui.NET-Standalone") : //Framework independent zip name
-										a.GetProperty("name").GetString().Contains("MyGui.NET-Framework-Dependant") //Framework dependent zip name
+					isSelfContained ? a.GetProperty("name").GetString().Contains("MyGui.Net-Standalone") : //Framework independent zip name
+										a.GetProperty("name").GetString().Contains("MyGui.Net-Framework-Dependant") //Framework dependent zip name
 				)
 				.Select(a => a.GetProperty("url").GetString())
 				.FirstOrDefault() ?? string.Empty;

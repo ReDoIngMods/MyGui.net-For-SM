@@ -1,8 +1,8 @@
-﻿using MyGui.NET.Properties;
+﻿using MyGui.net.Properties;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public partial class FormUpdater : Form
 	{
@@ -40,7 +40,7 @@ namespace MyGui.NET
 
 		private async Task DownloadFileAsync(string url, string destinationPath, string bearerToken, CancellationTokenSource cts)
 		{
-			Util.httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.NET");
+			Util.httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.net");
 			Util.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 			Util.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
 
@@ -53,7 +53,7 @@ namespace MyGui.NET
 					response.EnsureSuccessStatusCode();
 
 
-					label1.Text = "Updating MyGui.NET...";
+					label1.Text = "Updating MyGui.net...";
 					// Get the actual content length from the headers
 					long? totalBytes = response.Content.Headers.ContentLength;
 
@@ -146,7 +146,7 @@ echo Update completed successfully!
 timeout /t 3
 
 :: Relaunch MyGui.exe from the parent directory
-start """" ""%~dp1MyGui.NET.exe""
+start """" ""%~dp1MyGui.net.exe""
 
 :: Delete the .bat file and the .zip file after the update
 del ""%zipFile%""

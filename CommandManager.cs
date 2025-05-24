@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public class CommandManager
     {

@@ -1,4 +1,4 @@
-﻿namespace MyGui.NET
+﻿namespace MyGui.net
 {
     using System;
     using System.Windows.Forms;

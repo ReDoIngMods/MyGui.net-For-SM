@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public partial class FormActionHistory : Form
 	{

@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <StartupObject>MyGui.NET.Program</StartupObject>
-    <ApplicationIcon>MyGui.NET_Icon.ico</ApplicationIcon>
+    <StartupObject>MyGui.net.Program</StartupObject>
+    <ApplicationIcon>MyGUI.net_Icon.ico</ApplicationIcon>
 	<!--<RuntimeIdentifier>win-x86</RuntimeIdentifier>-->
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
   </PropertyGroup>
@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="MyGui.NET_Icon.ico" />
+    <Content Include="MyGUI.net_Icon.ico" />
   </ItemGroup>
 
   <ItemGroup>

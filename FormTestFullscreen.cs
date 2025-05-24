@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.ComponentModel;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public partial class FormTestFullscreen : Form
 	{

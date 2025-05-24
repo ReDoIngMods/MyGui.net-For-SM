@@ -1,4 +1,4 @@
-﻿namespace MyGui.NET
+﻿namespace MyGui.net
 {
     partial class FormSettings
     {
@@ -860,7 +860,7 @@
 			// 
 			// buttonAddLayoutToCreate
 			// 
-			buttonAddLayoutToCreate.AccessibleDescription = "Associate .layout files with MyGui.NET, won't override user's choice if they already have a program that opens .layout files.";
+			buttonAddLayoutToCreate.AccessibleDescription = "Associate .layout files with MyGui.net, won't override user's choice if they already have a program that opens .layout files.";
 			buttonAddLayoutToCreate.Enabled = false;
 			buttonAddLayoutToCreate.FlatStyle = FlatStyle.System;
 			buttonAddLayoutToCreate.Location = new Point(6, 157);
@@ -873,7 +873,7 @@
 			// 
 			// buttonAddToDesktop
 			// 
-			buttonAddToDesktop.AccessibleDescription = "Add a shortcut to MyGui.NET to current user's desktop.";
+			buttonAddToDesktop.AccessibleDescription = "Add a shortcut to MyGui.net to current user's desktop.";
 			buttonAddToDesktop.FlatStyle = FlatStyle.System;
 			buttonAddToDesktop.Location = new Point(6, 22);
 			buttonAddToDesktop.Name = "buttonAddToDesktop";
@@ -885,7 +885,7 @@
 			// 
 			// buttonAssociateWithFiles
 			// 
-			buttonAssociateWithFiles.AccessibleDescription = "Associate .layout files with MyGui.NET, won't override user's choice if they already have a program that opens .layout files.";
+			buttonAssociateWithFiles.AccessibleDescription = "Associate .layout files with MyGui.net, won't override user's choice if they already have a program that opens .layout files.";
 			buttonAssociateWithFiles.FlatStyle = FlatStyle.System;
 			buttonAssociateWithFiles.Location = new Point(6, 128);
 			buttonAssociateWithFiles.Name = "buttonAssociateWithFiles";
@@ -897,7 +897,7 @@
 			// 
 			// buttonRestartAdmin
 			// 
-			buttonRestartAdmin.AccessibleDescription = "Restart MyGui.NET with admin privileges.";
+			buttonRestartAdmin.AccessibleDescription = "Restart MyGui.net with admin privileges.";
 			buttonRestartAdmin.FlatStyle = FlatStyle.System;
 			buttonRestartAdmin.Location = new Point(6, 99);
 			buttonRestartAdmin.Name = "buttonRestartAdmin";
@@ -918,7 +918,7 @@
 			// 
 			// buttonAddToStart
 			// 
-			buttonAddToStart.AccessibleDescription = "Add a shortcut to MyGui.NET to current user's start menu.";
+			buttonAddToStart.AccessibleDescription = "Add a shortcut to MyGui.net to current user's start menu.";
 			buttonAddToStart.FlatStyle = FlatStyle.System;
 			buttonAddToStart.Location = new Point(6, 51);
 			buttonAddToStart.Name = "buttonAddToStart";
@@ -1297,7 +1297,7 @@
 			// 
 			// currentVersionLabel
 			// 
-			currentVersionLabel.AccessibleDescription = "Current MyGui.NET version";
+			currentVersionLabel.AccessibleDescription = "Current MyGui.net version";
 			currentVersionLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			currentVersionLabel.Location = new Point(6, 19);
 			currentVersionLabel.Name = "currentVersionLabel";
@@ -1346,14 +1346,14 @@
 			// 
 			// gitHubRepoButton
 			// 
-			gitHubRepoButton.AccessibleDescription = "Open the MyGui.NET GitHub repository in a web browser.";
+			gitHubRepoButton.AccessibleDescription = "Open the MyGui.net GitHub repository in a web browser.";
 			gitHubRepoButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			gitHubRepoButton.FlatStyle = FlatStyle.System;
 			gitHubRepoButton.Location = new Point(96, 298);
 			gitHubRepoButton.Name = "gitHubRepoButton";
 			gitHubRepoButton.Size = new Size(464, 23);
 			gitHubRepoButton.TabIndex = 4;
-			gitHubRepoButton.Text = "Visit MyGui.NET Repository";
+			gitHubRepoButton.Text = "Visit MyGui.net Repository";
 			gitHubRepoButton.UseVisualStyleBackColor = true;
 			gitHubRepoButton.Click += gitHubRepoButton_Click;
 			// 

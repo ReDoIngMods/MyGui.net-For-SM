@@ -1,8 +1,8 @@
-﻿using MyGui.NET.Properties;
+﻿using MyGui.net.Properties;
 using SkiaSharp;
 using System.Data;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public partial class FormSkin : Form
 	{

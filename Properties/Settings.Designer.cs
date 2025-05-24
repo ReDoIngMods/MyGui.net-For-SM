@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MyGui.NET.Properties {
+namespace MyGui.net.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

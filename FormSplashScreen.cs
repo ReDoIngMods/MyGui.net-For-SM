@@ -1,8 +1,8 @@
-﻿using MyGui.NET.Properties;
+﻿using MyGui.net.Properties;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public partial class FormSplashScreen : Form
 	{

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public class CustomSettingsProvider : SettingsProvider
 	{
@@ -28,7 +28,7 @@ namespace MyGui.NET
 			get
 			{
 				string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-				string appFolder = Path.Combine(appData, "ReDoIng Mods/MyGui.NET");
+				string appFolder = Path.Combine(appData, "ReDoIng Mods/MyGui.net");
 				Directory.CreateDirectory(appFolder);
 
 				return Path.Combine(appFolder, "user.config");
@@ -87,7 +87,7 @@ namespace MyGui.NET
 
 }
 
-namespace MyGui.NET.Properties
+namespace MyGui.net.Properties
 {
 	// This adds the SettingsProvider attribute to the Settings class, because Microsoft didnt give a shit and made unneccessarily complex to implement, i hate this...
 	[SettingsProvider(typeof(CustomSettingsProvider))]

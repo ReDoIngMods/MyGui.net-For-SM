@@ -1,11 +1,11 @@
-﻿using MyGui.NET.Properties;
+﻿using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.Text;
 using System.Text.RegularExpressions;
-using static MyGui.NET.Util;
+using static MyGui.net.Util;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	public static class RenderBackend
 	{

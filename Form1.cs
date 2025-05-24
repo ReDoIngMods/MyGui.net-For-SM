@@ -1,12 +1,12 @@
-using MyGui.NET.Properties;
+using MyGui.net.Properties;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.ComponentModel;
 using System.Xml.Linq;
-using static MyGui.NET.Util;
-using static MyGui.NET.RenderBackend;
+using static MyGui.net.Util;
+using static MyGui.net.RenderBackend;
 
-namespace MyGui.NET
+namespace MyGui.net
 {
 	//TODO: Add an undo/redo history window
 	//TODO: holding shift while using arrows ignores grid and control scales
@@ -167,7 +167,7 @@ namespace MyGui.NET
 
 			if (initial)
 			{
-				DebugConsole.Log("Starting MyGui.NET with " + ((_currentLayoutPath ?? "") != "" ? $"autoload path: \"{_currentLayoutPath}\"" : "an empty project"), DebugConsole.LogLevels.Success);
+				DebugConsole.Log("Starting MyGui.net with " + ((_currentLayoutPath ?? "") != "" ? $"autoload path: \"{_currentLayoutPath}\"" : "an empty project"), DebugConsole.LogLevels.Success);
 			}
 
 			DebugConsole.Log((initial ? "Loading" : "Reloading") + " Cache...", DebugConsole.LogLevels.Warning);
