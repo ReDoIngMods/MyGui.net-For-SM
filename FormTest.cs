@@ -1,4 +1,4 @@
-﻿using MyGui.net.Properties;
+﻿using MyGui.NET.Properties;
 using SkiaSharp.Views.Desktop;
 using SkiaSharp;
 using System;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
 	public partial class FormTest : Form
 	{

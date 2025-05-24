@@ -3,7 +3,7 @@ using SkiaSharp;
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
 	public partial class FormTextEditor : Form
 	{

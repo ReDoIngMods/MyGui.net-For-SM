@@ -1,9 +1,9 @@
-﻿using MyGui.net.Properties;
+﻿using MyGui.NET.Properties;
 using SkiaSharp;
 using System.Data;
 using System.Windows.Forms;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
 	public partial class FormSlicer : Form
 	{

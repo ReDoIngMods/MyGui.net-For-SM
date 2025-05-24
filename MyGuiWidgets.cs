@@ -5,7 +5,7 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.Text.Json.Serialization;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
 
 	public class ObservableList<T> : ObservableCollection<T>, IList<T>
@@ -509,7 +509,7 @@ namespace MyGui.net
 		#region Backend Functions
 		public MyGuiWidgetDataWidget ConvertTo(string targetType)
 		{
-			return ConvertTo(System.Type.GetType("MyGui.net." + targetType, true));
+			return ConvertTo(System.Type.GetType("MyGui.NET." + targetType, true));
 		}
 
 		public MyGuiWidgetDataWidget ConvertTo(Type targetType)

@@ -1,13 +1,14 @@
 ﻿using Cyotek.Windows.Forms;
 using Microsoft.Win32;
-using MyGui.net.Properties;
+using MyGui.NET.Properties;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
 	public partial class FormSettings : Form
 	{
@@ -98,6 +99,7 @@ namespace MyGui.net
 			//Add to start menu
 			buttonRestartAdmin.Enabled = !runningAsAdmin;
 			buttonAssociateWithFiles.Enabled = runningAsAdmin;
+			buttonAddLayoutToCreate.Enabled = runningAsAdmin;
 			#endregion
 
 			#region Tab Debug
@@ -110,11 +112,11 @@ namespace MyGui.net
 
 			#region Tab Version
 			autoUpdateCheckCheckBox.Checked = _setDef.AutoCheckUpdate;
-			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(((bool?)AppContext.GetData("IsSelfContained") ?? false) ? "MyGui.Net-Standalone" : "MyGui.Net-Framework-Dependant")}";
+			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(((bool?)AppContext.GetData("IsSelfContained") ?? false) ? "MyGui.NET-Standalone" : "MyGui.NET-Framework-Dependant")}";
 			#endregion
 
 			#region Tab About
-			aboutTextBox.Text = $"MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
+			aboutTextBox.Text = $"MyGui.NET is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
 			#endregion
 
 			_formLoaded = true;
@@ -541,7 +543,7 @@ namespace MyGui.net
 		{
 			try
 			{
-				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReDoIng Mods/MyGui.net");
+				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReDoIng Mods/MyGui.NET");
 
 				// Open the folder using Process.Start
 				if (userConfigDirectory != null && Directory.Exists(userConfigDirectory))
@@ -588,14 +590,14 @@ namespace MyGui.net
 
 		private void buttonAddToDesktop_Click(object sender, EventArgs e)
 		{
-			CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "MyGui.net.lnk"), Application.ExecutablePath);
+			CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "MyGui.NET.lnk"), Application.ExecutablePath);
 		}
 
 		private void buttonAddToStart_Click(object sender, EventArgs e)
 		{
 			string startMenuFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "ReDoIng Mods");
 			Directory.CreateDirectory(startMenuFolder);
-			CreateShortcut(Path.Combine(startMenuFolder, "MyGui.net.lnk"), Application.ExecutablePath);
+			CreateShortcut(Path.Combine(startMenuFolder, "MyGui.NET.lnk"), Application.ExecutablePath);
 		}
 
 		private void buttonRestartAdmin_Click(object sender, EventArgs e)
@@ -626,6 +628,8 @@ namespace MyGui.net
 
 		}
 
+		public const string progId = "MyGuiDotNet.LayoutFile";
+
 		[System.Runtime.InteropServices.DllImport("shell32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
 		private static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);
 		private void buttonAssociateWithFiles_Click(object sender, EventArgs e)
@@ -635,17 +639,11 @@ namespace MyGui.net
 				// Path to the current executable
 				string appPath = Application.ExecutablePath;
 
-				// File extension
-				string fileExtension = ".layout";
-
-				// ProgID (Program Identifier)
-				string progId = "MyGuiDotNet.LayoutFile";
-
 				// Create or update the file extension key
-				using (var extKey = Registry.ClassesRoot.CreateSubKey(fileExtension))
+				using (var extKey = Registry.ClassesRoot.CreateSubKey(".layout"))
 				{
 					if (extKey == null)
-						throw new Exception($"Failed to create registry key for {fileExtension}");
+						throw new Exception($"Failed to create registry key for .layout");
 
 					extKey.SetValue("", progId); // Link the extension with the ProgID
 				}
@@ -684,13 +682,70 @@ namespace MyGui.net
 
 				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
 
-				MessageBox.Show(".layout files have been successfully associated. If you already set an app for opening .layout files, you need to go to the Open With menu and set MyGui.net as default (should be on top of the list and labeled as New).",
+				MessageBox.Show(".layout files have been successfully associated. If you already set an app for opening .layout files, you need to go to the Open With menu and set MyGui.NET as default (should be on top of the list and labeled as New).",
 								"Association Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			catch (Exception ex)
 			{
 				MessageBox.Show($"Failed to associate .layout files.\nError: {ex.Message}",
 								"Association Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+
+		private void buttonAddLayoutToCreate_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				string appPath = Application.ExecutablePath;
+				string fileExtension = ".layout";
+				string defaultXml = "<MyGUI type=\"Layout\" version=\"3.2.0\">\n</MyGUI>";
+
+				byte[] xmlBytes = Encoding.UTF8.GetBytes(defaultXml);
+
+				// Ensure .layout extension points to the ProgID
+				using (var extKey = Registry.ClassesRoot.CreateSubKey(fileExtension))
+				{
+					if (extKey == null)
+						throw new Exception($"Failed to create registry key for {fileExtension}");
+
+					extKey.SetValue("", progId);
+
+					// Create ShellNew under .layout
+					using (var shellNew = extKey.CreateSubKey("ShellNew"))
+					{
+						if (shellNew == null)
+							throw new Exception($"Failed to create ShellNew key under {fileExtension}");
+
+						shellNew.SetValue("Data", xmlBytes, RegistryValueKind.Binary);
+					}
+				}
+
+				// Set up ProgID if not already done
+				using (var progKey = Registry.ClassesRoot.CreateSubKey(progId))
+				{
+					if (progKey == null)
+						throw new Exception($"Failed to create registry key for {progId}");
+
+					progKey.SetValue("", "SM Layout File");
+
+					using (var iconKey = progKey.CreateSubKey("DefaultIcon"))
+						iconKey?.SetValue("", $"{appPath},0");
+
+					using (var openCmd = progKey.CreateSubKey(@"shell\open\command"))
+						openCmd?.SetValue("", $"\"{appPath}\" \"%1\"");
+				}
+
+				// Notify Explorer of changes
+				const int SHCNE_ASSOCCHANGED = 0x8000000;
+				const int SHCNF_IDLIST = 0x0;
+				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
+
+				MessageBox.Show(".layout is now available in the New File menu.", "New Menu Addition Successful", MessageBoxButtons.OK, MessageBoxIcon.Information); ;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show($"Failed to add .layout files to New Menu.\nError: {ex.Message}",
+								"Registry Update Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
 		}
 		#endregion
@@ -785,7 +840,7 @@ namespace MyGui.net
 
 		private void gitHubRepoButton_Click(object sender, EventArgs e)
 		{
-			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods/MyGui.net-For-SM") { UseShellExecute = true });
+			Process.Start(new ProcessStartInfo("https://github.com/ReDoIngMods/MyGui.NET-For-SM") { UseShellExecute = true });
 		}
 		#endregion
 
@@ -869,5 +924,7 @@ namespace MyGui.net
 			_setDef.Reload();
 			_autoApply = false;
 		}
+
+		
 	}
 }

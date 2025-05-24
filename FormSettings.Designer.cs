@@ -1,4 +1,4 @@
-﻿namespace MyGui.net
+﻿namespace MyGui.NET
 {
     partial class FormSettings
     {
@@ -84,6 +84,7 @@
 			fileTabPage = new TabPage();
 			panel5 = new Panel();
 			groupBox13 = new GroupBox();
+			buttonAddLayoutToCreate = new Button();
 			buttonAddToDesktop = new Button();
 			buttonAssociateWithFiles = new Button();
 			buttonRestartAdmin = new Button();
@@ -843,6 +844,7 @@
 			// 
 			// groupBox13
 			// 
+			groupBox13.Controls.Add(buttonAddLayoutToCreate);
 			groupBox13.Controls.Add(buttonAddToDesktop);
 			groupBox13.Controls.Add(buttonAssociateWithFiles);
 			groupBox13.Controls.Add(buttonRestartAdmin);
@@ -851,14 +853,27 @@
 			groupBox13.Dock = DockStyle.Top;
 			groupBox13.Location = new Point(0, 273);
 			groupBox13.Name = "groupBox13";
-			groupBox13.Size = new Size(639, 157);
+			groupBox13.Size = new Size(639, 187);
 			groupBox13.TabIndex = 8;
 			groupBox13.TabStop = false;
 			groupBox13.Text = "Windows Integration";
 			// 
+			// buttonAddLayoutToCreate
+			// 
+			buttonAddLayoutToCreate.AccessibleDescription = "Associate .layout files with MyGui.NET, won't override user's choice if they already have a program that opens .layout files.";
+			buttonAddLayoutToCreate.Enabled = false;
+			buttonAddLayoutToCreate.FlatStyle = FlatStyle.System;
+			buttonAddLayoutToCreate.Location = new Point(6, 157);
+			buttonAddLayoutToCreate.Name = "buttonAddLayoutToCreate";
+			buttonAddLayoutToCreate.Size = new Size(230, 23);
+			buttonAddLayoutToCreate.TabIndex = 10;
+			buttonAddLayoutToCreate.Text = "Add .layout files to Create File";
+			buttonAddLayoutToCreate.UseVisualStyleBackColor = true;
+			buttonAddLayoutToCreate.Click += buttonAddLayoutToCreate_Click;
+			// 
 			// buttonAddToDesktop
 			// 
-			buttonAddToDesktop.AccessibleDescription = "Add a shortcut to MyGui.net to current user's desktop.";
+			buttonAddToDesktop.AccessibleDescription = "Add a shortcut to MyGui.NET to current user's desktop.";
 			buttonAddToDesktop.FlatStyle = FlatStyle.System;
 			buttonAddToDesktop.Location = new Point(6, 22);
 			buttonAddToDesktop.Name = "buttonAddToDesktop";
@@ -870,7 +885,7 @@
 			// 
 			// buttonAssociateWithFiles
 			// 
-			buttonAssociateWithFiles.AccessibleDescription = "Associate .layout files with MyGui.net, won't override user's choice if they already have a program that opens .layout files.";
+			buttonAssociateWithFiles.AccessibleDescription = "Associate .layout files with MyGui.NET, won't override user's choice if they already have a program that opens .layout files.";
 			buttonAssociateWithFiles.FlatStyle = FlatStyle.System;
 			buttonAssociateWithFiles.Location = new Point(6, 128);
 			buttonAssociateWithFiles.Name = "buttonAssociateWithFiles";
@@ -882,7 +897,7 @@
 			// 
 			// buttonRestartAdmin
 			// 
-			buttonRestartAdmin.AccessibleDescription = "Restart MyGui.net with admin privileges.";
+			buttonRestartAdmin.AccessibleDescription = "Restart MyGui.NET with admin privileges.";
 			buttonRestartAdmin.FlatStyle = FlatStyle.System;
 			buttonRestartAdmin.Location = new Point(6, 99);
 			buttonRestartAdmin.Name = "buttonRestartAdmin";
@@ -903,7 +918,7 @@
 			// 
 			// buttonAddToStart
 			// 
-			buttonAddToStart.AccessibleDescription = "Add a shortcut to MyGui.net to current user's start menu.";
+			buttonAddToStart.AccessibleDescription = "Add a shortcut to MyGui.NET to current user's start menu.";
 			buttonAddToStart.FlatStyle = FlatStyle.System;
 			buttonAddToStart.Location = new Point(6, 51);
 			buttonAddToStart.Name = "buttonAddToStart";
@@ -1282,7 +1297,7 @@
 			// 
 			// currentVersionLabel
 			// 
-			currentVersionLabel.AccessibleDescription = "Current MyGui.net version";
+			currentVersionLabel.AccessibleDescription = "Current MyGui.NET version";
 			currentVersionLabel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			currentVersionLabel.Location = new Point(6, 19);
 			currentVersionLabel.Name = "currentVersionLabel";
@@ -1331,14 +1346,14 @@
 			// 
 			// gitHubRepoButton
 			// 
-			gitHubRepoButton.AccessibleDescription = "Open the MyGui.net GitHub repository in a web browser.";
+			gitHubRepoButton.AccessibleDescription = "Open the MyGui.NET GitHub repository in a web browser.";
 			gitHubRepoButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
 			gitHubRepoButton.FlatStyle = FlatStyle.System;
 			gitHubRepoButton.Location = new Point(96, 298);
 			gitHubRepoButton.Name = "gitHubRepoButton";
 			gitHubRepoButton.Size = new Size(464, 23);
 			gitHubRepoButton.TabIndex = 4;
-			gitHubRepoButton.Text = "Visit MyGui.net Repository";
+			gitHubRepoButton.Text = "Visit MyGui.NET Repository";
 			gitHubRepoButton.UseVisualStyleBackColor = true;
 			gitHubRepoButton.Click += gitHubRepoButton_Click;
 			// 
@@ -1372,7 +1387,7 @@
 			// 
 			pictureBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			pictureBox2.Image = (Image)resources.GetObject("pictureBox2.Image");
-			pictureBox2.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
+			pictureBox2.InitialImage = (Image)resources.GetObject("pictureBox2.InitialImage");
 			pictureBox2.Location = new Point(566, 295);
 			pictureBox2.Name = "pictureBox2";
 			pictureBox2.Size = new Size(90, 90);
@@ -1383,8 +1398,8 @@
 			// pictureBox1
 			// 
 			pictureBox1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-			pictureBox1.Image = Properties.Resources.MyGUI_net_Icon_1;
-			pictureBox1.InitialImage = Properties.Resources.MyGUI_net_Icon_1;
+			pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+			pictureBox1.InitialImage = (Image)resources.GetObject("pictureBox1.InitialImage");
 			pictureBox1.Location = new Point(0, 295);
 			pictureBox1.Name = "pictureBox1";
 			pictureBox1.Size = new Size(90, 90);
@@ -1633,5 +1648,6 @@
 		private Panel panel5;
 		private Panel panel6;
 		private Label label4;
+		private Button buttonAddLayoutToCreate;
 	}
 }

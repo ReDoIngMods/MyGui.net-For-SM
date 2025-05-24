@@ -1,4 +1,4 @@
-﻿namespace MyGui.net
+﻿namespace MyGui.NET
 {
 	public class CustomTabControl : TabControl
 	{

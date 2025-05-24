@@ -1,6 +1,6 @@
-using MyGui.net.Properties;
+using MyGui.NET.Properties;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
     internal static class Program
     {

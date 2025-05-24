@@ -6,7 +6,7 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.Windows.Forms.Design;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
 	#region Templates
 	/*public class CustomSelectorControl : UserControl

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
 	public class AccessibleDescriptionTooltipFilter : IMessageFilter
 	{

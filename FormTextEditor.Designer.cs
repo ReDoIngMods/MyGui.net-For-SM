@@ -1,4 +1,4 @@
-﻿namespace MyGui.net
+﻿namespace MyGui.NET
 {
 	partial class FormTextEditor
 	{

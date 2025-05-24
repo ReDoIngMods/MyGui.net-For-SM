@@ -1,6 +1,6 @@
 ﻿using SkiaSharp.Views.Desktop;
 
-namespace MyGui.net
+namespace MyGui.NET
 {
     partial class Form1
     {
@@ -788,7 +788,7 @@ namespace MyGui.net
 			MinimumSize = new Size(640, 480);
 			Name = "Form1";
 			SizeGripStyle = SizeGripStyle.Show;
-			Text = "MyGui.net";
+			Text = "MyGui.NET";
 			FormClosing += Form1_FormClosing;
 			Load += Form1_Load;
 			ResizeBegin += Form1_ResizeBegin;
