@@ -522,6 +522,7 @@ namespace MyGui.net
 			return layoutWidgetData;
 		}
 
+		private static readonly Regex XmlFormatRegex = new Regex("(\"[^\"]*\")", RegexOptions.Compiled);
 		public static string FormatXmlString(string xmlString)
 		{
 			try
@@ -534,18 +535,23 @@ namespace MyGui.net
 				{
 					xmlWriter.WriteNode(xmlReader, true);
 				}
+				
 
-				return stringBuilder.ToString();
+				return XmlFormatRegex.Replace(stringBuilder.ToString(), match =>
+				{
+					string value = match.Value;
+					return value.Replace("'", "&apos;");
+				});
 			}
 			catch (XmlException ex)
 			{
-				Console.WriteLine($"XML Exception: {ex.Message}");
-				return null;
+				Debug.WriteLine($"XML Exception: {ex.Message}");
+				return xmlString;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"General Exception: {ex.Message}");
-				return null;
+				Debug.WriteLine($"General Exception: {ex.Message}");
+				return xmlString;
 			}
 		}
 
