@@ -751,7 +751,7 @@ namespace MyGui.net
 			zoomLevelNumericUpDown.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 			zoomLevelNumericUpDown.Increment = new decimal(new int[] { 5, 0, 0, 0 });
 			zoomLevelNumericUpDown.Location = new Point(880, 0);
-			zoomLevelNumericUpDown.Maximum = new decimal(new int[] { 400, 0, 0, 0 });
+			zoomLevelNumericUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
 			zoomLevelNumericUpDown.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
 			zoomLevelNumericUpDown.Name = "zoomLevelNumericUpDown";
 			zoomLevelNumericUpDown.Size = new Size(60, 23);
