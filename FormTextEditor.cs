@@ -1,7 +1,6 @@
 ﻿using Cyotek.Windows.Forms;
 using SkiaSharp;
 using System.Diagnostics;
-using System.Windows.Forms;
 
 namespace MyGui.net
 {

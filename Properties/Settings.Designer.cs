@@ -551,5 +551,17 @@ namespace MyGui.net.Properties {
                 this["HideOldSMWidgetSkins"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool use9xTheme {
+            get {
+                return ((bool)(this["use9xTheme"]));
+            }
+            set {
+                this["use9xTheme"] = value;
+            }
+        }
     }
 }

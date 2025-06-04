@@ -13,7 +13,6 @@ using System.Xml.Linq;
 using System.Text.RegularExpressions;
 using System.Security.Principal;
 using MyGui.net.Properties;
-using System.CodeDom.Compiler;
 
 namespace MyGui.net
 {
@@ -2085,6 +2084,18 @@ namespace MyGui.net
 		#endregion
 
 		#region Windows Utils
+
+		[DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
+		public static extern int SetWindowTheme(IntPtr hWnd, string? pszSubAppName, string? pszSubIdList);
+
+		public static void SetControlTheme(Control cntrl, string? pszSubAppName, string? pszSubIdList)
+		{
+			if (Settings.Default.use9xTheme) { return; }
+			SetWindowTheme(cntrl.Handle, pszSubAppName, pszSubIdList);
+		}
+
+		public static bool IsSystemDarkMode = false;
+
 		public static bool RunningAsAdministrator()
 		{
 			using (var identity = WindowsIdentity.GetCurrent())

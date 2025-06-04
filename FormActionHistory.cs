@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using MyGui.net.Properties;
 
 namespace MyGui.net
 {
@@ -16,6 +7,11 @@ namespace MyGui.net
 		public FormActionHistory()
 		{
 			InitializeComponent();
+			if (Settings.Default.Theme == 0 || (Settings.Default.Theme == 1 && !Util.IsSystemDarkMode))
+			{
+				Util.SetControlTheme(undoTreeView, "Explorer", null);
+				Util.SetControlTheme(redoTreeView, "Explorer", null);
+			}
 		}
 
 		private void undoTreeView_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)

@@ -1,3 +1,4 @@
+using Microsoft.Win32;
 using MyGui.net.Properties;
 
 namespace MyGui.net
@@ -17,14 +18,23 @@ namespace MyGui.net
             {
                 _DefaultOpenedDir = args[0];
             }
-			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-			ApplicationConfiguration.Initialize();
-            //Application.SetColorMode(SystemColorMode.Dark);
-            Application.SetColorMode((SystemColorMode)Settings.Default.Theme);
 
-			Application.EnableVisualStyles();
-			//Application.SetDefaultFont(new Font("Segoe UI", 9f)); //Do not enable this, EVER, i thought it would help fix DPI issues, but it instead broke multiple instances...
+			if (!Settings.Default.use9xTheme)
+			{
+				ApplicationConfiguration.Initialize();
+				Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+				Application.SetColorMode((SystemColorMode)Settings.Default.Theme);
 
+				using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+				{
+					object value = key?.GetValue("AppsUseLightTheme");
+					if (value is int intValue)
+					{
+						Util.IsSystemDarkMode = intValue == 0;
+					}
+				}
+			}
+			
 			Application.AddMessageFilter(new AccessibleDescriptionTooltipFilter());
 			try
             {

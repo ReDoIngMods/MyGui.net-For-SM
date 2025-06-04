@@ -121,6 +121,7 @@
 			Controls.Add(viewport);
 			Controls.Add(menuStrip1);
 			DoubleBuffered = true;
+			MinimizeBox = false;
 			MinimumSize = new Size(640, 480);
 			Name = "FormTest";
 			ShowIcon = false;

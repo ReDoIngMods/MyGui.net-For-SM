@@ -1,5 +1,4 @@
 ﻿using MyGui.net.Properties;
-using System.Net.Http;
 using System.Net.Http.Headers;
 
 namespace MyGui.net

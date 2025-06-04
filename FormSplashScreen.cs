@@ -1,5 +1,4 @@
 ﻿using MyGui.net.Properties;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace MyGui.net

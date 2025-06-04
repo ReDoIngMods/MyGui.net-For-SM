@@ -2,10 +2,10 @@
 using Microsoft.Win32;
 using MyGui.net.Properties;
 using System.ComponentModel;
-using System.Configuration;
 using System.Data;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Globalization;
+using System.Media;
 using System.Text;
 
 namespace MyGui.net
@@ -925,6 +925,45 @@ namespace MyGui.net
 			_autoApply = false;
 		}
 
-		
+		string _typed = "";
+		const string secretCode = "theme9x";
+
+		private void FormSettings_KeyPress(object sender, KeyPressEventArgs e)
+		{
+			char c = char.ToLower(e.KeyChar, CultureInfo.CurrentCulture);
+			if (secretCode[_typed.Length] == c)
+			{
+				_typed += c;
+
+				if (_typed == secretCode)
+				{
+					if (Settings.Default.use9xTheme)
+					{
+						Settings.Default.use9xTheme = false;
+						MessageBox.Show("Windows 9x Theme Disabled. Restart the program to see the effects.", "Easter Egg");
+						Settings.Default.Save();
+					}
+					else
+					{
+						Settings.Default.use9xTheme = true;
+						try
+						{
+							using var player = new SoundPlayer(@"C:\Windows\Media\tada.wav");
+							player.Play();
+						}
+						catch {}
+						MessageBox.Show("You have enabled the secret Windows 9x Theme! Congrats! Restart the program to see the effects.", "Easter Egg");
+						Settings.Default.Save();
+					}
+					_typed = "";
+				}
+			}
+			else
+			{
+				_typed = "";
+				if (secretCode[0] == c)
+					_typed = c.ToString();
+			}
+		}
 	}
 }

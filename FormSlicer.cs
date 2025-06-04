@@ -1,7 +1,5 @@
 ﻿using MyGui.net.Properties;
 using SkiaSharp;
-using System.Data;
-using System.Windows.Forms;
 
 namespace MyGui.net
 {

@@ -119,6 +119,10 @@ namespace MyGui.net
 			InitializeComponent();
 			DebugConsole.CloseConsoleOnExit(this);
 			HandleLoad(_DefaultOpenedDir);
+			if (Settings.Default.Theme == 0 || (Settings.Default.Theme == 1 && !Util.IsSystemDarkMode))
+			{
+				Util.SetControlTheme(treeView1, "Explorer", null);
+			}
 			/*float scaleFactor = (float)DeviceDpi / 96f; // Get DPI scale
 
 			viewportScrollY.Width = (int)(17 * scaleFactor);  // Scale vertical scrollbar width

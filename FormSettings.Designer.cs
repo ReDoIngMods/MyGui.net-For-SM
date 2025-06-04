@@ -1476,6 +1476,7 @@
 			Controls.Add(applySettingsButton);
 			Controls.Add(cancelButton);
 			Controls.Add(tabControl1);
+			KeyPreview = true;
 			MinimizeBox = false;
 			MinimumSize = new Size(445, 300);
 			Name = "FormSettings";
@@ -1486,6 +1487,7 @@
 			Text = "Options";
 			FormClosing += FormSettings_FormClosing;
 			Load += FormSettings_Load;
+			KeyPress += FormSettings_KeyPress;
 			tabControl1.ResumeLayout(false);
 			projectTabPage.ResumeLayout(false);
 			panel3.ResumeLayout(false);
