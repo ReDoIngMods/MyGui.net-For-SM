@@ -832,6 +832,7 @@
 			// 
 			panel5.AutoScroll = true;
 			panel5.AutoSize = true;
+			panel5.BackColor = SystemColors.ControlLightLight;
 			panel5.Controls.Add(groupBox13);
 			panel5.Controls.Add(groupBox4);
 			panel5.Controls.Add(groupBox11);
@@ -1149,6 +1150,7 @@
 			// panel6
 			// 
 			panel6.AutoScroll = true;
+			panel6.BackColor = SystemColors.ControlLightLight;
 			panel6.Controls.Add(groupBox3);
 			panel6.Controls.Add(groupBox16);
 			panel6.Controls.Add(groupBox6);
@@ -1319,6 +1321,7 @@
 			// panel1
 			// 
 			panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+			panel1.BackColor = SystemColors.ControlLightLight;
 			panel1.Controls.Add(gitHubOrgButton);
 			panel1.Controls.Add(gitHubRepoButton);
 			panel1.Controls.Add(joinDiscordButton);

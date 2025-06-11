@@ -37,7 +37,7 @@
 			ClientSize = new Size(304, 602);
 			MaximizeBox = false;
 			MinimizeBox = false;
-			MinimumSize = new Size(320, 400);
+			MinimumSize = new Size(220, 300);
 			Name = "FormSideBar";
 			ShowIcon = false;
 			ShowInTaskbar = false;
