@@ -26,6 +26,8 @@ namespace MyGui.net
 
 		static SKMatrix _viewportMatrix = SKMatrix.CreateIdentity();
 
+		MyGuiWidgetData _renderTarget = new MyGuiWidgetData();
+
 		RenderBackend.RenderOptions renderOptions = new(true)
 		{
 			applyVisibilityProperty = true,
@@ -74,14 +76,23 @@ namespace MyGui.net
 				canvas.DrawRect(new SKRect(0, 0, Form1.ProjectSize.Width, Form1.ProjectSize.Height), Form1.SurfacePaint);
 			}
 
-			int beforeProjectClip = canvas.Save();
-			canvas.ClipRect(new SKRect(0, 0, Form1.ProjectSize.Width, Form1.ProjectSize.Height));
+			//Render target already takes care of clipping for me
+			_renderTarget.position = new(0,0);
+			_renderTarget.size = new((int)projectWidth, (int)projectHeight);
 
-			foreach (var widget in Form1.CurrentLayout)
+			foreach (var item in Form1.CurrentLayout)
 			{
-				RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0), null, renderOptions);
+				if (item.name == "BackPanel")
+				{
+					_renderTarget.size = item.size;
+					_renderTarget.position = new((int)(projectWidth / 2 - _renderTarget.size.X / 2), (int)((projectHeight / 2 - _renderTarget.size.Y / 2) - (43 * renderOptions.screenSizeMultiplier))); //Yes, axolot probably rounded that 43, as the extra up offset isnt the same on all resolutions, how weird...
+					break;
+				}
 			}
-			canvas.RestoreToCount(beforeProjectClip);
+
+			_renderTarget.Children = new ObservableList<MyGuiWidgetData>(Util.DeepCopy(Form1.CurrentLayout));
+
+			RenderBackend.DrawWidget(canvas, _renderTarget, new SKPoint(0, 0), null, renderOptions);
 		}
 
 		private void updateToolStripMenuItem_Click(object sender, EventArgs e)

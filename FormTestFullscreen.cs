@@ -16,11 +16,21 @@ namespace MyGui.net
 			StartPosition = FormStartPosition.Manual;
 			Bounds = targetScreen.Bounds;
 			KeyPreview = true;
-			KeyDown += (s, e) => this.Close();
 
 			closeLabel = new() { Parent = this, AutoSize = true };
-			closeLabel.Text = "Press Any Key to Close";
+			closeLabel.Text = "Press ESC or F11 to Close";
 			closeLabel.Location = new Point(this.Width / 2 - closeLabel.Width / 2);
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+
+			var key = e.KeyData;
+			if (Util.IsAnyOf(key, [Keys.F11, Keys.Escape]))
+			{
+				this.Close();
+			}
 		}
 
 		protected override void OnLoad(EventArgs e)

@@ -763,8 +763,11 @@ namespace MyGui.net
 			}
 
 			// Put them in dicts based on their names
-			resourceDict = resources.ToDictionary(res => res.name);
-			imageResourceDict = imageResources.ToDictionary(res => res.name);
+			foreach (var res in resources)
+				resourceDict[res.name] = res;
+
+			foreach (var res in imageResources)
+				imageResourceDict[res.name] = res;
 
 			// Could this code be more efficient and suck less? Yes. Shut up.
 			return (resourceDict, imageResourceDict);
