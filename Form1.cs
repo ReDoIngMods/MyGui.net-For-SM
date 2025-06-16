@@ -1741,6 +1741,14 @@ namespace MyGui.net
 				{
 					FormExport decideForm = new FormExport();
 					actualExport = (int)decideForm.ShowDialog(this) - 1;
+					if (actualExport == 4) //Cant use the cancel form result, got to use another one
+					{
+						actualExport = 1;
+					}
+					else if (actualExport == 1)
+					{
+						return;
+					}
 					//Debug.WriteLine(actualExport);
 				}
 				if (actualExport == 0 || actualExport == 3)
