@@ -63,7 +63,7 @@
 			// 
 			updateToolStripMenuItem.Name = "updateToolStripMenuItem";
 			updateToolStripMenuItem.ShortcutKeys = Keys.F5;
-			updateToolStripMenuItem.Size = new Size(152, 22);
+			updateToolStripMenuItem.Size = new Size(180, 22);
 			updateToolStripMenuItem.Text = "Update";
 			updateToolStripMenuItem.Click += updateToolStripMenuItem_Click;
 			// 
@@ -71,33 +71,34 @@
 			// 
 			fullscreenToolStripMenuItem.Name = "fullscreenToolStripMenuItem";
 			fullscreenToolStripMenuItem.ShortcutKeys = Keys.F11;
-			fullscreenToolStripMenuItem.Size = new Size(152, 22);
+			fullscreenToolStripMenuItem.Size = new Size(180, 22);
 			fullscreenToolStripMenuItem.Text = "Fullscreen";
 			fullscreenToolStripMenuItem.Click += fullscreenToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator1
 			// 
 			toolStripSeparator1.Name = "toolStripSeparator1";
-			toolStripSeparator1.Size = new Size(149, 6);
+			toolStripSeparator1.Size = new Size(177, 6);
 			// 
 			// optionsToolStripMenuItem
 			// 
+			optionsToolStripMenuItem.Enabled = false;
 			optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-			optionsToolStripMenuItem.Size = new Size(152, 22);
+			optionsToolStripMenuItem.Size = new Size(180, 22);
 			optionsToolStripMenuItem.Text = "Options";
 			optionsToolStripMenuItem.Click += optionsToolStripMenuItem_Click;
 			// 
 			// toolStripSeparator2
 			// 
 			toolStripSeparator2.Name = "toolStripSeparator2";
-			toolStripSeparator2.Size = new Size(149, 6);
+			toolStripSeparator2.Size = new Size(177, 6);
 			// 
 			// exitToolStripMenuItem
 			// 
 			exitToolStripMenuItem.DisplayStyle = ToolStripItemDisplayStyle.Text;
 			exitToolStripMenuItem.Name = "exitToolStripMenuItem";
 			exitToolStripMenuItem.ShortcutKeyDisplayString = "Alt+F4";
-			exitToolStripMenuItem.Size = new Size(152, 22);
+			exitToolStripMenuItem.Size = new Size(180, 22);
 			exitToolStripMenuItem.Text = "Close";
 			exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
 			// 

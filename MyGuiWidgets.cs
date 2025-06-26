@@ -154,7 +154,7 @@ namespace MyGui.net
 		
 
 		[Category("1 - Main Properties")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		[TypeConverter(typeof(StringDropdownConverter))]
 		public string Layer
 		{
@@ -350,7 +350,7 @@ namespace MyGui.net
 
 		[Category("2 - Widget Properties")]
 		[DisplayName("Inherits Pick")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(TriStateConverter))]
 		public string InheritsPick
@@ -775,7 +775,7 @@ namespace MyGui.net
 		#region Properties
 		[Category("4 - Button Properties")]
 		[DisplayName("Image Group")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		public string ImageGroup
 		{
 			get => widget.properties.TryGetValue("ImageGroup", out var value) ? value : "";
@@ -796,7 +796,7 @@ namespace MyGui.net
 
 		[Category("4 - Button Properties")]
 		[DisplayName("Image Name")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		public string ImageName
 		{
 			get => widget.properties.TryGetValue("ImageName", out var value) ? value : "";
@@ -817,7 +817,7 @@ namespace MyGui.net
 
 		[Category("4 - Button Properties")]
 		[DisplayName("Image Resource")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		public string ImageResource
 		{
 			get => widget.properties.TryGetValue("ImageResource", out var value) ? value : "";
@@ -837,7 +837,7 @@ namespace MyGui.net
 		
 
 		[Category("4 - Button Properties")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		[DisplayName("Mode Image")]
 		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(TriStateConverter))]
@@ -1210,7 +1210,7 @@ namespace MyGui.net
 		#region Properties
 		[Category("3 - DDContainer Properties")]
 		[DisplayName("Need Drag Drop")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(TriStateConverter))]
 		public string NeedDragDrop
@@ -1437,7 +1437,7 @@ namespace MyGui.net
 		
 
 		[Category("3 - ScrollBar Properties")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		public string Page
 		{
 			get => widget.properties.TryGetValue("Page", out var value) ? value : "";
@@ -1502,7 +1502,7 @@ namespace MyGui.net
 		
 
 		[Category("3 - ScrollBar Properties")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		[Editor(typeof(TriStateEditor), typeof(UITypeEditor))]
 		[TypeConverter(typeof(TriStateConverter))]
 		public string Repeat
@@ -1525,7 +1525,7 @@ namespace MyGui.net
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Repeat Step Time")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		public string RepeatStepTime
 		{
 			get => widget.properties.TryGetValue("RepeatStepTime", out var value) ? value : "";
@@ -1547,7 +1547,7 @@ namespace MyGui.net
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("Repeat Trigger Time")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		public string RepeatTriggerTime
 		{
 			get => widget.properties.TryGetValue("RepeatTriggerTime", out var value) ? value : "";
@@ -1592,7 +1592,7 @@ namespace MyGui.net
 
 		[Category("3 - ScrollBar Properties")]
 		[DisplayName("View Page")]
-		[Description("Unknown behaviour.")]
+		[Description("Unknown behavior.")]
 		public string ViewPage
 		{
 			get => widget.properties.TryGetValue("ViewPage", out var value) ? value : "";
