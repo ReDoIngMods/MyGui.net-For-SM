@@ -1361,26 +1361,10 @@ namespace MyGui.net
 								break;
 						}
 
-						// Update only the changed property on the widget
-
-						//Using this code below will screw up the snapping if the opposite end is not aligned to grid, as such it is not recommended.
-						/*_currentSelectedWidget.size = new Point(
-							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Left, BorderPosition.Right, BorderPosition.TopLeft, BorderPosition.TopRight, BorderPosition.BottomLeft, BorderPosition.BottomRight }) ?
-								(int)(_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.X,
-							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Top, BorderPosition.Bottom, BorderPosition.TopLeft, BorderPosition.BottomLeft, BorderPosition.TopRight, BorderPosition.BottomRight }) ?
-								(int)(_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing : _currentSelectedWidget.size.Y
-						);
-
-						_currentSelectedWidget.position = new Point(
-							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Center, BorderPosition.Left, BorderPosition.TopLeft, BorderPosition.BottomLeft }) ?
-								(int)(_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.X,
-							IsAnyOf(_draggingWidgetAt, new[] { BorderPosition.Center, BorderPosition.Top, BorderPosition.TopLeft, BorderPosition.TopRight }) ?
-								(int)(_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing : _currentSelectedWidget.position.Y
-						);*/
 						// Adjusted snapping logic
 						_currentSelectedWidget.size = new Point(
-							Math.Max((int)Math.Round((float)_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing, _gridSpacing), // Ensure width doesn't become zero or negative
-							Math.Max((int)Math.Round((float)_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing, _gridSpacing) // Ensure height doesn't become zero or negative
+							Math.Max((int)Math.Round((float)_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing, _gridSpacing),
+							Math.Max((int)Math.Round((float)_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing, _gridSpacing)
 						);
 
 						_currentSelectedWidget.position = new Point(
@@ -1390,19 +1374,10 @@ namespace MyGui.net
 
 						UpdateProperties();
 
-						// Update editor properties
-						/*((NumericUpDown)_editorProperties["position_X"]).Value = _currentSelectedWidget.position.X;
-						((NumericUpDown)_editorProperties["position_Y"]).Value = _currentSelectedWidget.position.Y;
-						((NumericUpDown)_editorProperties["size_X"]).Value = _currentSelectedWidget.size.X;
-						((NumericUpDown)_editorProperties["size_Y"]).Value = _currentSelectedWidget.size.Y;*/
-
-						// Reset mouse delta for finer control
 						_mouseDeltaLoc.X %= 1;
 						_mouseDeltaLoc.Y %= 1;
 						viewport.Refresh();
 					}
-
-					// Update the previous mouse location
 					_mouseLoc = e.Location;
 				}
 			}
