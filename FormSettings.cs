@@ -113,7 +113,7 @@ namespace MyGui.net
 
 			#region Tab Version
 			autoUpdateCheckCheckBox.Checked = _setDef.AutoCheckUpdate;
-			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(((bool?)AppContext.GetData("IsSelfContained") ?? false) ? "MyGui.NET-Standalone" : "MyGui.NET-Framework-Dependant")}";
+			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(Util.IsStandalone() ? "MyGui.NET-Standalone" : "MyGui.NET-Framework-Dependant")}";
 			#endregion
 
 			#region Tab About

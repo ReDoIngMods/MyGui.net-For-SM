@@ -1377,6 +1377,15 @@ namespace MyGui.net
 
 		}
 
+		public static bool IsStandalone()
+		{
+#if STANDALONE
+			return true;
+#else
+			return false;
+#endif
+		}
+
 		public static string MyGuiToSystemString(string input)
 		{
 			return input.Replace("\\n", Environment.NewLine);
@@ -1714,7 +1723,7 @@ namespace MyGui.net
 
 			return new string(result);
 		}
-		#endregion
+#endregion
 
 		#region MyGui.NET-ified WinForms Utils
 
@@ -2178,17 +2187,14 @@ namespace MyGui.net
 			{
 				// Get the latest version tag
 				string tag = doc.RootElement.GetProperty("tag_name").GetString();
-				Version latestVersion = new Version(tag.TrimStart('v'));
+				Version latestVersion = new Version(Regex.Match(tag, @"^v?(?<ver>\d+(?:\.\d+){0,3})", RegexOptions.IgnoreCase).Groups["ver"].Value);
 
 				Version currentVersion = new Version(programVersion);
-
-				// Get the correct download URL
-				bool isSelfContained = (bool?)AppContext.GetData("IsSelfContained") ?? false;
 
 				string downloadUrl = doc.RootElement.GetProperty("assets")
 				.EnumerateArray()
 				.Where(a =>
-					isSelfContained ? a.GetProperty("name").GetString().Contains("MyGui.NET-Standalone") : //Framework independent zip name
+					Util.IsStandalone() ? a.GetProperty("name").GetString().Contains("MyGui.NET-Standalone") : //Framework independent zip name
 										a.GetProperty("name").GetString().Contains("MyGui.NET-Framework-Dependant") //Framework dependent zip name
 				)
 				.Select(a => a.GetProperty("url").GetString())

@@ -1,161 +1,161 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows7.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWindowsForms>true</UseWindowsForms>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <StartupObject>MyGui.net.Program</StartupObject>
-    <ApplicationIcon>MyGUI.net_Icon.ico</ApplicationIcon>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net9.0-windows7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWindowsForms>true</UseWindowsForms>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<StartupObject>MyGui.net.Program</StartupObject>
+		<ApplicationIcon>MyGUI.net_Icon.ico</ApplicationIcon>
 	<!--<RuntimeIdentifier>win-x86</RuntimeIdentifier>-->
 	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-  </PropertyGroup>
-  
-  <PropertyGroup>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <PublishSingleFile>true</PublishSingleFile>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <AssemblyVersion>0.0.1</AssemblyVersion>
-    <FileVersion>0.0.1</FileVersion>
-    <Version>0.0.1</Version>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<PublishReadyToRun>true</PublishReadyToRun>
+		<PublishSingleFile>true</PublishSingleFile>
+		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+		<AssemblyVersion>0.0.0</AssemblyVersion>
+		<FileVersion>0.0.0</FileVersion>
+		<Version>0.0.0</Version>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<FileAlignment>512</FileAlignment>
+	</PropertyGroup>
+	
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<FileAlignment>512</FileAlignment>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<None Remove="SelectionRectsSkin.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Remove="SelectionRectsSkin.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="MyGUI.net_Icon.ico" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Include="MyGUI.net_Icon.ico" />
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="SelectionRectsSkin.png" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Include="SelectionRectsSkin.png" />
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="BasicAlignEditor.cs">
+			<SubType>UserControl</SubType>
+		</Compile>
+		<Compile Update="CustomTabControl.cs">
+			<SubType>Component</SubType>
+		</Compile>
+		<Compile Update="FormFont.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="FormSlicer.cs">
+			<SubType>Form</SubType>
+		</Compile>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="BasicAlignEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="CustomTabControl.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Update="FormFont.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="FormSlicer.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="FontChars\Font Dumps made by crackx02.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_Brazilian.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_Chinese.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_English.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_French.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_German.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_Italian.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_Japanese.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_Korean.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_Polish.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_Russian.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontChars\FontRanges_Spanish.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\Font Dumps made by crackx02.txt">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_Brazilian.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_Chinese.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_English.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_French.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_German.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_Italian.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_Japanese.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_Korean.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_Polish.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_Russian.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="FontRanges\FontRanges_Spanish.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Update="FontChars\Font Dumps made by crackx02.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_Brazilian.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_Chinese.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_English.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_French.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_German.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_Italian.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_Japanese.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_Korean.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_Polish.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_Russian.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontChars\FontRanges_Spanish.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\Font Dumps made by crackx02.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_Brazilian.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_Chinese.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_English.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_French.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_German.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_Italian.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_Japanese.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_Korean.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_Polish.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_Russian.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="FontRanges\FontRanges_Spanish.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Cyotek.Windows.Forms.ColorPicker" Version="2.0.0-beta.7" />
-    <PackageReference Include="SkiaSharp" Version="2.88.9" />
+	<ItemGroup>
+		<PackageReference Include="Cyotek.Windows.Forms.ColorPicker" Version="2.0.0-beta.7" />
+		<PackageReference Include="SkiaSharp" Version="2.88.9" />
 	<PackageReference Include="SkiaSharp.Views" Version="2.88.9" />
-  </ItemGroup>
+	</ItemGroup>
 
 </Project>
