@@ -9,7 +9,7 @@ MyGui.NET is a rewrite of the original [MyGUI Layout Editor](http://mygui.info/)
 - *(Subjectively)* More readable source code, less of an *OOP hell*.
 - Many built in Editors!
 - **Less taxing on hardware** (uses event driven rendering, useful when having the game open at the same time)!
-- More accurate rendering than the stock editor. (When talking about [Scrap Mechanic](https://store.steampowered.com/app/387990/Scrap_Mechanic/), useless for any other MyGui app.)
+- More accurate rendering than the stock editor. (When talking about [Scrap Mechanic](https://store.steampowered.com/app/387990/Scrap_Mechanic/), useless for any other MyGUI app.)
 - Pulls *(most)* of the files straight from the game. (Borrowing a few exceptions where the files in the game actually contain incorrect information.)
 
 ## Special thanks to
