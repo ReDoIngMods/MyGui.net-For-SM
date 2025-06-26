@@ -22,7 +22,7 @@ namespace MyGui.net
 			get
 			{
 				string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-				string appFolder = Path.Combine(appData, "ReDoIng Mods/MyGui.net");
+				string appFolder = Path.Combine(appData, "ReDoIng Mods/MyGui.NET");
 				Directory.CreateDirectory(appFolder);
 
 				return Path.Combine(appFolder, "user.config");

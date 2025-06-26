@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Media;
 using System.Text;
+using System.Windows.Forms;
 
 namespace MyGui.net
 {
@@ -112,11 +113,21 @@ namespace MyGui.net
 
 			#region Tab Version
 			autoUpdateCheckCheckBox.Checked = _setDef.AutoCheckUpdate;
-			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(((bool?)AppContext.GetData("IsSelfContained") ?? false) ? "MyGui.net-Standalone" : "MyGui.net-Framework-Dependant")}";
+			currentVersionLabel.Text = $"Version: {Util.programVersion}, {(((bool?)AppContext.GetData("IsSelfContained") ?? false) ? "MyGui.NET-Standalone" : "MyGui.NET-Framework-Dependant")}";
 			#endregion
 
 			#region Tab About
-			aboutTextBox.Text = $"MyGui.net is a rewrite of the original MyGui built using .NET 9, WinForms and SkiaSharp by The Red Builder (github.com/TheRedBuilder) and Fagiano (github.com/Fagiano0). This version was specifically created for Scrap Mechanic Layout making.{Environment.NewLine}{Environment.NewLine}This project is not affiliated with MyGui in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.{Environment.NewLine}{Environment.NewLine}Special thanks to:{Environment.NewLine}• Questionable Mark (github.com/QuestionableM){Environment.NewLine}• crackx02 (github.com/crackx02){Environment.NewLine}• Ben Bingo (github.com/Ben-Bingo){Environment.NewLine}• The Guild of Scrap Mechanic Modders (discord.gg/SVEFyus){Environment.NewLine}{Environment.NewLine}Used Packages:{Environment.NewLine}• SkiaSharp (github.com/mono/SkiaSharp){Environment.NewLine}• Cyotek WinForms Color Picker (github.com/cyotek/Cyotek.Windows.Forms.ColorPicker)";
+			string linkColor = Util.IsDarkThemeActive() ? "\\red80\\green145\\blue255" : "\\red0\\green0\\blue255";
+			aboutTextBox.Rtf = "{\\rtf1\\ansi\\ansicpg1252\\deff0\\nouicompat\\deflang1033\\deflangfe1033\r\n{\\colortbl ;\\red0\\green0\\blue255;" + linkColor + ";}\r\n{\\*\\generator Riched20 10.0.19041}\r\n{\\*\\mmathPr\\mnaryLim0\\mdispDef1\\mwrapIndent1440 }\r\n\\viewkind4\\uc1\\fs18 \r\nMyGui.NET is a rewrite of the original {{\\field{\\*\\fldinst{HYPERLINK \"http://mygui.info/\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul MyGui Layout Editor}}}} built using .NET 9, WinForms and {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/mono/SkiaSharp\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul SkiaSharp}}}} by {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/TheRedBuilder\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul The Red Builder}}}} and {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/Fagiano0\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul Fagiano}}}}. This version was specifically created for Scrap Mechanic Layout making.\\par\r\n\\par\r\n\\b This project is not affiliated with {{\\field{\\*\\fldinst{HYPERLINK \"http://mygui.info/\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul MyGui}}}} in any way, shape or form. It is simply an alternative to it to make Scrap Mechanic modding easier.\\b0\\par\r\n\\par\r\nSpecial thanks to:\\par\r\n\\bullet  {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/QuestionableM\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul Questionable Mark}}}}\\par\r\n\\bullet  {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/crackx02\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul crackx02}}}}\\par\r\n\\bullet  {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/Ben-Bingo\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul Ben Bingo}}}}\\par\r\n\\bullet  {{\\field{\\*\\fldinst{HYPERLINK \"https://discord.gg/SVEFyus\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul The Guild of Scrap Mechanic Modders Discord Server}}}}\\par\r\n\\par\r\nUsed Packages:\\par\r\n\\bullet  {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/mono/SkiaSharp\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul SkiaSharp}}}}\\par\r\n\\bullet  {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/cyotek/Cyotek.Windows.Forms.ColorPicker\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul Cyotek WinForms Color Picker}}}}\\par\r\n\\par\r\n\\b Report any issues/suggestions on our {{\\field{\\*\\fldinst{HYPERLINK \"https://github.com/ReDoIngMods/MyGui.net-For-SM/issues\"}}{\\fldrslt{\\ul\\cf1\\cf2\\ul GitHub repo under the Issues tab}}}}\\b0 !\\par\r\n}\r\n"; //DO NOT EDIT THIS IN WORD, USE WORDPAD INSTEAD!
+			aboutTextBox.LinkClicked += (sender, e) =>
+			{
+				try
+				{
+					Process.Start(new ProcessStartInfo{FileName = e.LinkText, UseShellExecute = true});
+				}
+				catch(Exception){}
+			};
+			aboutTextBox.Cursor = Cursors.Arrow;
 			#endregion
 
 			_formLoaded = true;
@@ -543,7 +554,7 @@ namespace MyGui.net
 		{
 			try
 			{
-				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReDoIng Mods/MyGui.net");
+				string userConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "ReDoIng Mods/MyGui.NET");
 
 				// Open the folder using Process.Start
 				if (userConfigDirectory != null && Directory.Exists(userConfigDirectory))
@@ -590,14 +601,14 @@ namespace MyGui.net
 
 		private void buttonAddToDesktop_Click(object sender, EventArgs e)
 		{
-			CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "MyGui.net.lnk"), Application.ExecutablePath);
+			CreateShortcut(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "MyGui.NET.lnk"), Application.ExecutablePath);
 		}
 
 		private void buttonAddToStart_Click(object sender, EventArgs e)
 		{
 			string startMenuFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "ReDoIng Mods");
 			Directory.CreateDirectory(startMenuFolder);
-			CreateShortcut(Path.Combine(startMenuFolder, "MyGui.net.lnk"), Application.ExecutablePath);
+			CreateShortcut(Path.Combine(startMenuFolder, "MyGui.NET.lnk"), Application.ExecutablePath);
 		}
 
 		private void buttonRestartAdmin_Click(object sender, EventArgs e)
@@ -682,7 +693,7 @@ namespace MyGui.net
 
 				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
 
-				MessageBox.Show(".layout files have been successfully associated. If you already set an app for opening .layout files, you need to go to the Open With menu and set MyGui.net as default (should be on top of the list and labeled as New).",
+				MessageBox.Show(".layout files have been successfully associated. If you already set an app for opening .layout files, you need to go to the Open With menu and set MyGui.NET as default (should be on top of the list and labeled as New).",
 								"Association Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
 			}
 			catch (Exception ex)

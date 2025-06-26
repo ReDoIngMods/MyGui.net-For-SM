@@ -27,7 +27,7 @@ namespace MyGui.net
 	static class Util
 	{
 		public static string programVersion = Application.ProductVersion.Substring(0, Application.ProductVersion.IndexOf('+'));
-		public static string programName = "MyGui.net " + programVersion;
+		public static string programName = "MyGui.NET " + programVersion;
 		#region Steam Utils
 		public static string? GetSteamInstallPath()
 		{
@@ -1716,7 +1716,7 @@ namespace MyGui.net
 		}
 		#endregion
 
-		#region MyGui.Net-ified WinForms Utils
+		#region MyGui.NET-ified WinForms Utils
 
 		public static ColorPickerDialog NewFixedColorPickerDialog(bool doAlpha = false)
 		{
@@ -2099,6 +2099,17 @@ namespace MyGui.net
 
 		public static bool IsSystemDarkMode = false;
 
+		public static bool IsDarkThemeActive()
+		{
+			return Settings.Default.Theme switch
+			{
+				0 => false,
+				1 => IsSystemDarkMode,
+				2 => !Settings.Default.use9xTheme,
+				_ => false
+			};
+		}
+
 		public static bool RunningAsAdministrator()
 		{
 			using (var identity = WindowsIdentity.GetCurrent())
@@ -2150,7 +2161,7 @@ namespace MyGui.net
 
 		public static  async Task<UpdateInfo> CheckForUpdateAsync(string bearerToken = "")
 		{
-			httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.net");
+			httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.NET");
 			httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", bearerToken);
 			httpClient.DefaultRequestHeaders.Accept.Clear();
 
@@ -2177,8 +2188,8 @@ namespace MyGui.net
 				string downloadUrl = doc.RootElement.GetProperty("assets")
 				.EnumerateArray()
 				.Where(a =>
-					isSelfContained ? a.GetProperty("name").GetString().Contains("MyGui.Net-Standalone") : //Framework independent zip name
-										a.GetProperty("name").GetString().Contains("MyGui.Net-Framework-Dependant") //Framework dependent zip name
+					isSelfContained ? a.GetProperty("name").GetString().Contains("MyGui.NET-Standalone") : //Framework independent zip name
+										a.GetProperty("name").GetString().Contains("MyGui.NET-Framework-Dependant") //Framework dependent zip name
 				)
 				.Select(a => a.GetProperty("url").GetString())
 				.FirstOrDefault() ?? string.Empty;

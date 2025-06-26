@@ -70,7 +70,7 @@
 			label1.Name = "label1";
 			label1.Size = new Size(400, 26);
 			label1.TabIndex = 2;
-			label1.Text = "Welcome to MyGui.net, the Scrap Mechanic layout editor!";
+			label1.Text = "Welcome to MyGui.NET, the Scrap Mechanic Layout Editor!";
 			label1.TextAlign = ContentAlignment.MiddleCenter;
 			// 
 			// aboutButton

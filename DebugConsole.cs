@@ -46,7 +46,7 @@ namespace MyGui.net
 				Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
 				Console.SetIn(new StreamReader(Console.OpenStandardInput()));
 
-				Console.Title = "MyGui.net Debug Console";
+				Console.Title = "MyGui.NET Debug Console";
 				Console.CursorVisible = false;
 
 				// Redirect Debug and Trace output

@@ -39,7 +39,7 @@ namespace MyGui.net
 
 		private async Task DownloadFileAsync(string url, string destinationPath, string bearerToken, CancellationTokenSource cts)
 		{
-			Util.httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.net");
+			Util.httpClient.DefaultRequestHeaders.Add("User-Agent", "MyGui.NET");
 			Util.httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
 			Util.httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
 
@@ -52,7 +52,7 @@ namespace MyGui.net
 					response.EnsureSuccessStatusCode();
 
 
-					label1.Text = "Updating MyGui.net...";
+					label1.Text = "Updating MyGui.NET...";
 					// Get the actual content length from the headers
 					long? totalBytes = response.Content.Headers.ContentLength;
 
