@@ -203,9 +203,12 @@ namespace MyGui.net
 
 			set
 			{
-				widget.size = value;
-				//Recache Caption
-				widget.precomputedProperties.Remove("Caption");
+				if (value.X >= 0 && value.Y >= 0)
+				{
+					widget.size = value;
+					//Recache Caption
+					widget.precomputedProperties.Remove("Caption");
+				}
 			}
 		}
 		
