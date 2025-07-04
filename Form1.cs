@@ -2278,6 +2278,23 @@ namespace MyGui.net
 			}
 		}
 
+		private void treeView1_KeyDown(object sender, KeyEventArgs e)
+		{
+			if (_currentSelectedWidget != null)
+			{
+				bool didStuff = false;
+				if (e.KeyCode == Keys.Delete)
+				{
+					ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, CurrentLayout));
+					_currentSelectedWidget = null;
+					HandleWidgetSelection();
+					this.ActiveControl = null;
+					didStuff = true;
+				}
+				e.Handled = didStuff;
+			}
+		}
+
 		private void ShowEditorMenuStrip(Point position)
 		{
 			bool isWidgetSelected = _currentSelectedWidget != null;

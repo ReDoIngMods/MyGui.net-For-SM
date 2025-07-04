@@ -341,6 +341,7 @@ namespace MyGui.net
 			treeView1.AfterLabelEdit += treeView1_AfterLabelEdit;
 			treeView1.AfterSelect += treeView1_AfterSelect;
 			treeView1.NodeMouseClick += treeView1_NodeMouseClick;
+			treeView1.KeyDown += treeView1_KeyDown;
 			// 
 			// layoutExpandButton
 			// 
