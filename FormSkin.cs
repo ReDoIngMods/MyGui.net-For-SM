@@ -97,8 +97,14 @@ namespace MyGui.net
 			}
 			else
 			{
-				bindingSource.Filter = $"Name LIKE '*{searchValue}*'";
-				dataGridView1.Refresh();
+				try
+				{
+					bindingSource.Filter = $"Name LIKE '*{searchValue}*'";
+					dataGridView1.Refresh();
+				}
+				catch (Exception)
+				{
+				}
 			}
 		}
 

@@ -67,8 +67,15 @@ namespace MyGui.net
 			}
 			else
 			{
-				bindingSource.Filter = $"Tag LIKE '*{searchValue}*' OR Text LIKE '*{searchValue}*'";
-				dataGridView1.Refresh();
+				try
+				{
+					bindingSource.Filter = $"Tag LIKE '*{searchValue}*' OR Text LIKE '*{searchValue}*'";
+					dataGridView1.Refresh();
+				}
+				catch (Exception)
+				{
+				}
+				
 			}
 		}
 

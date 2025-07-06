@@ -70,8 +70,15 @@ namespace MyGui.net
 			}
 			else
 			{
-				bindingSource.Filter = $"Font LIKE '*{searchValue}*'";
-				dataGridView1.Refresh();
+				try
+				{
+					bindingSource.Filter = $"Font LIKE '*{searchValue}*'";
+					dataGridView1.Refresh();
+				}
+				catch (Exception)
+				{
+				}
+				
 			}
 		}
 
