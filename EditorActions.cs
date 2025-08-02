@@ -425,7 +425,7 @@
 		public override string ToString()
 		{
 			var actionsStr = string.Join(", ", _actions.Select(a => a.ToString()));
-			return $"CompountCommand: [{actionsStr}]";
+			return $"CompoundCommand: [{actionsStr}]";
 		}
 	}
 }
