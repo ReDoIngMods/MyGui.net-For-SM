@@ -9,13 +9,9 @@ namespace MyGui.net
 	// Wired in from the Form1 constructor via InitializeEditorEnhancements().
 	public partial class Form1
 	{
-		// New tree controls injected at runtime over the existing layoutMainPanel.
+		// Filter box injected at the top of the Layout tab. No action buttons —
+		// everything is accessible via the right-click menu and keyboard shortcuts.
 		private TextBox _treeFilterBox;
-		private Panel _treeToolbarPanel;
-		private Button _btnNewSibling;
-		private Button _btnDeleteNode;
-		private Button _btnMoveUp;
-		private Button _btnMoveDown;
 
 		// Tree context menu (replaces the right-click-renames behavior).
 		private ContextMenuStrip _treeContextMenu;
@@ -67,61 +63,14 @@ namespace MyGui.net
 
 		private void BuildLayoutTabUI()
 		{
-			// Replace the two giant text buttons + detach button with a compact toolbar
-			// stretched across the top, plus a filter box just below it.
+			// Header is filter-only. All actions live in the right-click context menu
+			// and keyboard shortcuts (F2 rename, Alt+↑/↓ reorder, Ctrl+D dup, Del, Ctrl+N).
 			layoutMainPanel.SuspendLayout();
 
-			// Hide originals (keep references alive so designer is happy).
+			// Hide the original designer buttons (kept around so the designer is happy).
 			layoutCollapseButton.Visible = false;
 			layoutExpandButton.Visible = false;
 			layoutToNewWindowButton.Visible = false;
-
-			_treeToolbarPanel = new Panel
-			{
-				Dock = DockStyle.Top,
-				Height = 28,
-				Padding = new Padding(4, 3, 4, 3),
-			};
-
-			var btnCollapse = MakeFlatToolButton("⮜", "Collapse All", (_, __) => treeView1.CollapseAll());
-			var btnExpand = MakeFlatToolButton("⮟", "Expand All", (_, __) => treeView1.ExpandAll());
-			_btnNewSibling = MakeFlatToolButton("＋", "New Widget (Ctrl+N)", (_, __) =>
-			{
-				_viewportFocused = true;
-				Form1_KeyDown(this, new KeyEventArgs(Keys.Control | Keys.N));
-			});
-			_btnDeleteNode = MakeFlatToolButton("🗑", "Delete (Del)", (_, __) =>
-			{
-				if (_currentSelectedWidget == null) return;
-				ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, CurrentLayout));
-				_currentSelectedWidget = null;
-				HandleWidgetSelection();
-			});
-			_btnMoveUp = MakeFlatToolButton("▲", "Move Up (Alt+↑)", (_, __) => MoveSelectedWidget(-1));
-			_btnMoveDown = MakeFlatToolButton("▼", "Move Down (Alt+↓)", (_, __) => MoveSelectedWidget(1));
-			var btnDetach = MakeFlatToolButton("⛶", "Detach / Attach Layout tab", layoutToNewWindowButton_Click);
-
-			// Right-aligned detach button via flow.
-			var leftFlow = new FlowLayoutPanel
-			{
-				Dock = DockStyle.Left,
-				FlowDirection = FlowDirection.LeftToRight,
-				WrapContents = false,
-				AutoSize = true,
-				Margin = new Padding(0),
-				Padding = new Padding(0),
-			};
-			leftFlow.Controls.Add(btnCollapse);
-			leftFlow.Controls.Add(btnExpand);
-			leftFlow.Controls.Add(new Label { AutoSize = false, Width = 8 }); // small gap
-			leftFlow.Controls.Add(_btnNewSibling);
-			leftFlow.Controls.Add(_btnDeleteNode);
-			leftFlow.Controls.Add(_btnMoveUp);
-			leftFlow.Controls.Add(_btnMoveDown);
-
-			btnDetach.Dock = DockStyle.Right;
-			_treeToolbarPanel.Controls.Add(leftFlow);
-			_treeToolbarPanel.Controls.Add(btnDetach);
 
 			_treeFilterBox = new TextBox
 			{
@@ -135,41 +84,18 @@ namespace MyGui.net
 				if (ev.KeyCode == Keys.Escape) { _treeFilterBox.Text = ""; ev.Handled = true; }
 			};
 
-			// Insert at top of layoutMainPanel: filter (below toolbar) then toolbar.
-			// We dock both Top so the LATER-added one appears higher; add filter first then toolbar.
 			layoutMainPanel.Controls.Add(_treeFilterBox);
-			layoutMainPanel.Controls.Add(_treeToolbarPanel);
 
-			// Reflow treeView1 so it fills the remaining space cleanly.
 			treeView1.Anchor = AnchorStyles.None;
 			treeView1.Dock = DockStyle.Fill;
+
+			// WinForms applies Dock in REVERSE z-order: backmost docks first.
+			// Filter must be backmost so it claims its Top strip before Fill eats the rest.
 			treeView1.BringToFront();
-			_treeFilterBox.BringToFront();
-			_treeToolbarPanel.BringToFront();
+			_treeFilterBox.SendToBack();
 
-			// Resequence so order is: toolbar (top, on top), filter (below toolbar), tree (fill).
-			layoutMainPanel.Controls.SetChildIndex(_treeToolbarPanel, 0);
-			layoutMainPanel.Controls.SetChildIndex(_treeFilterBox, 1);
-
+			layoutMainPanel.PerformLayout();
 			layoutMainPanel.ResumeLayout();
-		}
-
-		private static Button MakeFlatToolButton(string text, string tooltip, EventHandler onClick)
-		{
-			var btn = new Button
-			{
-				Text = text,
-				Size = new Size(28, 22),
-				Margin = new Padding(1, 0, 1, 0),
-				FlatStyle = FlatStyle.Flat,
-				UseVisualStyleBackColor = true,
-				TabStop = false,
-			};
-			btn.FlatAppearance.BorderSize = 0;
-			btn.Click += onClick;
-			var tip = new ToolTip();
-			tip.SetToolTip(btn, tooltip);
-			return btn;
 		}
 
 		private void ApplyTreeFilter(string filter)

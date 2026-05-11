@@ -388,6 +388,8 @@
 
 	// Moves a widget between parents and/or sibling positions. Used by the Layout-tab
 	// drag-drop, Move Up/Down buttons, and Alt+arrow shortcuts.
+	// When reparenting, the widget's local position is recomputed so its absolute
+	// on-screen position is preserved.
 	public class ReorderCommand : IEditorAction
 	{
 		private string _reason;
@@ -397,6 +399,11 @@
 		private readonly MyGuiWidgetData _newParent;
 		private int _newIndex;
 		private readonly List<MyGuiWidgetData> _rootList;
+
+		// Position bookkeeping for the reparent-preserves-screen-position trick.
+		private Point _oldPosition;
+		private Point _newPosition;
+		private bool _positionAdjusted;
 
 		public ReorderCommand(MyGuiWidgetData widget, MyGuiWidgetData oldParent, int oldIndex,
 			MyGuiWidgetData newParent, int newIndex, List<MyGuiWidgetData> rootList)
@@ -414,6 +421,10 @@
 			_reason = reason;
 			if (_oldParent == _newParent && _oldIndex == _newIndex) return false;
 
+			// Snapshot screen-absolute position BEFORE we mutate the tree.
+			Point absolute = Util.GetAbsolutePosition(_widget, _rootList);
+			_oldPosition = _widget.position;
+
 			RemoveFrom(_oldParent, _oldIndex);
 
 			// If moving within the same list and the new index is past the removed item,
@@ -424,6 +435,19 @@
 			_newIndex = insertAt; // remember the actual index used so Undo is symmetric
 
 			InsertInto(_newParent, insertAt, _widget);
+
+			// When the parent changes, recompute local position so the widget stays put on screen.
+			// Pure-sibling reorders don't change the parent chain and need no adjustment.
+			if (_oldParent != _newParent)
+			{
+				// TransformPointToLocal includes the widget's OWN position in the subtraction,
+				// so we feed it the absolute (which already has the widget's own contribution)
+				// and add the widget's current position back to land on the right local value.
+				var parentAbs = _newParent != null ? Util.GetAbsolutePosition(_newParent, _rootList) : Point.Empty;
+				_newPosition = new Point(absolute.X - parentAbs.X, absolute.Y - parentAbs.Y);
+				_widget.position = _newPosition;
+				_positionAdjusted = true;
+			}
 			return true;
 		}
 
@@ -435,6 +459,10 @@
 			if (_oldParent == _newParent && _oldIndex > _newIndex) insertAt--;
 			insertAt = Math.Clamp(insertAt, 0, ListFor(_oldParent).Count);
 			InsertInto(_oldParent, insertAt, _widget);
+			if (_positionAdjusted)
+			{
+				_widget.position = _oldPosition;
+			}
 			return true;
 		}
 
