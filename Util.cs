@@ -1804,11 +1804,12 @@ namespace MyGui.net
 		// matches what the user sees. Returns the widget's effective absolute rect.
 		private static SKRect GetAlignedAbsoluteRect(MyGuiWidgetData root, MyGuiWidgetData? parent, Point baseAbsolute)
 		{
-			if (parent == null || string.IsNullOrEmpty(root.align))
+			string align = root.align ?? "";
+			if (align == "" || align == "Default" || align == "[DEFAULT]" || align == "Left Top")
 			{
 				return new SKRect(baseAbsolute.X, baseAbsolute.Y, baseAbsolute.X + root.size.X, baseAbsolute.Y + root.size.Y);
 			}
-			return RenderBackend.GetWidgetOffset(root, parent, baseAbsolute, new Point(root.size.X, root.size.Y));
+			return RenderBackend.GetEditorAlignedRect(root, parent, baseAbsolute);
 		}
 
 		private static MyGuiWidgetData? GetTopmostControlAtPointRecursive(MyGuiWidgetData root, MyGuiWidgetData? parentWidget, Point parentPos, Point screenPoint, MyGuiWidgetData[]? excludeWidgets)

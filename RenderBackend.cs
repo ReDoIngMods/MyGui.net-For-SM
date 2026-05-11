@@ -143,12 +143,13 @@ namespace MyGui.net
 
 				widgetPosition = new(widget.position.X, widget.position.Y);
 			}
-			else if (parent != null && parent != widgetSecondaryData && !string.IsNullOrEmpty(widget.align))
+			else if (parent != widgetSecondaryData && !string.IsNullOrEmpty(widget.align) && widget.align != "Default" && widget.align != "[DEFAULT]" && widget.align != "Left Top")
 			{
-				// Editor-mode alignment: apply widget.align so options like Center / Right Top / Stretch
-				// have a visible effect, but don't mutate widget.position/size — the user still owns those
-				// values for dragging, undo/redo, and serialization.
-				rect = GetWidgetOffset(widget, parent, new((int)widgetPosition.X, (int)widgetPosition.Y), oldSizeParam);
+				// Editor-mode alignment: apply widget.align so options like Center / Right Top /
+				// Stretch have a visible effect even at the root (where ProjectSize is the
+				// implicit parent). Doesn't mutate widget.position/size so the user still owns
+				// those for dragging, undo/redo, and serialization.
+				rect = GetEditorAlignedRect(widget, parent, new((int)widgetPosition.X, (int)widgetPosition.Y));
 				widgetPosition = new(rect.Location.X, rect.Location.Y);
 
 				/*var textPaint = new SKPaint
@@ -291,6 +292,47 @@ namespace MyGui.net
 
 			// Restore the canvas to its previous state (removes clipping for this widget)
 			canvas.RestoreToCount(saveBeforeAll);
+		}
+
+		// Editor-mode alignment. Interprets widget.align as a layout anchor relative to the
+		// parent's CURRENT size (parent.size if non-null, else Form1.ProjectSize). Unlike
+		// GetWidgetOffset (which is geared for runtime parent-resize deltas and collapses to
+		// no-op in the editor where parent.size == parentOriginalSize), this is what users
+		// want to see when they pick "Center", "Right Top", etc. in the property panel.
+		public static SKRect GetEditorAlignedRect(MyGuiWidgetData current, MyGuiWidgetData? parent, Point currentPosition)
+		{
+			int pw = parent != null ? parent.size.X : Form1.ProjectSize.Width;
+			int ph = parent != null ? parent.size.Y : Form1.ProjectSize.Height;
+			int ww = current.size.X;
+			int wh = current.size.Y;
+
+			// currentPosition is the widget's absolute screen position (parentAbs + widget.position).
+			int parentAbsX = currentPosition.X - current.position.X;
+			int parentAbsY = currentPosition.Y - current.position.Y;
+
+			int x = currentPosition.X;
+			int y = currentPosition.Y;
+			int w = ww;
+			int h = wh;
+
+			string align = current.align ?? "";
+			if (align == "Stretch") align = "HStretch VStretch";
+			else if (align == "Center") align = "HCenter VCenter";
+
+			// Tokens are space-separated; one horizontal + one vertical (either may be absent).
+			bool hasH(string token) => align.Contains(token);
+
+			if (hasH("HCenter")) { x = parentAbsX + (pw - ww) / 2; }
+			else if (hasH("HStretch")) { x = parentAbsX; w = pw; }
+			else if (hasH("Right")) { x = parentAbsX + pw - ww; }
+			// else "Left" / "Default" / unspecified → keep x = currentPosition.X
+
+			if (hasH("VCenter")) { y = parentAbsY + (ph - wh) / 2; }
+			else if (hasH("VStretch")) { y = parentAbsY; h = ph; }
+			else if (hasH("Bottom")) { y = parentAbsY + ph - wh; }
+			// else "Top" / "Default" / unspecified → keep y
+
+			return new SKRect(x, y, x + w, y + h);
 		}
 
 		public static SKRect GetWidgetOffset(MyGuiWidgetData current, MyGuiWidgetData parent, Point currentPosition, Point parentOriginalSize)
