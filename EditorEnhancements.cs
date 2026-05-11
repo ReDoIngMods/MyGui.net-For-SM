@@ -1,4 +1,6 @@
 using MyGui.net.Properties;
+using SkiaSharp;
+using System.IO;
 using System.Xml.Linq;
 using System.Windows.Forms;
 using static MyGui.net.Util;
@@ -486,12 +488,15 @@ namespace MyGui.net
 			yield return new PaletteEntry { Type = "ItemBox", Skin = "ItemBox", DisplayName = "ItemBox", Description = "Item slot container.", DefaultSize = new Size(64, 64) };
 		}
 
+		// Size of the rendered skin preview shown on the left edge of each palette card.
+		private const int PalettePreviewSize = 48;
+
 		private Control BuildPaletteCard(PaletteEntry entry)
 		{
 			var card = new Button
 			{
 				Width = 250,
-				Height = 44,
+				Height = PalettePreviewSize + 12,
 				Margin = new Padding(0, 0, 0, 4),
 				FlatStyle = FlatStyle.Flat,
 				TextAlign = ContentAlignment.MiddleLeft,
@@ -509,6 +514,24 @@ namespace MyGui.net
 			var tip = new ToolTip();
 			tip.SetToolTip(card, $"{entry.DisplayName}\nType: {entry.Type}\nSkin: {entry.Skin}");
 
+			// Skins are loaded after Form1's constructor runs, so we generate the preview
+			// lazily on the first Paint where AllResources has the entry's skin.
+			card.Paint += (s, _) =>
+			{
+				var btn = (Button)s;
+				if (btn.Image != null) return;
+				if (!RenderBackend.AllResources.ContainsKey(entry.Skin)) return;
+				try
+				{
+					btn.Image = RenderPalettePreview(entry, PalettePreviewSize, PalettePreviewSize);
+					btn.Invalidate();
+				}
+				catch
+				{
+					// Don't let a single bad skin take out the palette — show the card without a preview.
+				}
+			};
+
 			card.Click += (_, __) => InsertPaletteEntryAtViewportCenter(entry);
 			card.MouseDown += (s, ev) =>
 			{
@@ -519,6 +542,46 @@ namespace MyGui.net
 				}
 			};
 			return card;
+		}
+
+		// Renders the entry's skin at its DefaultSize, scaled to fit a (width × height)
+		// preview bitmap. Used by the Widgets-tab cards.
+		private static Bitmap RenderPalettePreview(PaletteEntry entry, int width, int height)
+		{
+			var widget = new MyGuiWidgetData
+			{
+				type = entry.Type,
+				skin = entry.Skin,
+				size = new Point(entry.DefaultSize.Width, entry.DefaultSize.Height),
+				position = new Point(0, 0)
+			};
+
+			float scale = Math.Min(width / (float)widget.size.X, height / (float)widget.size.Y);
+			float scaledW = widget.size.X * scale;
+			float scaledH = widget.size.Y * scale;
+
+			var info = new SKImageInfo(width, height, SKColorType.Bgra8888, SKAlphaType.Premul);
+			using var surface = SKSurface.Create(info);
+			var canvas = surface.Canvas;
+			canvas.Clear(SKColors.Transparent);
+
+			int save = canvas.Save();
+			canvas.Translate((width - scaledW) / 2f, (height - scaledH) / 2f);
+			canvas.Scale(scale);
+
+			var opts = new RenderBackend.RenderOptions(true)
+			{
+				doHighlights = false,
+				renderWidgetNames = false,
+				renderInvisibleSkinWidgets = false,
+			};
+			RenderBackend.DrawWidget(canvas, widget, new SKPoint(0, 0), null, opts);
+			canvas.RestoreToCount(save);
+
+			using var image = surface.Snapshot();
+			using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+			using var stream = new MemoryStream(data.ToArray());
+			return new Bitmap(stream);
 		}
 
 		private void ApplyPaletteFilter(string filter)
