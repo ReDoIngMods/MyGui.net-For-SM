@@ -117,6 +117,7 @@ namespace MyGui.net
 		public Form1(string _DefaultOpenedDir = "")
 		{
 			InitializeComponent();
+			InitializeEditorEnhancements();
 			DebugConsole.CloseConsoleOnExit(this);
 			HandleLoad(_DefaultOpenedDir);
 			if (Settings.Default.Theme == 0 || (Settings.Default.Theme == 1 && !Util.IsSystemDarkMode))
@@ -576,7 +577,6 @@ namespace MyGui.net
 			return null;
 		}
 
-		//Here lies quick rename, it had caused some of the weirdest issues that ever existed.
 		private void treeView1_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
 		{
 			treeView1.LabelEdit = false;
@@ -585,9 +585,19 @@ namespace MyGui.net
 				e.CancelEdit = true;
 				return;
 			}
-			e.Node.EndEdit(false);
-			ExecuteCommand(new ChangePropertyCommand((MyGuiWidgetData)e.Node.Tag, "Name", e.Label ?? ""));
-			LoadTreeView(CurrentLayout);
+			var widget = (MyGuiWidgetData)e.Node.Tag;
+			var newName = e.Label ?? widget.name ?? "";
+
+			// Always cancel the default text replacement; we'll set the node text
+			// ourselves to the formatted "Name (Type)" string. This also prevents
+			// the whole-tree rebuild that used to follow renames and reset state.
+			e.CancelEdit = true;
+
+			if ((widget.name ?? "") != newName)
+			{
+				ExecuteCommand(new ChangePropertyCommand(widget, "Name", newName), reloadTree: false);
+			}
+			e.Node.Text = FormatTreeNodeText(widget);
 		}
 
 		private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -599,9 +609,7 @@ namespace MyGui.net
 			if (e.Button == MouseButtons.Right)
 			{
 				treeView1.SelectedNode = e.Node;
-				e.Node.Text = ((MyGuiWidgetData)e.Node.Tag).name ?? "";
-				treeView1.LabelEdit = true;
-				e.Node.BeginEdit();
+				ShowTreeContextMenu(e.Node, treeView1.PointToScreen(e.Location));
 			}
 		}
 
@@ -631,7 +639,7 @@ namespace MyGui.net
 			// Loop through each item in the custom list
 			foreach (var customItem in customList)
 			{
-				string treeNodeText = (string.IsNullOrEmpty(customItem.name) ? "[DEFAULT]" : customItem.name) + (string.IsNullOrEmpty(customItem.name) || Settings.Default.ShowTypesForNamedWidgets ? $" ({customItem.type})" : "");
+				string treeNodeText = FormatTreeNodeText(customItem);
 
 				TreeNode rootNode = new TreeNode(treeNodeText);
 				rootNode.Tag = customItem;
@@ -654,8 +662,7 @@ namespace MyGui.net
 		{
 			foreach (var child in children)
 			{
-
-				string treeNodeText = ((child.name ?? "") == "" ? "[DEFAULT]" : child.name) + ((child.name ?? "") == "" || Settings.Default.ShowTypesForNamedWidgets ? $" ({child.type})" : "");
+				string treeNodeText = FormatTreeNodeText(child);
 
 				TreeNode childNode = new(treeNodeText);
 				childNode.Tag = child;
@@ -701,12 +708,12 @@ namespace MyGui.net
 			}
 		}
 
-		void ExecuteCommand(IEditorAction command, string reason = null)
+		void ExecuteCommand(IEditorAction command, string reason = null, bool reloadTree = true)
 		{
 			CommandManager.ExecuteCommand(command, reason);
 
 			viewport.Refresh();
-			UpdateUndoRedo();
+			UpdateUndoRedo(reloadTree: reloadTree);
 		}
 
 		void ClearStacks()
@@ -1967,7 +1974,7 @@ namespace MyGui.net
 			UpdateUndoRedo(true);
 		}
 
-		public void UpdateUndoRedo(bool updateOnlyActionHistory = false)
+		public void UpdateUndoRedo(bool updateOnlyActionHistory = false, bool reloadTree = true)
 		{
 			this.Text = $"{Util.programName} - {(_currentLayoutPath == "" ? "unnamed" : (Settings.Default.ShowFullFilePathInTitle ? _currentLayoutPath : Path.GetFileName(_currentLayoutPath)))}{(CommandManager.GetUndoStackCount() > 0 ? "*" : "")}";
 
@@ -2038,7 +2045,8 @@ namespace MyGui.net
 				return;
 			}
 
-			LoadTreeView(CurrentLayout);
+			if (reloadTree)
+				LoadTreeView(CurrentLayout);
 
 			undoToolStripMenuItem.Enabled = CommandManager.GetUndoStackCount() > 0;
 			redoToolStripMenuItem.Enabled = CommandManager.GetRedoStackCount() > 0;
@@ -2257,8 +2265,10 @@ namespace MyGui.net
 							_draggedWidgetPositionStart = _currentSelectedWidget.position;
 						}
 
-						int deltaX = (Util.IsKeyPressed(Keys.Left) ? -1 : (Util.IsKeyPressed(Keys.Right) ? 1 : 0)) * _gridSpacing;
-						int deltaY = (Util.IsKeyPressed(Keys.Up) ? -1 : (Util.IsKeyPressed(Keys.Down) ? 1 : 0)) * _gridSpacing;
+						// Step size: Shift = grid spacing, Ctrl = 10px coarse, no modifier = 1px fine.
+						int step = e.Shift ? Math.Max(1, _gridSpacing) : (e.Control ? 10 : 1);
+						int deltaX = (Util.IsKeyPressed(Keys.Left) ? -1 : (Util.IsKeyPressed(Keys.Right) ? 1 : 0)) * step;
+						int deltaY = (Util.IsKeyPressed(Keys.Up) ? -1 : (Util.IsKeyPressed(Keys.Down) ? 1 : 0)) * step;
 
 						_currentSelectedWidget.position += new Size(deltaX, deltaY);
 						this.ActiveControl = null;
@@ -2434,7 +2444,15 @@ namespace MyGui.net
 			var property = e.ChangedItem.Parent?.PropertyDescriptor != null ? e.ChangedItem.Parent : e.ChangedItem;
 
 			var value = Util.IsAnyOf<string>(property.Value?.ToString() ?? "", ["[DEFAULT]", "Default", ""]) ? null : property.Value;
-			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, property.PropertyDescriptor.Name, value, e.OldValue));
+			ExecuteCommand(new ChangePropertyCommand(_currentSelectedWidget, property.PropertyDescriptor.Name, value, e.OldValue), reloadTree: false);
+
+			// Refresh just the selected node's label if a property that affects the
+			// label changed (Name / Type / Skin). Avoids a full tree rebuild.
+			if (treeView1.SelectedNode != null && treeView1.SelectedNode.Tag == _currentSelectedWidget &&
+				(property.PropertyDescriptor.Name == "Name" || property.PropertyDescriptor.Name == "Type" || property.PropertyDescriptor.Name == "Skin"))
+			{
+				treeView1.SelectedNode.Text = FormatTreeNodeText(_currentSelectedWidget);
+			}
 		}
 		private void Form1_ResizeBegin(object sender, EventArgs e)
 		{

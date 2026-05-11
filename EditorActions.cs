@@ -386,6 +386,83 @@
 		}
 	}
 
+	// Moves a widget between parents and/or sibling positions. Used by the Layout-tab
+	// drag-drop, Move Up/Down buttons, and Alt+arrow shortcuts.
+	public class ReorderCommand : IEditorAction
+	{
+		private string _reason;
+		private readonly MyGuiWidgetData _widget;
+		private readonly MyGuiWidgetData _oldParent;
+		private readonly int _oldIndex;
+		private readonly MyGuiWidgetData _newParent;
+		private int _newIndex;
+		private readonly List<MyGuiWidgetData> _rootList;
+
+		public ReorderCommand(MyGuiWidgetData widget, MyGuiWidgetData oldParent, int oldIndex,
+			MyGuiWidgetData newParent, int newIndex, List<MyGuiWidgetData> rootList)
+		{
+			_widget = widget;
+			_oldParent = oldParent;
+			_oldIndex = oldIndex;
+			_newParent = newParent;
+			_newIndex = newIndex;
+			_rootList = rootList;
+		}
+
+		public bool Execute(string? reason = null)
+		{
+			_reason = reason;
+			if (_oldParent == _newParent && _oldIndex == _newIndex) return false;
+
+			RemoveFrom(_oldParent, _oldIndex);
+
+			// If moving within the same list and the new index is past the removed item,
+			// the indices have shifted by one.
+			int insertAt = _newIndex;
+			if (_oldParent == _newParent && _newIndex > _oldIndex) insertAt--;
+			insertAt = Math.Clamp(insertAt, 0, ListFor(_newParent).Count);
+			_newIndex = insertAt; // remember the actual index used so Undo is symmetric
+
+			InsertInto(_newParent, insertAt, _widget);
+			return true;
+		}
+
+		public bool Undo()
+		{
+			RemoveFrom(_newParent, _newIndex);
+			int insertAt = _oldIndex;
+			// Same kind of compensation in reverse.
+			if (_oldParent == _newParent && _oldIndex > _newIndex) insertAt--;
+			insertAt = Math.Clamp(insertAt, 0, ListFor(_oldParent).Count);
+			InsertInto(_oldParent, insertAt, _widget);
+			return true;
+		}
+
+		private IList<MyGuiWidgetData> ListFor(MyGuiWidgetData parent)
+			=> parent != null ? (IList<MyGuiWidgetData>)parent.children : _rootList;
+
+		private void RemoveFrom(MyGuiWidgetData parent, int index)
+		{
+			var list = ListFor(parent);
+			if (index < 0 || index >= list.Count) return;
+			list.RemoveAt(index);
+		}
+
+		private void InsertInto(MyGuiWidgetData parent, int index, MyGuiWidgetData widget)
+		{
+			var list = ListFor(parent);
+			index = Math.Clamp(index, 0, list.Count);
+			list.Insert(index, widget);
+		}
+
+		public string[] ToHumanReadable() =>
+			[$"{(_reason != null ? $"({_reason}) " : "")}Widget Reordered",
+				$"Moved \"{_widget.name ?? "[DEFAULT]"}\" from {(_oldParent?.name ?? "<root>")}[{_oldIndex}] to {(_newParent?.name ?? "<root>")}[{_newIndex}]"];
+
+		public override string ToString() =>
+			$"ReorderCommand: {_widget} from {(_oldParent?.ToString() ?? "<root>")}[{_oldIndex}] to {(_newParent?.ToString() ?? "<root>")}[{_newIndex}]";
+	}
+
 	public class CompoundCommand : IEditorAction
 	{
 		private string _reason = null;
