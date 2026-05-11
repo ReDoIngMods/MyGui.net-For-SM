@@ -843,6 +843,57 @@ namespace MyGui.net
 
 		#endregion
 
+		#region Marquee selection
+
+		// Recursively collect every widget whose aligned bounds intersect the marquee rect.
+		// Coords are in viewport-pixel (canvas) space — same space DrawWidget uses.
+		private List<MyGuiWidgetData> MarqueeCollect(SKRect marqueeRect)
+		{
+			var hits = new List<MyGuiWidgetData>();
+
+			void Visit(MyGuiWidgetData node)
+			{
+				var bounds = Util.GetAlignedAbsoluteBounds(node, CurrentLayout);
+				if (bounds.IntersectsWith(marqueeRect))
+				{
+					hits.Add(node);
+				}
+				foreach (var c in node.children) Visit(c);
+			}
+			foreach (var root in CurrentLayout) Visit(root);
+			return hits;
+		}
+
+		// Reusable paints so we don't allocate per frame.
+		private static readonly SKPaint _marqueeFillPaint = new SKPaint
+		{
+			Color = new SKColor(0, 120, 215, 40),
+			Style = SKPaintStyle.Fill,
+			IsAntialias = false,
+		};
+		private static readonly SKPaint _marqueeStrokePaint = new SKPaint
+		{
+			Color = new SKColor(0, 120, 215, 220),
+			Style = SKPaintStyle.Stroke,
+			StrokeWidth = 1,
+			IsAntialias = false,
+		};
+
+		// Called from viewport_PaintSurface while the canvas matrix is the viewport transform.
+		internal void DrawMarquee(SKCanvas canvas)
+		{
+			if (!_marqueeActive) return;
+			float x1 = Math.Min(_marqueeStart.X, _marqueeCurrent.X);
+			float y1 = Math.Min(_marqueeStart.Y, _marqueeCurrent.Y);
+			float x2 = Math.Max(_marqueeStart.X, _marqueeCurrent.X);
+			float y2 = Math.Max(_marqueeStart.Y, _marqueeCurrent.Y);
+			var r = new SKRect(x1, y1, x2, y2);
+			canvas.DrawRect(r, _marqueeFillPaint);
+			canvas.DrawRect(r, _marqueeStrokePaint);
+		}
+
+		#endregion
+
 		#region Viewport grid
 
 		// Reusable paint so we don't allocate per frame.

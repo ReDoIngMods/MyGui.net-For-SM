@@ -23,6 +23,17 @@ namespace MyGui.net
 		public static MyGuiWidgetData? _currentSelectedWidget;
 		public static MyGuiWidgetData? _currentHoveredWidget;
 
+		// Secondary multi-selection. Always includes _currentSelectedWidget when non-null;
+		// extra members come from Shift-click and marquee. Most existing call sites still
+		// operate on the primary; render path and Delete iterate the whole set.
+		public static HashSet<MyGuiWidgetData> _selectedWidgets = new();
+
+		// Marquee state (LMB-drag on empty space). Coords stored in viewport-pixel space.
+		static bool _marqueeActive;
+		static Point _marqueeStart;
+		static Point _marqueeCurrent;
+		static bool _marqueeShiftAtStart;
+
 		static SKMatrix _viewportMatrix = SKMatrix.CreateIdentity();
 		static float _viewportScale = 1f;
 		static SKPoint _mouseDeltaLoc = new();
@@ -527,6 +538,10 @@ namespace MyGui.net
 		void HandleWidgetSelection()
 		{
 			UpdateProperties();
+			// Keep the multi-selection set in sync with the primary selection by default.
+			// Marquee finalize re-adds extra widgets right after calling this.
+			_selectedWidgets.Clear();
+			if (_currentSelectedWidget != null) _selectedWidgets.Add(_currentSelectedWidget);
 			if (_currentSelectedWidget == null)
 			{
 				viewport.Refresh();
@@ -994,8 +1009,26 @@ namespace MyGui.net
 				SurfacePaint.StrokeWidth = highlight.Value.width;
 				canvas.DrawRect(selectionRect, SurfacePaint);
 			}
-			//stopwatch.Stop();
-			//System.Diagnostics.Debug.WriteLine($"Frame render time: {stopwatch.ElapsedMilliseconds} ms");
+
+			// Multi-selection: outline every extra widget (i.e. everything in _selectedWidgets
+			// other than the primary, which already got drawn above) so the user can see what
+			// the marquee picked up.
+			foreach (var w in _selectedWidgets)
+			{
+				if (w == _currentSelectedWidget) continue;
+				var b = Util.GetAlignedAbsoluteBounds(w, CurrentLayout);
+				var expanded = new SKRect(
+					b.Left - SelectionBorderSize / 2f,
+					b.Top - SelectionBorderSize / 2f,
+					b.Right + SelectionBorderSize / 2f,
+					b.Bottom + SelectionBorderSize / 2f);
+				SurfacePaint.Color = SKColors.Green.WithAlpha(80);
+				SurfacePaint.Style = SKPaintStyle.Stroke;
+				SurfacePaint.StrokeWidth = SelectionBorderSize;
+				canvas.DrawRect(expanded, SurfacePaint);
+			}
+
+			DrawMarquee(canvas);
 		}
 
 
@@ -1015,6 +1048,19 @@ namespace MyGui.net
 				_mouseLoc = e.Location;
 				_mouseDeltaLoc = new SKPoint(0, 0);
 				sender.Cursor = Cursors.NoMove2D;
+			}
+			// Shift+LMB starts a marquee selection. Suppresses all widget interaction
+			// (no drag, no border-resize, no click-through to widgets) until release.
+			else if (e.Button == MouseButtons.Left && Util.IsKeyPressed(Keys.ShiftKey))
+			{
+				_marqueeActive = true;
+				_marqueeStart = viewportPixelPos;
+				_marqueeCurrent = viewportPixelPos;
+				_marqueeShiftAtStart = true;
+				_mouseLoc = e.Location;
+				sender.Cursor = Cursors.Cross;
+				viewport.Refresh();
+				return;
 			}
 			else if (e.Button == MouseButtons.Left)
 			{
@@ -1192,6 +1238,16 @@ namespace MyGui.net
 			Point viewportRelPos = e.Location;
 			SKPoint viewportPixelPos = new SKPoint((viewportRelPos.X / _viewportScale - _viewportOffset.X), (viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
 			Point viewportPixelPosPoint = new Point((int)viewportPixelPos.X, (int)viewportPixelPos.Y);
+
+			// While the marquee is active, suppress all widget interaction (hover,
+			// border detection, cursor changes). Just update the marquee rect.
+			if (_marqueeActive)
+			{
+				_marqueeCurrent = viewportPixelPosPoint;
+				sender.Cursor = Cursors.Cross;
+				viewport.Refresh();
+				return;
+			}
 
 			bool topmostWidgetRan = false;
 			bool holdingShift = Util.IsKeyPressed(Keys.ShiftKey);
@@ -1487,6 +1543,37 @@ namespace MyGui.net
 		void Viewport_MouseUp(object senderAny, MouseEventArgs e)
 		{
 			Control sender = (Control)senderAny;
+
+			// Finalize marquee selection. A zero-area marquee (Shift-click without drag)
+			// just clears itself without changing the existing selection.
+			if (_marqueeActive && e.Button == MouseButtons.Left)
+			{
+				_marqueeActive = false;
+				sender.Cursor = Cursors.Default;
+
+				int x1 = Math.Min(_marqueeStart.X, _marqueeCurrent.X);
+				int y1 = Math.Min(_marqueeStart.Y, _marqueeCurrent.Y);
+				int x2 = Math.Max(_marqueeStart.X, _marqueeCurrent.X);
+				int y2 = Math.Max(_marqueeStart.Y, _marqueeCurrent.Y);
+				if (x2 - x1 >= 2 && y2 - y1 >= 2)
+				{
+					var marqueeRect = new SKRect(x1, y1, x2, y2);
+					var hits = MarqueeCollect(marqueeRect);
+					if (hits.Count > 0)
+					{
+						// Take a snapshot of the existing multi-selection (so additive Shift+drag
+						// extends the previous pick instead of replacing it).
+						var prev = new HashSet<MyGuiWidgetData>(_selectedWidgets);
+						_currentSelectedWidget = hits[hits.Count - 1];
+						HandleWidgetSelection(); // resets _selectedWidgets to {primary}
+						foreach (var w in prev) _selectedWidgets.Add(w);
+						foreach (var w in hits) _selectedWidgets.Add(w);
+					}
+				}
+				viewport.Refresh();
+				return;
+			}
+
 			if (e.Button == MouseButtons.Right)
 			{
 				if (!_movedViewport)
@@ -2368,7 +2455,16 @@ namespace MyGui.net
 					}
 					if (e.KeyCode == Keys.Delete)
 					{
-						ExecuteCommand(new DeleteControlCommand(_currentSelectedWidget, CurrentLayout));
+						// Delete every widget in the multi-selection (snapshot the set so it
+						// doesn't change mid-iteration when each ExecuteCommand fires).
+						var toDelete = _selectedWidgets.Count > 0
+							? new List<MyGuiWidgetData>(_selectedWidgets)
+							: new List<MyGuiWidgetData> { _currentSelectedWidget };
+						foreach (var w in toDelete)
+						{
+							ExecuteCommand(new DeleteControlCommand(w, CurrentLayout));
+						}
+						_selectedWidgets.Clear();
 						_currentSelectedWidget = null;
 						HandleWidgetSelection();
 						this.ActiveControl = null;
