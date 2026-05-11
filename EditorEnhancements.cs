@@ -676,7 +676,7 @@ namespace MyGui.net
 		private static IEnumerable<PaletteEntry> GetPaletteEntries()
 		{
 			yield return new PaletteEntry { Type = "Widget", Skin = "PanelEmpty", DisplayName = "Widget", Description = "Generic invisible container.", DefaultSize = new Size(200, 150) };
-			yield return new PaletteEntry { Type = "Widget", Skin = "InventoryBackground", DisplayName = "Panel (HUD)", Description = "SM inventory-style background.", DefaultSize = new Size(300, 200) };
+			yield return new PaletteEntry { Type = "Widget", Skin = "BackgroundEngineNoUpgrade", DisplayName = "Panel", Description = "SM blurry-engine panel background.", DefaultSize = new Size(300, 200) };
 			yield return new PaletteEntry { Type = "TextBox", Skin = "SMTextBox_NoBackground", DisplayName = "TextBox", Description = "SM-styled static text label.", DefaultSize = new Size(200, 30) };
 			yield return new PaletteEntry { Type = "TextBox", Skin = "SMTextBox_Small_NoBackground", DisplayName = "TextBox (small)", Description = "Small SM-styled static text.", DefaultSize = new Size(160, 22) };
 			yield return new PaletteEntry { Type = "Button", Skin = "SMButton", DisplayName = "Button", Description = "Standard SM button.", DefaultSize = new Size(120, 30) };
