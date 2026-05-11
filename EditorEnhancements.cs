@@ -37,15 +37,210 @@ namespace MyGui.net
 		// Drag state for palette-to-canvas creation.
 		private string _paletteDragType;
 
+		// Properties-panel header bits.
+		private Panel _propsHeader;
+		private Panel _propsHeaderStripe;
+		private Label _propsHeaderTitle;
+		private Label _propsHeaderSubtitle;
+
 		private void InitializeEditorEnhancements()
 		{
 			BuildLayoutTabUI();
 			BuildWidgetsPaletteUI();
+			BuildPropertiesPanelHeader();
+			StylePropertyGrid();
 			BuildTreeContextMenu();
 			EnableTreeDragDrop();
 			// Compatibility: ensure existing single-clicks on Expand/Collapse use the new mechanic.
 			treeView1.LabelEdit = false;
 		}
+
+		#region Properties tab polish
+
+		// Theme-aware color palette so the properties panel matches the rest of the app.
+		private struct PropsTheme
+		{
+			public Color HeaderBg, HeaderBorder, Title, Subtitle, StripeNeutral;
+			public Color GridView, GridText, GridLine, GridSplitter, GridBorder, GridCategory;
+			public Color HelpBg, HelpText, HelpBorder;
+			public Color AlignBg, AlignButton, AlignButtonText, AlignButtonBorder, AlignHover, AlignAccent, AlignAccentText, AlignSubLabel;
+		}
+
+		private static PropsTheme GetPropsTheme()
+		{
+			if (Util.IsDarkThemeActive())
+			{
+				return new PropsTheme
+				{
+					HeaderBg = Color.FromArgb(32, 32, 36),
+					HeaderBorder = Color.FromArgb(60, 60, 66),
+					Title = Color.FromArgb(232, 232, 235),
+					Subtitle = Color.FromArgb(150, 150, 158),
+					StripeNeutral = Color.FromArgb(90, 90, 96),
+					GridView = Color.FromArgb(40, 40, 44),
+					GridText = Color.FromArgb(232, 232, 235),
+					GridLine = Color.FromArgb(58, 58, 64),
+					GridSplitter = Color.FromArgb(58, 58, 64),
+					GridBorder = Color.FromArgb(70, 70, 76),
+					GridCategory = Color.FromArgb(200, 200, 208),
+					HelpBg = Color.FromArgb(32, 32, 36),
+					HelpText = Color.FromArgb(190, 190, 198),
+					HelpBorder = Color.FromArgb(60, 60, 66),
+					AlignBg = Color.FromArgb(40, 40, 44),
+					AlignButton = Color.FromArgb(48, 48, 52),
+					AlignButtonText = Color.FromArgb(220, 220, 225),
+					AlignButtonBorder = Color.FromArgb(70, 70, 76),
+					AlignHover = Color.FromArgb(58, 70, 96),
+					AlignAccent = Color.FromArgb(0, 120, 215),
+					AlignAccentText = Color.White,
+					AlignSubLabel = Color.FromArgb(170, 170, 178),
+				};
+			}
+			return new PropsTheme
+			{
+				HeaderBg = Color.FromArgb(248, 248, 250),
+				HeaderBorder = Color.FromArgb(220, 220, 225),
+				Title = Color.FromArgb(34, 34, 38),
+				Subtitle = Color.FromArgb(120, 120, 128),
+				StripeNeutral = Color.FromArgb(180, 180, 185),
+				GridView = Color.White,
+				GridText = Color.FromArgb(34, 34, 38),
+				GridLine = Color.FromArgb(235, 235, 240),
+				GridSplitter = Color.FromArgb(230, 230, 235),
+				GridBorder = Color.FromArgb(220, 220, 225),
+				GridCategory = Color.FromArgb(60, 60, 70),
+				HelpBg = Color.FromArgb(248, 248, 250),
+				HelpText = Color.FromArgb(80, 80, 90),
+				HelpBorder = Color.FromArgb(220, 220, 225),
+				AlignBg = Color.White,
+				AlignButton = Color.White,
+				AlignButtonText = Color.FromArgb(50, 50, 55),
+				AlignButtonBorder = Color.FromArgb(200, 200, 205),
+				AlignHover = Color.FromArgb(232, 240, 252),
+				AlignAccent = Color.FromArgb(0, 120, 215),
+				AlignAccentText = Color.White,
+				AlignSubLabel = Color.FromArgb(80, 80, 90),
+			};
+		}
+
+		private void BuildPropertiesPanelHeader()
+		{
+			tabPage1Panel.SuspendLayout();
+
+			var theme = GetPropsTheme();
+
+			_propsHeader = new Panel
+			{
+				Dock = DockStyle.Top,
+				Height = 48,
+				BackColor = theme.HeaderBg,
+				Padding = new Padding(0),
+			};
+
+			_propsHeaderStripe = new Panel
+			{
+				Dock = DockStyle.Left,
+				Width = 4,
+				BackColor = theme.StripeNeutral,
+			};
+
+			_propsHeaderTitle = new Label
+			{
+				AutoSize = false,
+				Dock = DockStyle.Top,
+				Height = 24,
+				Padding = new Padding(10, 6, 8, 0),
+				Font = new Font("Segoe UI Semibold", 10F),
+				ForeColor = theme.Title,
+				Text = "No selection",
+				TextAlign = ContentAlignment.MiddleLeft,
+				BackColor = theme.HeaderBg,
+			};
+
+			_propsHeaderSubtitle = new Label
+			{
+				AutoSize = false,
+				Dock = DockStyle.Fill,
+				Padding = new Padding(10, 0, 8, 6),
+				Font = new Font("Segoe UI", 8.25F),
+				ForeColor = theme.Subtitle,
+				Text = "Click a widget on the canvas or in the tree.",
+				TextAlign = ContentAlignment.TopLeft,
+				BackColor = theme.HeaderBg,
+			};
+
+			// Add subtitle first so the title (added later, also Dock.Top) stacks above it.
+			_propsHeader.Controls.Add(_propsHeaderSubtitle);
+			_propsHeader.Controls.Add(_propsHeaderTitle);
+			_propsHeader.Controls.Add(_propsHeaderStripe);
+
+			_propsHeader.Paint += (s, e) =>
+			{
+				var t = GetPropsTheme();
+				using var pen = new Pen(t.HeaderBorder);
+				e.Graphics.DrawLine(pen, 0, _propsHeader.Height - 1, _propsHeader.Width, _propsHeader.Height - 1);
+			};
+
+			// CRITICAL: propertyGrid1 was added in the designer first (Dock=Fill). Adding the
+			// header now appends it to the end of the Controls collection. WinForms docks LAST
+			// child first, so the Top-docked header takes 48px off the top and the Fill grid
+			// gets the remaining space. Do NOT call SetChildIndex(0) — that puts the header at
+			// the BACK of the dock order and the grid covers it.
+			tabPage1Panel.Controls.Add(_propsHeader);
+
+			tabPage1Panel.ResumeLayout();
+		}
+
+		// Called from UpdateProperties so the header reflects whatever's currently selected.
+		internal void RefreshPropertiesHeader(MyGuiWidgetData widget)
+		{
+			if (_propsHeader == null) return;
+
+			var theme = GetPropsTheme();
+
+			if (widget == null)
+			{
+				_propsHeaderTitle.Text = "No selection";
+				_propsHeaderSubtitle.Text = "Click a widget on the canvas or in the tree.";
+				_propsHeaderStripe.BackColor = theme.StripeNeutral;
+				return;
+			}
+
+			string name = string.IsNullOrEmpty(widget.name) ? "(unnamed)" : widget.name;
+			_propsHeaderTitle.Text = name;
+			_propsHeaderSubtitle.Text = $"{widget.type}   •   skin: {(string.IsNullOrEmpty(widget.skin) ? "—" : widget.skin)}";
+
+			// Color stripe based on widget type (same palette the viewport uses for debug colors).
+			if (RenderBackend._widgetTypeColors.TryGetValue(widget.type, out var skColor))
+			{
+				_propsHeaderStripe.BackColor = Color.FromArgb(skColor.Red, skColor.Green, skColor.Blue);
+			}
+			else
+			{
+				_propsHeaderStripe.BackColor = theme.StripeNeutral;
+			}
+		}
+
+		private void StylePropertyGrid()
+		{
+			var theme = GetPropsTheme();
+			propertyGrid1.ToolbarVisible = false;
+			propertyGrid1.HelpVisible = true;
+			propertyGrid1.PropertySort = PropertySort.Categorized;
+			propertyGrid1.Font = new Font("Segoe UI", 9F);
+			propertyGrid1.BackColor = theme.HeaderBg;
+			propertyGrid1.CategoryForeColor = theme.GridCategory;
+			propertyGrid1.CategorySplitterColor = theme.GridSplitter;
+			propertyGrid1.LineColor = theme.GridLine;
+			propertyGrid1.ViewBackColor = theme.GridView;
+			propertyGrid1.ViewForeColor = theme.GridText;
+			propertyGrid1.ViewBorderColor = theme.GridBorder;
+			propertyGrid1.HelpBackColor = theme.HelpBg;
+			propertyGrid1.HelpForeColor = theme.HelpText;
+			propertyGrid1.HelpBorderColor = theme.HelpBorder;
+		}
+
+		#endregion
 
 		#region Tree-node text formatting
 

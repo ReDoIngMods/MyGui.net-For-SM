@@ -729,6 +729,7 @@ namespace MyGui.net
 			propertyGrid1.SelectedObject = widget == null ? null : new MyGuiWidgetDataWidget(widget).ConvertTo(WidgetTypeToObjectType.TryGetValue(widget.type, out var typeValue) ? typeValue : typeof(MyGuiWidgetDataWidget));
 			propertyGrid1.Enabled = widget == _currentSelectedWidget;
 			propertyGrid1.Refresh();
+			RefreshPropertiesHeader(widget);
 		}
 
 		void Form1_Load(object sender, EventArgs e)
@@ -904,16 +905,16 @@ namespace MyGui.net
 
 			if (_currentHoveredWidget != null && _currentHoveredWidget != _currentSelectedWidget)
 			{
-				SKPoint pos = new();
-				var parents = Util.FindParentTree(_currentHoveredWidget, CurrentLayout);
-				if (parents != null)
-				{
-					foreach (var item in parents)
-					{
-						pos += item.position.ToSKPoint();
-					}
-				}
-				_renderWidgetHighligths[_currentHoveredWidget] = new(pos + _currentHoveredWidget.position.ToSKPoint(), SKColor.Parse("#ffff00").WithAlpha(75), SKPaintStyle.Fill, 0, false);
+				// Use the aligned bounds so the yellow hover rect tracks where the widget is
+				// actually drawn (Center / Stretch / Right Top all reposition the widget).
+				SKRect hoverRect = Util.GetAlignedAbsoluteBounds(_currentHoveredWidget, CurrentLayout);
+				_renderWidgetHighligths[_currentHoveredWidget] = new(
+					new SKPoint(hoverRect.Left, hoverRect.Top),
+					SKColor.Parse("#ffff00").WithAlpha(75),
+					SKPaintStyle.Fill,
+					0,
+					false,
+					new SKSize(hoverRect.Width, hoverRect.Height));
 			}
 
 
@@ -968,8 +969,12 @@ namespace MyGui.net
 
 			foreach (var highlight in _renderWidgetHighligths)
 			{
+				// Prefer the aligned size stored on the highlight (so Stretch selections match
+				// what's rendered); fall back to raw widget.size when none was provided.
+				float hw = highlight.Value.sizeOverride?.Width ?? highlight.Key.size.X;
+				float hh = highlight.Value.sizeOverride?.Height ?? highlight.Key.size.Y;
 				var rect = new SKRect(highlight.Value.position.X, highlight.Value.position.Y,
-								  highlight.Value.position.X + highlight.Key.size.X, highlight.Value.position.Y + highlight.Key.size.Y);
+								  highlight.Value.position.X + hw, highlight.Value.position.Y + hh);
 				// Draw selection highlight without any clipping
 				var selectionRect = new SKRect(
 					rect.Left - highlight.Value.width / 2,  // Expand left
@@ -1041,6 +1046,28 @@ namespace MyGui.net
 						ExecuteCommand(new CreateControlCommand(copy, _currentSelectedWidget.Parent, CurrentLayout), "Alt-drag duplicate");
 						_currentSelectedWidget = copy;
 						HandleWidgetSelection();
+					}
+
+					// Dragging the raw position of an aligned widget is a silent no-op (the
+					// render path overrides via GetEditorAlignedRect). Treat the drag as the
+					// user's intent to override alignment: bake the current aligned bounds
+					// into widget.position/size, clear align, then let the drag math run as
+					// usual. The widget visually starts from exactly where it was.
+					var sel = _currentSelectedWidget;
+					string curAlign = sel.align ?? "";
+					if (!string.IsNullOrEmpty(curAlign) && curAlign != "Default" && curAlign != "[DEFAULT]" && curAlign != "Left Top")
+					{
+						SKRect aligned = Util.GetAlignedAbsoluteBounds(sel, CurrentLayout);
+						Point parentAbs = Point.Empty;
+						if (sel.Parent != null)
+						{
+							SKRect p = Util.GetAlignedAbsoluteBounds(sel.Parent, CurrentLayout);
+							parentAbs = new Point((int)p.Left, (int)p.Top);
+						}
+						sel.position = new Point((int)aligned.Left - parentAbs.X, (int)aligned.Top - parentAbs.Y);
+						sel.size = new Point((int)aligned.Width, (int)aligned.Height);
+						sel.align = null;
+						UpdateProperties();
 					}
 
 					_draggingWidgetAt = currWidgetBorder;

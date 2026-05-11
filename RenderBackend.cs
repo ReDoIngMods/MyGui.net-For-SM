@@ -38,14 +38,16 @@ namespace MyGui.net
 		public struct WidgetHighlightType
 		{
 			public SKPoint position;
+			public SKSize? sizeOverride;
 			public SKColor highlightColor;
 			public SKPaintStyle style;
 			public float width;
 			public bool ignoreDrawOrder;
 
-			public WidgetHighlightType(SKPoint position, SKColor highlightColor, SKPaintStyle? style = null, float width = 7, bool ignoreDrawOrder = true)
+			public WidgetHighlightType(SKPoint position, SKColor highlightColor, SKPaintStyle? style = null, float width = 7, bool ignoreDrawOrder = true, SKSize? sizeOverride = null)
 			{
 				this.position = position;
+				this.sizeOverride = sizeOverride;
 				this.highlightColor = highlightColor;
 				this.style = style ?? SKPaintStyle.Stroke;
 				this.width = width;
@@ -226,8 +228,10 @@ namespace MyGui.net
 					{
 						foreach (var highlight in selfHighlights)
 						{
+							float hw = highlight.Value.sizeOverride?.Width ?? highlight.Key.size.X;
+							float hh = highlight.Value.sizeOverride?.Height ?? highlight.Key.size.Y;
 							var rect2 = new SKRect(highlight.Value.position.X, highlight.Value.position.Y,
-											  highlight.Value.position.X + highlight.Key.size.X, highlight.Value.position.Y + highlight.Key.size.Y);
+											  highlight.Value.position.X + hw, highlight.Value.position.Y + hh);
 							// Draw selection highlight without any clipping
 							var selectionRect = new SKRect(
 								rect2.Left - highlight.Value.width / 2,  // Expand left
@@ -265,10 +269,12 @@ namespace MyGui.net
 					canvas.DrawText(widget.name, rect.Left + 5, rect.Top + 20, textPaint);
 				}
 
-				//selection box
+				//selection box — use the aligned rect's size so the highlight tracks Stretch
+				// alignments instead of clinging to the raw widget.size.
 				if (widget == Form1._currentSelectedWidget)
 				{
-					_renderWidgetHighligths[widget] = new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128), null, Form1.SelectionBorderSize);
+					var alignedSize = new SKSize(rect.Width, rect.Height);
+					_renderWidgetHighligths[widget] = new WidgetHighlightType(widgetPosition, SKColors.Green.WithAlpha(128), null, Form1.SelectionBorderSize, true, alignedSize);
 				}
 				else
 				{

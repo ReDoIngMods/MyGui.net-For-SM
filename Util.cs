@@ -1916,21 +1916,58 @@ namespace MyGui.net
 			Center
 		}
 
+		// Walks the parent chain top-down, applying widget.align at each level so the returned
+		// rect matches exactly what RenderBackend.DrawWidget draws. Use this for selection
+		// handles, hit-test bounds, hover indicators — anything that has to land on the
+		// pixels the user actually sees.
+		public static SKRect GetAlignedAbsoluteBounds(MyGuiWidgetData widget, List<MyGuiWidgetData> layout)
+		{
+			var chain = FindParentTree(widget, layout) ?? new List<MyGuiWidgetData>();
+			chain.Reverse(); // root-first
+			chain.Add(widget);
+
+			MyGuiWidgetData? currentParent = null;
+			int parentAbsX = 0, parentAbsY = 0;
+			SKRect last = SKRect.Empty;
+
+			foreach (var node in chain)
+			{
+				Point baseAbs = new Point(parentAbsX + node.position.X, parentAbsY + node.position.Y);
+				string align = node.align ?? "";
+				SKRect r;
+				if (align == "" || align == "Default" || align == "[DEFAULT]" || align == "Left Top")
+				{
+					r = new SKRect(baseAbs.X, baseAbs.Y, baseAbs.X + node.size.X, baseAbs.Y + node.size.Y);
+				}
+				else
+				{
+					r = RenderBackend.GetEditorAlignedRect(node, currentParent, baseAbs);
+				}
+
+				currentParent = node;
+				parentAbsX = (int)r.Left;
+				parentAbsY = (int)r.Top;
+				last = r;
+			}
+
+			return last;
+		}
+
 		public static BorderPosition DetectBorder(MyGuiWidgetData widget, Point mousePosition, List<MyGuiWidgetData> layout, int borderThreshold = 7)
 		{
 			if (widget == null) return BorderPosition.None;
 
-			// Calculate the widget's absolute position on the screen
-			Point absolutePosition = GetAbsolutePosition(widget, layout);
+			// Use aligned bounds so resize/move handles land where the widget is *drawn*,
+			// not where its raw widget.position would put it.
+			SKRect bounds = GetAlignedAbsoluteBounds(widget, layout);
 
-			// Calculate the widget-relative position
 			Point widgetRelativePosition = new Point(
-				mousePosition.X - absolutePosition.X,
-				mousePosition.Y - absolutePosition.Y
+				mousePosition.X - (int)bounds.Left,
+				mousePosition.Y - (int)bounds.Top
 			);
 
-			int widgetWidth = widget.size.X;
-			int widgetHeight = widget.size.Y;
+			int widgetWidth = (int)bounds.Width;
+			int widgetHeight = (int)bounds.Height;
 
 			// Check if the mouse is near the widget (including a threshold margin)
 			bool isNearWidget = widgetRelativePosition.X >= -borderThreshold &&

@@ -531,7 +531,7 @@ namespace MyGui.net
 			{
 				"true" => "True",
 				"false" => "False",
-				_ => "[DEFAULT]"
+				_ => "Default"
 			};
 		}
 
@@ -583,8 +583,8 @@ namespace MyGui.net
 
 				var buttonCenter = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 39),
 					Name = "buttonCenter",
 					Size = new Size(47, 47),
@@ -596,8 +596,8 @@ namespace MyGui.net
 
 				var buttonBottom = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 92),
 					Name = "buttonBottom",
 					Size = new Size(47, 30),
@@ -609,8 +609,8 @@ namespace MyGui.net
 
 				var buttonTop = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 3),
 					Name = "buttonTop",
 					Size = new Size(47, 30),
@@ -622,8 +622,8 @@ namespace MyGui.net
 
 				var buttonRight = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(92, 39),
 					Name = "buttonRight",
 					Size = new Size(30, 47),
@@ -635,8 +635,8 @@ namespace MyGui.net
 
 				var buttonLeft = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(3, 39),
 					Name = "buttonLeft",
 					Size = new Size(30, 47),
@@ -648,8 +648,8 @@ namespace MyGui.net
 
 				var buttonBottomRight = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(92, 92),
 					Name = "buttonBottomRight",
 					Size = new Size(30, 30),
@@ -661,8 +661,8 @@ namespace MyGui.net
 
 				var buttonBottomLeft = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(3, 92),
 					Name = "buttonBottomLeft",
 					Size = new Size(30, 30),
@@ -674,8 +674,8 @@ namespace MyGui.net
 
 				var buttonTopRight = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(92, 3),
 					Name = "buttonTopRight",
 					Size = new Size(30, 30),
@@ -687,8 +687,8 @@ namespace MyGui.net
 
 				var buttonTopLeft = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(3, 3),
 					Name = "buttonTopLeft",
 					Size = new Size(30, 30),
@@ -700,8 +700,8 @@ namespace MyGui.net
 
 				var buttonDefault = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(127, 3),
 					Name = "buttonBottomRight",
 					Size = new Size(30, 30),
@@ -762,8 +762,8 @@ namespace MyGui.net
 				// buttonBottomLeft
 				var buttonBottomLeft = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(3, 92),
 					Name = "buttonBottomLeft",
 					Size = new Size(30, 30),
@@ -776,8 +776,8 @@ namespace MyGui.net
 				// buttonTopLeft
 				var buttonTopLeft = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(3, 3),
 					Name = "buttonTopLeft",
 					Size = new Size(30, 30),
@@ -790,8 +790,8 @@ namespace MyGui.net
 				// buttonTop
 				var buttonTop = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 3),
 					Name = "buttonTop",
 					Size = new Size(47, 30),
@@ -804,8 +804,8 @@ namespace MyGui.net
 				// buttonCenter
 				var buttonCenter = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 39),
 					Name = "buttonCenter",
 					Size = new Size(47, 47),
@@ -818,8 +818,8 @@ namespace MyGui.net
 				// buttonBottom
 				var buttonBottom = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 92),
 					Name = "buttonBottom",
 					Size = new Size(47, 30),
@@ -832,8 +832,8 @@ namespace MyGui.net
 				// buttonLeft
 				var buttonLeft = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(3, 39),
 					Name = "buttonLeft",
 					Size = new Size(30, 47),
@@ -846,8 +846,8 @@ namespace MyGui.net
 				// buttonRight
 				var buttonRight = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(92, 39),
 					Name = "buttonRight",
 					Size = new Size(30, 47),
@@ -860,8 +860,8 @@ namespace MyGui.net
 				// buttonTopRight
 				var buttonTopRight = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(92, 3),
 					Name = "buttonTopRight",
 					Size = new Size(30, 30),
@@ -874,8 +874,8 @@ namespace MyGui.net
 				// buttonBottomRight
 				var buttonBottomRight = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(92, 92),
 					Name = "buttonBottomRight",
 					Size = new Size(30, 30),
@@ -909,8 +909,8 @@ namespace MyGui.net
 				// buttonTopScale
 				var buttonTopScale = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 3),
 					Name = "buttonTopScale",
 					Size = new Size(47, 30),
@@ -924,8 +924,8 @@ namespace MyGui.net
 				// buttonStretch
 				var buttonStretch = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 39),
 					Name = "buttonStretch",
 					Size = new Size(47, 47),
@@ -938,8 +938,8 @@ namespace MyGui.net
 				// buttonBottomScale
 				var buttonBottomScale = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(39, 92),
 					Name = "buttonBottomScale",
 					Size = new Size(47, 30),
@@ -953,8 +953,8 @@ namespace MyGui.net
 				// buttonLeftScale
 				var buttonLeftScale = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(3, 39),
 					Name = "buttonLeftScale",
 					Size = new Size(30, 47),
@@ -967,8 +967,8 @@ namespace MyGui.net
 				// buttonRightScale
 				var buttonRightScale = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(92, 39),
 					Name = "buttonRightScale",
 					Size = new Size(30, 47),
@@ -1008,8 +1008,8 @@ namespace MyGui.net
 
 				var buttonDefault = new Button
 				{
-					FlatStyle = FlatStyle.System,
-					Font = new Font("Segoe UI", 15F),
+					FlatStyle = FlatStyle.Flat,
+					Font = new Font("Segoe UI", 14F),
 					Location = new Point(269, 3),
 					Name = "buttonBottomRight",
 					Size = new Size(30, 30),
@@ -1031,13 +1031,47 @@ namespace MyGui.net
 					buttonTopScale, buttonStretch, buttonBottomScale, buttonLeftScale, buttonRightScale, buttonDefault
 				];
 
+				// Polished, theme-aware button styling. Highlights the currently-set option so
+				// users can see what's active at a glance.
+				bool dark = Util.IsDarkThemeActive();
+				Color bg = dark ? Color.FromArgb(40, 40, 44) : Color.White;
+				Color panelBg = dark ? Color.FromArgb(48, 48, 52) : Color.FromArgb(248, 248, 250);
+				Color border = dark ? Color.FromArgb(70, 70, 76) : Color.FromArgb(200, 200, 205);
+				Color text = dark ? Color.FromArgb(220, 220, 225) : Color.FromArgb(50, 50, 55);
+				Color hover = dark ? Color.FromArgb(58, 70, 96) : Color.FromArgb(232, 240, 252);
+				Color accent = Color.FromArgb(0, 120, 215);
+				Color accentFore = Color.White;
+				Color labelFore = dark ? Color.FromArgb(170, 170, 178) : Color.FromArgb(80, 80, 90);
+
+				string currentTag = (value as string) ?? "";
 				foreach (var item in controls)
 				{
+					bool selected = string.Equals((item.Tag as string) ?? "", currentTag, StringComparison.Ordinal);
+					if (item is Button b)
+					{
+						b.FlatAppearance.BorderSize = 1;
+						b.FlatAppearance.BorderColor = selected ? accent : border;
+						b.FlatAppearance.MouseOverBackColor = selected ? accent : hover;
+						b.FlatAppearance.MouseDownBackColor = selected ? accent : hover;
+						b.BackColor = selected ? accent : bg;
+						b.ForeColor = selected ? accentFore : text;
+						b.UseVisualStyleBackColor = false;
+					}
 					item.Click += (senderAny, e) => {
 						value = ((Control)senderAny).Tag.ToString(); // Set the return value
 						editorService.CloseDropDown(); // Close dropdown after selection
 					};
 				}
+
+				panel.BackColor = bg;
+				panel2.BorderStyle = BorderStyle.None;
+				panel4.BorderStyle = BorderStyle.None;
+				panel2.BackColor = panelBg;
+				panel4.BackColor = panelBg;
+				label9.Font = new Font("Segoe UI Semibold", 8.5F);
+				label10.Font = new Font("Segoe UI Semibold", 8.5F);
+				label9.ForeColor = labelFore;
+				label10.ForeColor = labelFore;
 
 				// Show the dropdown with the panel
 				editorService.DropDownControl(panel);

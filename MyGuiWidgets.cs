@@ -158,7 +158,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(StringDropdownConverter))]
 		public string Layer
 		{
-			get => widget.layer ?? "[DEFAULT]";
+			get => widget.layer ?? "Default";
 
 			set
 			{
@@ -312,7 +312,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string Enabled
 		{
-			get => widget.properties.TryGetValue("Enabled", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("Enabled", out var value) ? value : "Default";
 
 			set
 			{
@@ -335,7 +335,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string InheritsAlpha
 		{
-			get => widget.properties.TryGetValue("InheritsAlpha", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("InheritsAlpha", out var value) ? value : "Default";
 
 			set
 			{
@@ -358,7 +358,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string InheritsPick
 		{
-			get => widget.properties.TryGetValue("InheritsPick", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("InheritsPick", out var value) ? value : "Default";
 
 			set
 			{
@@ -403,7 +403,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string NeedKey
 		{
-			get => widget.properties.TryGetValue("NeedKey", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("NeedKey", out var value) ? value : "Default";
 
 			set
 			{
@@ -426,7 +426,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string NeedMouse
 		{
-			get => widget.properties.TryGetValue("NeedMouse", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("NeedMouse", out var value) ? value : "Default";
 
 			set
 			{
@@ -449,7 +449,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string NeedToolTip
 		{
-			get => widget.properties.TryGetValue("NeedToolTip", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("NeedToolTip", out var value) ? value : "Default";
 
 			set
 			{
@@ -492,7 +492,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string Visible
 		{
-			get => widget.properties.TryGetValue("Visible", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("Visible", out var value) ? value : "Default";
 
 			set
 			{
@@ -693,7 +693,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string TextShadow
 		{
-			get => widget.properties.TryGetValue("TextShadow", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("TextShadow", out var value) ? value : "Default";
 
 			set
 			{
@@ -846,7 +846,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string ModeImage
 		{
-			get => widget.properties.TryGetValue("ModeImage", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("ModeImage", out var value) ? value : "Default";
 
 			set
 			{
@@ -869,7 +869,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string StateSelected
 		{
-			get => widget.properties.TryGetValue("StateSelected", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("StateSelected", out var value) ? value : "Default";
 
 			set
 			{
@@ -922,7 +922,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string InvertSelected
 		{
-			get => widget.properties.TryGetValue("InvertSelected", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("InvertSelected", out var value) ? value : "Default";
 
 			set
 			{
@@ -940,7 +940,7 @@ namespace MyGui.net
 
 		[Category("4 - EditBox Properties")]
 		[DisplayName("Text Length Limit")]
-		[Description("The maximum number of characters. [DEFAULT] is 2048, not infinite!")]
+		[Description("The maximum number of characters. Default is 2048, not infinite!")]
 		public string MaxTextLength
 		{
 			get => widget.properties.TryGetValue("MaxTextLength", out var value) ? value : "";
@@ -969,7 +969,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string MultiLine
 		{
-			get => widget.properties.TryGetValue("MultiLine", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("MultiLine", out var value) ? value : "Default";
 
 			set
 			{
@@ -994,7 +994,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string OverflowToTheLeft
 		{
-			get => widget.properties.TryGetValue("OverflowToTheLeft", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("OverflowToTheLeft", out var value) ? value : "Default";
 
 			set
 			{
@@ -1018,7 +1018,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string Password
 		{
-			get => widget.properties.TryGetValue("Password", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("Password", out var value) ? value : "Default";
 
 			set
 			{
@@ -1062,7 +1062,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string ReadOnly
 		{
-			get => widget.properties.TryGetValue("ReadOnly", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("ReadOnly", out var value) ? value : "Default";
 
 			set
 			{
@@ -1084,7 +1084,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string Static
 		{
-			get => widget.properties.TryGetValue("Static", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("Static", out var value) ? value : "Default";
 
 			set
 			{
@@ -1140,7 +1140,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string VisibleHScroll
 		{
-			get => widget.properties.TryGetValue("VisibleHScroll", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("VisibleHScroll", out var value) ? value : "Default";
 
 			set
 			{
@@ -1163,7 +1163,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string VisibleVScroll
 		{
-			get => widget.properties.TryGetValue("VisibleVScroll", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("VisibleVScroll", out var value) ? value : "Default";
 
 			set
 			{
@@ -1186,7 +1186,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string WordWrap
 		{
-			get => widget.properties.TryGetValue("WordWrap", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("WordWrap", out var value) ? value : "Default";
 
 			set
 			{
@@ -1218,7 +1218,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string NeedDragDrop
 		{
-			get => widget.properties.TryGetValue("NeedDragDrop", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("NeedDragDrop", out var value) ? value : "Default";
 
 			set
 			{
@@ -1249,7 +1249,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string VerticalAlignment
 		{
-			get => widget.properties.TryGetValue("VerticalAlignment", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("VerticalAlignment", out var value) ? value : "Default";
 
 			set
 			{
@@ -1272,7 +1272,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string VisibleHScroll
 		{
-			get => widget.properties.TryGetValue("VisibleHScroll", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("VisibleHScroll", out var value) ? value : "Default";
 
 			set
 			{
@@ -1295,7 +1295,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string VisibleVScroll
 		{
-			get => widget.properties.TryGetValue("VisibleVScroll", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("VisibleVScroll", out var value) ? value : "Default";
 
 			set
 			{
@@ -1326,7 +1326,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string AutoTrack
 		{
-			get => widget.properties.TryGetValue("AutoTrack", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("AutoTrack", out var value) ? value : "Default";
 
 			set
 			{
@@ -1348,7 +1348,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(StringDropdownConverter))]
 		public string FlowDirection
 		{
-			get => widget.properties.TryGetValue("FlowDirection", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("FlowDirection", out var value) ? value : "Default";
 
 			set
 			{
@@ -1423,7 +1423,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string MoveToClick
 		{
-			get => widget.properties.TryGetValue("MoveToClick", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("MoveToClick", out var value) ? value : "Default";
 
 			set
 			{
@@ -1510,7 +1510,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string Repeat
 		{
-			get => widget.properties.TryGetValue("Repeat", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("Repeat", out var value) ? value : "Default";
 
 			set
 			{
@@ -1577,7 +1577,7 @@ namespace MyGui.net
 		[TypeConverter(typeof(TriStateConverter))]
 		public string VerticalAlignment
 		{
-			get => widget.properties.TryGetValue("VerticalAlignment", out var value) ? value : "[DEFAULT]";
+			get => widget.properties.TryGetValue("VerticalAlignment", out var value) ? value : "Default";
 
 			set
 			{
@@ -1647,7 +1647,7 @@ namespace MyGui.net
 		#region Properties
 		[Category("3 - ImageBox Properties")]
 		[DisplayName("Image Crop")]
-		[Description("Crops the image. Format your input as \"positionX positionY sizeX sizeY\". [DEFAULT] renders the whole image and stretches it to the size of the ImageBox.")]
+		[Description("Crops the image. Format your input as \"positionX positionY sizeX sizeY\". Default renders the whole image and stretches it to the size of the ImageBox.")]
 		[Editor(typeof(SliceSelectorEditor), typeof(UITypeEditor))]
 		public string ImageCoord
 		{
