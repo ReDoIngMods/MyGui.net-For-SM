@@ -2404,24 +2404,8 @@ namespace MyGui.net
 				}
 				else if (e.Control && e.KeyCode == Keys.N)
 				{
-					XDocument doc = XDocument.Parse("<MyGUI type=\"Layout\" version=\"3.2.0\"><Widget type=\"Widget\" skin=\"HudBackgroundLarge\" position=\"0 0 100 100\"/></MyGUI>");
-					List<MyGuiWidgetData> parsedLayout = Util.ParseLayoutFile(doc, null);
-					MyGuiWidgetData widgetToPasteInto = _currentSelectedWidget;
-
-					// Convert cursor position to local coordinates
-					Point viewportRelPos = viewport.PointToClient(Cursor.Position);
-					var newPos = Util.TransformPointToLocal(
-						CurrentLayout,
-						widgetToPasteInto,
-						new Point(
-							(int)(viewportRelPos.X / _viewportScale - _viewportOffset.X),
-							(int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y)
-						)
-					);
-
-					parsedLayout[0].position = newPos;
-
-					ExecuteCommand(new CreateControlCommand(parsedLayout[0], widgetToPasteInto, CurrentLayout));
+					ShowNewWidgetPicker(Cursor.Position);
+					e.Handled = true;
 				}
 
 

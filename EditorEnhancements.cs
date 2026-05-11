@@ -843,6 +843,54 @@ namespace MyGui.net
 
 		#endregion
 
+		#region New-widget picker (Ctrl+N / context menu)
+
+		// Pops up a small menu of widget types at the given screen position so the user
+		// can pick what to insert instead of always getting a generic Widget. Each item
+		// uses the same PaletteEntry the Widgets-tab palette uses, so types/skins/sizes
+		// stay consistent. The selected entry is inserted at the cursor's current
+		// viewport position (or centered in the parent if the cursor isn't over it).
+		internal void ShowNewWidgetPicker(Point screenPos)
+		{
+			var menu = new ContextMenuStrip { RenderMode = ToolStripRenderMode.System };
+			foreach (var entry in GetPaletteEntries())
+			{
+				var item = new ToolStripMenuItem($"{entry.DisplayName}   ({entry.Type})") { Tag = entry };
+				item.ToolTipText = string.IsNullOrEmpty(entry.Description)
+					? $"Skin: {entry.Skin}"
+					: $"{entry.Description}\nSkin: {entry.Skin}";
+				item.Click += (_, __) => InsertPaletteEntryAtCursor((PaletteEntry)item.Tag, screenPos);
+				menu.Items.Add(item);
+			}
+			menu.Show(screenPos);
+		}
+
+		private void InsertPaletteEntryAtCursor(PaletteEntry entry, Point screenPos)
+		{
+			MyGuiWidgetData parent = _currentSelectedWidget;
+			Point viewportRel = viewport.PointToClient(screenPos);
+			Point viewportPx = new Point(
+				(int)(viewportRel.X / _viewportScale - _viewportOffset.X),
+				(int)(viewportRel.Y / _viewportScale - _viewportOffset.Y));
+
+			// If the cursor's actually over the viewport, drop the widget there. Otherwise
+			// fall back to the parent's center (covers the case where the user invoked
+			// New Widget from the right-click menu sitting off-canvas).
+			Rectangle vp = viewport.ClientRectangle;
+			if (vp.Contains(viewportRel))
+			{
+				Point local = Util.TransformPointToLocal(CurrentLayout, parent, viewportPx);
+				local.Offset(-entry.DefaultSize.Width / 2, -entry.DefaultSize.Height / 2);
+				CreatePaletteWidget(entry, parent, local);
+			}
+			else
+			{
+				InsertPaletteEntryAtViewportCenter(entry);
+			}
+		}
+
+		#endregion
+
 		#region Marquee selection
 
 		// Recursively collect every widget whose aligned bounds intersect the marquee rect.

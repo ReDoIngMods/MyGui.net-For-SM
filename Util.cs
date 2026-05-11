@@ -1791,9 +1791,11 @@ namespace MyGui.net
 		// Public function to get the topmost widget for a list of widgets
 		public static MyGuiWidgetData? GetTopmostControlAtPoint(List<MyGuiWidgetData> parents, Point screenPoint, MyGuiWidgetData[]? excludeWidgets = null)
 		{
+			// Top-level clip = the project rect, matching the viewport's ClipRect.
+			SKRect projectClip = new SKRect(0, 0, Form1.ProjectSize.Width, Form1.ProjectSize.Height);
 			for (int i = parents.Count - 1; i >= 0; i--)
 			{
-				var result = GetTopmostControlAtPointRecursive(parents[i], null, Point.Empty, screenPoint, excludeWidgets);
+				var result = GetTopmostControlAtPointRecursive(parents[i], null, Point.Empty, projectClip, screenPoint, excludeWidgets);
 				if (result != null)
 					return result;
 			}
@@ -1812,24 +1814,38 @@ namespace MyGui.net
 			return RenderBackend.GetEditorAlignedRect(root, parent, baseAbsolute);
 		}
 
-		private static MyGuiWidgetData? GetTopmostControlAtPointRecursive(MyGuiWidgetData root, MyGuiWidgetData? parentWidget, Point parentPos, Point screenPoint, MyGuiWidgetData[]? excludeWidgets)
+		// `clip` is the accumulated visible region (ProjectSize at the root, then intersected
+		// with each ancestor's rect) — matches the renderer's canvas.ClipRect stack so the
+		// hit area lines up with the visible pixels. When a widget is fully outside its
+		// parent's rect the renderer draws only a red outline at the widget's full position;
+		// we keep that full rect clickable so the user can still pick the outline.
+		private static MyGuiWidgetData? GetTopmostControlAtPointRecursive(MyGuiWidgetData root, MyGuiWidgetData? parentWidget, Point parentPos, SKRect clip, Point screenPoint, MyGuiWidgetData[]? excludeWidgets)
 		{
 			Point baseAbsolute = new(parentPos.X + root.position.X, parentPos.Y + root.position.Y);
 			SKRect alignedRect = GetAlignedAbsoluteRect(root, parentWidget, baseAbsolute);
 			Point alignedAbsolute = new((int)alignedRect.Left, (int)alignedRect.Top);
 
-			// Recurse into children first — a child may be positioned outside its parent's rect
-			// (drawn with a red out-of-bounds outline) and must still be selectable.
+			SKRect clippedRect = alignedRect;
+			bool intersects = clippedRect.IntersectsWith(clip);
+			if (intersects)
+			{
+				clippedRect.Intersect(clip);
+			}
+			// Else: widget is fully outside its visible region — the red outline is drawn at
+			// the full alignedRect, so leave clippedRect == alignedRect so users can click it.
+
+			// Recurse into children first so deeper widgets win when stacked.
+			SKRect childClip = intersects ? clippedRect : alignedRect;
 			for (int i = root.children.Count - 1; i >= 0; i--)
 			{
-				var match = GetTopmostControlAtPointRecursive(root.children[i], root, alignedAbsolute, screenPoint, excludeWidgets);
+				var match = GetTopmostControlAtPointRecursive(root.children[i], root, alignedAbsolute, childClip, screenPoint, excludeWidgets);
 				if (match != null)
 					return match;
 			}
 
 			if (excludeWidgets?.Contains(root) == true ||
-				screenPoint.X < alignedRect.Left || screenPoint.X >= alignedRect.Right ||
-				screenPoint.Y < alignedRect.Top || screenPoint.Y >= alignedRect.Bottom)
+				screenPoint.X < clippedRect.Left || screenPoint.X >= clippedRect.Right ||
+				screenPoint.Y < clippedRect.Top || screenPoint.Y >= clippedRect.Bottom)
 			{
 				return null;
 			}
@@ -1844,7 +1860,7 @@ namespace MyGui.net
 			return new MyGuiWidgetData();
 		}
 
-		private static void GetAllControlsAtPointRecursive(MyGuiWidgetData root, MyGuiWidgetData? parentWidget, Point parentAbsolutePosition, Point screenPoint, List<MyGuiWidgetData> result, MyGuiWidgetData[]? excludeWidgets)
+		private static void GetAllControlsAtPointRecursive(MyGuiWidgetData root, MyGuiWidgetData? parentWidget, Point parentAbsolutePosition, SKRect clip, Point screenPoint, List<MyGuiWidgetData> result, MyGuiWidgetData[]? excludeWidgets)
 		{
 			Point baseAbsolute = new(
 				parentAbsolutePosition.X + root.position.X,
@@ -1853,15 +1869,22 @@ namespace MyGui.net
 			SKRect alignedRect = GetAlignedAbsoluteRect(root, parentWidget, baseAbsolute);
 			Point alignedAbsolute = new((int)alignedRect.Left, (int)alignedRect.Top);
 
-			// Traverse children first so out-of-parent-bounds widgets remain clickable.
+			SKRect clippedRect = alignedRect;
+			bool intersects = clippedRect.IntersectsWith(clip);
+			if (intersects)
+			{
+				clippedRect.Intersect(clip);
+			}
+
+			SKRect childClip = intersects ? clippedRect : alignedRect;
 			for (int i = root.children.Count - 1; i >= 0; i--)
 			{
-				GetAllControlsAtPointRecursive(root.children[i], root, alignedAbsolute, screenPoint, result, excludeWidgets);
+				GetAllControlsAtPointRecursive(root.children[i], root, alignedAbsolute, childClip, screenPoint, result, excludeWidgets);
 			}
 
 			if (excludeWidgets?.Contains(root) == true ||
-				screenPoint.X < alignedRect.Left || screenPoint.X >= alignedRect.Right ||
-				screenPoint.Y < alignedRect.Top || screenPoint.Y >= alignedRect.Bottom)
+				screenPoint.X < clippedRect.Left || screenPoint.X >= clippedRect.Right ||
+				screenPoint.Y < clippedRect.Top || screenPoint.Y >= clippedRect.Bottom)
 			{
 				return;
 			}
@@ -1873,11 +1896,12 @@ namespace MyGui.net
 		public static List<MyGuiWidgetData> GetAllControlsAtPoint( List<MyGuiWidgetData> parents, Point screenPoint, MyGuiWidgetData[]? excludeParent = null)
 		{
 			var widgetsAtPoint = new List<MyGuiWidgetData>();
+			SKRect projectClip = new SKRect(0, 0, Form1.ProjectSize.Width, Form1.ProjectSize.Height);
 
 			// Traverse each parent widget in reverse order (render order)
 			for (int i = parents.Count - 1; i >= 0; i--)
 			{
-				GetAllControlsAtPointRecursive(parents[i], null, Point.Empty, screenPoint, widgetsAtPoint, excludeParent);
+				GetAllControlsAtPointRecursive(parents[i], null, Point.Empty, projectClip, screenPoint, widgetsAtPoint, excludeParent);
 			}
 
 			return widgetsAtPoint;
