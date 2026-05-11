@@ -669,16 +669,26 @@ namespace MyGui.net
 			public Size DefaultSize = new Size(100, 100);
 		}
 
+		// Skin names sourced from Scrap Mechanic\Data\Gui\ScrapMekTemplate.xml and
+		// ScrapMekSkin.xml so the palette defaults match the in-game look. A few entries
+		// fall back to MyGUI defaults (PanelEmpty, ImageBox, ItemBox) where SM doesn't
+		// ship an equivalent.
 		private static IEnumerable<PaletteEntry> GetPaletteEntries()
 		{
-			yield return new PaletteEntry { Type = "Widget", Skin = "PanelEmpty", DisplayName = "Widget", Description = "Generic container.", DefaultSize = new Size(200, 150) };
+			yield return new PaletteEntry { Type = "Widget", Skin = "PanelEmpty", DisplayName = "Widget", Description = "Generic invisible container.", DefaultSize = new Size(200, 150) };
 			yield return new PaletteEntry { Type = "Widget", Skin = "InventoryBackground", DisplayName = "Panel (HUD)", Description = "SM inventory-style background.", DefaultSize = new Size(300, 200) };
-			yield return new PaletteEntry { Type = "TextBox", Skin = "TextBox", DisplayName = "TextBox", Description = "Static text label.", DefaultSize = new Size(200, 30) };
-			yield return new PaletteEntry { Type = "Button", Skin = "Button", DisplayName = "Button", Description = "Clickable button.", DefaultSize = new Size(120, 30) };
-			yield return new PaletteEntry { Type = "EditBox", Skin = "EditBox", DisplayName = "EditBox", Description = "Single-line editable text.", DefaultSize = new Size(200, 30) };
+			yield return new PaletteEntry { Type = "TextBox", Skin = "SMTextBox_NoBackground", DisplayName = "TextBox", Description = "SM-styled static text label.", DefaultSize = new Size(200, 30) };
+			yield return new PaletteEntry { Type = "TextBox", Skin = "SMTextBox_Small_NoBackground", DisplayName = "TextBox (small)", Description = "Small SM-styled static text.", DefaultSize = new Size(160, 22) };
+			yield return new PaletteEntry { Type = "Button", Skin = "SMButton", DisplayName = "Button", Description = "Standard SM button.", DefaultSize = new Size(120, 30) };
+			yield return new PaletteEntry { Type = "Button", Skin = "SMWhiteButton", DisplayName = "Button (white)", Description = "Inverted/white SM button.", DefaultSize = new Size(120, 30) };
+			yield return new PaletteEntry { Type = "Button", Skin = "SMSmallButton", DisplayName = "Button (small)", Description = "Compact SM button.", DefaultSize = new Size(90, 22) };
+			yield return new PaletteEntry { Type = "EditBox", Skin = "SMEditBox", DisplayName = "EditBox", Description = "SM-styled single-line input.", DefaultSize = new Size(200, 30) };
 			yield return new PaletteEntry { Type = "ImageBox", Skin = "ImageBox", DisplayName = "ImageBox", Description = "Image display.", DefaultSize = new Size(64, 64) };
 			yield return new PaletteEntry { Type = "ProgressBar", Skin = "ProgressBar", DisplayName = "ProgressBar", Description = "Progress indicator.", DefaultSize = new Size(200, 20) };
-			yield return new PaletteEntry { Type = "ScrollBar", Skin = "ScrollBarV", DisplayName = "ScrollBar", Description = "Vertical scroll bar.", DefaultSize = new Size(20, 200) };
+			yield return new PaletteEntry { Type = "ScrollBar", Skin = "InventoryVScroll", DisplayName = "ScrollBar", Description = "SM vertical scroll bar.", DefaultSize = new Size(20, 200) };
+			yield return new PaletteEntry { Type = "ScrollView", Skin = "SMScrollView", DisplayName = "ScrollView", Description = "SM scrollable view.", DefaultSize = new Size(240, 200) };
+			yield return new PaletteEntry { Type = "ListBox", Skin = "SMListBox", DisplayName = "ListBox", Description = "SM list box.", DefaultSize = new Size(200, 200) };
+			yield return new PaletteEntry { Type = "TabControl", Skin = "SMTabControl", DisplayName = "TabControl", Description = "SM tab control.", DefaultSize = new Size(280, 200) };
 			yield return new PaletteEntry { Type = "DDContainer", Skin = "PanelEmpty", DisplayName = "DDContainer", Description = "Drag-and-drop container.", DefaultSize = new Size(200, 200) };
 			yield return new PaletteEntry { Type = "ItemBox", Skin = "ItemBox", DisplayName = "ItemBox", Description = "Item slot container.", DefaultSize = new Size(64, 64) };
 		}
