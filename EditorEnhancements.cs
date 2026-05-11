@@ -475,15 +475,15 @@ namespace MyGui.net
 		private static IEnumerable<PaletteEntry> GetPaletteEntries()
 		{
 			yield return new PaletteEntry { Type = "Widget", Skin = "PanelEmpty", DisplayName = "Widget", Description = "Generic container.", DefaultSize = new Size(200, 150) };
-			yield return new PaletteEntry { Type = "Widget", Skin = "HudBackgroundLarge", DisplayName = "Panel (HUD)", Description = "Large HUD-style background.", DefaultSize = new Size(300, 200) };
-			yield return new PaletteEntry { Type = "TextBox", Skin = "TextBoxNew", DisplayName = "TextBox", Description = "Static text label.", DefaultSize = new Size(200, 30) };
-			yield return new PaletteEntry { Type = "Button", Skin = "ButtonStandard", DisplayName = "Button", Description = "Clickable button.", DefaultSize = new Size(120, 30) };
-			yield return new PaletteEntry { Type = "EditBox", Skin = "EditNew", DisplayName = "EditBox", Description = "Single-line editable text.", DefaultSize = new Size(200, 30) };
+			yield return new PaletteEntry { Type = "Widget", Skin = "InventoryBackground", DisplayName = "Panel (HUD)", Description = "SM inventory-style background.", DefaultSize = new Size(300, 200) };
+			yield return new PaletteEntry { Type = "TextBox", Skin = "TextBox", DisplayName = "TextBox", Description = "Static text label.", DefaultSize = new Size(200, 30) };
+			yield return new PaletteEntry { Type = "Button", Skin = "Button", DisplayName = "Button", Description = "Clickable button.", DefaultSize = new Size(120, 30) };
+			yield return new PaletteEntry { Type = "EditBox", Skin = "EditBox", DisplayName = "EditBox", Description = "Single-line editable text.", DefaultSize = new Size(200, 30) };
 			yield return new PaletteEntry { Type = "ImageBox", Skin = "ImageBox", DisplayName = "ImageBox", Description = "Image display.", DefaultSize = new Size(64, 64) };
-			yield return new PaletteEntry { Type = "ProgressBar", Skin = "ProgressFill", DisplayName = "ProgressBar", Description = "Progress indicator.", DefaultSize = new Size(200, 20) };
-			yield return new PaletteEntry { Type = "ScrollBar", Skin = "VScrollBar", DisplayName = "ScrollBar", Description = "Scroll handle.", DefaultSize = new Size(20, 200) };
+			yield return new PaletteEntry { Type = "ProgressBar", Skin = "ProgressBar", DisplayName = "ProgressBar", Description = "Progress indicator.", DefaultSize = new Size(200, 20) };
+			yield return new PaletteEntry { Type = "ScrollBar", Skin = "ScrollBarV", DisplayName = "ScrollBar", Description = "Vertical scroll bar.", DefaultSize = new Size(20, 200) };
 			yield return new PaletteEntry { Type = "DDContainer", Skin = "PanelEmpty", DisplayName = "DDContainer", Description = "Drag-and-drop container.", DefaultSize = new Size(200, 200) };
-			yield return new PaletteEntry { Type = "ItemBox", Skin = "PanelEmpty", DisplayName = "ItemBox", Description = "Item slot container.", DefaultSize = new Size(64, 64) };
+			yield return new PaletteEntry { Type = "ItemBox", Skin = "ItemBox", DisplayName = "ItemBox", Description = "Item slot container.", DefaultSize = new Size(64, 64) };
 		}
 
 		private Control BuildPaletteCard(PaletteEntry entry)
@@ -581,6 +581,74 @@ namespace MyGui.net
 			ExecuteCommand(new CreateControlCommand(widget, parent, CurrentLayout), $"Create {entry.DisplayName}");
 			_currentSelectedWidget = widget;
 			HandleWidgetSelection();
+		}
+
+		#endregion
+
+		#region Edge snap during drag
+
+		// Snap threshold in viewport pixels. Scaled by zoom so the feel stays constant.
+		private const int EdgeSnapThresholdPx = 8;
+
+		// Returns a position that snaps the widget's left/right/top/bottom edges to the parent's
+		// inner edges and immediate siblings' edges when within threshold. Falls back to grid snap
+		// on any axis that didn't find an edge match. Ctrl disables all snapping (caller's
+		// responsibility to skip the call).
+		private Point SnapDraggedPosition(MyGuiWidgetData widget, Point candidatePos)
+		{
+			Size size = new Size(widget.size.X, widget.size.Y);
+			int threshold = Math.Max(1, (int)Math.Round(EdgeSnapThresholdPx / Math.Max(_viewportScale, 0.0001f)));
+
+			// Build a list of (referenceCoord, isVerticalLine) pairs for X and Y axes.
+			List<int> xLines = new();
+			List<int> yLines = new();
+
+			MyGuiWidgetData? parent = widget.Parent;
+			if (parent != null)
+			{
+				xLines.Add(0);
+				xLines.Add(parent.size.X);
+				yLines.Add(0);
+				yLines.Add(parent.size.Y);
+				foreach (var sibling in parent.children)
+				{
+					if (sibling == widget) continue;
+					xLines.Add(sibling.position.X);
+					xLines.Add(sibling.position.X + sibling.size.X);
+					yLines.Add(sibling.position.Y);
+					yLines.Add(sibling.position.Y + sibling.size.Y);
+				}
+			}
+			else
+			{
+				xLines.Add(0); xLines.Add(ProjectSize.Width);
+				yLines.Add(0); yLines.Add(ProjectSize.Height);
+			}
+
+			int snapX = TryEdgeSnap(candidatePos.X, size.Width, xLines, threshold, out bool snappedX);
+			int snapY = TryEdgeSnap(candidatePos.Y, size.Height, yLines, threshold, out bool snappedY);
+
+			// Fall back to grid snap on any axis that didn't find an edge match.
+			if (!snappedX) snapX = (int)Math.Round((float)candidatePos.X / _gridSpacing) * _gridSpacing;
+			if (!snappedY) snapY = (int)Math.Round((float)candidatePos.Y / _gridSpacing) * _gridSpacing;
+
+			return new Point(snapX, snapY);
+		}
+
+		private static int TryEdgeSnap(int origin, int extent, List<int> lines, int threshold, out bool snapped)
+		{
+			snapped = false;
+			int bestOrigin = origin;
+			int bestDist = int.MaxValue;
+			foreach (var line in lines)
+			{
+				int distLeft = Math.Abs(origin - line);
+				if (distLeft < bestDist && distLeft <= threshold) { bestDist = distLeft; bestOrigin = line; snapped = true; }
+
+				int distRight = Math.Abs(origin + extent - line);
+				if (distRight < bestDist && distRight <= threshold) { bestDist = distRight; bestOrigin = line - extent; snapped = true; }
+			}
+			return bestOrigin;
 		}
 
 		#endregion

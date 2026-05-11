@@ -991,13 +991,12 @@ namespace MyGui.net
 		{
 			Control sender = (Control)senderAny;
 			Point viewportRelPos = e.Location;
-			//Debug.WriteLine($"default: X: {e.Location.X} Y: {e.Location.Y}");
 			Point viewportPixelPos = new Point((int)(viewportRelPos.X / _viewportScale - _viewportOffset.X), (int)(viewportRelPos.Y / _viewportScale - _viewportOffset.Y));
-			//Debug.WriteLine($"with offset: X: {viewportPixelPos.X} Y: {viewportPixelPos.Y}");
 
-			//Cursor.Position = sender.PointToScreen(viewportPixelPos);
-
-			if (e.Button == MouseButtons.Right)
+			// Middle-mouse always pans. Right-mouse keeps its existing pan-or-context-menu behavior.
+			// Left-mouse pans when Space is held (Photoshop/Figma-style).
+			bool spacePan = e.Button == MouseButtons.Left && Util.IsKeyPressed(Keys.Space);
+			if (e.Button == MouseButtons.Right || e.Button == MouseButtons.Middle || spacePan)
 			{
 				_draggingViewport = true;
 				_movedViewport = false;
@@ -1010,10 +1009,40 @@ namespace MyGui.net
 				BorderPosition currWidgetBorder = Util.DetectBorder(_currentSelectedWidget, viewportPixelPos, CurrentLayout, SelectionBorderSize);
 				MyGuiWidgetData? clickedControl = Util.GetTopmostControlAtPoint(CurrentLayout, viewportPixelPos);
 
+				bool altHeld = Util.IsKeyPressed(Keys.Menu); // Alt
 				bool canDragWidget = _currentSelectedWidget != null && e.Clicks == 1 && currWidgetBorder != BorderPosition.None;
+
+				// Alt-click on a widget: cycle up the parent chain so a parent is reachable
+				// through its children. If Alt-click hits empty space, do nothing extra.
+				if (altHeld && !canDragWidget && clickedControl != null)
+				{
+					MyGuiWidgetData? target = clickedControl.Parent ?? clickedControl;
+					if (_currentSelectedWidget != null && Util.FindParentTree(_currentSelectedWidget, CurrentLayout)?.Contains(clickedControl) == true)
+					{
+						// Already inside this clicked subtree — walk further up from the current selection.
+						target = _currentSelectedWidget.Parent ?? clickedControl;
+					}
+					if (target != null && _currentSelectedWidget != target)
+					{
+						_currentSelectedWidget = target;
+						HandleWidgetSelection();
+						viewport.Refresh();
+					}
+					return;
+				}
 
 				if (canDragWidget && (_currentSelectedWidget == clickedControl || clickedControl == null || Util.IsKeyPressed(Keys.ShiftKey) || currWidgetBorder != BorderPosition.Center))
 				{
+					// Alt+drag from the widget's center duplicates it (like most design tools).
+					if (altHeld && currWidgetBorder == BorderPosition.Center && _currentSelectedWidget != null)
+					{
+						var copy = DeepCopy(_currentSelectedWidget);
+						copy.position = _currentSelectedWidget.position;
+						ExecuteCommand(new CreateControlCommand(copy, _currentSelectedWidget.Parent, CurrentLayout), "Alt-drag duplicate");
+						_currentSelectedWidget = copy;
+						HandleWidgetSelection();
+					}
+
 					_draggingWidgetAt = currWidgetBorder;
 					_draggedWidgetPosition = _currentSelectedWidget.position;
 					_draggedWidgetSize = (Size)_currentSelectedWidget.size;
@@ -1368,16 +1397,30 @@ namespace MyGui.net
 								break;
 						}
 
-						// Adjusted snapping logic
+						// Snap: Ctrl disables all snap; otherwise edge-snap (parent + siblings)
+						// with grid fall-back per axis. Edge snap only applies while moving
+						// (Center drag); resizes still use plain grid snap.
+						bool disableSnap = Util.IsKeyPressed(Keys.ControlKey);
+
 						_currentSelectedWidget.size = new Point(
-							Math.Max((int)Math.Round((float)_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing, _gridSpacing),
-							Math.Max((int)Math.Round((float)_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing, _gridSpacing)
+							Math.Max(disableSnap
+								? _draggedWidgetSize.Width
+								: (int)Math.Round((float)_draggedWidgetSize.Width / _gridSpacing) * _gridSpacing, _gridSpacing),
+							Math.Max(disableSnap
+								? _draggedWidgetSize.Height
+								: (int)Math.Round((float)_draggedWidgetSize.Height / _gridSpacing) * _gridSpacing, _gridSpacing)
 						);
 
-						_currentSelectedWidget.position = new Point(
-							(int)Math.Round((float)_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing,
-							(int)Math.Round((float)_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing
-						);
+						Point posCandidate = _draggedWidgetPosition;
+						if (!disableSnap)
+						{
+							posCandidate = (_draggingWidgetAt == BorderPosition.Center)
+								? SnapDraggedPosition(_currentSelectedWidget, _draggedWidgetPosition)
+								: new Point(
+									(int)Math.Round((float)_draggedWidgetPosition.X / _gridSpacing) * _gridSpacing,
+									(int)Math.Round((float)_draggedWidgetPosition.Y / _gridSpacing) * _gridSpacing);
+						}
+						_currentSelectedWidget.position = posCandidate;
 
 						UpdateProperties();
 
@@ -1429,8 +1472,22 @@ namespace MyGui.net
 				_movedViewport = false;
 				sender.Cursor = Cursors.Default;
 			}
+			else if (e.Button == MouseButtons.Middle)
+			{
+				_draggingViewport = false;
+				_movedViewport = false;
+				sender.Cursor = Cursors.Default;
+			}
 			else if (e.Button == MouseButtons.Left)
 			{
+				// End Space+LMB pan if we were panning.
+				if (_draggingViewport)
+				{
+					_draggingViewport = false;
+					_movedViewport = false;
+					sender.Cursor = Cursors.Default;
+					return;
+				}
 				if (_draggingWidgetAt != BorderPosition.None && _currentSelectedWidget != null)
 				{
 					_draggingWidgetAt = BorderPosition.None;

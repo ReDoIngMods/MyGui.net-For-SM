@@ -1793,28 +1793,44 @@ namespace MyGui.net
 		{
 			for (int i = parents.Count - 1; i >= 0; i--)
 			{
-				var result = GetTopmostControlAtPointRecursive(parents[i], Point.Empty, screenPoint, excludeWidgets);
+				var result = GetTopmostControlAtPointRecursive(parents[i], null, Point.Empty, screenPoint, excludeWidgets);
 				if (result != null)
 					return result;
 			}
 			return null;
 		}
 
-		private static MyGuiWidgetData? GetTopmostControlAtPointRecursive(MyGuiWidgetData root, Point parentPos, Point screenPoint, MyGuiWidgetData[]? excludeWidgets)
+		// Mirrors the editor-mode alignment branch in RenderBackend.DrawWidget so hit-testing
+		// matches what the user sees. Returns the widget's effective absolute rect.
+		private static SKRect GetAlignedAbsoluteRect(MyGuiWidgetData root, MyGuiWidgetData? parent, Point baseAbsolute)
 		{
-			Point absolute = new(parentPos.X + root.position.X, parentPos.Y + root.position.Y);
-
-			if (excludeWidgets?.Contains(root) == true ||
-				!ContainsPoint(root, absolute, screenPoint))
+			if (parent == null || string.IsNullOrEmpty(root.align))
 			{
-				return null;
+				return new SKRect(baseAbsolute.X, baseAbsolute.Y, baseAbsolute.X + root.size.X, baseAbsolute.Y + root.size.Y);
 			}
+			return RenderBackend.GetWidgetOffset(root, parent, baseAbsolute, new Point(root.size.X, root.size.Y));
+		}
 
+		private static MyGuiWidgetData? GetTopmostControlAtPointRecursive(MyGuiWidgetData root, MyGuiWidgetData? parentWidget, Point parentPos, Point screenPoint, MyGuiWidgetData[]? excludeWidgets)
+		{
+			Point baseAbsolute = new(parentPos.X + root.position.X, parentPos.Y + root.position.Y);
+			SKRect alignedRect = GetAlignedAbsoluteRect(root, parentWidget, baseAbsolute);
+			Point alignedAbsolute = new((int)alignedRect.Left, (int)alignedRect.Top);
+
+			// Recurse into children first — a child may be positioned outside its parent's rect
+			// (drawn with a red out-of-bounds outline) and must still be selectable.
 			for (int i = root.children.Count - 1; i >= 0; i--)
 			{
-				var match = GetTopmostControlAtPointRecursive(root.children[i], absolute, screenPoint, excludeWidgets);
+				var match = GetTopmostControlAtPointRecursive(root.children[i], root, alignedAbsolute, screenPoint, excludeWidgets);
 				if (match != null)
 					return match;
+			}
+
+			if (excludeWidgets?.Contains(root) == true ||
+				screenPoint.X < alignedRect.Left || screenPoint.X >= alignedRect.Right ||
+				screenPoint.Y < alignedRect.Top || screenPoint.Y >= alignedRect.Bottom)
+			{
+				return null;
 			}
 
 			return root;
@@ -1827,27 +1843,28 @@ namespace MyGui.net
 			return new MyGuiWidgetData();
 		}
 
-		private static void GetAllControlsAtPointRecursive(MyGuiWidgetData root, Point parentAbsolutePosition, Point screenPoint, List<MyGuiWidgetData> result, MyGuiWidgetData[]? excludeWidgets)
+		private static void GetAllControlsAtPointRecursive(MyGuiWidgetData root, MyGuiWidgetData? parentWidget, Point parentAbsolutePosition, Point screenPoint, List<MyGuiWidgetData> result, MyGuiWidgetData[]? excludeWidgets)
 		{
-			// Calculate the widget's absolute position by adding the parent's position
-			Point absolutePosition = new(
+			Point baseAbsolute = new(
 				parentAbsolutePosition.X + root.position.X,
 				parentAbsolutePosition.Y + root.position.Y
 			);
+			SKRect alignedRect = GetAlignedAbsoluteRect(root, parentWidget, baseAbsolute);
+			Point alignedAbsolute = new((int)alignedRect.Left, (int)alignedRect.Top);
 
-			// Check if the widget contains the point and is not excluded
-			if (excludeWidgets?.Contains(root) == true || !ContainsPoint(root, absolutePosition, screenPoint))
+			// Traverse children first so out-of-parent-bounds widgets remain clickable.
+			for (int i = root.children.Count - 1; i >= 0; i--)
+			{
+				GetAllControlsAtPointRecursive(root.children[i], root, alignedAbsolute, screenPoint, result, excludeWidgets);
+			}
+
+			if (excludeWidgets?.Contains(root) == true ||
+				screenPoint.X < alignedRect.Left || screenPoint.X >= alignedRect.Right ||
+				screenPoint.Y < alignedRect.Top || screenPoint.Y >= alignedRect.Bottom)
 			{
 				return;
 			}
 
-			// Traverse children in reverse order (render order) and accumulate their positions
-			for (int i = root.children.Count - 1; i >= 0; i--)
-			{
-				GetAllControlsAtPointRecursive(root.children[i], absolutePosition, screenPoint, result, excludeWidgets);
-			}
-
-			// Add the current widget to the result (after processing its children)
 			result.Add(root);
 		}
 
@@ -1859,7 +1876,7 @@ namespace MyGui.net
 			// Traverse each parent widget in reverse order (render order)
 			for (int i = parents.Count - 1; i >= 0; i--)
 			{
-				GetAllControlsAtPointRecursive(parents[i], Point.Empty, screenPoint, widgetsAtPoint, excludeParent);
+				GetAllControlsAtPointRecursive(parents[i], null, Point.Empty, screenPoint, widgetsAtPoint, excludeParent);
 			}
 
 			return widgetsAtPoint;

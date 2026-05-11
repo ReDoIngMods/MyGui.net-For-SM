@@ -142,6 +142,14 @@ namespace MyGui.net
 				widget.size = new Point((int)rect.Size.Width, (int)rect.Size.Height);
 
 				widgetPosition = new(widget.position.X, widget.position.Y);
+			}
+			else if (parent != null && parent != widgetSecondaryData && !string.IsNullOrEmpty(widget.align))
+			{
+				// Editor-mode alignment: apply widget.align so options like Center / Right Top / Stretch
+				// have a visible effect, but don't mutate widget.position/size — the user still owns those
+				// values for dragging, undo/redo, and serialization.
+				rect = GetWidgetOffset(widget, parent, new((int)widgetPosition.X, (int)widgetPosition.Y), oldSizeParam);
+				widgetPosition = new(rect.Location.X, rect.Location.Y);
 
 				/*var textPaint = new SKPaint
 				{
