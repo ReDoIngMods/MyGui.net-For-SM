@@ -57,69 +57,34 @@ namespace MyGui.net
 
 		#region Properties tab polish
 
-		// Theme-aware color palette so the properties panel matches the rest of the app.
+		// Pull from SystemColors so we inherit Application.SetColorMode's theme — same
+		// palette the rest of the app uses. Hardcoded RGBs drift from the system colors
+		// and look out of place next to TreeView / PropertyGrid defaults.
 		private struct PropsTheme
 		{
 			public Color HeaderBg, HeaderBorder, Title, Subtitle, StripeNeutral;
 			public Color GridView, GridText, GridLine, GridSplitter, GridBorder, GridCategory;
 			public Color HelpBg, HelpText, HelpBorder;
-			public Color AlignBg, AlignButton, AlignButtonText, AlignButtonBorder, AlignHover, AlignAccent, AlignAccentText, AlignSubLabel;
 		}
 
 		private static PropsTheme GetPropsTheme()
 		{
-			if (Util.IsDarkThemeActive())
-			{
-				return new PropsTheme
-				{
-					HeaderBg = Color.FromArgb(32, 32, 36),
-					HeaderBorder = Color.FromArgb(60, 60, 66),
-					Title = Color.FromArgb(232, 232, 235),
-					Subtitle = Color.FromArgb(150, 150, 158),
-					StripeNeutral = Color.FromArgb(90, 90, 96),
-					GridView = Color.FromArgb(40, 40, 44),
-					GridText = Color.FromArgb(232, 232, 235),
-					GridLine = Color.FromArgb(58, 58, 64),
-					GridSplitter = Color.FromArgb(58, 58, 64),
-					GridBorder = Color.FromArgb(70, 70, 76),
-					GridCategory = Color.FromArgb(200, 200, 208),
-					HelpBg = Color.FromArgb(32, 32, 36),
-					HelpText = Color.FromArgb(190, 190, 198),
-					HelpBorder = Color.FromArgb(60, 60, 66),
-					AlignBg = Color.FromArgb(40, 40, 44),
-					AlignButton = Color.FromArgb(48, 48, 52),
-					AlignButtonText = Color.FromArgb(220, 220, 225),
-					AlignButtonBorder = Color.FromArgb(70, 70, 76),
-					AlignHover = Color.FromArgb(58, 70, 96),
-					AlignAccent = Color.FromArgb(0, 120, 215),
-					AlignAccentText = Color.White,
-					AlignSubLabel = Color.FromArgb(170, 170, 178),
-				};
-			}
 			return new PropsTheme
 			{
-				HeaderBg = Color.FromArgb(248, 248, 250),
-				HeaderBorder = Color.FromArgb(220, 220, 225),
-				Title = Color.FromArgb(34, 34, 38),
-				Subtitle = Color.FromArgb(120, 120, 128),
-				StripeNeutral = Color.FromArgb(180, 180, 185),
-				GridView = Color.White,
-				GridText = Color.FromArgb(34, 34, 38),
-				GridLine = Color.FromArgb(235, 235, 240),
-				GridSplitter = Color.FromArgb(230, 230, 235),
-				GridBorder = Color.FromArgb(220, 220, 225),
-				GridCategory = Color.FromArgb(60, 60, 70),
-				HelpBg = Color.FromArgb(248, 248, 250),
-				HelpText = Color.FromArgb(80, 80, 90),
-				HelpBorder = Color.FromArgb(220, 220, 225),
-				AlignBg = Color.White,
-				AlignButton = Color.White,
-				AlignButtonText = Color.FromArgb(50, 50, 55),
-				AlignButtonBorder = Color.FromArgb(200, 200, 205),
-				AlignHover = Color.FromArgb(232, 240, 252),
-				AlignAccent = Color.FromArgb(0, 120, 215),
-				AlignAccentText = Color.White,
-				AlignSubLabel = Color.FromArgb(80, 80, 90),
+				HeaderBg = SystemColors.Control,
+				HeaderBorder = SystemColors.ControlDark,
+				Title = SystemColors.ControlText,
+				Subtitle = SystemColors.GrayText,
+				StripeNeutral = SystemColors.ControlDark,
+				GridView = SystemColors.Window,
+				GridText = SystemColors.WindowText,
+				GridLine = SystemColors.ControlDark,
+				GridSplitter = SystemColors.Control,
+				GridBorder = SystemColors.ControlDark,
+				GridCategory = SystemColors.ControlText,
+				HelpBg = SystemColors.Control,
+				HelpText = SystemColors.ControlText,
+				HelpBorder = SystemColors.ControlDark,
 			};
 		}
 

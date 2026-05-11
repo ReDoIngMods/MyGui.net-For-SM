@@ -1031,17 +1031,16 @@ namespace MyGui.net
 					buttonTopScale, buttonStretch, buttonBottomScale, buttonLeftScale, buttonRightScale, buttonDefault
 				];
 
-				// Polished, theme-aware button styling. Highlights the currently-set option so
-				// users can see what's active at a glance.
-				bool dark = Util.IsDarkThemeActive();
-				Color bg = dark ? Color.FromArgb(40, 40, 44) : Color.White;
-				Color panelBg = dark ? Color.FromArgb(48, 48, 52) : Color.FromArgb(248, 248, 250);
-				Color border = dark ? Color.FromArgb(70, 70, 76) : Color.FromArgb(200, 200, 205);
-				Color text = dark ? Color.FromArgb(220, 220, 225) : Color.FromArgb(50, 50, 55);
-				Color hover = dark ? Color.FromArgb(58, 70, 96) : Color.FromArgb(232, 240, 252);
-				Color accent = Color.FromArgb(0, 120, 215);
-				Color accentFore = Color.White;
-				Color labelFore = dark ? Color.FromArgb(170, 170, 178) : Color.FromArgb(80, 80, 90);
+				// SystemColors so the picker inherits Application.SetColorMode's palette —
+				// same look as the surrounding PropertyGrid and TreeView.
+				Color bg = SystemColors.Window;
+				Color panelBg = SystemColors.Control;
+				Color border = SystemColors.ControlDark;
+				Color text = SystemColors.WindowText;
+				Color hover = SystemColors.ControlLight;
+				Color accent = SystemColors.Highlight;
+				Color accentFore = SystemColors.HighlightText;
+				Color labelFore = SystemColors.GrayText;
 
 				string currentTag = (value as string) ?? "";
 				foreach (var item in controls)
