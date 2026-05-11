@@ -843,6 +843,54 @@ namespace MyGui.net
 
 		#endregion
 
+		#region Viewport grid
+
+		// Reusable paint so we don't allocate per frame.
+		private static readonly SKPaint _gridLinePaint = new SKPaint
+		{
+			Color = new SKColor(35, 35, 35),
+			StrokeWidth = 1,
+			IsAntialias = false,
+			Style = SKPaintStyle.Stroke,
+		};
+
+		// Draws the project's grid directly into the viewport canvas with screen-space
+		// snapping so each line is exactly one device pixel regardless of zoom.
+		private void DrawViewportGrid(SKCanvas canvas)
+		{
+			int cell = _gridSpacing;
+			if (cell <= 0) return;
+
+			// Project rect in screen pixels (canvas matrix is scale*translate).
+			float projLeft = _viewportScale * _viewportOffset.X;
+			float projTop = _viewportScale * _viewportOffset.Y;
+			float projRight = projLeft + ProjectSize.Width * _viewportScale;
+			float projBottom = projTop + ProjectSize.Height * _viewportScale;
+
+			// Skip drawing when cells get too small to be useful (would be visual noise).
+			if (cell * _viewportScale < 2f) return;
+
+			int saved = canvas.Save();
+			canvas.ResetMatrix();
+			canvas.ClipRect(new SKRect(projLeft, projTop, projRight, projBottom));
+
+			// +0.5f keeps a stroke-width-1 line centered on the integer pixel column.
+			for (int wx = 0; wx <= ProjectSize.Width; wx += cell)
+			{
+				float sx = (float)Math.Round(projLeft + wx * _viewportScale) + 0.5f;
+				canvas.DrawLine(sx, projTop, sx, projBottom, _gridLinePaint);
+			}
+			for (int wy = 0; wy <= ProjectSize.Height; wy += cell)
+			{
+				float sy = (float)Math.Round(projTop + wy * _viewportScale) + 0.5f;
+				canvas.DrawLine(projLeft, sy, projRight, sy, _gridLinePaint);
+			}
+
+			canvas.RestoreToCount(saved);
+		}
+
+		#endregion
+
 		#region Edge snap during drag
 
 		// Snap threshold in viewport pixels. Scaled by zoom so the feel stays constant.

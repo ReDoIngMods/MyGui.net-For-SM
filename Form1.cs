@@ -937,12 +937,19 @@ namespace MyGui.net
 
 			SurfacePaint.Color = EditorBackgroundMode != 0 ? SKColors.Black : new SKColor(EditorBackgroundColor.R, EditorBackgroundColor.G, EditorBackgroundColor.B);
 			SurfacePaint.Style = SKPaintStyle.Fill;
-			if (ViewportBackgroundBitmap != null)
+			if (EditorBackgroundMode == 1)
+			{
+				// Fill the project rect, then draw the grid live in screen space so the
+				// lines stay one device pixel at any zoom. The old approach pre-rasterized
+				// a bitmap at ProjectSize and let the canvas matrix scale it, which smears
+				// 1px lines across subpixel boundaries at fractional zooms (e.g. 1.10×, 1.50×).
+				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), SurfacePaint);
+				DrawViewportGrid(canvas);
+			}
+			else if (ViewportBackgroundBitmap != null)
 			{
 				canvas.DrawRect(new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), SurfacePaint);
-
-				SurfacePaint.FilterQuality = EditorBackgroundMode == 1 ? SKFilterQuality.None : (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
-
+				SurfacePaint.FilterQuality = (SKFilterQuality)Settings.Default.ViewportFilteringLevel;
 				canvas.DrawBitmap(ViewportBackgroundBitmap, new SKRect(0, 0, ProjectSize.Width, ProjectSize.Height), SurfacePaint);
 			}
 			else
